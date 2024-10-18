@@ -3,7 +3,7 @@ import dotenv from "dotenv"
 import express from "express"
 import cookieParser from "cookie-parser"
 
-dotenv.config({ path: ".env" })
+dotenv.config({ path: ".env.local" })
 
 const app = express()
 
@@ -13,7 +13,7 @@ app.use(cors({
 		if (!origin) return callback(null, true)
 		return callback(null, true)
 	},
-	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+	methods: ["GET", "POST"],
 	allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
 	credentials: true
 }))
