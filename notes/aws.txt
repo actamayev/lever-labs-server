@@ -1,0 +1,58 @@
+To copy important files to AWS, run the following commands from the fortuna-backend-devnet-nodejs root directory.
+Locally, run `npm run build`
+
+Devnet:
+	scp -i /Users/arieltamayev/Documents/devnet-ec2-keypair.pem -r ./dist ubuntu@54.90.242.166:/home/ubuntu/fortuna
+	scp -i /Users/arieltamayev/Documents/devnet-ec2-keypair.pem -r ./prisma ubuntu@54.90.242.166:/home/ubuntu/fortuna/dist/src
+	scp -i /Users/arieltamayev/Documents/devnet-ec2-keypair.pem ./package.json ubuntu@54.90.242.166:/home/ubuntu/fortuna
+	scp -i /Users/arieltamayev/Documents/devnet-ec2-keypair.pem ./package-lock.json ubuntu@54.90.242.166:/home/ubuntu/fortuna
+	scp -i /Users/arieltamayev/Documents/devnet-ec2-keypair.pem ./.env.production ubuntu@54.90.242.166:/home/ubuntu/fortuna/dist/src/.env
+	scp -i /Users/arieltamayev/Documents/devnet-ec2-keypair.pem ./ecosystem.config.js ubuntu@54.90.242.166:/home/ubuntu/fortuna/dist/src
+
+Mainnet:
+	scp -i /Users/arieltamayev/Documents/mainnet-ec2-keypair.pem -r ./dist ubuntu@54.221.182.74:/home/ubuntu/fortuna
+	scp -i /Users/arieltamayev/Documents/mainnet-ec2-keypair.pem -r ./prisma ubuntu@54.221.182.74:/home/ubuntu/fortuna/dist/src
+	scp -i /Users/arieltamayev/Documents/mainnet-ec2-keypair.pem ./package.json ubuntu@54.221.182.74:/home/ubuntu/fortuna
+	scp -i /Users/arieltamayev/Documents/mainnet-ec2-keypair.pem ./package-lock.json ubuntu@54.221.182.74:/home/ubuntu/fortuna
+	scp -i /Users/arieltamayev/Documents/mainnet-ec2-keypair.pem ./.env.production ubuntu@54.221.182.74:/home/ubuntu/fortuna/dist/src/.env
+	scp -i /Users/arieltamayev/Documents/mainnet-ec2-keypair.pem ./ecosystem.config.js ubuntu@54.221.182.74:/home/ubuntu/fortuna/dist/src
+
+To SSH into AWS:
+	Devnet:
+		ssh -i /Users/arieltamayev/Documents/devnet-ec2-keypair.pem ubuntu@54.90.242.166
+	Mainnet:
+		ssh -i /Users/arieltamayev/Documents/mainnet-ec2-keypair.pem ubuntu@54.221.182.74
+
+In AWS:
+`cd fortuna`
+`npm install --production`
+`pm2 restart <app_name or app_id>`
+
+For Database migrations, navigate to dist/src, and run::
+	`npx prisma migrate deploy`
+	Run `npx prisma generate` in the src directory.
+	`pm2 restart <app_name or app_id>`
+	If nothing is working after doing a migration, try restarting the pm2 `pm2 restart <app_name or app_id>`
+
+I am using the package pm2 to run the server on the instance (even after I close my connection)
+Important pm2 commands:
+1. pm2 list (shows pm2 instances)
+2. pm2 stop app_name_or_id (stops a running pm2 process)
+3. pm2 delete app_name_or_id (deletes a stopped pm2 process)
+4.
+	Devnet: pm2 start ecosystem.config.js --env devnet_production (must be done where the index.js file is)
+	Mainnet: pm2 start ecosystem.config.js --env mainnet_production (must be done where the index.js file is)
+5. pm2 logs app_name_or_id (shows logs for a process)
+
+Other:
+- If getting this error:  `Error: @prisma/client did not initialize yet. Please run "prisma generate" and try to import it again.`, run:
+	`npx prisma generate` in the src directory
+- If getting this error after a migration: `Unknown field `[field_name]` for select statement on model [model_name]...`
+	Check that the field exists in PGAdmin (remote into the RDS box). If it does, run `npx prisma generate` in the src directory
+- To save the Postgres Url to AWS's configuration, go into `nano ~/.bashrc`, to the end of the file, and add:
+	export DATABASE_URL='your-database-url'.
+	Save, and run `source ~/.bashrc`
+	Run `echo $DATABASE_URL` to make sure the command ran correctly
+
+- Update linux packages
+	sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
