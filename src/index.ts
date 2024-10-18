@@ -21,7 +21,9 @@ app.use(cors({
 app.use(cookieParser())
 app.use(express.json())
 
-app.use("*", (req, res) => res.status(404).json({ error: "Route not found"}))
+app.use("*", (_req, res) => {
+	res.status(404).json({ error: "Route not found"})
+})
 
 // Initialization of server:
 app.listen(8080, "0.0.0.0", () => {
