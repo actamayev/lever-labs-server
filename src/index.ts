@@ -4,8 +4,10 @@ import WebSocket from "ws"
 import dotenv from "dotenv"
 import express from "express"
 import cookieParser from "cookie-parser"
+import checkHealth from "./controllers/health-checks/check-health"
+import getEnvPath from "./utils/get-env-path"
 
-dotenv.config({ path: ".env.local" })
+dotenv.config({ path: getEnvPath() })
 
 const app = express()
 
@@ -44,6 +46,8 @@ wss.on("connection", (ws: WebSocket) => {
 	  console.log("Client disconnected")
 	})
 })
+
+app.use("/health", checkHealth)
 
 app.use("*", (_req, res) => {
 	res.status(404).json({ error: "Route not found"})
