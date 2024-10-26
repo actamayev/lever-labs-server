@@ -4,8 +4,11 @@ import WebSocket from "ws"
 import dotenv from "dotenv"
 import express from "express"
 import cookieParser from "cookie-parser"
+import checkHealth from "./controllers/health-checks/check-health"
+import getEnvPath from "./utils/get-env-path"
+import allowedOrigins from "./utils/get-allowed-origins"
 
-dotenv.config({ path: ".env.local" })
+dotenv.config({ path: getEnvPath() })
 
 const app = express()
 
@@ -13,9 +16,13 @@ app.use(cors({
 	origin: function (origin, callback) {
 		// Allow requests with no origin (like mobile apps, curl requests, or Postman)
 		if (!origin) return callback(null, true)
+		if (allowedOrigins().indexOf(origin) === -1) {
+			const msg = "The CORS policy for this site does not allow access from the specified Origin."
+			return callback(new Error(msg), false)
+		}
 		return callback(null, true)
 	},
-	methods: ["GET", "POST"],
+	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 	allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
 	credentials: true
 }))
@@ -44,6 +51,8 @@ wss.on("connection", (ws: WebSocket) => {
 	  console.log("Client disconnected")
 	})
 })
+
+app.use("/health", checkHealth)
 
 app.use("*", (_req, res) => {
 	res.status(404).json({ error: "Route not found"})
