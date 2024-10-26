@@ -8,6 +8,8 @@ import checkHealth from "./controllers/health-checks/check-health"
 import getEnvPath from "./utils/get-env-path"
 import allowedOrigins from "./utils/get-allowed-origins"
 
+import authRoutes from "./routes/auth"
+
 dotenv.config({ path: getEnvPath() })
 
 const app = express()
@@ -52,6 +54,7 @@ wss.on("connection", (ws: WebSocket) => {
 	})
 })
 
+app.use("/auth", authRoutes)
 app.use("/health", checkHealth)
 
 app.use("*", (_req, res) => {
