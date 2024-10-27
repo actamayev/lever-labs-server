@@ -13,4 +13,6 @@ authRoutes.post("/login", validateLogin, login)
 authRoutes.post("/logout", logout)
 authRoutes.post("/register", validateRegister, register)
 
+// TODO: Add google routes
+
 export default authRoutes
