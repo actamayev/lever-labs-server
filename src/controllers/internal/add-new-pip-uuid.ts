@@ -3,7 +3,7 @@ import addPipUUIDRecord from "../../db-operations/write/pip-uuid/add-pip-uuid-re
 
 export default async function addNewPipUUID (req: Request, res: Response): Promise<void> {
 	try {
-		const { pipUUID } = req.body as { pipUUID: string }
+		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
 		await addPipUUIDRecord(pipUUID)
 

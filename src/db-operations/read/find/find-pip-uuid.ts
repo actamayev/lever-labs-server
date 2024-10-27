@@ -1,7 +1,7 @@
 import { pip_uuid } from "@prisma/client"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function findPipUUID(pipUUID: string): Promise<pip_uuid | null> {
+export default async function findPipUUID(pipUUID: PipUUID): Promise<pip_uuid | null> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 

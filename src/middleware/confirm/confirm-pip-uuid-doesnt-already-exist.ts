@@ -7,7 +7,7 @@ export default async function confirmPipUUIDDoesntAlreadyExist(
 	next: NextFunction
 ): Promise<void> {
 	try {
-		const { pipUUID } = req.body as { pipUUID: string }
+		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
 		const pipUUIDExists = await doesPipUUIDExist(pipUUID)
 

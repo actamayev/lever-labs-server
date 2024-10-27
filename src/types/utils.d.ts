@@ -26,6 +26,8 @@ declare global {
 		"GOOGLE_CLIENT_SECRET"
 
 	type SecretsObject = { [K in SecretKeys]: string }
+
+	type PipUUID = string & { readonly __brand: unique symbol };
 }
 
 export {}

@@ -119,8 +119,7 @@ export default [
 		rules: {
 			"@typescript-eslint/no-unnecessary-condition": "warn",
 			"@typescript-eslint/no-floating-promises": "warn",
-			//TODO: Bring this back:
-			// "filename-rules/match": [2, "^[a-z\\d-]+$"],
+			"filename-rules/match": [2, "^[a-z\\d-]+$"],
 		},
 	},
 	{

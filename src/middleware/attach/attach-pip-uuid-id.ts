@@ -8,7 +8,7 @@ export default async function attachPipUUIDId(
 	next: NextFunction
 ): Promise<void> {
 	try {
-		const { pipUUID } = req.body.addPipToAccountData as { pipUUID: string }
+		const { pipUUID } = req.body.addPipToAccountData as { pipUUID: PipUUID }
 
 		const pipUUIDData = await findPipUUID(pipUUID)
 

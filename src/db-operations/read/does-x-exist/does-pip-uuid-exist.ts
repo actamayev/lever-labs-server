@@ -1,7 +1,6 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 
-// TODO: Consider making pipUUID into it's own custom type
-export default async function doesPipUUIDExist(pipUUID: string): Promise<boolean> {
+export default async function doesPipUUIDExist(pipUUID: PipUUID): Promise<boolean> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
