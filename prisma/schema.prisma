@@ -72,6 +72,7 @@ model user_pip_uuid_map {
 
 	last_connection_time										DateTime @default(now())
 	created_at                                                  DateTime  @default(now())
+	is_active                                                   Boolean  @default(true)
 
 	user                                                        credentials @relation(fields: [user_id], references: [user_id])
 	pip_uuid                                                    pip_uuid @relation(fields: [pip_uuid_id], references: [pip_uuid_id])

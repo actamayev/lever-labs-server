@@ -2,7 +2,7 @@ import { Response, Request } from "express"
 import Hash from "../../classes/hash"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
-import addUser from "../../db-operations/write/credentials/add-user"
+import { addLocalUser } from "../../db-operations/write/credentials/add-user"
 import doesEmailExist from "../../db-operations/read/does-x-exist/does-email-exist"
 import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-hisory-record"
@@ -24,7 +24,7 @@ export default async function register (req: Request, res: Response): Promise<vo
 
 		const userData = await constructLocalUserFields(registerInformation, hashedPassword)
 
-		const userId = await addUser(userData)
+		const userId = await addLocalUser(userData)
 
 		await addLoginHistoryRecord(userId)
 

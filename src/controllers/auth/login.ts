@@ -5,6 +5,7 @@ import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import determineLoginContactType from "../../utils/auth-helpers/determine-contact-type"
 import retrieveUserFromContact from "../../utils/auth-helpers/login/retrieve-user-from-contact"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-hisory-record"
+import retrieveUserPipUUIDs from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
 
 export default async function login (req: Request, res: Response): Promise<void> {
 	try {
@@ -27,7 +28,9 @@ export default async function login (req: Request, res: Response): Promise<void>
 
 		await addLoginHistoryRecord(credentialsResult.user_id)
 
-		res.status(200).json({ accessToken })
+		const userPipUUIDs = await retrieveUserPipUUIDs(credentialsResult.user_id)
+
+		res.status(200).json({ accessToken, userPipUUIDs })
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ error: "Internal Server Error: Unable to Login" })

@@ -1,13 +1,15 @@
-import { pip_uuid } from "@prisma/client"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function findPipUUID(pipUUID: PipUUID): Promise<pip_uuid | null> {
+export default async function setUsername(userId: number, username: string): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		return await prismaClient.pip_uuid.findFirst({
+		await prismaClient.credentials.update({
 			where: {
-				uuid: pipUUID
+				user_id: userId
+			},
+			data: {
+				username
 			}
 		})
 	} catch (error) {
