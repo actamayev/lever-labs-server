@@ -9,7 +9,7 @@ export default class SecretsManager extends Singleton {
 
 	private constructor() {
 		super()
-		if (process.env.NODE_ENV !== "production-dev" && process.env.NODE_ENV !== "production-prod") {
+		if (process.env.NODE_ENV !== "staging" && process.env.NODE_ENV !== "production") {
 			dotenv.config({ path: ".env.local" })
 			return
 		}
@@ -36,7 +36,7 @@ export default class SecretsManager extends Singleton {
 			if (this.secrets.has(key)) {
 				secret = this.secrets.get(key)
 			}
-			else if (process.env.NODE_ENV !== "production-dev" && process.env.NODE_ENV !== "production-prod") {
+			else if (process.env.NODE_ENV !== "staging" && process.env.NODE_ENV !== "production") {
 				secret = process.env[key]
 			}
 			else {
@@ -54,7 +54,7 @@ export default class SecretsManager extends Singleton {
 		try {
 			const secrets: Partial<SecretsObject> = {}
 
-			if (process.env.NODE_ENV !== "production-dev" && process.env.NODE_ENV !== "production-prod") {
+			if (process.env.NODE_ENV !== "staging" && process.env.NODE_ENV !== "production") {
 				for (const key of keys) {
 					const secret = process.env[key]
 					secrets[key] = secret
@@ -134,10 +134,10 @@ export default class SecretsManager extends Singleton {
 	}
 
 	private getSecretName(): string {
-		if (process.env.NODE_ENV === "production-dev") {
-			return "dev_secrets"
-		} else if (process.env.NODE_ENV === "production-prod") {
-			return "prod_secrets"
+		if (process.env.NODE_ENV === "staging") {
+			return "blue-dot-staging-secrets"
+		} else if (process.env.NODE_ENV === "production") {
+			return "blue-dot-prod-secrets"
 		}
 		return ""
 	}

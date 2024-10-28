@@ -15,6 +15,6 @@ declare namespace NodeJS {
 		AWS_ACCESS_KEY_ID: string
 		AWS_SECRET_ACCESS_KEY: string
 
-		NODE_ENV: "development" | "production-dev" | "production-prod"
+		NODE_ENV: "local" | "staging" | "production"
 	}
 }

@@ -1,20 +1,20 @@
 To copy important files to AWS, run the following commands from the blue-dot-robots-server root directory.
 Locally, run `npm run build`
 
-Dev:
-	scp -i /Users/arieltamayev/Documents/bdr-dev-ec2-keypair.pem -r ./dist ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots
-	scp -i /Users/arieltamayev/Documents/bdr-dev-ec2-keypair.pem -r ./prisma ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/bdr-dev-ec2-keypair.pem ./package.json ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots
-	scp -i /Users/arieltamayev/Documents/bdr-dev-ec2-keypair.pem ./package-lock.json ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots
-	scp -i /Users/arieltamayev/Documents/bdr-dev-ec2-keypair.pem ./.env.production ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots/dist/src/.env
-	scp -i /Users/arieltamayev/Documents/bdr-dev-ec2-keypair.pem ./ecosystem.config.js ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots/dist/src
+Staging:
+	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem -r ./dist ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots
+	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem -r ./prisma ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots/dist/src
+	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./package.json ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots
+	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./package-lock.json ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots
+	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./.env.production ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots/dist/src/.env
+	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./ecosystem.config.js ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots/dist/src
 
-Prod:
+Production:
 	- find in fortuna
 
 To SSH into AWS:
-	Dev:
-		ssh -i /Users/arieltamayev/Documents/bdr-dev-ec2-keypair.pem ubuntu@3.94.205.5
+	Staging:
+		ssh -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ubuntu@3.94.205.5
 	Prod:
 		Find in fortuna
 
@@ -35,8 +35,8 @@ Important pm2 commands:
 2. pm2 stop app_name_or_id (stops a running pm2 process)
 3. pm2 delete app_name_or_id (deletes a stopped pm2 process)
 4.
-	Dev: pm2 start ecosystem.config.js --env dev_production (must be done where the index.js file is)
-	Production: pm2 start ecosystem.config.js --env prod_production (must be done where the index.js file is)
+	Staging: pm2 start ecosystem.config.js --env staging (must be done where the index.js file is)
+	Production: pm2 start ecosystem.config.js --env production (must be done where the index.js file is)
 5. pm2 logs app_name_or_id (shows logs for a process)
 
 Other:
