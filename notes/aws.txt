@@ -10,13 +10,18 @@ Staging:
 	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./ecosystem.config.js ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots/dist/src
 
 Production:
-	- find in fortuna
+	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem -r ./dist ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots
+	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem -r ./prisma ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
+	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem ./package.json ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots
+	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem ./package-lock.json ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots
+	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem ./.env.production ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src/.env
+	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem ./ecosystem.config.js ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
 
 To SSH into AWS:
 	Staging:
 		ssh -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ubuntu@3.94.205.5
 	Prod:
-		Find in fortuna
+		ssh -i /Users/arieltamayev/Documents/bdr-production-ec2.pem ubuntu@54.81.65.153
 
 In AWS:
 `cd blue-dot-robots`
