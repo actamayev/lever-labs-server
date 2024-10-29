@@ -1,7 +1,7 @@
 import _ from "lodash"
 import { Response, Request } from "express"
-import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"
 import setUsername from "../../db-operations/write/credentials/set-username"
+import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"
 
 export default async function registerUsername (req: Request, res: Response): Promise<void> {
 	try {
