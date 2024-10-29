@@ -1,12 +1,12 @@
 export default function getEnvPath (): string {
 	const env = process.env.NODE_ENV
 
-	if (env === "production-dev") {
-		return ".env.dev.production"
+	if (env === "staging") {
+		return ".env.staging"
 	}
 
-	if (env === "production-prod") {
-		return ".env.prod.production"
+	if (env === "production") {
+		return ".env.production"
 	}
 
 	return ".env.local"

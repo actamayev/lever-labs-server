@@ -6,3 +6,69 @@ datasource db {
 	provider = "postgresql"
 	url      = env("DATABASE_URL")
 }
+
+enum SiteThemes {
+	light
+	dark
+}
+
+enum AuthMethods {
+	blue_dot
+	google
+}
+
+model credentials {
+	user_id                                                     Int      @id @default(autoincrement())
+	username                                                    String?     @unique
+
+	password                                                    String?
+	is_active                                                   Boolean  @default(true)
+	default_site_theme                                          SiteThemes
+
+	auth_method                                                 AuthMethods
+
+	email__encrypted                                            String
+
+	created_at                                                  DateTime @default(now())
+	updated_at                                                  DateTime @default(now()) @updatedAt
+
+	login_history                                               login_history[]
+	user_pip_uuid_map											user_pip_uuid_map[]
+}
+
+model login_history {
+	login_history_id                                            Int       @id @default(autoincrement())
+	user_id                                                     Int
+	login_time                                                  DateTime  @default(now())
+
+	user                                                        credentials @relation(fields: [user_id], references: [user_id])
+
+	@@index([user_id], name: "login_history__user_id_idx")
+}
+
+model pip_uuid {
+	pip_uuid_id                                            		Int       @id @default(autoincrement())
+	uuid														String		@unique
+
+	created_at                                                  DateTime  @default(now())
+
+	user_pip_uuid_map											user_pip_uuid_map[]
+}
+
+model user_pip_uuid_map {
+	user_pip_uuid_map_id										Int       @id @default(autoincrement())
+  	user_id             										Int
+	pip_uuid_id                                               	Int
+	pip_name													String
+
+	last_connection_time										DateTime @default(now())
+	created_at                                                  DateTime  @default(now())
+	is_active                                                   Boolean  @default(true)
+
+	user                                                        credentials @relation(fields: [user_id], references: [user_id])
+	pip_uuid                                                    pip_uuid @relation(fields: [pip_uuid_id], references: [pip_uuid_id])
+
+	@@index([user_id], name: "user_pip_uuid_map__user_id_idx")
+	@@index([pip_uuid_id], name: "user_pip_uuid_map__pip_uuid_id_idx")
+	@@unique([user_id, pip_uuid_id])
+}
