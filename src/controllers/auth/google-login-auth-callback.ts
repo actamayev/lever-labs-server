@@ -50,8 +50,10 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 		await addLoginHistoryRecord(userId)
 
 		res.status(200).json({ accessToken, isNewUser })
+		return
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ error: "Internal Server Error: Unable to Login with Google" })
+		return
 	}
 }

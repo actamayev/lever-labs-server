@@ -18,7 +18,10 @@ export default function validateRegister (req: Request, res: Response, next: Nex
 	try {
 		const { error } = registerInformationSchema.validate(req.body)
 
-		if (!_.isUndefined(error)) res.status(400).json({ validationError: error.details[0].message })
+		if (!_.isUndefined(error)) {
+			res.status(400).json({ validationError: error.details[0].message })
+			return
+		}
 
 		const trimmedEmail = req.body.registerInformation.email.trimEnd()
 		req.body.registerInformation.email = trimmedEmail
@@ -26,5 +29,6 @@ export default function validateRegister (req: Request, res: Response, next: Nex
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ error: "Internal Server Error: Unable to Validate Registration" })
+		return
 	}
 }

@@ -13,8 +13,10 @@ export default async function addPipToAccount (req: Request, res: Response): Pro
 
 
 		res.status(200).json({ success: "" })
+		return
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ error: "Internal Server Error: Unable to add Pip to account" })
+		return
 	}
 }

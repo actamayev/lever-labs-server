@@ -14,11 +14,15 @@ export default function validateAddPipToAccount (req: Request, res: Response, ne
 	try {
 		const { error } = addPipToAccountSchema.validate(req.body)
 
-		if (!_.isUndefined(error)) res.status(400).json({ validationError: error.details[0].message })
+		if (!_.isUndefined(error)) {
+			res.status(400).json({ validationError: error.details[0].message })
+			return
+		}
 
 		next()
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ error: "Internal Server Error: Unable to Validate Login" })
+		return
 	}
 }

@@ -19,10 +19,14 @@ export default async function login (req: Request, res: Response): Promise<void>
 		}
 		if (credentialsResult.auth_method === "google") {
 			res.status(400).json({ message: "Please log in via Google" })
+			return
 		}
 
 		const doPasswordsMatch = await Hash.checkPassword(password, credentialsResult.password as HashedString)
-		if (doPasswordsMatch === false) res.status(400).json({ message: "Wrong Username or Password!" })
+		if (doPasswordsMatch === false) {
+			res.status(400).json({ message: "Wrong Username or Password!" })
+			return
+		}
 
 		const accessToken = await signJWT({ userId: credentialsResult.user_id, newUser: false })
 
@@ -31,8 +35,10 @@ export default async function login (req: Request, res: Response): Promise<void>
 		const userPipUUIDs = await retrieveUserPipUUIDs(credentialsResult.user_id)
 
 		res.status(200).json({ accessToken, userPipUUIDs })
+		return
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ error: "Internal Server Error: Unable to Login" })
+		return
 	}
 }

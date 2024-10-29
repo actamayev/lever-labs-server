@@ -11,11 +11,15 @@ export default function validateAddPipUUID (req: Request, res: Response, next: N
 	try {
 		const { error } = addPipUUIDSchema.validate(req.body)
 
-		if (!_.isUndefined(error)) res.status(400).json({ validationError: error.details[0].message })
+		if (!_.isUndefined(error)) {
+			res.status(400).json({ validationError: error.details[0].message })
+			return
+		}
 
 		next()
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ error: "Internal Server Error: Unable to Validate Pip UUID" })
+		return
 	}
 }

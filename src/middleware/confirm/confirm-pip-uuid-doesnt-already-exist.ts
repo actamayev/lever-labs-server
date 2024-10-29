@@ -13,10 +13,12 @@ export default async function confirmPipUUIDDoesntAlreadyExist(
 
 		if (pipUUIDExists === true) {
 			res.status(500).json({ error: "Pip UUID Already exists"})
+			return
 		}
 		next()
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ error: "Internal Server Error: Unable to confirm user hasn't already registered this pip UUID" })
+		return
 	}
 }

@@ -11,11 +11,15 @@ export default function validateGoogleLoginAuthCallback (req: Request, res: Resp
 	try {
 		const { error } = googleLoginAuthCallback.validate(req.body)
 
-		if (!_.isUndefined(error)) res.status(400).json({ validationError: error.details[0].message })
+		if (!_.isUndefined(error)) {
+			res.status(400).json({ validationError: error.details[0].message })
+			return
+		}
 
 		next()
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ error: "Internal Server Error: Unable to Validate Google Login Callback" })
+		return
 	}
 }

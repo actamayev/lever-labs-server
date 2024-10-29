@@ -15,10 +15,16 @@ export default async function register (req: Request, res: Response): Promise<vo
 		const encryptor = new Encryptor()
 		const encryptedEmail = await encryptor.deterministicEncrypt(registerInformation.email, "EMAIL_ENCRYPTION_KEY")
 		const emailExists = await doesEmailExist(encryptedEmail)
-		if (emailExists === true) res.status(400).json({ message: "Email already exists" })
+		if (emailExists === true) {
+			res.status(400).json({ message: "Email already exists" })
+			return
+		}
 
 		const usernameExists = await doesUsernameExist(registerInformation.username)
-		if (usernameExists === true) res.status(400).json({ message: "Username taken" })
+		if (usernameExists === true) {
+			res.status(400).json({ message: "Username taken" })
+			return
+		}
 
 		const hashedPassword = await Hash.hashCredentials(registerInformation.password)
 
@@ -31,8 +37,10 @@ export default async function register (req: Request, res: Response): Promise<vo
 		const accessToken = await signJWT({ userId, newUser: true })
 
 		res.status(200).json({ accessToken })
+		return
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ error: "Internal Server Error: Unable to Register New User" })
+		return
 	}
 }

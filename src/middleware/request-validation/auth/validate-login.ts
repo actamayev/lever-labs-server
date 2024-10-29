@@ -14,7 +14,10 @@ export default function validateLogin (req: Request, res: Response, next: NextFu
 	try {
 		const { error } = loginInformationSchema.validate(req.body)
 
-		if (!_.isUndefined(error)) res.status(400).json({ validationError: error.details[0].message })
+		if (!_.isUndefined(error)) {
+			res.status(400).json({ validationError: error.details[0].message })
+			return
+		}
 
 		const trimmedContact = req.body.loginInformation.contact.trimEnd()
 		req.body.loginInformation.contact = trimmedContact
@@ -23,5 +26,6 @@ export default function validateLogin (req: Request, res: Response, next: NextFu
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ error: "Internal Server Error: Unable to Validate Login" })
+		return
 	}
 }
