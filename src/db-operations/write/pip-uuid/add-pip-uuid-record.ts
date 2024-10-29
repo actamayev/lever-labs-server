@@ -1,6 +1,6 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function addPipUUIDRecord(uuid: PipUUID): Promise<void> {
+export default async function addPipUUIDRecord(uuid: PipUUID): Promise<boolean> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -9,8 +9,15 @@ export default async function addPipUUIDRecord(uuid: PipUUID): Promise<void> {
 				uuid
 			}
 		})
-	} catch (error) {
-		console.error("Error adding Pip UUID record:", error)
-		throw error
+		return true
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} catch (error: any) {
+		if (error.code === "P2002" && error.meta?.target?.includes("uuid")) {
+			console.log("UUID conflict, generating a new UUID and retrying...")
+			return false // Unique constraint violation, signal retry
+		} else {
+			console.error("Error adding Pip UUID record:", error)
+			throw error // Other errors, rethrow to handle elsewhere
+		}
 	}
 }

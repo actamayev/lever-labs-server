@@ -2,7 +2,7 @@ import Joi from "joi"
 
 const pipUUIdValidator = Joi.string()
 	.alphanum()
-	.length(6)
+	.length(5)
 	.required()
 
 export default pipUUIdValidator
