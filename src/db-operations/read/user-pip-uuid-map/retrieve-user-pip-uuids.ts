@@ -1,16 +1,10 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 
-interface RetrievedUserPipUUIDs {
-	pip_uuid: {
-        uuid: string
-    }
-}
-
-export default async function retrieveUserPipUUIDs(userId: number): Promise<RetrievedUserPipUUIDs[]> {
+export default async function retrieveUserPipUUIDs(userId: number): Promise<string[]> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		return await prismaClient.user_pip_uuid_map.findMany({
+		const retrievedUserPipUUIDs = await prismaClient.user_pip_uuid_map.findMany({
 			where: {
 				user_id: userId,
 				is_active: true
@@ -23,6 +17,8 @@ export default async function retrieveUserPipUUIDs(userId: number): Promise<Retr
 				}
 			}
 		})
+
+		return retrievedUserPipUUIDs.map(item => item.pip_uuid.uuid)
 	} catch (error) {
 		console.error(error)
 		throw error
