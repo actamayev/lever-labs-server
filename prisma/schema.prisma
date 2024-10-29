@@ -29,20 +29,11 @@ model credentials {
 
 	email__encrypted                                            String
 
-	profile_picture_id                                          Int?    @unique
-	youtube_access_tokens_id                                    Int?    @unique
-	channel_banner_id                                          	Int?    @unique
-
 	created_at                                                  DateTime @default(now())
 	updated_at                                                  DateTime @default(now()) @updatedAt
 
 	login_history                                               login_history[]
-
 	user_pip_uuid_map											user_pip_uuid_map[]
-
-	@@index([profile_picture_id], name:"credentials__profile_picture_id_idx")
-	@@index([channel_banner_id], name:"credentials__channel_banner_id_idx")
-	@@index([youtube_access_tokens_id], name:"credentials__youtube_access_tokens_id_idx")
 }
 
 model login_history {
