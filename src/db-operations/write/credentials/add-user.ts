@@ -1,12 +1,12 @@
 import { SiteThemes } from "@prisma/client"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export async function addLocalUser(userFields: NewLocalUserFields): Promise<number> {
+export async function addLocalUser(data: NewLocalUserFields): Promise<number> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
 		const user = await prismaClient.credentials.create({
-			data: userFields
+			data
 		})
 
 		return user.user_id
