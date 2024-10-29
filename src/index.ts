@@ -4,9 +4,12 @@ import WebSocket from "ws"
 import dotenv from "dotenv"
 import express from "express"
 import cookieParser from "cookie-parser"
-import checkHealth from "./controllers/health-checks/check-health"
 import getEnvPath from "./utils/get-env-path"
 import allowedOrigins from "./utils/get-allowed-origins"
+
+import authRoutes from "./routes/auth-routes"
+import internalRoutes from "./routes/internal-routes"
+import checkHealth from "./controllers/health-checks/check-health"
 
 dotenv.config({ path: getEnvPath() })
 
@@ -52,6 +55,10 @@ wss.on("connection", (ws: WebSocket) => {
 	})
 })
 
+app.use("/auth", authRoutes)
+
+// Internal Use:
+app.use("/internal", internalRoutes)
 app.use("/health", checkHealth)
 
 app.use("*", (_req, res) => {
