@@ -7,8 +7,11 @@ import cookieParser from "cookie-parser"
 import getEnvPath from "./utils/get-env-path"
 import allowedOrigins from "./utils/get-allowed-origins"
 
+import pipRoutes from "./routes/pip-routes"
 import authRoutes from "./routes/auth-routes"
 import internalRoutes from "./routes/internal-routes"
+import personalInfoRoutes from "./routes/personal-info-routes"
+
 import checkHealth from "./controllers/health-checks/check-health"
 
 dotenv.config({ path: getEnvPath() })
@@ -56,6 +59,8 @@ wss.on("connection", (ws: WebSocket) => {
 })
 
 app.use("/auth", authRoutes)
+app.use("/personal-info", personalInfoRoutes)
+app.use("/pip", pipRoutes)
 
 // Internal Use:
 app.use("/internal", internalRoutes)

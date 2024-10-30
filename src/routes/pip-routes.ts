@@ -7,9 +7,9 @@ import jwtVerifyAttachUser from "../middleware/jwt/jwt-verify-attach-user"
 import validateAddPipToAccount from "../middleware/request-validation/pip/validate-add-pip-to-account"
 import confirmUserHasntAlreadyAddedUUID from "../middleware/confirm/confirm-user-hasnt-already-added-uuid"
 
-const authRoutes = express.Router()
+const pipRoutes = express.Router()
 
-authRoutes.post(
+pipRoutes.post(
 	"/add-pip-to-account",
 	validateAddPipToAccount,
 	jwtVerifyAttachUser,
@@ -18,4 +18,4 @@ authRoutes.post(
 	addPipToAccount
 )
 
-export default authRoutes
+export default pipRoutes
