@@ -23,7 +23,8 @@ export default async function retrieveUserPipUUIDs(userId: number): Promise<PipD
 		return retrievedUserPipUUIDs.map(item => ({
 			pipName: item.pip_name,
 			userPipUUIDId: item.pip_uuid_id,
-			pipUUID: item.pip_uuid.uuid as PipUUID
+			pipUUID: item.pip_uuid.uuid as PipUUID,
+			pipConnectionStatus: "inactive"
 		  }))
 	} catch (error) {
 		console.error(error)

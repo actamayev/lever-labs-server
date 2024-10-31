@@ -32,4 +32,9 @@ export default class BrowserSocketManager extends SocketManager {
 		this.addConnection(socket.userId.toString(), { socketId: socket.id, status: "connected" })
 		socket.on("disconnect", () => this.handleDisconnection(socket.id))
 	}
+
+	public emitPipStatusUpdate(pipUUID: string, newConnectionStatus: string): void {
+		// TODO: Figure out who to send to
+		this.io.emit("pip-connection-status-update", { pipUUID, newConnectionStatus }) // Sends to all connected clients
+	  }
 }
