@@ -85,6 +85,13 @@ export default [
 				},
 				format: null,
 			}, {
+				selector: "variable",
+				filter: {
+					regex: "PORT",
+					match: true,
+				},
+				format: null,
+			},{
 				selector: "function",
 				format: ["camelCase"],
 			}, {
