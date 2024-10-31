@@ -24,16 +24,6 @@ declare global {
 	type SecretsObject = { [K in SecretKeys]: string }
 
 	type PipUUID = string & { readonly __brand: unique symbol }
-
-	type BrowserSocketConnectionInfo = {
-		userId: number
-		status: PipBrowserConnectionStatus
-	}
-
-	type ESP32SocketConnectionInfo = {
-		pipUUID: PipUUID
-		status: PipConnectionStatus
-	}
 }
 
 export {}

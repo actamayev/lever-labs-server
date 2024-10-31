@@ -1,6 +1,7 @@
 import WebSocket, { Server as WSServer } from "ws"
 import Singleton from "./singleton"
 import isPipUUID from "../utils/type-checks"
+import BrowserSocketManager from "./browser-socket-manager"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<string, ESP32SocketConnectionInfo>() // Maps socketId to ESP32SocketConnectionInfo
@@ -37,16 +38,45 @@ export default class Esp32SocketManager extends Singleton {
 		})
 	}
 
+	public getPreviouslyConnectedPipUUIDs(userPipUUIDs: PipUUID[]): PreviouslyConnectedPipUUIDs[] {
+		return userPipUUIDs.map((pipUUID) => {
+			const connectionInfo = Array.from(this.connections.values()).find(
+				(connection) => connection.pipUUID === pipUUID
+			)
+
+			let status: PipBrowserConnectionStatus = "inactive"
+
+			if (connectionInfo) {
+				switch (connectionInfo.status) {
+				case "inactive":
+					status = "inactive"
+					break
+				case "updating firmware":
+					status = "online"
+					break
+				case "connected":
+					status = "connected to other user"
+					break
+				}
+			}
+
+			return { pipUUID, status }
+		})
+	  }
+
 	private handleMessage(clientId: string, message: string): void {
 		console.info(`Message from ESP32 (${clientId}):`, message)
 	}
 
-	public addConnection(socketId: string, pipUUID: PipUUID): void {
+	private addConnection(socketId: string, pipUUID: PipUUID): void {
 		this.connections.set(socketId, { pipUUID, status: "connected"})
+		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "online")
 	}
 
-	public handleDisconnection(socketId: string): void {
-		if (!this.connections.has(socketId)) return
+	private handleDisconnection(socketId: string): void {
+		const socketInfo = this.connections.get(socketId)
+		if (!socketInfo) return
+		BrowserSocketManager.getInstance().emitPipStatusUpdate(socketInfo.pipUUID, "inactive")
 		this.connections.delete(socketId)
 	}
 }

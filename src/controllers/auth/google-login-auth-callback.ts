@@ -8,7 +8,7 @@ import { addGoogleUser } from "../../db-operations/write/credentials/add-user"
 import createGoogleAuthClient from "../../utils/google/create-google-auth-client"
 import retrieveUserIdByEmail from "../../db-operations/read/credentials/retrieve-user-id-by-email"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-hisory-record"
-import retrieveUserPipUUIDs from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
+import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function googleLoginAuthCallback (req: Request, res: Response): Promise<void> {
@@ -42,7 +42,7 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 			return
 		} else if (!_.isNull(userId)) {
 			accessToken = await signJWT({ userId, newUser: false })
-			userPipData = await retrieveUserPipUUIDs(userId)
+			userPipData = await retrieveUserPipUUIDsDetails(userId)
 			return
 		} else {
 			userId = await addGoogleUser(encryptedEmail, siteTheme as SiteThemes)

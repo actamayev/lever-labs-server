@@ -1,6 +1,8 @@
 import _ from "lodash"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import Singleton from "./singleton"
+import Esp32SocketManager from "./esp32-socket-manager"
+import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
 
 export default class BrowserSocketManager extends Singleton {
 	private connections = new Map<string, BrowserSocketConnectionInfo>() // Maps SocketID to BrowserSocketConnectionInfo
@@ -21,17 +23,21 @@ export default class BrowserSocketManager extends Singleton {
 	}
 
 	private initializeListeners(): void {
-		this.io.on("connection", (socket: Socket) => {
-			this.handleBrowserConnection(socket)
+		this.io.on("connection", async (socket: Socket) => {
+			await this.handleBrowserConnection(socket)
 		})
 	}
 
-	private handleBrowserConnection(socket: Socket): void {
+	private async handleBrowserConnection(socket: Socket): Promise<void> {
 		if (_.isUndefined(socket.userId)) {
 			console.error(`User ${socket.id} is not authenticated`)
 			return
 		}
-		this.addConnection(socket.id, { userId: socket.userId, status: "connected" })
+		const userPipUUIDs = await retrieveUserPipUUIDs(socket.userId)
+		this.addConnection(socket.id, {
+			userId: socket.userId,
+			previouslyConnectedPipUUIDs: Esp32SocketManager.getInstance().getPreviouslyConnectedPipUUIDs(userPipUUIDs)
+		})
 		socket.on("disconnect", () => this.handleDisconnection(socket.id))
 	}
 
@@ -44,8 +50,28 @@ export default class BrowserSocketManager extends Singleton {
 		this.connections.delete(socketId)
 	}
 
-	private emitPipStatusUpdate(pipUUID: string, newConnectionStatus: string): void {
-		// TODO: Figure out who to send to
-		this.io.emit("pip-connection-status-update", { pipUUID, newConnectionStatus }) // Sends to all connected clients
+	public newPipUUIDOnline(pipUUID: PipUUID): void {
+		this.connections.forEach((connectionInfo) => {
+			const matchingPip = connectionInfo.previouslyConnectedPipUUIDs.find(
+				(pip) => pip.pipUUID === pipUUID
+			)
+			if (matchingPip) matchingPip.status = "online"
+		})
 	}
+
+	public emitPipStatusUpdate(pipUUID: PipUUID, newConnectionStatus: PipBrowserConnectionStatus): void {
+		this.connections.forEach((connectionInfo, socketId) => {
+			// Check if the specified pipUUID exists in this connection's previouslyConnectedPipUUIDs
+			const hasPipUUID = connectionInfo.previouslyConnectedPipUUIDs.some(
+				(previousPip) => previousPip.pipUUID === pipUUID
+			)
+
+			if (hasPipUUID) {
+				// Emit event to this specific connection
+				this.io.to(socketId).emit("pip-connection-status-update", { pipUUID, newConnectionStatus })
+			}
+		})
+	}
+
+	// TODO: Add Pip UUID to connection, remove it.
 }
