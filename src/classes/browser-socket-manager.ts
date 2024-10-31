@@ -29,7 +29,7 @@ export default class BrowserSocketManager extends SocketManager {
 			console.error(`User ${socket.id} is not authenticated`)
 			return
 		}
-		this.addConnection(socket.userId.toString(), { socketId: socket.id, status: "active" })
+		this.addConnection(socket.userId.toString(), { socketId: socket.id, status: "connected" })
 		socket.on("disconnect", () => this.handleDisconnection(socket.id))
 	}
 }

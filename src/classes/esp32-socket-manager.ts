@@ -21,7 +21,7 @@ export default class Esp32SocketManager extends SocketManager {
 		this.wss.on("connection", (ws: WebSocket, req) => {
 			const clientId = req.headers["sec-websocket-key"] as string
 			console.log(`ESP32 connected: ${clientId}`)
-			this.addConnection(clientId, { socketId: clientId, status: "active" })
+			this.addConnection(clientId, { socketId: clientId, status: "connected" })
 
 			ws.on("close", () => this.handleDisconnection(clientId))
 			ws.on("message", (message) => this.handleMessage(clientId, message.toString()))

@@ -1,13 +1,14 @@
 import dotenv from "dotenv"
 import express from "express"
-import { Server as HttpServer } from "http"
 import { Server as WSServer } from "ws"
+import { Server as HttpServer } from "http"
 import { Server as SocketIOServer } from "socket.io"
 
 import getEnvPath from "./utils/get-env-path"
 import jwtVerifySocket from "./middleware/jwt/jwt-verify-socket"
-import setupRoutes from "./setup-routes"
 import { configureAppMiddleware, corsOptions } from "./middleware/init-config"
+
+import setupRoutes from "./setup-routes"
 
 import Esp32SocketManager from "./classes/esp32-socket-manager"
 import BrowserSocketManager from "./classes/browser-socket-manager"

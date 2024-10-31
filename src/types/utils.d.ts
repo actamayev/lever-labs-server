@@ -27,7 +27,7 @@ declare global {
 
 	type SocketConnectionInfo = {
 		socketId: string
-		status: AppStates
+		status: PipConnectionStatus
 	}
 }
 
