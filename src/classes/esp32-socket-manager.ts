@@ -1,7 +1,9 @@
 import WebSocket, { Server as WSServer } from "ws"
-import SocketManager from "./socket-manager"
+import Singleton from "./singleton"
 
-export default class Esp32SocketManager extends SocketManager {
+export default class Esp32SocketManager extends Singleton {
+	private connections = new Map<PipUUID, PipConnectionStatus>() // Maps UUID to ESP32SocketConnectionInfo
+
 	private constructor(private readonly wss: WSServer) {
 		super()
 		this.initializeListeners()
@@ -19,9 +21,9 @@ export default class Esp32SocketManager extends SocketManager {
 
 	protected initializeListeners(): void {
 		this.wss.on("connection", (ws: WebSocket, req) => {
-			const clientId = req.headers["sec-websocket-key"] as string
+			const clientId = req.headers["sec-websocket-key"] as PipUUID
 			console.log(`ESP32 connected: ${clientId}`)
-			this.addConnection(clientId, { socketId: clientId, status: "connected" })
+			this.addConnection(clientId)
 
 			ws.on("close", () => this.handleDisconnection(clientId))
 			ws.on("message", (message) => this.handleMessage(clientId, message.toString()))
@@ -30,5 +32,19 @@ export default class Esp32SocketManager extends SocketManager {
 
 	private handleMessage(clientId: string, message: string): void {
 		console.log(`Message from ESP32 (${clientId}):`, message)
+	}
+
+	public addConnection(pipUUID: PipUUID): void {
+		this.connections.set(pipUUID, "connected")
+	}
+
+	public removeConnection(pipUUID: PipUUID): void {
+		this.connections.delete(pipUUID)
+	}
+
+	public handleDisconnection(pipUUID: PipUUID): void {
+		if (!this.connections.has(pipUUID)) return
+		this.connections.delete(pipUUID)
+		console.log(`Disconnected: ${pipUUID}`)
 	}
 }

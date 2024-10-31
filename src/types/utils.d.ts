@@ -25,9 +25,14 @@ declare global {
 
 	type PipUUID = string & { readonly __brand: unique symbol }
 
-	type SocketConnectionInfo = {
+	type BrowserSocketConnectionInfo = {
 		socketId: string
 		status: PipConnectionStatus
+	}
+
+	type ESP32SocketConnectionInfo = {
+		socketId: string
+		status: "not connected" | "updating firmware" |  "connected"
 	}
 }
 

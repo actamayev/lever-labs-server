@@ -1,8 +1,10 @@
 import _ from "lodash"
 import { Server as SocketIOServer, Socket } from "socket.io"
-import SocketManager from "./socket-manager"
+import Singleton from "./singleton"
 
-export default class BrowserSocketManager extends SocketManager {
+export default class BrowserSocketManager extends Singleton {
+	private connections = new Map<string, BrowserSocketConnectionInfo>() // Maps UserId to BrowserSocketConnectionInfo
+
 	private constructor(private readonly io: SocketIOServer) {
 		super()
 		this.initializeListeners()
@@ -18,7 +20,7 @@ export default class BrowserSocketManager extends SocketManager {
 		return BrowserSocketManager.instance
 	}
 
-	protected initializeListeners(): void {
+	private initializeListeners(): void {
 		this.io.on("connection", (socket: Socket) => {
 			this.handleBrowserConnection(socket)
 		})
@@ -33,8 +35,18 @@ export default class BrowserSocketManager extends SocketManager {
 		socket.on("disconnect", () => this.handleDisconnection(socket.id))
 	}
 
-	public emitPipStatusUpdate(pipUUID: string, newConnectionStatus: string): void {
+	private addConnection(id: string, info: BrowserSocketConnectionInfo): void {
+		this.connections.set(id, info)
+	}
+
+	private handleDisconnection(id: string): void {
+		if (!this.connections.has(id)) return
+		this.connections.delete(id)
+		console.log(`Disconnected: ${id}`)
+	}
+
+	private emitPipStatusUpdate(pipUUID: string, newConnectionStatus: string): void {
 		// TODO: Figure out who to send to
 		this.io.emit("pip-connection-status-update", { pipUUID, newConnectionStatus }) // Sends to all connected clients
-	  }
+	}
 }
