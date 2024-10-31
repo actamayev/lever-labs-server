@@ -42,7 +42,6 @@ export default class BrowserSocketManager extends Singleton {
 	private handleDisconnection(socketId: string): void {
 		if (!this.connections.has(socketId)) return
 		this.connections.delete(socketId)
-		console.log(`Disconnected: ${socketId}`)
 	}
 
 	private emitPipStatusUpdate(pipUUID: string, newConnectionStatus: string): void {

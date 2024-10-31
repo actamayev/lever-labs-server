@@ -23,13 +23,13 @@ export default class Esp32SocketManager extends Singleton {
 	private initializeListeners(): void {
 		this.wss.on("connection", (ws: WebSocket, req) => {
 			const socketId = req.headers["sec-websocket-key"] as string
-			console.log(`ESP32 connected: ${socketId}`)
+			console.info(`ESP32 connected: ${socketId}`)
 
 			ws.once("message", (message) => {
 				const pipUUID = message.toString() // Treat the first message as the UUID
 				if (!isPipUUID(pipUUID)) return
 				this.addConnection(socketId, pipUUID)
-				console.log(`Registered new ESP32 connection with UUID: ${pipUUID}`)
+				console.info(`Registered new ESP32 connection with UUID: ${pipUUID}`)
 			  })
 
 			ws.on("close", () => this.handleDisconnection(socketId))
@@ -38,7 +38,7 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	private handleMessage(clientId: string, message: string): void {
-		console.log(`Message from ESP32 (${clientId}):`, message)
+		console.info(`Message from ESP32 (${clientId}):`, message)
 	}
 
 	public addConnection(socketId: string, pipUUID: PipUUID): void {
@@ -48,6 +48,5 @@ export default class Esp32SocketManager extends Singleton {
 	public handleDisconnection(socketId: string): void {
 		if (!this.connections.has(socketId)) return
 		this.connections.delete(socketId)
-		console.log(`Disconnected: ${socketId}`)
 	}
 }
