@@ -23,7 +23,12 @@ declare global {
 
 	type SecretsObject = { [K in SecretKeys]: string }
 
-	type PipUUID = string & { readonly __brand: unique symbol };
+	type PipUUID = string & { readonly __brand: unique symbol }
+
+	type UserConnectionInfo = {
+		socketId: string
+		status: AppStates
+	}
 }
 
 export {}

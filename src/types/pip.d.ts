@@ -4,6 +4,8 @@ declare global {
 		userPipUUIDId: number
 		pipUUID: PipUUID
 	}
+
+	type PipConnectionStatus = "not connected" | "connected"
 }
 
 export {}
