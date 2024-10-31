@@ -32,9 +32,9 @@ export default async function login (req: Request, res: Response): Promise<void>
 
 		await addLoginHistoryRecord(credentialsResult.user_id)
 
-		const userPipUUIDs = await retrieveUserPipUUIDs(credentialsResult.user_id)
+		const userPipData = await retrieveUserPipUUIDs(credentialsResult.user_id)
 
-		res.status(200).json({ accessToken, userPipUUIDs })
+		res.status(200).json({ accessToken, userPipData })
 		return
 	} catch (error) {
 		console.error(error)
