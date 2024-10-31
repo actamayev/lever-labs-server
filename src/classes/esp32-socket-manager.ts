@@ -1,8 +1,9 @@
 import WebSocket, { Server as WSServer } from "ws"
 import Singleton from "./singleton"
+import isPipUUID from "../utils/type-checks"
 
 export default class Esp32SocketManager extends Singleton {
-	private connections = new Map<PipUUID, PipConnectionStatus>() // Maps UUID to ESP32SocketConnectionInfo
+	private connections = new Map<string, ESP32SocketConnectionInfo>() // Maps socketId to ESP32SocketConnectionInfo
 
 	private constructor(private readonly wss: WSServer) {
 		super()
@@ -19,14 +20,20 @@ export default class Esp32SocketManager extends Singleton {
 		return Esp32SocketManager.instance
 	}
 
-	protected initializeListeners(): void {
+	private initializeListeners(): void {
 		this.wss.on("connection", (ws: WebSocket, req) => {
-			const clientId = req.headers["sec-websocket-key"] as PipUUID
-			console.log(`ESP32 connected: ${clientId}`)
-			this.addConnection(clientId)
+			const socketId = req.headers["sec-websocket-key"] as string
+			console.log(`ESP32 connected: ${socketId}`)
 
-			ws.on("close", () => this.handleDisconnection(clientId))
-			ws.on("message", (message) => this.handleMessage(clientId, message.toString()))
+			ws.once("message", (message) => {
+				const pipUUID = message.toString() // Treat the first message as the UUID
+				if (!isPipUUID(pipUUID)) return
+				this.addConnection(socketId, pipUUID)
+				console.log(`Registered new ESP32 connection with UUID: ${pipUUID}`)
+			  })
+
+			ws.on("close", () => this.handleDisconnection(socketId))
+			ws.on("message", (message) => this.handleMessage(socketId, message.toString()))
 		})
 	}
 
@@ -34,17 +41,13 @@ export default class Esp32SocketManager extends Singleton {
 		console.log(`Message from ESP32 (${clientId}):`, message)
 	}
 
-	public addConnection(pipUUID: PipUUID): void {
-		this.connections.set(pipUUID, "connected")
+	public addConnection(socketId: string, pipUUID: PipUUID): void {
+		this.connections.set(socketId, { pipUUID, status: "connected"})
 	}
 
-	public removeConnection(pipUUID: PipUUID): void {
-		this.connections.delete(pipUUID)
-	}
-
-	public handleDisconnection(pipUUID: PipUUID): void {
-		if (!this.connections.has(pipUUID)) return
-		this.connections.delete(pipUUID)
-		console.log(`Disconnected: ${pipUUID}`)
+	public handleDisconnection(socketId: string): void {
+		if (!this.connections.has(socketId)) return
+		this.connections.delete(socketId)
+		console.log(`Disconnected: ${socketId}`)
 	}
 }
