@@ -22,7 +22,7 @@ export default function validateAddPipToAccount (req: Request, res: Response, ne
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate Login" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Add Pip to account" })
 		return
 	}
 }

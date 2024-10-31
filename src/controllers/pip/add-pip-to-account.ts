@@ -5,14 +5,13 @@ export default async function addPipToAccount (req: Request, res: Response): Pro
 	try {
 		const { user, pipUUIDData } = req
 		const { pipName } = req.body.addPipToAccountData as { pipName: string }
-		await addUserPipUUIDMapRecord(
+		const userPipUUIDId = await addUserPipUUIDMapRecord(
 			user.user_id,
 			pipName,
 			pipUUIDData.pip_uuid_id
 		)
 
-
-		res.status(200).json({ success: "" })
+		res.status(200).json({ userPipUUIDId })
 		return
 	} catch (error) {
 		console.error(error)
