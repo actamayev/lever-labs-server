@@ -2,35 +2,35 @@ import _ from "lodash"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import Singleton from "./singleton"
 
-export default class ClientSocketManager extends Singleton {
-	private _userConnections: Map<number, UserConnectionInfo> = new Map<number, UserConnectionInfo>()
+export default class BrowserSocketManager extends Singleton {
+	private _userConnections: Map<number, SocketConnectionInfo> = new Map<number, SocketConnectionInfo>()
 
 	constructor(private readonly io: SocketIOServer) {
 		super()
 		this.initializeListeners()
 	}
 
-	get userConnections(): Map<number, UserConnectionInfo> {
+	get userConnections(): Map<number, SocketConnectionInfo> {
 		return this._userConnections
 	}
 
-	set userConnections(value: Map<number, UserConnectionInfo>) {
+	set userConnections(value: Map<number, SocketConnectionInfo>) {
 		this._userConnections = value
 	}
 
 	public static assignIo(io: SocketIOServer): void {
-		if (_.isNull(ClientSocketManager.instance)) {
-			ClientSocketManager.instance = new ClientSocketManager(io)
+		if (_.isNull(BrowserSocketManager.instance)) {
+			BrowserSocketManager.instance = new BrowserSocketManager(io)
 		} else {
-			throw new Error("ClientSocketManager instance has already been initialized")
+			throw new Error("BrowserSocketManager instance has already been initialized")
 		}
 	}
 
-	public static getInstance(): ClientSocketManager {
-		if (_.isNull(ClientSocketManager.instance)) {
-			throw new Error("ClientSocketManager instance is not initialized. Call assignIo first.")
+	public static getInstance(): BrowserSocketManager {
+		if (_.isNull(BrowserSocketManager.instance)) {
+			throw new Error("BrowserSocketManager instance is not initialized. Call assignIo first.")
 		}
-		return ClientSocketManager.instance
+		return BrowserSocketManager.instance
 	}
 
 	private initializeListeners(): void {

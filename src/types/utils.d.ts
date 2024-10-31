@@ -25,7 +25,7 @@ declare global {
 
 	type PipUUID = string & { readonly __brand: unique symbol }
 
-	type UserConnectionInfo = {
+	type SocketConnectionInfo = {
 		socketId: string
 		status: AppStates
 	}
