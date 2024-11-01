@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import BrowserSocketManager from "../../classes/browser-socket-manager"
+import Esp32SocketManager from "../../classes/esp32-socket-manager"
 
 export default function confirmPipIsActive(
 	req: Request,
@@ -9,10 +9,10 @@ export default function confirmPipIsActive(
 	try {
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		const isUUIDAlreadyConnected = BrowserSocketManager.getInstance().isUUIDConnected(pipUUID)
+		const isPipUUIDConnected = Esp32SocketManager.getInstance().isPipUUIDConnected(pipUUID)
 
-		if (isUUIDAlreadyConnected === false) {
-			res.status(400).json({ message: "Someone is already connected to this Pip"})
+		if (isPipUUIDConnected === false) {
+			res.status(400).json({ message: "This Pip is not active/connected to the internet"})
 			return
 		}
 		next()
