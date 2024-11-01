@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import doesUUIDUserRecordExist from "../../db-operations/read/does-x-exist/does-uuid-user-record-exist"
+import doesUUIDIdUserRecordExist from "../../db-operations/read/does-x-exist/does-uuid-id-user-record-exist"
 
 export default async function confirmUserHasntAlreadyAddedUUID(
 	req: Request,
@@ -9,7 +9,7 @@ export default async function confirmUserHasntAlreadyAddedUUID(
 	try {
 		const { user, pipUUIDData } = req
 
-		const uuidUserRecord = await doesUUIDUserRecordExist(user.user_id, pipUUIDData.pip_uuid_id)
+		const uuidUserRecord = await doesUUIDIdUserRecordExist(user.user_id, pipUUIDData.pip_uuid_id)
 
 		if (uuidUserRecord === true) {
 			res.status(400).json({ message: "User already registered this Pip UUID"})

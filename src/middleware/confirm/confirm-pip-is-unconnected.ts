@@ -1,0 +1,24 @@
+import { Request, Response, NextFunction } from "express"
+import Esp32SocketManager from "../../classes/esp32-socket-manager"
+
+export default function confirmPipIsUnconnected(
+	req: Request,
+	res: Response,
+	next: NextFunction
+): void {
+	try {
+		const { pipUUID } = req.body as { pipUUID: PipUUID }
+
+		const isPipUUIDConnected = Esp32SocketManager.getInstance().isPipUUIDConnected(pipUUID)
+
+		if (isPipUUIDConnected === false) {
+			res.status(400).json({ message: "This Pip is not active/connected to the internet"})
+			return
+		}
+		next()
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm no one else is connected to this Pip" })
+		return
+	}
+}

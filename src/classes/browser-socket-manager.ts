@@ -62,16 +62,53 @@ export default class BrowserSocketManager extends Singleton {
 	public emitPipStatusUpdate(pipUUID: PipUUID, newConnectionStatus: PipBrowserConnectionStatus): void {
 		this.connections.forEach((connectionInfo, socketId) => {
 			// Check if the specified pipUUID exists in this connection's previouslyConnectedPipUUIDs
-			const hasPipUUID = connectionInfo.previouslyConnectedPipUUIDs.some(
+			const pipToUpdate = connectionInfo.previouslyConnectedPipUUIDs.find(
 				(previousPip) => previousPip.pipUUID === pipUUID
-			)
+			  )
 
-			if (hasPipUUID) {
+			if (pipToUpdate) {
+				pipToUpdate.status = newConnectionStatus
 				// Emit event to this specific connection
 				this.io.to(socketId).emit("pip-connection-status-update", { pipUUID, newConnectionStatus })
 			}
 		})
 	}
+
+	public emitPipStatusUpdateForUser(pipUUID: PipUUID, userId: number): void {
+		this.connections.forEach((connectionInfo, socketId) => {
+		// Find the pipUUID in the connection's previouslyConnectedPipUUIDs
+			const pipToUpdate = connectionInfo.previouslyConnectedPipUUIDs.find(
+				(previousPip) => previousPip.pipUUID === pipUUID
+			)
+
+			if (!pipToUpdate) return
+
+			// Set status based on whether the userId matches
+			pipToUpdate.status = connectionInfo.userId === userId ? "connected" : "connected to other user"
+
+			// Emit event to this specific connection
+			this.io.to(socketId).emit("pip-connection-status-update", {
+				pipUUID,
+				newConnectionStatus: pipToUpdate.status,
+			})
+		})
+	}
+
+	public isUUIDConnected(pipUUID: PipUUID): boolean {
+		// Iterate through each connection in the connections map
+		for (const connectionInfo of this.connections.values()) {
+		  // Check if any previouslyConnectedPipUUIDs has the specified pipUUID with status "connected"
+		  const isConnected = connectionInfo.previouslyConnectedPipUUIDs.some(
+				(previousPip) => previousPip.pipUUID === pipUUID && previousPip.status === "connected"
+		  )
+
+		  // If a match is found, return true
+		  if (isConnected) return true
+		}
+
+		// If no matches were found, return false
+		return false
+	  }
 
 	// TODO: Add Pip UUID to connection, remove it.
 }

@@ -31,11 +31,27 @@ export default class Esp32SocketManager extends Singleton {
 				if (!isPipUUID(pipUUID)) return
 				this.addConnection(socketId, pipUUID)
 				console.info(`Registered new ESP32 connection with UUID: ${pipUUID}`)
-			  })
+			})
 
 			ws.on("close", () => this.handleDisconnection(socketId))
 			ws.on("message", (message) => this.handleMessage(socketId, message.toString()))
 		})
+	}
+
+	private handleMessage(clientId: string, message: string): void {
+		console.info(`Message from ESP32 (${clientId}):`, message)
+	}
+
+	private addConnection(socketId: string, pipUUID: PipUUID): void {
+		this.connections.set(socketId, { pipUUID, status: "connected"})
+		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "online")
+	}
+
+	private handleDisconnection(socketId: string): void {
+		const socketInfo = this.connections.get(socketId)
+		if (!socketInfo) return
+		BrowserSocketManager.getInstance().emitPipStatusUpdate(socketInfo.pipUUID, "inactive")
+		this.connections.delete(socketId)
 	}
 
 	public getPreviouslyConnectedPipUUIDs(userPipUUIDs: PipUUID[]): PreviouslyConnectedPipUUIDs[] {
@@ -62,21 +78,14 @@ export default class Esp32SocketManager extends Singleton {
 
 			return { pipUUID, status }
 		})
-	  }
-
-	private handleMessage(clientId: string, message: string): void {
-		console.info(`Message from ESP32 (${clientId}):`, message)
 	}
 
-	private addConnection(socketId: string, pipUUID: PipUUID): void {
-		this.connections.set(socketId, { pipUUID, status: "connected"})
-		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "online")
-	}
-
-	private handleDisconnection(socketId: string): void {
-		const socketInfo = this.connections.get(socketId)
-		if (!socketInfo) return
-		BrowserSocketManager.getInstance().emitPipStatusUpdate(socketInfo.pipUUID, "inactive")
-		this.connections.delete(socketId)
+	public isPipUUIDConnected(pipUUID: PipUUID): boolean {
+		for (const connectionInfo of this.connections.values()) {
+			if (connectionInfo.pipUUID === pipUUID && connectionInfo.status === "connected") {
+				return true // Return true as soon as we find a match
+			}
+		}
+		return false // Return false if no match is found
 	}
 }
