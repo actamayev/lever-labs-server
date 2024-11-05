@@ -1,3 +1,4 @@
+import { IncomingMessage } from "http"
 import WebSocket, { Server as WSServer } from "ws"
 import Singleton from "./singleton"
 import isPipUUID from "../utils/type-checks"
@@ -22,11 +23,13 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	private initializeListeners(): void {
-		this.wss.on("connection", (ws: WebSocket, req) => {
+		this.wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
+			console.log(req.headers)
 			const socketId = req.headers["sec-websocket-key"] as string
 			console.info(`ESP32 connected: ${socketId}`)
 
 			ws.once("message", (message) => {
+				// TODO: 5/11: Make sure the connected ESP gets added to the connections list
 				const pipUUID = message.toString() // Treat the first message as the UUID
 				if (!isPipUUID(pipUUID)) return
 				this.addConnection(socketId, pipUUID)
@@ -43,7 +46,8 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	private addConnection(socketId: string, pipUUID: PipUUID): void {
-		this.connections.set(socketId, { pipUUID, status: "connected"})
+		console.log("adding new connection")
+		this.connections.set(socketId, { pipUUID, status: "connected" })
 		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "online")
 	}
 

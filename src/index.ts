@@ -33,11 +33,10 @@ Esp32SocketManager.getInstance(esp32WSServer) // Directly use getInstance with w
 
 // Handle WebSocket upgrade for ESP32 connections
 httpServer.on("upgrade", (request, socket, head) => {
-	if (request.url === "/esp32") {
-		esp32WSServer.handleUpgrade(request, socket, head, (ws) => {
-			esp32WSServer.emit("connection", ws, request)
-		})
-	}
+	if (request.url !== "/esp32") return
+	esp32WSServer.handleUpgrade(request, socket, head, (ws) => {
+		esp32WSServer.emit("connection", ws, request)
+	})
 })
 
 setupRoutes(app)
