@@ -16,5 +16,7 @@ declare namespace NodeJS {
 		AWS_SECRET_ACCESS_KEY: string
 
 		NODE_ENV: "local" | "staging" | "production"
+
+		PIP_HARDWARE_VERSION: string
 	}
 }

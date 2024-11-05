@@ -5,5 +5,5 @@ export default function generatePipUUID(): PipUUID {
 		const randomIndex = Math.floor(Math.random() * characters.length)
 		result += characters[randomIndex]
 	}
-	return result as PipUUID
+	return `${result}-${process.env.PIP_HARDWARE_VERSION}` as PipUUID
 }
