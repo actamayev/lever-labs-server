@@ -88,4 +88,15 @@ export default class Esp32SocketManager extends Singleton {
 		}
 		return false // Return false if no match is found
 	}
+
+	public getESPStatus(pipUUID: PipUUID): ESPConnectionStatus {
+		// Iterate through connections to find the one with the specified userId
+		for (const connectionInfo of this.connections.values()) {
+		  if (connectionInfo.pipUUID === pipUUID) {
+				return connectionInfo.status
+		  }
+		}
+		// Return "inactive" if no matching pipUUID was found
+		return "inactive"
+	}
 }

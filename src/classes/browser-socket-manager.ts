@@ -110,5 +110,37 @@ export default class BrowserSocketManager extends Singleton {
 		return false
 	  }
 
-	// TODO: Add Pip UUID to connection, remove it.
+	  public getPipStatus(userId: number, pipUUID: PipUUID): PipBrowserConnectionStatus {
+		// Iterate through connections to find the one with the specified userId
+		for (const connectionInfo of this.connections.values()) {
+		  if (connectionInfo.userId === userId) {
+			// Find the pipUUID in the user's previouslyConnectedPipUUIDs
+				const pipInfo = connectionInfo.previouslyConnectedPipUUIDs.find(
+					(previousPip) => previousPip.pipUUID === pipUUID
+				)
+
+				// If found, return its status
+				if (pipInfo) return pipInfo.status
+		  }
+		}
+		// Return "inactive" if no matching pipUUID or userId was found
+		return "inactive"
+	}
+
+	public addOrUpdatePipStatus(userId: number, pipUUID: PipUUID, status: PipBrowserConnectionStatus): void {
+		// Iterate through connections to find ones that match the specified userId
+		this.connections.forEach((connectionInfo) => {
+			if (connectionInfo.userId !== userId) return
+			// Check if the pipUUID exists in previouslyConnectedPipUUIDs
+			const existingPip = connectionInfo.previouslyConnectedPipUUIDs.find(
+				(previousPip) => previousPip.pipUUID === pipUUID
+			)
+
+			if (existingPip) {
+				existingPip.status = status
+				return
+			}
+			connectionInfo.previouslyConnectedPipUUIDs.push({ pipUUID, status })
+		})
+	}
 }

@@ -1,5 +1,6 @@
 import _ from "lodash"
 import { Request, Response, NextFunction } from "express"
+import { validateExtendedPipUUID } from "../../utils/type-guards"
 import findPipUUID from "../../db-operations/read/find/find-pip-uuid"
 
 export default async function attachPipUUIDId(
@@ -14,6 +15,11 @@ export default async function attachPipUUIDId(
 
 		if (_.isNull(pipUUIDData)) {
 			res.status(400).json({ message: "Pip UUID doesn't exist"})
+			return
+		}
+
+		if (!validateExtendedPipUUID(pipUUIDData)) {
+			res.status(400).json({ message: "Invalid Pip UUID"})
 			return
 		}
 
