@@ -1,3 +1,4 @@
+import _ from "lodash"
 import { IncomingMessage } from "http"
 import WebSocket, { Server as WSServer } from "ws"
 import Singleton from "./singleton"
@@ -24,25 +25,61 @@ export default class Esp32SocketManager extends Singleton {
 
 	private initializeListeners(): void {
 		this.wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
-			console.log(req.headers)
 			const socketId = req.headers["sec-websocket-key"] as string
 			console.info(`ESP32 connected: ${socketId}`)
 
-			ws.once("message", (message) => {
-				// TODO: 5/11: Make sure the connected ESP gets added to the connections list
-				const pipUUID = message.toString() // Treat the first message as the UUID
-				if (!isPipUUID(pipUUID)) return
-				this.addConnection(socketId, pipUUID)
-				console.info(`Registered new ESP32 connection with UUID: ${pipUUID}`)
+			let isRegistered = false // Track if the connection is registered with a UUID
+
+			ws.on("message", (message) => {
+				// Pass isRegistered by reference so it can be updated within handleMessage
+				this.handleMessage(socketId, message.toString(), isRegistered, (registered) => {
+					isRegistered = registered // Update isRegistered based on the result of handleMessage
+				})
 			})
 
 			ws.on("close", () => this.handleDisconnection(socketId))
-			ws.on("message", (message) => this.handleMessage(socketId, message.toString()))
 		})
 	}
 
-	private handleMessage(clientId: string, message: string): void {
+	// handleMessage handles both registration and regular message handling
+	private handleMessage(
+		clientId: string,
+		message: string,
+		isRegistered: boolean,
+		setRegistered: (status: boolean) => void
+	): void {
 		console.info(`Message from ESP32 (${clientId}):`, message)
+
+		if (isRegistered) {
+			// Handle regular messages
+			console.info(`Regular message from ESP32 (${clientId}):`, message)
+			return
+		}
+
+		// Handle first message as registration
+		try {
+			const data = JSON.parse(message) as { pipUUID?: string }
+
+			const pipUUID = data.pipUUID
+			// Check if pipUUID exists
+			if (_.isUndefined(pipUUID)) {
+				console.warn(`No pipUUID found in message from ESP32 (${clientId}):`, message)
+				return
+			}
+
+			// Validate pipUUID
+			if (!isPipUUID(pipUUID)) {
+				console.warn(`Invalid UUID received from ESP32 (${clientId}):`, pipUUID)
+				return
+			}
+
+			// Register the connection
+			this.addConnection(clientId, pipUUID)
+			console.info(`Registered new ESP32 connection with UUID: ${pipUUID}`)
+			setRegistered(true)  // Update isRegistered to true
+		} catch (error) {
+			console.error(`Failed to parse message from ESP32 (${clientId}):`, error)
+		}
 	}
 
 	private addConnection(socketId: string, pipUUID: PipUUID): void {
@@ -60,28 +97,33 @@ export default class Esp32SocketManager extends Singleton {
 
 	public getPreviouslyConnectedPipUUIDs(userPipUUIDs: PipUUID[]): PreviouslyConnectedPipUUIDs[] {
 		return userPipUUIDs.map((pipUUID) => {
-			const connectionInfo = Array.from(this.connections.values()).find(
-				(connection) => connection.pipUUID === pipUUID
-			)
-
-			let status: PipBrowserConnectionStatus = "inactive"
-
-			if (connectionInfo) {
-				switch (connectionInfo.status) {
-				case "inactive":
-					status = "inactive"
-					break
-				case "updating firmware":
-					status = "online"
-					break
-				case "connected":
-					status = "connected to other user"
-					break
-				}
-			}
-
-			return { pipUUID, status }
+			return this.getPreviouslyConnectedPipUUID(pipUUID)
 		})
+	}
+
+	public getPreviouslyConnectedPipUUID(userPipUUID: PipUUID): PreviouslyConnectedPipUUIDs {
+		const connectionInfo = Array.from(this.connections.values()).find(
+			(connection) => connection.pipUUID === userPipUUID
+		)
+
+		let status: PipBrowserConnectionStatus = "inactive"
+
+		if (connectionInfo) {
+			console.log("connectionInfo", connectionInfo)
+			switch (connectionInfo.status) {
+			case "inactive":
+				status = "inactive"
+				break
+			case "updating firmware":
+				status = "updating firmware"
+				break
+			case "connected":
+				status = "connected to other user"
+				break
+			}
+		}
+
+		return { pipUUID: userPipUUID, status }
 	}
 
 	public isPipUUIDConnected(pipUUID: PipUUID): boolean {
@@ -96,11 +138,20 @@ export default class Esp32SocketManager extends Singleton {
 	public getESPStatus(pipUUID: PipUUID): ESPConnectionStatus {
 		// Iterate through connections to find the one with the specified userId
 		for (const connectionInfo of this.connections.values()) {
-		  if (connectionInfo.pipUUID === pipUUID) {
+			if (connectionInfo.pipUUID === pipUUID) {
 				return connectionInfo.status
-		  }
+			}
 		}
 		// Return "inactive" if no matching pipUUID was found
 		return "inactive"
+	}
+
+	// This method is called when a browser client that was connected to a Pip disconnects.
+	public handleClientLogoff(pipUUID: PipUUID): void {
+		for (const connectionInfo of this.connections.values()) {
+			if (connectionInfo.pipUUID === pipUUID && connectionInfo.status === "connected") {
+				connectionInfo.status = "inactive"
+			}
+		}
 	}
 }

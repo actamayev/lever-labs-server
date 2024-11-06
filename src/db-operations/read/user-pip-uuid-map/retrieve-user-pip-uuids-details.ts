@@ -1,5 +1,5 @@
 import PrismaClientClass from "../../../classes/prisma-client"
-import BrowserSocketManager from "../../../classes/browser-socket-manager"
+import Esp32SocketManager from "../../../classes/esp32-socket-manager"
 
 export default async function retrieveUserPipUUIDsDetails(userId: number): Promise<PipData[]> {
 	try {
@@ -25,7 +25,7 @@ export default async function retrieveUserPipUUIDsDetails(userId: number): Promi
 			pipName: item.pip_name,
 			userPipUUIDId: item.pip_uuid_id,
 			pipUUID: item.pip_uuid.uuid as PipUUID,
-			pipConnectionStatus: BrowserSocketManager.getInstance().getPipStatus(userId, item.pip_uuid.uuid as PipUUID)
+			pipConnectionStatus: Esp32SocketManager.getInstance().getPreviouslyConnectedPipUUID(item.pip_uuid.uuid as PipUUID).status
 		}))
 	} catch (error) {
 		console.error(error)

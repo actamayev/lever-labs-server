@@ -46,7 +46,15 @@ export default class BrowserSocketManager extends Singleton {
 	}
 
 	private handleDisconnection(socketId: string): void {
+		console.log("socketId", socketId)
 		if (!this.connections.has(socketId)) return
+		const previouslyConnectedPipUUIDs = this.connections.get(socketId)?.previouslyConnectedPipUUIDs
+
+		previouslyConnectedPipUUIDs?.forEach((previousConnection) => {
+			if (previousConnection.status === "connected") {
+				Esp32SocketManager.getInstance().handleClientLogoff(previousConnection.pipUUID)
+			}
+		})
 		this.connections.delete(socketId)
 	}
 
@@ -110,10 +118,11 @@ export default class BrowserSocketManager extends Singleton {
 		return false
 	  }
 
-	  public getPipStatus(userId: number, pipUUID: PipUUID): PipBrowserConnectionStatus {
+	public getPipStatus(userId: number, pipUUID: PipUUID): PipBrowserConnectionStatus {
 		// Iterate through connections to find the one with the specified userId
 		for (const connectionInfo of this.connections.values()) {
-		  if (connectionInfo.userId === userId) {
+			console.log("connectionInfo", connectionInfo)
+			if (connectionInfo.userId === userId) {
 			// Find the pipUUID in the user's previouslyConnectedPipUUIDs
 				const pipInfo = connectionInfo.previouslyConnectedPipUUIDs.find(
 					(previousPip) => previousPip.pipUUID === pipUUID
@@ -121,7 +130,17 @@ export default class BrowserSocketManager extends Singleton {
 
 				// If found, return its status
 				if (pipInfo) return pipInfo.status
-		  }
+			} else {
+				const pipInfo = connectionInfo.previouslyConnectedPipUUIDs.find(
+					(previousPip) => previousPip.pipUUID === pipUUID
+				)
+				// If found, return its status
+				if (pipInfo) {
+					// eslint-disable-next-line max-depth
+					if (pipInfo.status === "connected") return "connected to other user"
+					return pipInfo.status
+				}
+			}
 		}
 		// Return "inactive" if no matching pipUUID or userId was found
 		return "inactive"
