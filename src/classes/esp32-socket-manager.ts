@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { IncomingMessage } from "http"
-import WebSocket, { Server as WSServer } from "ws"
+import { Server as WSServer } from "ws"
 import Singleton from "./singleton"
 import isPipUUID from "../utils/type-checks"
 import BrowserSocketManager from "./browser-socket-manager"
@@ -23,21 +23,40 @@ export default class Esp32SocketManager extends Singleton {
 		return Esp32SocketManager.instance
 	}
 
+	// Configure WebSocket with ping/pong and timeout settings
 	private initializeListeners(): void {
-		this.wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
+		this.wss.on("connection", (ws: ExtendedWebSocket, req: IncomingMessage) => {
 			const socketId = req.headers["sec-websocket-key"] as string
 			console.info(`ESP32 connected: ${socketId}`)
 
-			let isRegistered = false // Track if the connection is registered with a UUID
+			let isRegistered = false
+
+			// Set up ping/pong interval to detect inactive clients
+			ws.isAlive = true
+			ws.on("pong", () => {
+				ws.isAlive = true
+			})
+
+			const interval = setInterval(() => {
+				if (!ws.isAlive) {
+					console.info(`Terminating inactive connection for socketId: ${socketId}`)
+					this.handleDisconnection(socketId)
+					return ws.terminate()
+				}
+				ws.isAlive = false
+				ws.ping() // Send ping and wait for pong response
+			}, 30000) // Check every 30 seconds
 
 			ws.on("message", (message) => {
-				// Pass isRegistered by reference so it can be updated within handleMessage
 				this.handleMessage(socketId, message.toString(), isRegistered, (registered) => {
-					isRegistered = registered // Update isRegistered based on the result of handleMessage
+					isRegistered = registered
 				})
 			})
 
-			ws.on("close", () => this.handleDisconnection(socketId))
+			ws.on("close", () => {
+				clearInterval(interval)
+				this.handleDisconnection(socketId)
+			})
 		})
 	}
 
@@ -149,6 +168,7 @@ export default class Esp32SocketManager extends Singleton {
 	// This method is called when a browser client that was connected to a Pip disconnects.
 	public handleClientLogoff(pipUUID: PipUUID): void {
 		for (const connectionInfo of this.connections.values()) {
+			console.log("connectionInfo", connectionInfo)
 			if (connectionInfo.pipUUID === pipUUID && connectionInfo.status === "connected") {
 				connectionInfo.status = "inactive"
 			}

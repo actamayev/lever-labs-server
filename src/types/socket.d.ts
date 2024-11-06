@@ -7,7 +7,7 @@ declare global {
 	}
 
 	type BrowserSocketConnectionInfo = {
-		userId: number
+		socketId: string
 		previouslyConnectedPipUUIDs: PreviouslyConnectedPipUUIDs[]
 	}
 
