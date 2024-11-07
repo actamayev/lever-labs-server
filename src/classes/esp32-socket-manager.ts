@@ -102,7 +102,7 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	private addConnection(socketId: string, pipUUID: PipUUID): void {
-		console.log("adding new connection")
+		console.log("ESP adding new connection")
 		this.connections.set(socketId, { pipUUID, status: "connected" })
 		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "online")
 	}
@@ -128,7 +128,7 @@ export default class Esp32SocketManager extends Singleton {
 		let status: PipBrowserConnectionStatus = "inactive"
 
 		if (connectionInfo) {
-			console.log("connectionInfo", connectionInfo)
+			console.log("ESP previously connected connectionInfo", connectionInfo)
 			switch (connectionInfo.status) {
 			case "inactive":
 				status = "inactive"
@@ -156,8 +156,10 @@ export default class Esp32SocketManager extends Singleton {
 
 	public getESPStatus(pipUUID: PipUUID): ESPConnectionStatus {
 		// Iterate through connections to find the one with the specified userId
+		console.log("ESP this.connections.values()", this.connections.values())
 		for (const connectionInfo of this.connections.values()) {
 			if (connectionInfo.pipUUID === pipUUID) {
+				console.log("ESP, status", connectionInfo.status)
 				return connectionInfo.status
 			}
 		}
@@ -166,12 +168,12 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	// This method is called when a browser client that was connected to a Pip disconnects.
-	public handleClientLogoff(pipUUID: PipUUID): void {
-		for (const connectionInfo of this.connections.values()) {
-			console.log("connectionInfo", connectionInfo)
-			if (connectionInfo.pipUUID === pipUUID && connectionInfo.status === "connected") {
-				connectionInfo.status = "inactive"
-			}
-		}
-	}
+	// public handleClientLogoff(pipUUID: PipUUID): void {
+	// 	for (const connectionInfo of this.connections.values()) {
+	// 		console.log("ESP client logoff connectionInfo", connectionInfo)
+	// 		if (connectionInfo.pipUUID === pipUUID && connectionInfo.status === "connected") {
+	// 			connectionInfo.status = "inactive"
+	// 		}
+	// 	}
+	// }
 }
