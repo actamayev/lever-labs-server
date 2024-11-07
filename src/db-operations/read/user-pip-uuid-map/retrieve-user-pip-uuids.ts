@@ -1,6 +1,6 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function retrieveUserPipUUIDs(userId: number): Promise<string[]> {
+export default async function retrieveUserPipUUIDs(userId: number): Promise<PipUUID[]> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -18,7 +18,7 @@ export default async function retrieveUserPipUUIDs(userId: number): Promise<stri
 			}
 		})
 
-		return retrievedUserPipUUIDs.map(item => item.pip_uuid.uuid)
+		return retrievedUserPipUUIDs.map(item => (item.pip_uuid.uuid as PipUUID))
 	} catch (error) {
 		console.error(error)
 		throw error

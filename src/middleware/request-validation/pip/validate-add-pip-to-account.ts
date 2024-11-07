@@ -6,7 +6,8 @@ import pipUUIdValidator from "../../joi/pip-uuid-validator"
 const addPipToAccountSchema = Joi.object({
 	addPipToAccountData: Joi.object({
 		pipUUID: pipUUIdValidator.required(),
-		pipName: Joi.string().required().min(3).max(20)
+		pipName: Joi.string().required().min(3).max(20),
+		shouldAutoConnect: Joi.bool().required()
 	}).required()
 }).required()
 
@@ -22,7 +23,7 @@ export default function validateAddPipToAccount (req: Request, res: Response, ne
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate Login" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Add Pip to account" })
 		return
 	}
 }

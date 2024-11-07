@@ -1,13 +1,15 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function doesUUIDUserRecordExist(userId: number, pipUUIDId: number): Promise<boolean> {
+export default async function doesUUIDUserRecordExist(userId: number, pipUUID: PipUUID): Promise<boolean> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
 		const uuidUserRecord = await prismaClient.user_pip_uuid_map.findFirst({
 			where: {
 				user_id: userId,
-				pip_uuid_id: pipUUIDId
+				pip_uuid: {
+					uuid: pipUUID
+				}
 			}
 		})
 

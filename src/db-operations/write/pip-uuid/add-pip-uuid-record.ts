@@ -13,7 +13,7 @@ export default async function addPipUUIDRecord(uuid: PipUUID): Promise<boolean> 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (error: any) {
 		if (error.code === "P2002" && error.meta?.target?.includes("uuid")) {
-			console.log("UUID conflict, generating a new UUID and retrying...")
+			console.info("UUID conflict, generating a new UUID and retrying...")
 			return false // Unique constraint violation, signal retry
 		} else {
 			console.error("Error adding Pip UUID record:", error)
