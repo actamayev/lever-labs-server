@@ -1,9 +1,5 @@
 import express from "express"
 
-import addPipToAccount from "../controllers/pip/add-pip-to-account"
-import retrievePreviouslyAddedPips from "../controllers/pip/retrieve-previously-added-pips"
-import clientConnectToPipRequest from "../controllers/pip/client-connect-to-pip-request"
-
 import attachPipUUIDData from "../middleware/attach/attach-pip-uuid-data"
 import jwtVerifyAttachUser from "../middleware/jwt/jwt-verify-attach-user"
 import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
@@ -12,6 +8,10 @@ import confirmUserPreviouslyAddedUUID from "../middleware/confirm/confirm-user-p
 import validateAddPipToAccount from "../middleware/request-validation/pip/validate-add-pip-to-account"
 import confirmUserHasntAlreadyAddedUUID from "../middleware/confirm/confirm-user-hasnt-already-added-uuid"
 import validateClientConnectToPipRequest from "../middleware/request-validation/pip/validate-client-connect-to-pip-request"
+
+import addPipToAccount from "../controllers/pip/add-pip-to-account"
+import clientConnectToPipRequest from "../controllers/pip/client-connect-to-pip-request"
+import retrievePreviouslyAddedPips from "../controllers/pip/retrieve-previously-added-pips"
 
 const pipRoutes = express.Router()
 
@@ -34,10 +34,6 @@ pipRoutes.post(
 	clientConnectToPipRequest
 )
 
-pipRoutes.get(
-	"/retrieve-previously-added-pips",
-	jwtVerifyAttachUser,
-	retrievePreviouslyAddedPips
-)
+pipRoutes.get("/retrieve-previously-added-pips", jwtVerifyAttachUser, retrievePreviouslyAddedPips)
 
 export default pipRoutes
