@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express"
 import { validateExtendedPipUUID } from "../../utils/type-guards"
 import findPipUUID from "../../db-operations/read/find/find-pip-uuid"
 
-export default async function attachPipUUIDId(
+export default async function attachPipUUIDData(
 	req: Request,
 	res: Response,
 	next: NextFunction

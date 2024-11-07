@@ -4,7 +4,7 @@ import addPipToAccount from "../controllers/pip/add-pip-to-account"
 import retrievePreviouslyAddedPips from "../controllers/pip/retrieve-previously-added-pips"
 import clientConnectToPipRequest from "../controllers/pip/client-connect-to-pip-request"
 
-import attachPipUUIDId from "../middleware/attach/attach-pip-uuid-id"
+import attachPipUUIDData from "../middleware/attach/attach-pip-uuid-data"
 import jwtVerifyAttachUser from "../middleware/jwt/jwt-verify-attach-user"
 import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
 import confirmPipIsUnconnected from "../middleware/confirm/confirm-pip-is-unconnected"
@@ -19,7 +19,7 @@ pipRoutes.post(
 	"/add-pip-to-account",
 	validateAddPipToAccount,
 	jwtVerifyAttachUser,
-	attachPipUUIDId,
+	attachPipUUIDData,
 	confirmUserHasntAlreadyAddedUUID,
 	addPipToAccount
 )
