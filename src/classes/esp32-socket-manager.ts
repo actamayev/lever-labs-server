@@ -114,36 +114,6 @@ export default class Esp32SocketManager extends Singleton {
 		this.connections.delete(socketId)
 	}
 
-	public getPreviouslyConnectedPipUUIDs(userPipUUIDs: PipUUID[]): PreviouslyConnectedPipUUIDs[] {
-		return userPipUUIDs.map((pipUUID) => {
-			return this.getPreviouslyConnectedPipUUID(pipUUID)
-		})
-	}
-
-	public getPreviouslyConnectedPipUUID(userPipUUID: PipUUID): PreviouslyConnectedPipUUIDs {
-		const connectionInfo = Array.from(this.connections.values()).find(
-			(connection) => connection.pipUUID === userPipUUID
-		)
-
-		let status: PipBrowserConnectionStatus = "inactive"
-
-		if (connectionInfo) {
-			switch (connectionInfo.status) {
-			case "inactive":
-				status = "inactive"
-				break
-			case "updating firmware":
-				status = "updating firmware"
-				break
-			case "connected":
-				status = "connected to other user"
-				break
-			}
-		}
-
-		return { pipUUID: userPipUUID, status }
-	}
-
 	public isPipUUIDConnected(pipUUID: PipUUID): boolean {
 		for (const connectionInfo of this.connections.values()) {
 			if (connectionInfo.pipUUID === pipUUID && connectionInfo.status === "connected") {
@@ -163,13 +133,4 @@ export default class Esp32SocketManager extends Singleton {
 		// Return "inactive" if no matching pipUUID was found
 		return "inactive"
 	}
-
-	// This method is called when a browser client that was connected to a Pip disconnects.
-	// public handleClientLogoff(pipUUID: PipUUID): void {
-	// 	for (const connectionInfo of this.connections.values()) {
-	// 		if (connectionInfo.pipUUID === pipUUID && connectionInfo.status === "connected") {
-	// 			connectionInfo.status = "inactive"
-	// 		}
-	// 	}
-	// }
 }

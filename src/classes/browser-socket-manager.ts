@@ -62,15 +62,6 @@ export default class BrowserSocketManager extends Singleton {
 		this.connections.delete(userId)
 	}
 
-	// public newPipUUIDOnline(pipUUID: PipUUID): void {
-	// 	this.connections.forEach((connectionInfo) => {
-	// 		const matchingPip = connectionInfo.previouslyConnectedPipUUIDs.find(
-	// 			(pip) => pip.pipUUID === pipUUID
-	// 		)
-	// 		if (matchingPip) matchingPip.status = "online"
-	// 	})
-	// }
-
 	public emitPipStatusUpdate(pipUUID: PipUUID, newConnectionStatus: PipBrowserConnectionStatus): void {
 		this.connections.forEach((connectionInfo) => {
 			// Check if the specified pipUUID exists in this connection's previouslyConnectedPipUUIDs
