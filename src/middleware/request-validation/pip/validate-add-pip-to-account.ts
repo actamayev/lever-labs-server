@@ -6,7 +6,7 @@ import pipUUIdValidator from "../../joi/pip-uuid-validator"
 const addPipToAccountSchema = Joi.object({
 	addPipToAccountData: Joi.object({
 		pipUUID: pipUUIdValidator.required(),
-		pipName: Joi.string().required().min(3).max(20),
+		pipName: Joi.string().optional().min(3).max(20),
 		shouldAutoConnect: Joi.bool().required()
 	}).required()
 }).required()
