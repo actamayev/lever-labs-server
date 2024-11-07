@@ -19,11 +19,12 @@ declare global {
 		"DATABASE_URL" |
 		"JWT_KEY" |
 		"GOOGLE_CLIENT_ID" |
-		"GOOGLE_CLIENT_SECRET"
+		"GOOGLE_CLIENT_SECRET" |
+		"PIP_HARDWARE_VERSION"
 
 	type SecretsObject = { [K in SecretKeys]: string }
 
-	type PipUUID = string & { readonly __brand: unique symbol };
+	type PipUUID = string & { readonly __brand: unique symbol }
 }
 
 export {}

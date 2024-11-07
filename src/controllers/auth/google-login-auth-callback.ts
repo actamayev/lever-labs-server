@@ -8,6 +8,7 @@ import { addGoogleUser } from "../../db-operations/write/credentials/add-user"
 import createGoogleAuthClient from "../../utils/google/create-google-auth-client"
 import retrieveUserIdByEmail from "../../db-operations/read/credentials/retrieve-user-id-by-email"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-hisory-record"
+import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function googleLoginAuthCallback (req: Request, res: Response): Promise<void> {
@@ -34,12 +35,14 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 		let userId = await retrieveUserIdByEmail(encryptedEmail)
 		let accessToken: string
 		let isNewUser = false
+		let userPipData: PipData[] = []
 
 		if (_.isUndefined(userId)) {
 			res.status(500).json({ error: "Unable to login with this email. Account inactive." })
 			return
 		} else if (!_.isNull(userId)) {
 			accessToken = await signJWT({ userId, newUser: false })
+			userPipData = await retrieveUserPipUUIDsDetails(userId)
 			return
 		} else {
 			userId = await addGoogleUser(encryptedEmail, siteTheme as SiteThemes)
@@ -49,7 +52,7 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 
 		await addLoginHistoryRecord(userId)
 
-		res.status(200).json({ accessToken, isNewUser })
+		res.status(200).json({ accessToken, isNewUser, userPipData })
 		return
 	} catch (error) {
 		console.error(error)
