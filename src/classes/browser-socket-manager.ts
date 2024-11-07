@@ -4,7 +4,6 @@ import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32-socket-manager"
 import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
 
-// TODO: Delete unused methods in this class and in ESP32 class
 export default class BrowserSocketManager extends Singleton {
 	private connections = new Map<number, BrowserSocketConnectionInfo>() // Maps SocketID to BrowserSocketConnectionInfo
 

@@ -6,7 +6,7 @@ import isPipUUID from "../utils/type-checks"
 import BrowserSocketManager from "./browser-socket-manager"
 
 export default class Esp32SocketManager extends Singleton {
-	private connections = new Map<string, ESP32SocketConnectionInfo>() // Maps socketId to ESP32SocketConnectionInfo
+	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>() // Maps pipUUID to ESP32SocketConnectionInfo
 
 	private constructor(private readonly wss: WSServer) {
 		super()
@@ -40,7 +40,7 @@ export default class Esp32SocketManager extends Singleton {
 			const interval = setInterval(() => {
 				if (!ws.isAlive) {
 					console.info(`Terminating inactive connection for socketId: ${socketId}`)
-					this.handleDisconnection(socketId)
+					this.handleDisconnectionBySocketId(socketId)
 					return ws.terminate()
 				}
 				ws.isAlive = false
@@ -55,7 +55,7 @@ export default class Esp32SocketManager extends Singleton {
 
 			ws.on("close", () => {
 				clearInterval(interval)
-				this.handleDisconnection(socketId)
+				this.handleDisconnectionBySocketId(socketId)
 			})
 		})
 	}
@@ -103,34 +103,35 @@ export default class Esp32SocketManager extends Singleton {
 
 	private addConnection(socketId: string, pipUUID: PipUUID): void {
 		console.log("ESP adding new connection")
-		this.connections.set(socketId, { pipUUID, status: "connected" })
+		this.connections.set(pipUUID, { socketId, status: "connected" })
 		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "online")
 	}
 
-	private handleDisconnection(socketId: string): void {
-		const socketInfo = this.connections.get(socketId)
-		if (!socketInfo) return
-		BrowserSocketManager.getInstance().emitPipStatusUpdate(socketInfo.pipUUID, "inactive")
-		this.connections.delete(socketId)
+	private handleDisconnectionBySocketId(socketId: string): void {
+		const pipUUID = this.getPipUUIDBySocketId(socketId)
+		if (!pipUUID) return
+
+		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "inactive")
+		this.connections.delete(pipUUID)
+	}
+
+	// Helper function to retrieve pipUUID by socketId
+	private getPipUUIDBySocketId(socketId: string): PipUUID | undefined {
+		for (const [uuid, connectionInfo] of this.connections.entries()) {
+			if (connectionInfo.socketId === socketId) {
+				return uuid
+			}
+		}
+		return undefined
 	}
 
 	public isPipUUIDConnected(pipUUID: PipUUID): boolean {
-		for (const connectionInfo of this.connections.values()) {
-			if (connectionInfo.pipUUID === pipUUID && connectionInfo.status === "connected") {
-				return true // Return true as soon as we find a match
-			}
-		}
-		return false // Return false if no match is found
+		const connectionInfo = this.connections.get(pipUUID)
+		return connectionInfo?.status === "connected" || false
 	}
 
 	public getESPStatus(pipUUID: PipUUID): ESPConnectionStatus {
-		// Iterate through connections to find the one with the specified userId
-		for (const connectionInfo of this.connections.values()) {
-			if (connectionInfo.pipUUID === pipUUID) {
-				return connectionInfo.status
-			}
-		}
-		// Return "inactive" if no matching pipUUID was found
-		return "inactive"
+		const connectionInfo = this.connections.get(pipUUID)
+		return connectionInfo?.status || "inactive"
 	}
 }

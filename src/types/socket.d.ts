@@ -12,7 +12,7 @@ declare global {
 	}
 
 	type ESP32SocketConnectionInfo = {
-		pipUUID: PipUUID
+		socketId: string
 		status: ESPConnectionStatus
 	}
 
