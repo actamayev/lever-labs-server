@@ -18,7 +18,7 @@ export default async function addPipToAccount(req: Request, res: Response): Prom
 
 		const pipConnectionStatus = espStatusToPipConnectionStatus(espStatus, pipUUIDData.uuid)
 
-		BrowserSocketManager.getInstance().addOrUpdatePipStatus(user.user_id, pipUUIDData.uuid, pipConnectionStatus)
+		BrowserSocketManager.getInstance().addPipStatusToAccount(user.user_id, pipUUIDData.uuid, pipConnectionStatus)
 
 		res.status(200).json({ userPipUUIDId, pipConnectionStatus })
 		return

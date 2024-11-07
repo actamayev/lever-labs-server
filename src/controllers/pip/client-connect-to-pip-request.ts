@@ -6,7 +6,7 @@ export default function clientConnectToPipRequest (req: Request, res: Response):
 		const { user } = req
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		BrowserSocketManager.getInstance().emitPipStatusUpdateForUser(pipUUID, user.user_id)
+		BrowserSocketManager.getInstance().addPipStatusToAccount(user.user_id, pipUUID, "connected")
 
 		res.status(200).json({ success: "" })
 		return

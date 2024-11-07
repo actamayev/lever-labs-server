@@ -76,24 +76,87 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	public emitPipStatusUpdateForUser(pipUUID: PipUUID, userId: number): void {
-		this.connections.forEach((connectionInfo, connectionUserId) => {
-		// Find the pipUUID in the connection's previouslyConnectedPipUUIDs
-			const pipToUpdate = connectionInfo.previouslyConnectedPipUUIDs.find(
+	public addPipStatusToAccount(
+		userId: number,
+		pipUUID: PipUUID,
+		status: PipBrowserConnectionStatus
+	): void {
+		const connectionInfo = this.connections.get(userId)
+
+		if (!connectionInfo) {
+			console.warn(`No connection found for userId: ${userId}`)
+			return
+		}
+
+		// Get or add the pipUUID entry for this user and update its status
+		const pipToUpdate = this.getOrAddPipEntry(connectionInfo.previouslyConnectedPipUUIDs, pipUUID, status)
+
+		// Emit the updated status to the specified user and other users if necessary
+		this.emitPipStatusForUser(pipUUID, userId, pipToUpdate.status)
+		this.emitConnectionToPipToOtherUsers(pipUUID, userId, pipToUpdate.status) // The status won't always be "connected"
+	}
+
+	// Helper function to get or add a pipUUID entry for a user
+	private getOrAddPipEntry(
+		previouslyConnectedPipUUIDs: PreviouslyConnectedPipUUIDs[],
+		pipUUID: PipUUID,
+		status: PipBrowserConnectionStatus
+	): PreviouslyConnectedPipUUIDs {
+		let pipEntry = previouslyConnectedPipUUIDs.find(
+			(previousPip) => previousPip.pipUUID === pipUUID
+		)
+
+		if (!pipEntry) {
+			// If pipUUID entry doesn't exist, add it
+			pipEntry = { pipUUID, status }
+			previouslyConnectedPipUUIDs.push(pipEntry)
+		} else {
+			// Update the status of the existing pipUUID entry
+			pipEntry.status = status
+		}
+
+		return pipEntry
+	}
+
+	// Helper function to emit pip status to the specified user
+	private emitPipStatusForUser(
+		pipUUID: PipUUID,
+		userId: number,
+		status: PipBrowserConnectionStatus
+	): void {
+		const connectionInfo = this.connections.get(userId)
+		if (connectionInfo) {
+			this.io.to(connectionInfo.socketId).emit("pip-connection-status-update", {
+				pipUUID,
+				newConnectionStatus: status
+			})
+		}
+	}
+
+	// Emit to other users connected to the same pipUUID
+	private emitConnectionToPipToOtherUsers(
+		pipUUID: PipUUID,
+		userId: number,
+		newStatus: PipBrowserConnectionStatus
+	): void {
+		for (const [otherUserId, otherConnectionInfo] of this.connections.entries()) {
+			if (otherUserId === userId) continue
+
+			const pipToUpdate = otherConnectionInfo.previouslyConnectedPipUUIDs.find(
 				(previousPip) => previousPip.pipUUID === pipUUID
 			)
 
-			if (!pipToUpdate) return
-
-			// Set status based on whether the userId matches
-			pipToUpdate.status = connectionUserId === userId ? "connected" : "connected to other user"
-
-			// Emit event to this specific connection
-			this.io.to(connectionInfo.socketId).emit("pip-connection-status-update", {
-				pipUUID,
-				newConnectionStatus: pipToUpdate.status
-			})
-		})
+			if (pipToUpdate) {
+				// If the user's new status is connected, he has to notify others that their status is now "connected to other user"
+				if (newStatus === "connected") {
+					pipToUpdate.status = "connected to other user"
+				}
+				this.io.to(otherConnectionInfo.socketId).emit("pip-connection-status-update", {
+					pipUUID,
+					newConnectionStatus: pipToUpdate.status
+				})
+			}
+		}
 	}
 
 	public isUUIDConnected(pipUUID: PipUUID): boolean {
@@ -150,22 +213,5 @@ export default class BrowserSocketManager extends Singleton {
 
 		// Return "online" if no matching pipUUID or userId was found
 		return "online"
-	}
-
-	public addOrUpdatePipStatus(userId: number, pipUUID: PipUUID, status: PipBrowserConnectionStatus): void {
-		// Iterate through connections to find ones that match the specified userId
-		this.connections.forEach((connectionInfo, connectionUserId) => {
-			if (connectionUserId !== userId) return
-			// Check if the pipUUID exists in previouslyConnectedPipUUIDs
-			const existingPip = connectionInfo.previouslyConnectedPipUUIDs.find(
-				(previousPip) => previousPip.pipUUID === pipUUID
-			)
-
-			if (existingPip) {
-				existingPip.status = status
-				return
-			}
-			connectionInfo.previouslyConnectedPipUUIDs.push({ pipUUID, status })
-		})
 	}
 }
