@@ -4,6 +4,7 @@ import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32-socket-manager"
 import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
 
+// TODO: Delete unused methods in this class and in ESP32 class
 export default class BrowserSocketManager extends Singleton {
 	private connections = new Map<number, BrowserSocketConnectionInfo>() // Maps SocketID to BrowserSocketConnectionInfo
 
@@ -53,7 +54,8 @@ export default class BrowserSocketManager extends Singleton {
 			previouslyConnectedPipUUIDs.forEach((previousConnection) => {
 				if (previousConnection.status === "connected") {
 					// Esp32SocketManager.getInstance().handleClientLogoff(previousConnection.pipUUID)
-					previousConnection.status = "online"
+					this.emitPipStatusUpdate(previousConnection.pipUUID, "online")
+					// previousConnection.status = "online"
 				}
 			})
 		}
@@ -128,16 +130,18 @@ export default class BrowserSocketManager extends Singleton {
 	}
 
 	public getLivePipStatus(userId: number, pipUUID: PipUUID): PipBrowserConnectionStatus {
-		// Iterate through connections to find the one with the specified userId
 		const espStatus = Esp32SocketManager.getInstance().getESPStatus(pipUUID)
+
+		// Check if the ESP32 is inactive or updating firmware
 		if (espStatus === "inactive" || espStatus === "updating firmware") {
 			return espStatus
 		}
-		if (_.isEmpty(this.connections)) return "online"
-		this.connections.forEach((connectionInfo, connectionUserId) => {
-			console.log("Browser pip status connectionInfo", connectionInfo)
+
+		// Iterate over connections to find the relevant pipUUID
+		for (const [connectionUserId, connectionInfo] of this.connections.entries()) {
+
+			// Check if this connection belongs to the given user
 			if (connectionUserId === userId) {
-			// Find the pipUUID in the user's previouslyConnectedPipUUIDs
 				const pipInfo = connectionInfo.previouslyConnectedPipUUIDs.find(
 					(previousPip) => previousPip.pipUUID === pipUUID
 				)
@@ -148,13 +152,13 @@ export default class BrowserSocketManager extends Singleton {
 				const pipInfo = connectionInfo.previouslyConnectedPipUUIDs.find(
 					(previousPip) => previousPip.pipUUID === pipUUID
 				)
-				// If found, return its status
-				if (!pipInfo) return
-				else if (pipInfo.status === "connected") return "connected to other user"
-				// return pipInfo.status
+
+				// If found and status is "connected", return "connected to other user"
+				if (pipInfo?.status === "connected") return "connected to other user"
 			}
-		})
-		// Return "inactive" if no matching pipUUID or userId was found
+		}
+
+		// Return "online" if no matching pipUUID or userId was found
 		return "online"
 	}
 
