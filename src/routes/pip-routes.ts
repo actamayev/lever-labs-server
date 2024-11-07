@@ -39,9 +39,9 @@ pipRoutes.post(
 pipRoutes.get("/retrieve-previously-added-pips", jwtVerifyAttachUser, retrievePreviouslyAddedPips)
 
 pipRoutes.get(
-	"/check-if-pip-uuid-is-valid",
-	jwtVerifyAttachUser,
+	"/check-if-pip-uuid-is-valid/:pipUUID",
 	validatePipUUID,
+	jwtVerifyAttachUser,
 	isValidPipUUID
 )
 

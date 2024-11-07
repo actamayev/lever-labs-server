@@ -4,7 +4,7 @@ import findPipUUID from "../../db-operations/read/find/find-pip-uuid"
 
 export default async function isValidPipUUID(req: Request, res: Response): Promise<void> {
 	try {
-		const { pipUUID } = req.body as { pipUUID: PipUUID }
+		const { pipUUID } = req.params as { pipUUID: PipUUID }
 
 		const pipUUIDData = await findPipUUID(pipUUID)
 

@@ -9,7 +9,7 @@ const pipUUIDSchema = Joi.object({
 
 export default function validatePipUUID (req: Request, res: Response, next: NextFunction): void {
 	try {
-		const { error } = pipUUIDSchema.validate(req.body)
+		const { error } = pipUUIDSchema.validate(req.params)
 
 		if (!_.isUndefined(error)) {
 			res.status(400).json({ validationError: error.details[0].message })
