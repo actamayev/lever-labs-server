@@ -1,12 +1,16 @@
+import SecretsManager from "../../../classes/secrets-manager"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function addPipUUIDRecord(uuid: PipUUID): Promise<boolean> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
+		const hardwareVersion = await SecretsManager.getInstance().getSecret("PIP_HARDWARE_VERSION")
+
 		await prismaClient.pip_uuid.create({
 			data: {
-				uuid
+				uuid,
+				hardware_version: hardwareVersion
 			}
 		})
 		return true

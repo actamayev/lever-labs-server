@@ -11,7 +11,7 @@ export default async function addPipToAccount(req: Request, res: Response): Prom
 		const userPipUUIDId = await addUserPipUUIDMapRecord(
 			user.user_id,
 			pipName,
-			pipUUIDData.pip_uuid_id
+			pipUUIDData
 		)
 
 		const espStatus = Esp32SocketManager.getInstance().getESPStatus(pipUUIDData.uuid)
