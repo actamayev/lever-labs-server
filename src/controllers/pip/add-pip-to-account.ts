@@ -7,7 +7,7 @@ import addUserPipUUIDMapRecord from "../../db-operations/write/user-pip-uuid-map
 export default async function addPipToAccount(req: Request, res: Response): Promise<void> {
 	try {
 		const { user, pipUUIDData } = req
-		const { pipName } = req.body.addPipToAccountData as { pipName: string }
+		const { pipName, shouldAutoConnect } = req.body.addPipToAccountData as { pipName: string, shouldAutoConnect: boolean }
 		const userPipUUIDId = await addUserPipUUIDMapRecord(
 			user.user_id,
 			pipName,
@@ -16,7 +16,7 @@ export default async function addPipToAccount(req: Request, res: Response): Prom
 
 		const espStatus = Esp32SocketManager.getInstance().getESPStatus(pipUUIDData.uuid)
 
-		const pipConnectionStatus = espStatusToPipConnectionStatus(espStatus, pipUUIDData.uuid)
+		const pipConnectionStatus = espStatusToPipConnectionStatus(espStatus, pipUUIDData.uuid, shouldAutoConnect)
 
 		BrowserSocketManager.getInstance().addPipStatusToAccount(user.user_id, pipUUIDData.uuid, pipConnectionStatus)
 
