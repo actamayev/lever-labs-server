@@ -102,7 +102,7 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	private addConnection(socketId: string, pipUUID: PipUUID): void {
-		console.log("ESP adding new connection")
+		console.info("ESP adding new connection")
 		this.connections.set(pipUUID, { socketId, status: "connected" })
 		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "online")
 	}
