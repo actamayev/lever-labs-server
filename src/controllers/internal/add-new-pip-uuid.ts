@@ -8,7 +8,7 @@ export default async function addNewPipUUID (_req: Request, res: Response): Prom
 
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		while (true) {
-			generatedPipUUID = await generatePipUUID()
+			generatedPipUUID = generatePipUUID()
 			const success = await addPipUUIDRecord(generatedPipUUID)
 			if (success) break // Exit loop if the UUID was successfully created
 		}

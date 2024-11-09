@@ -49,6 +49,8 @@ model login_history {
 model pip_uuid {
 	pip_uuid_id                                            		Int       @id @default(autoincrement())
 	uuid														String		@unique
+	hardware_version											String
+	pip_name													String?
 
 	created_at                                                  DateTime  @default(now())
 
@@ -59,7 +61,6 @@ model user_pip_uuid_map {
 	user_pip_uuid_map_id										Int       @id @default(autoincrement())
   	user_id             										Int
 	pip_uuid_id                                               	Int
-	pip_name													String
 
 	last_connection_time										DateTime @default(now())
 	created_at                                                  DateTime  @default(now())

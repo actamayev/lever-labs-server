@@ -11,10 +11,10 @@ export default async function retrieveUserPipUUIDsDetails(userId: number): Promi
 				is_active: true
 			},
 			select: {
-				pip_name: true,
 				pip_uuid_id: true,
 				pip_uuid: {
 					select: {
+						pip_name: true,
 						uuid: true
 					}
 				}
@@ -22,7 +22,7 @@ export default async function retrieveUserPipUUIDsDetails(userId: number): Promi
 		})
 
 		return retrievedUserPipUUIDs.map(item => ({
-			pipName: item.pip_name,
+			pipName: item.pip_uuid.pip_name || "Pip",
 			userPipUUIDId: item.pip_uuid_id,
 			pipUUID: item.pip_uuid.uuid as PipUUID,
 			pipConnectionStatus: BrowserSocketManager.getInstance().getLivePipStatus(userId, item.pip_uuid.uuid as PipUUID)
