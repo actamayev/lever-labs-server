@@ -43,7 +43,6 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 		} else if (!_.isNull(userId)) {
 			accessToken = await signJWT({ userId, newUser: false })
 			userPipData = await retrieveUserPipUUIDsDetails(userId)
-			return
 		} else {
 			userId = await addGoogleUser(encryptedEmail, siteTheme as SiteThemes)
 			accessToken = await signJWT({ userId, newUser: true })
