@@ -8,6 +8,7 @@ export default async function compileAndSendCppToPip(req: Request, res: Response
 
 		const compiledUserCode = await compileUserCode(cppCode)
 
+		console.log("compiledUserCode", compiledUserCode)
 		Esp32SocketManager.getInstance().emitBinaryCodeToPip(pipUUID, compiledUserCode)
 
 		res.status(200).json({ success: "Sent code to Pip" })
