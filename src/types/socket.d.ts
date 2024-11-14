@@ -14,6 +14,7 @@ declare global {
 	type ESP32SocketConnectionInfo = {
 		socketId: string
 		status: ESPConnectionStatus
+		socket: ExtendedWebSocket
 	}
 
 	interface ExtendedWebSocket extends WebSocket {

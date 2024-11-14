@@ -3,7 +3,9 @@ import express from "express"
 import attachPipUUIDData from "../middleware/attach/attach-pip-uuid-data"
 import jwtVerifyAttachUser from "../middleware/jwt/jwt-verify-attach-user"
 import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
+import confirmPipIsConnected from "../middleware/confirm/confirm-pip-is-connected"
 import validatePipUUID from "../middleware/request-validation/pip/validate-pip-uuid"
+import validateCppCode from "../middleware/request-validation/pip/validate-cpp-code"
 import confirmPipIsUnconnected from "../middleware/confirm/confirm-pip-is-unconnected"
 import confirmUserPreviouslyAddedUUID from "../middleware/confirm/confirm-user-previously-added-uuid"
 import validateAddPipToAccount from "../middleware/request-validation/pip/validate-add-pip-to-account"
@@ -12,6 +14,7 @@ import validateClientConnectToPipRequest from "../middleware/request-validation/
 
 import isValidPipUUID from "../controllers/pip/is-valid-pip-uuid"
 import addPipToAccount from "../controllers/pip/add-pip-to-account"
+import compileAndSendCppToPip from "../controllers/pip/compile-and-send-cpp-to-pip"
 import clientConnectToPipRequest from "../controllers/pip/client-connect-to-pip-request"
 import retrievePreviouslyAddedPips from "../controllers/pip/retrieve-previously-added-pips"
 
@@ -43,6 +46,16 @@ pipRoutes.get(
 	validatePipUUID,
 	jwtVerifyAttachUser,
 	isValidPipUUID
+)
+
+pipRoutes.get(
+	"/compile-and-send-cpp-to-pip",
+	validateCppCode,
+	confirmPipIsActive,
+	confirmPipIsConnected, // TODO: Consider removing this, and if the user isn't already connected, connect automatically.
+	jwtVerifyAttachUser,
+	confirmUserPreviouslyAddedUUID,
+	compileAndSendCppToPip
 )
 
 export default pipRoutes

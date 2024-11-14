@@ -50,7 +50,7 @@ export default class Esp32SocketManager extends Singleton {
 			ws.on("message", (message) => {
 				this.handleMessage(socketId, message.toString(), isRegistered, (registered) => {
 					isRegistered = registered
-				})
+				}, ws)
 			})
 
 			ws.on("close", () => {
@@ -65,7 +65,8 @@ export default class Esp32SocketManager extends Singleton {
 		clientId: string,
 		message: string,
 		isRegistered: boolean,
-		setRegistered: (status: boolean) => void
+		setRegistered: (status: boolean) => void,
+		ws: ExtendedWebSocket
 	): void {
 		console.info(`Message from ESP32 (${clientId}):`, message)
 
@@ -93,7 +94,7 @@ export default class Esp32SocketManager extends Singleton {
 			}
 
 			// Register the connection
-			this.addConnection(clientId, pipUUID)
+			this.addConnection(clientId, pipUUID, ws)
 			console.info(`Registered new ESP32 connection with UUID: ${pipUUID}`)
 			setRegistered(true)  // Update isRegistered to true
 		} catch (error) {
@@ -101,9 +102,13 @@ export default class Esp32SocketManager extends Singleton {
 		}
 	}
 
-	private addConnection(socketId: string, pipUUID: PipUUID): void {
+	private addConnection(socketId: string, pipUUID: PipUUID, socket: ExtendedWebSocket): void {
 		console.info("ESP adding new connection")
-		this.connections.set(pipUUID, { socketId, status: "connected" })
+		this.connections.set(pipUUID, {
+			socketId,
+			status: "connected",
+			socket
+		})
 		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "online")
 	}
 
@@ -133,5 +138,21 @@ export default class Esp32SocketManager extends Singleton {
 	public getESPStatus(pipUUID: PipUUID): ESPConnectionStatus {
 		const connectionInfo = this.connections.get(pipUUID)
 		return connectionInfo?.status || "inactive"
+	}
+
+	public emitBinaryCodeToPip(pipUUID: PipUUID, binary: Buffer): void {
+		const connectionInfo = this.connections.get(pipUUID)
+		if (!connectionInfo) return
+
+		try {
+			const message = {
+				event: "new-user-code",
+				data: binary.toString("base64")
+			}
+
+			connectionInfo.socket.send(JSON.stringify(message))
+		} catch (error) {
+			console.error(`Failed to send binary code to pip ${pipUUID}:`, error)
+		}
 	}
 }
