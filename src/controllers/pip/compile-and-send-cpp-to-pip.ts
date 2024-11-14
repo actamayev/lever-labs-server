@@ -6,8 +6,6 @@ export default async function compileAndSendCppToPip(req: Request, res: Response
 	try {
 		const { pipUUID, cppCode } = req.body as { pipUUID: PipUUID, cppCode: string }
 
-		console.log("cppCode", cppCode)
-
 		const compiledUserCode = await compileUserCode(cppCode)
 
 		Esp32SocketManager.getInstance().emitBinaryCodeToPip(pipUUID, compiledUserCode)
@@ -16,7 +14,7 @@ export default async function compileAndSendCppToPip(req: Request, res: Response
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to connect to Pip" })
+		res.status(500).json({ error: "Internal Server Error: Unable to compile and send Pip the code" })
 		return
 	}
 }
