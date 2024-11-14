@@ -48,11 +48,11 @@ pipRoutes.get(
 	isValidPipUUID
 )
 
-pipRoutes.get(
+pipRoutes.post(
 	"/compile-and-send-cpp-to-pip",
 	validateCppCode,
-	confirmPipIsActive,
-	confirmPipIsConnected, // TODO: Consider removing this, and if the user isn't already connected, connect automatically.
+	// confirmPipIsActive,
+	// confirmPipIsConnected, // TODO: Consider removing this, and if the user isn't already connected, connect automatically.
 	jwtVerifyAttachUser,
 	confirmUserPreviouslyAddedUUID,
 	compileAndSendCppToPip

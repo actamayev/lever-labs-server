@@ -13,8 +13,10 @@ export default async function compileUserCode(userCode: string): Promise<Buffer>
 	// Run Docker command to compile the code asynchronously
 	await new Promise<void>((resolve, reject) => {
 		exec(
-			// eslint-disable-next-line max-len
-			`docker run --rm -v "${path.join(process.cwd(), "build")}:/workspace/build" -v "${path.join(process.cwd(), "user_code.cpp")}:/workspace/user_code.cpp" cpp-compiler /entrypoint.sh`,
+			`docker run --rm \
+			-v "/Users/arieltamayev/Documents/PlatformIO/pip-bot-firmware:/workspace" \
+			-v "${path.join(process.cwd(), "build")}:/workspace/build" \
+			cpp-compiler /entrypoint.sh "$(cat ${userCodePath})"`,
 			(error, stdout, stderr) => {
 				if (error) {
 					console.error(`Error: ${error.message}`)
