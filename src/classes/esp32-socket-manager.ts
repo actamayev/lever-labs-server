@@ -142,7 +142,10 @@ export default class Esp32SocketManager extends Singleton {
 
 	public emitBinaryCodeToPip(pipUUID: PipUUID, binary: Buffer): void {
 		const connectionInfo = this.connections.get(pipUUID)
-		if (!connectionInfo) return
+		if (!connectionInfo) {
+			console.info("Pip not connected")
+			return
+		}
 
 		try {
 			const message = {
