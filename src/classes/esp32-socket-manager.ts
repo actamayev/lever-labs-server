@@ -45,7 +45,7 @@ export default class Esp32SocketManager extends Singleton {
 				}
 				ws.isAlive = false
 				ws.ping() // Send ping and wait for pong response
-			}, 30000) // Check every 30 seconds
+			}, 15000) // Check every 15 seconds
 
 			ws.on("message", (message) => {
 				this.handleMessage(socketId, message.toString(), isRegistered, (registered) => {
@@ -55,6 +55,7 @@ export default class Esp32SocketManager extends Singleton {
 
 			ws.on("close", () => {
 				clearInterval(interval)
+				console.log("closing WS here")
 				this.handleDisconnectionBySocketId(socketId)
 			})
 		})
@@ -115,6 +116,7 @@ export default class Esp32SocketManager extends Singleton {
 	private handleDisconnectionBySocketId(socketId: string): void {
 		const pipUUID = this.getPipUUIDBySocketId(socketId)
 		if (!pipUUID) return
+		console.log("disconnecting socket id", pipUUID)
 
 		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "inactive")
 		this.connections.delete(pipUUID)
@@ -141,13 +143,11 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	public emitBinaryCodeToPip(pipUUID: PipUUID, binary: Buffer): void {
-		const connectionInfo = this.connections.get(pipUUID)
-		if (!connectionInfo) {
-			console.info("Pip not connected")
-			return
-		}
-
 		try {
+			const connectionInfo = this.connections.get(pipUUID)
+			if (!connectionInfo) {
+				throw Error("Pip Not connected")
+			}
 			const message = {
 				event: "new-user-code",
 				data: binary.toString("base64")
@@ -156,6 +156,7 @@ export default class Esp32SocketManager extends Singleton {
 			connectionInfo.socket.send(JSON.stringify(message))
 		} catch (error) {
 			console.error(`Failed to send binary code to pip ${pipUUID}:`, error)
+			throw error
 		}
 	}
 }
