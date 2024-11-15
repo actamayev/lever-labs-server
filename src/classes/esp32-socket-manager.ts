@@ -6,7 +6,8 @@ import isPipUUID from "../utils/type-checks"
 import BrowserSocketManager from "./browser-socket-manager"
 
 export default class Esp32SocketManager extends Singleton {
-	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>() // Maps pipUUID to ESP32SocketConnectionInfo
+	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
+	private pingIntervals = new Map<string, NodeJS.Timeout>()  // Track intervals by socketId
 
 	private constructor(private readonly wss: WSServer) {
 		super()
@@ -23,7 +24,6 @@ export default class Esp32SocketManager extends Singleton {
 		return Esp32SocketManager.instance
 	}
 
-	// Configure WebSocket with ping/pong and timeout settings
 	private initializeListeners(): void {
 		this.wss.on("connection", (ws: ExtendedWebSocket, req: IncomingMessage) => {
 			const socketId = req.headers["sec-websocket-key"] as string
@@ -31,21 +31,27 @@ export default class Esp32SocketManager extends Singleton {
 
 			let isRegistered = false
 
-			// Set up ping/pong interval to detect inactive clients
+			// Set up ping/pong
 			ws.isAlive = true
 			ws.on("pong", () => {
 				ws.isAlive = true
+				console.debug(`Pong received from ${socketId}`)
 			})
 
+			// Store interval reference
 			const interval = setInterval(() => {
 				if (!ws.isAlive) {
 					console.info(`Terminating inactive connection for socketId: ${socketId}`)
-					this.handleDisconnectionBySocketId(socketId)
-					return ws.terminate()
+					this.cleanupConnection(socketId, ws, interval)
+					return
 				}
 				ws.isAlive = false
-				ws.ping() // Send ping and wait for pong response
-			}, 15000) // Check every 15 seconds
+				ws.ping(() => {
+					console.debug(`Ping sent to ${socketId}`)
+				})
+			}, 15000)
+
+			this.pingIntervals.set(socketId, interval)
 
 			ws.on("message", (message) => {
 				this.handleMessage(socketId, message.toString(), isRegistered, (registered) => {
@@ -54,14 +60,32 @@ export default class Esp32SocketManager extends Singleton {
 			})
 
 			ws.on("close", () => {
-				clearInterval(interval)
-				console.log("closing WS here")
-				this.handleDisconnectionBySocketId(socketId)
+				console.log(`WebSocket closed for ${socketId}`)
+				this.cleanupConnection(socketId, ws, interval)
+			})
+
+			ws.on("error", (error) => {
+				console.error(`WebSocket error for ${socketId}:`, error)
+				this.cleanupConnection(socketId, ws, interval)
 			})
 		})
 	}
 
-	// handleMessage handles both registration and regular message handling
+	private cleanupConnection(socketId: string, ws: ExtendedWebSocket, interval: NodeJS.Timeout | undefined): void {
+		// Clear the ping interval
+		clearInterval(interval)
+		this.pingIntervals.delete(socketId)
+
+		// Terminate the WebSocket if it's still open
+		if (ws.readyState !== ws.CLOSED) {
+			ws.terminate()
+		}
+
+		// Handle disconnection
+		console.log("Cleaning up connection for socket", socketId)
+		this.handleDisconnectionBySocketId(socketId)
+	}
+
 	private handleMessage(
 		clientId: string,
 		message: string,
@@ -69,41 +93,51 @@ export default class Esp32SocketManager extends Singleton {
 		setRegistered: (status: boolean) => void,
 		ws: ExtendedWebSocket
 	): void {
+		if (!ws.isAlive) {
+			console.warn(`Received message from inactive connection ${clientId}`)
+			return
+		}
+
 		console.info(`Message from ESP32 (${clientId}):`, message)
 
 		if (isRegistered) {
-			// Handle regular messages
 			console.info(`Regular message from ESP32 (${clientId}):`, message)
 			return
 		}
 
-		// Handle first message as registration
 		try {
 			const data = JSON.parse(message) as { pipUUID?: string }
-
 			const pipUUID = data.pipUUID
-			// Check if pipUUID exists
+
 			if (_.isUndefined(pipUUID)) {
 				console.warn(`No pipUUID found in message from ESP32 (${clientId}):`, message)
 				return
 			}
 
-			// Validate pipUUID
 			if (!isPipUUID(pipUUID)) {
 				console.warn(`Invalid UUID received from ESP32 (${clientId}):`, pipUUID)
 				return
 			}
 
-			// Register the connection
 			this.addConnection(clientId, pipUUID, ws)
 			console.info(`Registered new ESP32 connection with UUID: ${pipUUID}`)
-			setRegistered(true)  // Update isRegistered to true
+			setRegistered(true)
 		} catch (error) {
 			console.error(`Failed to parse message from ESP32 (${clientId}):`, error)
 		}
 	}
 
 	private addConnection(socketId: string, pipUUID: PipUUID, socket: ExtendedWebSocket): void {
+		// Remove any existing connection for this pipUUID
+		const existingConnection = this.connections.get(pipUUID)
+		if (existingConnection) {
+			this.cleanupConnection(
+				existingConnection.socketId,
+				existingConnection.socket,
+				this.pingIntervals.get(existingConnection.socketId)
+			)
+		}
+
 		console.info("ESP adding new connection")
 		this.connections.set(pipUUID, {
 			socketId,
@@ -115,14 +149,20 @@ export default class Esp32SocketManager extends Singleton {
 
 	private handleDisconnectionBySocketId(socketId: string): void {
 		const pipUUID = this.getPipUUIDBySocketId(socketId)
-		if (!pipUUID) return
-		console.log("disconnecting socket id", pipUUID)
+		if (!pipUUID) {
+			console.log(`No PIP UUID found for socket ID ${socketId}`)
+			return
+		}
+		console.log(`Disconnecting socket for PIP ${pipUUID}`)
 
-		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "inactive")
-		this.connections.delete(pipUUID)
+		const connection = this.connections.get(pipUUID)
+		if (connection) {
+			connection.status = "inactive"
+			BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "inactive")
+			this.connections.delete(pipUUID)
+		}
 	}
 
-	// Helper function to retrieve pipUUID by socketId
 	private getPipUUIDBySocketId(socketId: string): PipUUID | undefined {
 		for (const [uuid, connectionInfo] of this.connections.entries()) {
 			if (connectionInfo.socketId === socketId) {
@@ -142,18 +182,53 @@ export default class Esp32SocketManager extends Singleton {
 		return connectionInfo?.status || "inactive"
 	}
 
+	// eslint-disable-next-line max-lines-per-function
 	public emitBinaryCodeToPip(pipUUID: PipUUID, binary: Buffer): void {
 		try {
 			const connectionInfo = this.connections.get(pipUUID)
 			if (!connectionInfo) {
 				throw Error("Pip Not connected")
 			}
+
+			if (connectionInfo.socket.readyState !== connectionInfo.socket.OPEN) {
+				throw Error("WebSocket connection is not open")
+			}
+
+			// Temporarily pause ping-pong checks
+			const interval = this.pingIntervals.get(connectionInfo.socketId)
+			if (interval) {
+				clearInterval(interval)
+				this.pingIntervals.delete(connectionInfo.socketId)
+			}
+
 			const message = {
 				event: "new-user-code",
 				data: binary.toString("base64")
 			}
 
-			connectionInfo.socket.send(JSON.stringify(message))
+			connectionInfo.socket.send(JSON.stringify(message), (error) => {
+				if (error) {
+					console.error(`Failed to send update to ${pipUUID}:`, error)
+					this.cleanupConnection(
+						connectionInfo.socketId,
+						connectionInfo.socket,
+						interval
+					)
+				} else {
+					console.log(`Update sent to ${pipUUID}, waiting for disconnect...`)
+					// Set a longer timeout for update process
+					setTimeout(() => {
+						if (this.connections.has(pipUUID)) {
+							console.log(`Cleaning up connection after update timeout for ${pipUUID}`)
+							this.cleanupConnection(
+								connectionInfo.socketId,
+								connectionInfo.socket,
+								interval
+							)
+						}
+					}, 30000) // 30 second timeout for update
+				}
+			})
 		} catch (error) {
 			console.error(`Failed to send binary code to pip ${pipUUID}:`, error)
 			throw error
