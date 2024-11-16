@@ -182,84 +182,41 @@ export default class Esp32SocketManager extends Singleton {
 		return connectionInfo?.status || "inactive"
 	}
 
-	// eslint-disable-next-line max-lines-per-function
+
 	public emitBinaryCodeToPip(pipUUID: PipUUID, binary: Buffer): void {
 		try {
 			const connectionInfo = this.connections.get(pipUUID)
-			if (!connectionInfo) {
-				throw Error("Pip Not connected")
+			if (!connectionInfo || connectionInfo.socket.readyState !== connectionInfo.socket.OPEN) {
+				throw Error("Pip not connected or socket not open")
 			}
 
-			if (connectionInfo.socket.readyState !== connectionInfo.socket.OPEN) {
-				throw Error("WebSocket connection is not open")
-			}
-
-			// Temporarily pause ping-pong checks
+			// Pause ping-pong
 			const interval = this.pingIntervals.get(connectionInfo.socketId)
 			if (interval) {
 				clearInterval(interval)
 				this.pingIntervals.delete(connectionInfo.socketId)
 			}
 
-			// Chunk size: 32KB
-			// eslint-disable-next-line @typescript-eslint/naming-convention
-			const CHUNK_SIZE = 32 * 1024
-			const totalChunks = Math.ceil(binary.length / CHUNK_SIZE)
-			let chunksProcessed = 0
+			console.log(`Sending ${binary.length} bytes to ${pipUUID}`)
 
-			// eslint-disable-next-line max-lines-per-function
-			const sendNextChunk = () => {
-				const start = chunksProcessed * CHUNK_SIZE
-				const end = Math.min(start + CHUNK_SIZE, binary.length)
-				const chunk = binary.slice(start, end)
-				const isLastChunk = end === binary.length
-
-				const message = {
-					event: "new-user-code",
-					totalChunks: totalChunks,
-					chunkIndex: chunksProcessed,
-					isLastChunk: isLastChunk,
-					totalSize: binary.length,
-					data: chunk.toString("base64")
-				}
-
-				connectionInfo.socket.send(JSON.stringify(message), (error) => {
-					if (error) {
-						console.error(`Failed to send chunk ${chunksProcessed} to ${pipUUID}:`, error)
-						this.cleanupConnection(
-							connectionInfo.socketId,
-							connectionInfo.socket,
-							interval
-						)
-						return
-					}
-
-					chunksProcessed++
-					console.log(`Sent chunk ${chunksProcessed}/${totalChunks} to ${pipUUID}`)
-
-					if (chunksProcessed < totalChunks) {
-						// Send next chunk after a small delay
-						setTimeout(sendNextChunk, 50)
-					} else {
-						console.log(`All chunks sent to ${pipUUID}, waiting for disconnect...`)
-						// Set a longer timeout for update process
-						setTimeout(() => {
-							if (this.connections.has(pipUUID)) {
-								console.log(`Cleaning up connection after update timeout for ${pipUUID}`)
-								this.cleanupConnection(
-									connectionInfo.socketId,
-									connectionInfo.socket,
-									interval
-								)
-							}
-						}, 30000) // 30 second timeout for update
-					}
-				})
+			const message = {
+				event: "new-user-code",
+				data: binary.toString("base64")
 			}
 
-			// Start sending chunks
-			console.log(`Starting binary transfer to ${pipUUID}: ${binary.length} bytes in ${totalChunks} chunks`)
-			sendNextChunk()
+			connectionInfo.socket.send(JSON.stringify(message), (error) => {
+				if (error) {
+					console.error(`Failed to send update to ${pipUUID}:`, error)
+					this.cleanupConnection(connectionInfo.socketId, connectionInfo.socket, interval)
+				} else {
+					console.log(`Update sent to ${pipUUID}, waiting for restart...`)
+					setTimeout(() => {
+						if (this.connections.has(pipUUID)) {
+							this.cleanupConnection(connectionInfo.socketId, connectionInfo.socket, interval)
+						}
+					}, 30000)
+				}
+			})
 		} catch (error) {
 			console.error(`Failed to send binary code to pip ${pipUUID}:`, error)
 			throw error
