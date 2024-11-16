@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import _ from "lodash"
 import { IncomingMessage } from "http"
 import { Server as WSServer } from "ws"
@@ -187,7 +188,7 @@ export default class Esp32SocketManager extends Singleton {
 		try {
 			const connectionInfo = this.connections.get(pipUUID)
 			if (!connectionInfo || connectionInfo.socket.readyState !== connectionInfo.socket.OPEN) {
-				throw Error("Pip not connected or socket not open")
+				throw Error("Connection not ready")
 			}
 
 			// Pause ping-pong
@@ -197,26 +198,58 @@ export default class Esp32SocketManager extends Singleton {
 				this.pingIntervals.delete(connectionInfo.socketId)
 			}
 
-			console.log(`Sending ${binary.length} bytes to ${pipUUID}`)
+			// Reduced chunk size to 16KB
+			const CHUNK_SIZE = 16 * 1024
+			const base64Data = binary.toString("base64")
+			const chunks = Math.ceil(base64Data.length / CHUNK_SIZE)
+			let currentChunk = 0
 
-			const message = {
-				event: "new-user-code",
-				data: binary.toString("base64")
+			console.log(`Starting transfer of ${binary.length} bytes in ${chunks} chunks to ${pipUUID}`)
+
+			const sendNextChunk = () => {
+				if (currentChunk >= chunks) {
+					console.log(`All ${chunks} chunks sent successfully to ${pipUUID}`)
+					return
+				}
+
+				const start = currentChunk * CHUNK_SIZE
+				const end = Math.min(start + CHUNK_SIZE, base64Data.length)
+				const chunk = base64Data.slice(start, end)
+
+				const message = {
+					event: "new-user-code",
+					chunkIndex: currentChunk,
+					totalChunks: chunks,
+					totalSize: binary.length,
+					isLast: currentChunk === chunks - 1,
+					data: chunk
+				}
+
+				connectionInfo.socket.send(JSON.stringify(message), (error) => {
+					if (error) {
+						console.error(`Failed to send chunk ${currentChunk}:`, error)
+						this.cleanupConnection(connectionInfo.socketId, connectionInfo.socket, interval)
+						return
+					}
+
+					console.log(`Sent chunk ${currentChunk + 1}/${chunks} to ${pipUUID}`)
+					currentChunk++
+
+					// Increased delay between chunks to 250ms
+					setTimeout(sendNextChunk, 250)
+				})
 			}
 
-			connectionInfo.socket.send(JSON.stringify(message), (error) => {
-				if (error) {
-					console.error(`Failed to send update to ${pipUUID}:`, error)
+			sendNextChunk()
+
+			// Extended timeout
+			const timeoutDuration = Math.max(90000, chunks * 300 + 30000)
+			setTimeout(() => {
+				if (this.connections.has(pipUUID)) {
 					this.cleanupConnection(connectionInfo.socketId, connectionInfo.socket, interval)
-				} else {
-					console.log(`Update sent to ${pipUUID}, waiting for restart...`)
-					setTimeout(() => {
-						if (this.connections.has(pipUUID)) {
-							this.cleanupConnection(connectionInfo.socketId, connectionInfo.socket, interval)
-						}
-					}, 30000)
 				}
-			})
+			}, timeoutDuration)
+
 		} catch (error) {
 			console.error(`Failed to send binary code to pip ${pipUUID}:`, error)
 			throw error
