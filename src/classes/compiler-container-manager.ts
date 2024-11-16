@@ -71,6 +71,7 @@ export default class CompilerContainerManager extends Singleton {
 		}
 	}
 
+	// eslint-disable-next-line max-lines-per-function, complexity
 	public async compile(userCode: string): Promise<Buffer> {
 		if (!this.containerId) {
 			await this.startContainer()
@@ -92,6 +93,7 @@ export default class CompilerContainerManager extends Singleton {
 				}
 			)
 
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (stderr && stderr.length > 0) {
 				const stderrStr = stderr.toString()
 				if (!stderrStr.includes("Checking python version") &&
@@ -100,6 +102,7 @@ export default class CompilerContainerManager extends Singleton {
 				}
 			}
 
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!stdout || stdout.length === 0) {
 				throw new Error("No binary output received from container")
 			}

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+
 import _ from "lodash"
 import { IncomingMessage } from "http"
 import { Server as WSServer } from "ws"
@@ -9,6 +9,7 @@ import BrowserSocketManager from "./browser-socket-manager"
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
 	private pingIntervals = new Map<string, NodeJS.Timeout>()  // Track intervals by socketId
+	private chunkSize = 32 * 1024 // 32KB
 
 	private constructor(private readonly wss: WSServer) {
 		super()
@@ -40,19 +41,7 @@ export default class Esp32SocketManager extends Singleton {
 			})
 
 			// Store interval reference
-			const interval = setInterval(() => {
-				if (!ws.isAlive) {
-					console.info(`Terminating inactive connection for socketId: ${socketId}`)
-					this.cleanupConnection(socketId, ws, interval)
-					return
-				}
-				ws.isAlive = false
-				ws.ping(() => {
-					console.debug(`Ping sent to ${socketId}`)
-				})
-			}, 15000)
-
-			this.pingIntervals.set(socketId, interval)
+			const interval = this.setupPingInterval(socketId, ws)
 
 			ws.on("message", (message) => {
 				this.handleMessage(socketId, message.toString(), isRegistered, (registered) => {
@@ -70,6 +59,23 @@ export default class Esp32SocketManager extends Singleton {
 				this.cleanupConnection(socketId, ws, interval)
 			})
 		})
+	}
+
+	private setupPingInterval(socketId: string, ws: ExtendedWebSocket): NodeJS.Timeout {
+		const interval = setInterval(() => {
+			if (!ws.isAlive) {
+				console.info(`Terminating inactive connection for socketId: ${socketId}`)
+				this.cleanupConnection(socketId, ws, interval)
+				return
+			}
+			ws.isAlive = false
+			ws.ping(() => {
+				console.debug(`Ping sent to ${socketId}`)
+			})
+		}, 15000)
+
+		this.pingIntervals.set(socketId, interval)
+		return interval
 	}
 
 	private cleanupConnection(socketId: string, ws: ExtendedWebSocket, interval: NodeJS.Timeout | undefined): void {
@@ -183,37 +189,63 @@ export default class Esp32SocketManager extends Singleton {
 		return connectionInfo?.status || "inactive"
 	}
 
-
+	// eslint-disable-next-line max-lines-per-function
 	public emitBinaryCodeToPip(pipUUID: PipUUID, binary: Buffer): void {
 		try {
 			const connectionInfo = this.connections.get(pipUUID)
-			if (!connectionInfo || connectionInfo.socket.readyState !== connectionInfo.socket.OPEN) {
-				throw Error("Connection not ready")
+			if (!connectionInfo) {
+				throw Error("Pip Not connected")
 			}
 
-			// Pause ping-pong
+			// Keep track of whether we should continue sending
+			let shouldContinueSending = true
+
+			// Pause ping-pong checks
 			const interval = this.pingIntervals.get(connectionInfo.socketId)
 			if (interval) {
 				clearInterval(interval)
 				this.pingIntervals.delete(connectionInfo.socketId)
 			}
 
-			// Reduced chunk size to 16KB
-			const CHUNK_SIZE = 16 * 1024
 			const base64Data = binary.toString("base64")
-			const chunks = Math.ceil(base64Data.length / CHUNK_SIZE)
+			const chunks = Math.ceil(base64Data.length / this.chunkSize)
 			let currentChunk = 0
 
-			console.log(`Starting transfer of ${binary.length} bytes in ${chunks} chunks to ${pipUUID}`)
+			// Handle status messages from ESP
+			const statusHandler = (data: string) => {
+				try {
+					const message = JSON.parse(data)
+					if (message.event === "update_status") {
+						if (message.status === "error") {
+							console.error(`ESP reported error: ${message.error}`)
+							shouldContinueSending = false
+
+							// Restore ping interval
+							this.setupPingInterval(connectionInfo.socketId, connectionInfo.socket)
+						}
+					}
+				} catch (e) {
+					// Handle non-JSON messages
+				}
+			}
+
+			connectionInfo.socket.on("message", statusHandler)
 
 			const sendNextChunk = () => {
-				if (currentChunk >= chunks) {
-					console.log(`All ${chunks} chunks sent successfully to ${pipUUID}`)
+				if (!shouldContinueSending || currentChunk >= chunks) {
+					if (shouldContinueSending) {
+						console.log(`Successfully sent all ${chunks} chunks to ${pipUUID}`)
+					} else {
+						console.log("Stopped sending due to ESP error")
+					}
+
+					// Restore ping interval
+					this.setupPingInterval(connectionInfo.socketId, connectionInfo.socket)
 					return
 				}
 
-				const start = currentChunk * CHUNK_SIZE
-				const end = Math.min(start + CHUNK_SIZE, base64Data.length)
+				const start = currentChunk * this.chunkSize
+				const end = Math.min(start + this.chunkSize, base64Data.length)
 				const chunk = base64Data.slice(start, end)
 
 				const message = {
@@ -228,27 +260,38 @@ export default class Esp32SocketManager extends Singleton {
 				connectionInfo.socket.send(JSON.stringify(message), (error) => {
 					if (error) {
 						console.error(`Failed to send chunk ${currentChunk}:`, error)
-						this.cleanupConnection(connectionInfo.socketId, connectionInfo.socket, interval)
+						shouldContinueSending = false
 						return
 					}
 
-					console.log(`Sent chunk ${currentChunk + 1}/${chunks} to ${pipUUID}`)
 					currentChunk++
-
-					// Increased delay between chunks to 250ms
-					setTimeout(sendNextChunk, 250)
+					if (shouldContinueSending) {
+						setTimeout(sendNextChunk, 100)
+					}
 				})
 			}
 
-			sendNextChunk()
+			// Start sending only after confirming ESP is ready
+			const initMessage = {
+				event: "new-user-code",
+				chunkIndex: 0,
+				totalChunks: chunks,
+				totalSize: binary.length,
+				isLast: chunks === 1,
+				data: base64Data.slice(0, this.chunkSize)
+			}
 
-			// Extended timeout
-			const timeoutDuration = Math.max(90000, chunks * 300 + 30000)
-			setTimeout(() => {
-				if (this.connections.has(pipUUID)) {
-					this.cleanupConnection(connectionInfo.socketId, connectionInfo.socket, interval)
+			connectionInfo.socket.send(JSON.stringify(initMessage), (error) => {
+				if (error) {
+					console.error("Failed to send initial chunk")
+					shouldContinueSending = false
+					return
 				}
-			}, timeoutDuration)
+				currentChunk = 1
+				if (currentChunk < chunks) {
+					setTimeout(sendNextChunk, 100)
+				}
+			})
 
 		} catch (error) {
 			console.error(`Failed to send binary code to pip ${pipUUID}:`, error)

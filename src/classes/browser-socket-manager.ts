@@ -81,19 +81,24 @@ export default class BrowserSocketManager extends Singleton {
 		pipUUID: PipUUID,
 		status: PipBrowserConnectionStatus
 	): void {
-		const connectionInfo = this.connections.get(userId)
+		try {
+			const connectionInfo = this.connections.get(userId)
 
-		if (!connectionInfo) {
-			console.warn(`No connection found for userId: ${userId}`)
-			return
+			if (!connectionInfo) {
+				console.warn(`No connection found for userId: ${userId}`)
+				return
+			}
+
+			// Get or add the pipUUID entry for this user and update its status
+			const pipToUpdate = this.getOrAddPipEntry(connectionInfo.previouslyConnectedPipUUIDs, pipUUID, status)
+
+			// Emit the updated status to the specified user and other users if necessary
+			this.emitPipStatusForUser(pipUUID, userId, pipToUpdate.status)
+			this.emitConnectionToPipToOtherUsers(pipUUID, userId, pipToUpdate.status) // The status won't always be "connected"
+		} catch (error) {
+			console.error(error)
+			throw error
 		}
-
-		// Get or add the pipUUID entry for this user and update its status
-		const pipToUpdate = this.getOrAddPipEntry(connectionInfo.previouslyConnectedPipUUIDs, pipUUID, status)
-
-		// Emit the updated status to the specified user and other users if necessary
-		this.emitPipStatusForUser(pipUUID, userId, pipToUpdate.status)
-		this.emitConnectionToPipToOtherUsers(pipUUID, userId, pipToUpdate.status) // The status won't always be "connected"
 	}
 
 	// Helper function to get or add a pipUUID entry for a user
