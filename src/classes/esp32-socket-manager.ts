@@ -9,7 +9,7 @@ import BrowserSocketManager from "./browser-socket-manager"
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
 	private pingIntervals = new Map<string, NodeJS.Timeout>()  // Track intervals by socketId
-	private chunkSize = 32 * 1024 // 32KB
+	private chunkSize = 12 * 1024 // 12KB
 
 	private constructor(private readonly wss: WSServer) {
 		super()
@@ -189,109 +189,128 @@ export default class Esp32SocketManager extends Singleton {
 		return connectionInfo?.status || "inactive"
 	}
 
-	// eslint-disable-next-line max-lines-per-function
-	public emitBinaryCodeToPip(pipUUID: PipUUID, binary: Buffer): void {
+	private setupStatusHandler(socket: ExtendedWebSocket, socketId: string): (data: string) => void {
+		return (data: string) => {
+			try {
+				const message = JSON.parse(data)
+				if (message.event === "update_status" && message.status === "error") {
+					console.error(`ESP reported error: ${message.error}`)
+					this.setupPingInterval(socketId, socket)
+					return false
+				}
+			} catch (e) {
+				console.error(e)
+				throw e
+				// Handle non-JSON messages
+			}
+			return true
+		}
+	}
+
+	private createChunkMessage(
+		chunkIndex: number,
+		totalChunks: number,
+		totalSize: number,
+		data: string
+	): object {
+		return {
+			event: "new-user-code",
+			chunkIndex,
+			totalChunks,
+			totalSize,
+			isLast: chunkIndex === totalChunks - 1,
+			data
+		}
+	}
+
+	private async sendChunk(
+		socket: ExtendedWebSocket,
+		message: object
+	): Promise<boolean> {
+		return await new Promise((resolve) => {
+			socket.send(JSON.stringify(message), (error) => {
+				if (error) {
+					console.error("Failed to send chunk:", error)
+					resolve(false)
+				}
+				resolve(true)
+			})
+		})
+	}
+
+	private async sendAllChunks(
+		socket: ExtendedWebSocket,
+		base64Data: string,
+		totalSize: number,
+		chunks: number
+	): Promise<boolean> {
+		for (let currentChunk = 0; currentChunk < chunks; currentChunk++) {
+			const start = currentChunk * this.chunkSize
+			const end = Math.min(start + this.chunkSize, base64Data.length)
+			const chunk = base64Data.slice(start, end)
+
+			const message = this.createChunkMessage(
+				currentChunk,
+				chunks,
+				totalSize,
+				chunk
+			)
+
+			const success = await this.sendChunk(socket, message)
+			if (!success) {
+				return false
+			}
+
+			// Add delay between chunks
+			await new Promise(resolve => setTimeout(resolve, 250))
+		}
+
+		return true
+	}
+
+	public async emitBinaryCodeToPip(pipUUID: PipUUID, binary: Buffer): Promise<void> {
 		try {
 			const connectionInfo = this.connections.get(pipUUID)
 			if (!connectionInfo) {
 				throw Error("Pip Not connected")
 			}
 
-			// Keep track of whether we should continue sending
-			let shouldContinueSending = true
-
-			// Pause ping-pong checks
+			// Pause ping-pong checks during transfer
 			const interval = this.pingIntervals.get(connectionInfo.socketId)
 			if (interval) {
 				clearInterval(interval)
 				this.pingIntervals.delete(connectionInfo.socketId)
 			}
 
-			const base64Data = binary.toString("base64")
-			const chunks = Math.ceil(base64Data.length / this.chunkSize)
-			let currentChunk = 0
-
-			// Handle status messages from ESP
-			const statusHandler = (data: string) => {
-				try {
-					const message = JSON.parse(data)
-					if (message.event === "update_status") {
-						if (message.status === "error") {
-							console.error(`ESP reported error: ${message.error}`)
-							shouldContinueSending = false
-
-							// Restore ping interval
-							this.setupPingInterval(connectionInfo.socketId, connectionInfo.socket)
-						}
-					}
-				} catch (e) {
-					// Handle non-JSON messages
-				}
-			}
-
+			// Setup status handler
+			const statusHandler = this.setupStatusHandler(
+				connectionInfo.socket,
+				connectionInfo.socketId
+			)
 			connectionInfo.socket.on("message", statusHandler)
 
-			const sendNextChunk = () => {
-				if (!shouldContinueSending || currentChunk >= chunks) {
-					if (shouldContinueSending) {
-						console.log(`Successfully sent all ${chunks} chunks to ${pipUUID}`)
-					} else {
-						console.log("Stopped sending due to ESP error")
-					}
+			// Prepare data
+			const base64Data = binary.toString("base64")
+			const chunks = Math.ceil(base64Data.length / this.chunkSize)
 
-					// Restore ping interval
-					this.setupPingInterval(connectionInfo.socketId, connectionInfo.socket)
-					return
-				}
+			console.log(`Starting transfer of ${binary.length} bytes in ${chunks} chunks`)
 
-				const start = currentChunk * this.chunkSize
-				const end = Math.min(start + this.chunkSize, base64Data.length)
-				const chunk = base64Data.slice(start, end)
+			// Send all chunks
+			const success = await this.sendAllChunks(
+				connectionInfo.socket,
+				base64Data,
+				binary.length,
+				chunks
+			)
 
-				const message = {
-					event: "new-user-code",
-					chunkIndex: currentChunk,
-					totalChunks: chunks,
-					totalSize: binary.length,
-					isLast: currentChunk === chunks - 1,
-					data: chunk
-				}
+			// Cleanup
+			this.setupPingInterval(connectionInfo.socketId, connectionInfo.socket)
 
-				connectionInfo.socket.send(JSON.stringify(message), (error) => {
-					if (error) {
-						console.error(`Failed to send chunk ${currentChunk}:`, error)
-						shouldContinueSending = false
-						return
-					}
-
-					currentChunk++
-					if (shouldContinueSending) {
-						setTimeout(sendNextChunk, 100)
-					}
-				})
+			if (success) {
+				console.log(`Successfully sent all ${chunks} chunks to ${pipUUID}`)
+			} else {
+				console.log("Transfer stopped due to error")
 			}
-
-			// Start sending only after confirming ESP is ready
-			const initMessage = {
-				event: "new-user-code",
-				chunkIndex: 0,
-				totalChunks: chunks,
-				totalSize: binary.length,
-				isLast: chunks === 1,
-				data: base64Data.slice(0, this.chunkSize)
-			}
-
-			connectionInfo.socket.send(JSON.stringify(initMessage), (error) => {
-				if (error) {
-					console.error("Failed to send initial chunk")
-					shouldContinueSending = false
-					return
-				}
-				currentChunk = 1
-				if (currentChunk < chunks) {
-					setTimeout(sendNextChunk, 100)
-				}
-			})
 
 		} catch (error) {
 			console.error(`Failed to send binary code to pip ${pipUUID}:`, error)
