@@ -80,11 +80,11 @@ export default class CompilerContainerManager extends Singleton {
 			const cleanUserCode = userCode.trim()
 			console.log("Compiling code in container:", this.containerId)
 
+			// Escape user code for shell
+			const escapedCode = cleanUserCode.replace(/'/g, "'\\''")
+
 			const { stdout, stderr } = await execAsync(
-				`docker exec \
-                -e "USER_CODE=${cleanUserCode}" \
-                cpp-compiler-instance \
-                /entrypoint.sh`,
+				`docker exec -e "USER_CODE='${escapedCode}'" cpp-compiler-instance /entrypoint.sh`,
 				{
 					encoding: "buffer",
 					maxBuffer: 10 * 1024 * 1024,
@@ -92,21 +92,36 @@ export default class CompilerContainerManager extends Singleton {
 				}
 			)
 
-			if (stderr.length > 0) {
+			if (stderr && stderr.length > 0) {
 				const stderrStr = stderr.toString()
 				if (!stderrStr.includes("Checking python version") &&
-                    !stderrStr.includes("Checking python dependencies")) {
+					!stderrStr.includes("Checking python dependencies")) {
 					console.error(`stderr: ${stderrStr}`)
 				}
 			}
 
+			if (!stdout || stdout.length === 0) {
+				throw new Error("No binary output received from container")
+			}
+
 			return stdout
 		} catch (error) {
-			// If container is gone, try to restart it and compile again
-			if (error instanceof Error && error.message.includes("No such container")) {
-				console.log("Container not found, restarting...")
-				this.containerId = null
-				return this.compile(userCode)
+			if (error instanceof Error) {
+				if (error.message.includes("No such container")) {
+					console.log("Container not found, restarting...")
+					this.containerId = null
+					return this.compile(userCode)
+				}
+
+				// Add container logs for debugging
+				try {
+					const { stdout: logs } = await execAsync(
+						"docker logs cpp-compiler-instance"
+					)
+					console.error("Container logs:", logs)
+				} catch (logError) {
+					console.error("Failed to get container logs:", logError)
+				}
 			}
 			throw error
 		}

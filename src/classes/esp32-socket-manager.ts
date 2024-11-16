@@ -201,34 +201,65 @@ export default class Esp32SocketManager extends Singleton {
 				this.pingIntervals.delete(connectionInfo.socketId)
 			}
 
-			const message = {
-				event: "new-user-code",
-				data: binary.toString("base64")
+			// Chunk size: 32KB
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			const CHUNK_SIZE = 32 * 1024
+			const totalChunks = Math.ceil(binary.length / CHUNK_SIZE)
+			let chunksProcessed = 0
+
+			// eslint-disable-next-line max-lines-per-function
+			const sendNextChunk = () => {
+				const start = chunksProcessed * CHUNK_SIZE
+				const end = Math.min(start + CHUNK_SIZE, binary.length)
+				const chunk = binary.slice(start, end)
+				const isLastChunk = end === binary.length
+
+				const message = {
+					event: "new-user-code",
+					totalChunks: totalChunks,
+					chunkIndex: chunksProcessed,
+					isLastChunk: isLastChunk,
+					totalSize: binary.length,
+					data: chunk.toString("base64")
+				}
+
+				connectionInfo.socket.send(JSON.stringify(message), (error) => {
+					if (error) {
+						console.error(`Failed to send chunk ${chunksProcessed} to ${pipUUID}:`, error)
+						this.cleanupConnection(
+							connectionInfo.socketId,
+							connectionInfo.socket,
+							interval
+						)
+						return
+					}
+
+					chunksProcessed++
+					console.log(`Sent chunk ${chunksProcessed}/${totalChunks} to ${pipUUID}`)
+
+					if (chunksProcessed < totalChunks) {
+						// Send next chunk after a small delay
+						setTimeout(sendNextChunk, 50)
+					} else {
+						console.log(`All chunks sent to ${pipUUID}, waiting for disconnect...`)
+						// Set a longer timeout for update process
+						setTimeout(() => {
+							if (this.connections.has(pipUUID)) {
+								console.log(`Cleaning up connection after update timeout for ${pipUUID}`)
+								this.cleanupConnection(
+									connectionInfo.socketId,
+									connectionInfo.socket,
+									interval
+								)
+							}
+						}, 30000) // 30 second timeout for update
+					}
+				})
 			}
 
-			connectionInfo.socket.send(JSON.stringify(message), (error) => {
-				if (error) {
-					console.error(`Failed to send update to ${pipUUID}:`, error)
-					this.cleanupConnection(
-						connectionInfo.socketId,
-						connectionInfo.socket,
-						interval
-					)
-				} else {
-					console.log(`Update sent to ${pipUUID}, waiting for disconnect...`)
-					// Set a longer timeout for update process
-					setTimeout(() => {
-						if (this.connections.has(pipUUID)) {
-							console.log(`Cleaning up connection after update timeout for ${pipUUID}`)
-							this.cleanupConnection(
-								connectionInfo.socketId,
-								connectionInfo.socket,
-								interval
-							)
-						}
-					}, 30000) // 30 second timeout for update
-				}
-			})
+			// Start sending chunks
+			console.log(`Starting binary transfer to ${pipUUID}: ${binary.length} bytes in ${totalChunks} chunks`)
+			sendNextChunk()
 		} catch (error) {
 			console.error(`Failed to send binary code to pip ${pipUUID}:`, error)
 			throw error
