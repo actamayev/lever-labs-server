@@ -1,4 +1,4 @@
-// container-manager.ts
+import _ from "lodash"
 import { promisify } from "util"
 import { exec } from "child_process"
 import Singleton from "./singleton"
@@ -22,6 +22,7 @@ export default class CompilerContainerManager extends Singleton {
 	}
 
 	private async startContainer(): Promise<void> {
+		console.log("starting container")
 		if (this.isStarting) {
 			// If container is already starting, wait for it
 			return this.startPromise as Promise<void>
@@ -71,67 +72,74 @@ export default class CompilerContainerManager extends Singleton {
 		}
 	}
 
-	// eslint-disable-next-line max-lines-per-function, complexity
 	public async compile(userCode: string): Promise<Buffer> {
-		if (!this.containerId) {
-			await this.startContainer()
-		}
+		if (!this.containerId) await this.startContainer()
 
 		try {
-			const cleanUserCode = userCode.trim()
-			console.log("Compiling code in container:", this.containerId)
-
-			// Escape user code for shell
-			const escapedCode = cleanUserCode.replace(/'/g, "'\\''")
-
-			const { stdout, stderr } = await execAsync(
-				`docker exec -e "USER_CODE='${escapedCode}'" cpp-compiler-instance /entrypoint.sh`,
-				{
-					encoding: "buffer",
-					maxBuffer: 10 * 1024 * 1024,
-					shell: "/bin/bash"
-				}
-			)
-
-			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-			if (stderr && stderr.length > 0) {
-				const stderrStr = stderr.toString()
-				if (!stderrStr.includes("Checking python version") &&
-					!stderrStr.includes("Checking python dependencies")) {
-					console.error(`stderr: ${stderrStr}`)
-				}
-			}
-
-			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-			if (!stdout || stdout.length === 0) {
-				throw new Error("No binary output received from container")
-			}
-
-			return stdout
+			const cleanUserCode = this.sanitizeUserCode(userCode)
+			return await this.executeCompilation(this.containerId as string, cleanUserCode)
 		} catch (error) {
-			if (error instanceof Error) {
-				if (error.message.includes("No such container")) {
-					console.log("Container not found, restarting...")
-					this.containerId = null
-					return this.compile(userCode)
-				}
-
-				// Add container logs for debugging
-				try {
-					const { stdout: logs } = await execAsync(
-						"docker logs cpp-compiler-instance"
-					)
-					console.error("Container logs:", logs)
-				} catch (logError) {
-					console.error("Failed to get container logs:", logError)
-				}
-			}
+			await this.handleCompilationError(error, userCode)
 			throw error
+		}
+	}
+
+	private sanitizeUserCode(userCode: string): string {
+		return userCode.trim().replace(/'/g, "'\\''")
+	}
+
+	private async executeCompilation(containerId: string | null, userCode: string): Promise<Buffer> {
+		console.log("Compiling code in container:", containerId)
+
+		const { stdout, stderr } = await execAsync(
+			`docker exec -e "USER_CODE='${userCode}'" cpp-compiler-instance /entrypoint.sh`,
+			{
+				encoding: "buffer",
+				maxBuffer: 10 * 1024 * 1024,
+				shell: "/bin/bash",
+			}
+		)
+
+		this.handleStderr(stderr)
+
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		if (!stdout || stdout.length === 0) {
+			throw new Error("No binary output received from container")
+		}
+
+		return stdout
+	}
+
+	private handleStderr(stderr: Buffer): void {
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		if (!stderr || _.isEmpty(stderr)) return
+		const stderrStr = stderr.toString()
+		if (!stderrStr.includes("Checking python version") && !stderrStr.includes("Checking python dependencies")) {
+			console.error(`stderr: ${stderrStr}`)
+		}
+	}
+
+	private async handleCompilationError(error: unknown, userCode: string): Promise<void> {
+		if (error instanceof Error) {
+			if (error.message.includes("No such container")) {
+				console.log("Container not found, restarting...")
+				this.containerId = null
+				await this.compile(userCode) // Retry compilation
+				return
+			}
+
+			try {
+				const { stdout: logs } = await execAsync("docker logs cpp-compiler-instance")
+				console.error("Container logs:", logs)
+			} catch (logError) {
+				console.error("Failed to get container logs:", logError)
+			}
 		}
 	}
 
 	public async shutdown(): Promise<void> {
 		if (!this.containerId) return
+		console.log("shutting down")
 		await this.cleanup()
 		this.containerId = null
 	}

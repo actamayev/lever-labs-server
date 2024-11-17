@@ -262,7 +262,7 @@ export default class Esp32SocketManager extends Singleton {
 			}
 
 			// Add delay between chunks
-			await new Promise(resolve => setTimeout(resolve, 250))
+			await new Promise(resolve => setTimeout(resolve, 200))
 		}
 
 		return true
