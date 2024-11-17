@@ -1,4 +1,3 @@
-
 import _ from "lodash"
 import { IncomingMessage } from "http"
 import { Server as WSServer } from "ws"
@@ -163,11 +162,11 @@ export default class Esp32SocketManager extends Singleton {
 		console.log(`Disconnecting socket for PIP ${pipUUID}`)
 
 		const connection = this.connections.get(pipUUID)
-		if (connection) {
-			connection.status = "inactive"
-			BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "inactive")
-			this.connections.delete(pipUUID)
-		}
+		if (!connection) return
+
+		connection.status = "inactive"
+		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "inactive")
+		this.connections.delete(pipUUID)
 	}
 
 	private getPipUUIDBySocketId(socketId: string): PipUUID | undefined {

@@ -130,12 +130,11 @@ export default class BrowserSocketManager extends Singleton {
 		status: PipBrowserConnectionStatus
 	): void {
 		const connectionInfo = this.connections.get(userId)
-		if (connectionInfo) {
-			this.io.to(connectionInfo.socketId).emit("pip-connection-status-update", {
-				pipUUID,
-				newConnectionStatus: status
-			})
-		}
+		if (_.isUndefined(connectionInfo)) return
+		this.io.to(connectionInfo.socketId).emit("pip-connection-status-update", {
+			pipUUID,
+			newConnectionStatus: status
+		})
 	}
 
 	// Emit to other users connected to the same pipUUID

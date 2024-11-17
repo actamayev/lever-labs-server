@@ -3,10 +3,10 @@ import express from "express"
 import attachPipUUIDData from "../middleware/attach/attach-pip-uuid-data"
 import jwtVerifyAttachUser from "../middleware/jwt/jwt-verify-attach-user"
 import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
-import confirmPipIsConnected from "../middleware/confirm/confirm-pip-is-connected"
 import validatePipUUID from "../middleware/request-validation/pip/validate-pip-uuid"
 import validateCppCode from "../middleware/request-validation/pip/validate-cpp-code"
 import confirmPipIsUnconnected from "../middleware/confirm/confirm-pip-is-unconnected"
+import confirmUserConnectedToPip from "../middleware/confirm/confirm-user-connected-to-pip"
 import confirmUserPreviouslyAddedUUID from "../middleware/confirm/confirm-user-previously-added-uuid"
 import validateAddPipToAccount from "../middleware/request-validation/pip/validate-add-pip-to-account"
 import confirmUserHasntAlreadyAddedUUID from "../middleware/confirm/confirm-user-hasnt-already-added-uuid"
@@ -52,9 +52,9 @@ pipRoutes.post(
 	"/compile-and-send-cpp-to-pip",
 	validateCppCode,
 	confirmPipIsActive,
-	confirmPipIsConnected, // TODO: Consider removing this, and if the user isn't already connected, connect automatically.
 	jwtVerifyAttachUser,
 	confirmUserPreviouslyAddedUUID,
+	confirmUserConnectedToPip,
 	compileAndSendCppToPip
 )
 
