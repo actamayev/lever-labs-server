@@ -49,7 +49,7 @@ export default class Esp32SocketManager extends Singleton {
 			})
 
 			ws.on("close", () => {
-				console.log(`WebSocket closed for ${socketId}`)
+				console.info(`WebSocket closed for ${socketId}`)
 				this.cleanupConnection(socketId, ws, interval)
 			})
 
@@ -292,7 +292,7 @@ export default class Esp32SocketManager extends Singleton {
 			const base64Data = binary.toString("base64")
 			const chunks = Math.ceil(base64Data.length / this.chunkSize)
 
-			console.log(`Starting transfer of ${binary.length} bytes in ${chunks} chunks`)
+			console.info(`Starting transfer of ${binary.length} bytes in ${chunks} chunks`)
 
 			// Send all chunks
 			const success = await this.sendAllChunks(
@@ -306,9 +306,9 @@ export default class Esp32SocketManager extends Singleton {
 			this.setupPingInterval(connectionInfo.socketId, connectionInfo.socket)
 
 			if (success) {
-				console.log(`Successfully sent all ${chunks} chunks to ${pipUUID}`)
+				console.info(`Successfully sent all ${chunks} chunks to ${pipUUID}`)
 			} else {
-				console.log("Transfer stopped due to error")
+				console.error("Transfer stopped due to error")
 			}
 
 		} catch (error) {

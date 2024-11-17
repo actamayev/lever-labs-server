@@ -19,7 +19,7 @@ async function compileCode(userCode: string): Promise<Buffer> {
 		throw new Error("No binary data received from compilation")
 	}
 
-	console.log(`Binary size: ${binary.length} bytes`)
+	console.info(`Binary size: ${binary.length} bytes`)
 	return binary
 }
 
@@ -29,7 +29,7 @@ function validateBinary(binary: Buffer): void {
 	}
 
 	const magicByte = binary[0]
-	console.log(`Magic byte: 0x${magicByte.toString(16)}`)
+	console.info(`Magic byte: 0x${magicByte.toString(16)}`)
 
 	if (magicByte !== 0xE9) {
 		throw new Error(`Invalid magic byte: 0x${magicByte.toString(16)} (expected 0xE9)`)
