@@ -9,6 +9,7 @@ export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
 	private pingIntervals = new Map<string, NodeJS.Timeout>()  // Track intervals by socketId
 	private chunkSize = 12 * 1024 // 12KB
+	private pingInterval = 10 * 1000 // 10 seconds
 
 	private constructor(private readonly wss: WSServer) {
 		super()
@@ -71,7 +72,7 @@ export default class Esp32SocketManager extends Singleton {
 			ws.ping(() => {
 				console.debug(`Ping sent to ${socketId}`)
 			})
-		}, 15000)
+		}, this.pingInterval)
 
 		this.pingIntervals.set(socketId, interval)
 		return interval
