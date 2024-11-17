@@ -11,6 +11,7 @@ export default function confirmPipIsUnconnected(
 
 		const isUUIDAlreadyConnected = BrowserSocketManager.getInstance().isUUIDConnected(pipUUID)
 
+		// TODO: If that someone is me, then it should output a 200 message
 		if (isUUIDAlreadyConnected === true) {
 			res.status(400).json({ message: "Someone is already connected to this Pip"})
 			return
