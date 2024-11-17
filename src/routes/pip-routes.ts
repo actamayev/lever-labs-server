@@ -5,11 +5,11 @@ import jwtVerifyAttachUser from "../middleware/jwt/jwt-verify-attach-user"
 import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
 import validatePipUUID from "../middleware/request-validation/pip/validate-pip-uuid"
 import validateCppCode from "../middleware/request-validation/pip/validate-cpp-code"
-import confirmPipIsUnconnected from "../middleware/confirm/confirm-pip-is-unconnected"
 import confirmUserConnectedToPip from "../middleware/confirm/confirm-user-connected-to-pip"
 import confirmUserPreviouslyAddedUUID from "../middleware/confirm/confirm-user-previously-added-uuid"
 import validateAddPipToAccount from "../middleware/request-validation/pip/validate-add-pip-to-account"
 import confirmUserHasntAlreadyAddedUUID from "../middleware/confirm/confirm-user-hasnt-already-added-uuid"
+import confirmOtherUserIsntConnectedToPip from "../middleware/confirm/confirm-other-user-isnt-connected-to-pip"
 import validateClientConnectToPipRequest from "../middleware/request-validation/pip/validate-client-connect-to-pip-request"
 
 import isValidPipUUID from "../controllers/pip/is-valid-pip-uuid"
@@ -34,7 +34,7 @@ pipRoutes.post(
 	validateClientConnectToPipRequest,
 	confirmPipIsActive,
 	jwtVerifyAttachUser,
-	confirmPipIsUnconnected,
+	confirmOtherUserIsntConnectedToPip,
 	confirmUserPreviouslyAddedUUID,
 	clientConnectToPipRequest
 )

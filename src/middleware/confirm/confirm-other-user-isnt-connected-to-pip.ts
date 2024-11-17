@@ -2,7 +2,7 @@ import _ from "lodash"
 import { Request, Response, NextFunction } from "express"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 
-export default function confirmPipIsUnconnected(
+export default function confirmOtherUserIsntConnectedToPip(
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -23,7 +23,7 @@ export default function confirmPipIsUnconnected(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm no one else is connected to this Pip" })
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm another user isn't connected to this Pip" })
 		return
 	}
 }
