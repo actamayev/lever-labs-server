@@ -33,8 +33,8 @@ pipRoutes.post(
 	"/client-connect-to-pip-request",
 	validateClientConnectToPipRequest,
 	confirmPipIsActive,
-	confirmPipIsUnconnected,
 	jwtVerifyAttachUser,
+	confirmPipIsUnconnected,
 	confirmUserPreviouslyAddedUUID,
 	clientConnectToPipRequest
 )

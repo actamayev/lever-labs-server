@@ -1,3 +1,4 @@
+import _ from "lodash"
 import { Request, Response, NextFunction } from "express"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 
@@ -9,9 +10,9 @@ export default function confirmPipIsConnected(
 	try {
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		const isUUIDConnected = BrowserSocketManager.getInstance().isUUIDConnected(pipUUID)
+		const connectedUserId = BrowserSocketManager.getInstance().whichUserConnectedToPipUUID(pipUUID)
 
-		if (isUUIDConnected === false) {
+		if (_.isUndefined(connectedUserId)) {
 			res.status(400).json({ message: "Pip is not connected. Please connect to Pip"})
 			return
 		}

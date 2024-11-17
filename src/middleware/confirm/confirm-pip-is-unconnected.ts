@@ -1,3 +1,4 @@
+import _ from "lodash"
 import { Request, Response, NextFunction } from "express"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 
@@ -7,12 +8,15 @@ export default function confirmPipIsUnconnected(
 	next: NextFunction
 ): void {
 	try {
+		const { user } = req
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		const isUUIDAlreadyConnected = BrowserSocketManager.getInstance().isUUIDConnected(pipUUID)
+		const userId = BrowserSocketManager.getInstance().whichUserConnectedToPipUUID(pipUUID)
 
-		// TODO: If that someone is me, then it should output a 200 message
-		if (isUUIDAlreadyConnected === true) {
+		if (userId === user.user_id) {
+			res.status(200).json({ success: "You are already connected to this Pip" })
+			return
+		} else if (!_.isUndefined(userId)) {
 			res.status(400).json({ message: "Someone is already connected to this Pip"})
 			return
 		}
