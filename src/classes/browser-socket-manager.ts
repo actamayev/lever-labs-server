@@ -5,7 +5,7 @@ import Esp32SocketManager from "./esp32-socket-manager"
 import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
 
 export default class BrowserSocketManager extends Singleton {
-	private connections = new Map<number, BrowserSocketConnectionInfo>() // Maps SocketID to BrowserSocketConnectionInfo
+	private connections = new Map<number, BrowserSocketConnectionInfo>() // Maps UserID to BrowserSocketConnectionInfo
 
 	private constructor(private readonly io: SocketIOServer) {
 		super()
@@ -81,19 +81,24 @@ export default class BrowserSocketManager extends Singleton {
 		pipUUID: PipUUID,
 		status: PipBrowserConnectionStatus
 	): void {
-		const connectionInfo = this.connections.get(userId)
+		try {
+			const connectionInfo = this.connections.get(userId)
 
-		if (!connectionInfo) {
-			console.warn(`No connection found for userId: ${userId}`)
-			return
+			if (!connectionInfo) {
+				console.warn(`No connection found for userId: ${userId}`)
+				return
+			}
+
+			// Get or add the pipUUID entry for this user and update its status
+			const pipToUpdate = this.getOrAddPipEntry(connectionInfo.previouslyConnectedPipUUIDs, pipUUID, status)
+
+			// Emit the updated status to the specified user and other users if necessary
+			this.emitPipStatusForUser(pipUUID, userId, pipToUpdate.status)
+			this.emitConnectionToPipToOtherUsers(pipUUID, userId, pipToUpdate.status) // The status won't always be "connected"
+		} catch (error) {
+			console.error(error)
+			throw error
 		}
-
-		// Get or add the pipUUID entry for this user and update its status
-		const pipToUpdate = this.getOrAddPipEntry(connectionInfo.previouslyConnectedPipUUIDs, pipUUID, status)
-
-		// Emit the updated status to the specified user and other users if necessary
-		this.emitPipStatusForUser(pipUUID, userId, pipToUpdate.status)
-		this.emitConnectionToPipToOtherUsers(pipUUID, userId, pipToUpdate.status) // The status won't always be "connected"
 	}
 
 	// Helper function to get or add a pipUUID entry for a user
@@ -125,12 +130,11 @@ export default class BrowserSocketManager extends Singleton {
 		status: PipBrowserConnectionStatus
 	): void {
 		const connectionInfo = this.connections.get(userId)
-		if (connectionInfo) {
-			this.io.to(connectionInfo.socketId).emit("pip-connection-status-update", {
-				pipUUID,
-				newConnectionStatus: status
-			})
-		}
+		if (_.isUndefined(connectionInfo)) return
+		this.io.to(connectionInfo.socketId).emit("pip-connection-status-update", {
+			pipUUID,
+			newConnectionStatus: status
+		})
 	}
 
 	// Emit to other users connected to the same pipUUID
@@ -150,6 +154,8 @@ export default class BrowserSocketManager extends Singleton {
 				// If the user's new status is connected, he has to notify others that their status is now "connected to other user"
 				if (newStatus === "connected") {
 					pipToUpdate.status = "connected to other user"
+				} else if (newStatus === "online") {
+					pipToUpdate.status = "online"
 				}
 				this.io.to(otherConnectionInfo.socketId).emit("pip-connection-status-update", {
 					pipUUID,
@@ -159,20 +165,21 @@ export default class BrowserSocketManager extends Singleton {
 		}
 	}
 
-	public isUUIDConnected(pipUUID: PipUUID): boolean {
-		// Iterate through each connection in the connections map
-		for (const connectionInfo of this.connections.values()) {
-			// Check if any previouslyConnectedPipUUIDs has the specified pipUUID with status "connected"
-			const isConnected = connectionInfo.previouslyConnectedPipUUIDs.some(
+	public whichUserConnectedToPipUUID(pipUUID: PipUUID): number | undefined {
+		// Iterate through the Map entries (key-value pairs)
+		for (const [userID, connectionInfo] of this.connections.entries()) {
+			// Check if the specified pipUUID with status "connected" exists
+			const foundConnection = connectionInfo.previouslyConnectedPipUUIDs.find(
 				(previousPip) => previousPip.pipUUID === pipUUID && previousPip.status === "connected"
 			)
 
-			// If a match is found, return true
-			if (isConnected) return true
+			// If a match is found, return the key (userID)
+			if (foundConnection) {
+				return userID
+			}
 		}
 
-		// If no matches were found, return false
-		return false
+		return undefined
 	}
 
 	private getLivePipStatuses(userId: number, pipUUIDs: PipUUID[]): PreviouslyConnectedPipUUIDs[] {
