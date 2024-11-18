@@ -154,6 +154,8 @@ export default class BrowserSocketManager extends Singleton {
 				// If the user's new status is connected, he has to notify others that their status is now "connected to other user"
 				if (newStatus === "connected") {
 					pipToUpdate.status = "connected to other user"
+				} else if (newStatus === "online") {
+					pipToUpdate.status = "online"
 				}
 				this.io.to(otherConnectionInfo.socketId).emit("pip-connection-status-update", {
 					pipUUID,

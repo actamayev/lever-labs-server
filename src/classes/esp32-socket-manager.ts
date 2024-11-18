@@ -37,7 +37,7 @@ export default class Esp32SocketManager extends Singleton {
 			ws.isAlive = true
 			ws.on("pong", () => {
 				ws.isAlive = true
-				console.debug(`Pong received from ${socketId}`)
+				// console.debug(`Pong received from ${socketId}`)
 			})
 
 			// Store interval reference
@@ -70,7 +70,7 @@ export default class Esp32SocketManager extends Singleton {
 			}
 			ws.isAlive = false
 			ws.ping(() => {
-				console.debug(`Ping sent to ${socketId}`)
+				// console.debug(`Ping sent to ${socketId}`)
 			})
 		}, this.pingInterval)
 
