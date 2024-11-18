@@ -16,6 +16,7 @@ export default class CompilerContainerManager extends Singleton {
 	private lastCompileTime: number = 0
 	private compileCount: number = 0
 	private totalCompileTime: number = 0
+	private isWarmedUp = false
 
 	private constructor() {
 		super()
@@ -30,10 +31,8 @@ export default class CompilerContainerManager extends Singleton {
 
 	private async ensureCacheVolume(): Promise<void> {
 		try {
-			// Check if volume exists
 			await execAsync(`docker volume inspect ${PIO_CACHE_VOLUME}`)
 		} catch (error) {
-			// Volume doesn't exist, create it
 			console.log("Creating PlatformIO cache volume...")
 			await execAsync(`docker volume create ${PIO_CACHE_VOLUME}`)
 		}
@@ -50,6 +49,7 @@ export default class CompilerContainerManager extends Singleton {
 
 		try {
 			await this.startPromise
+			await this.warmupContainer()  // Warmup after container starts
 		} finally {
 			this.isStarting = false
 			this.startPromise = null
@@ -58,13 +58,9 @@ export default class CompilerContainerManager extends Singleton {
 
 	private async doStartContainer(): Promise<void> {
 		try {
-			// First, clean up any existing container
 			await this.cleanup()
-
-			// Ensure cache volume exists
 			await this.ensureCacheVolume()
 
-			// Start new container with optimized settings
 			const { stdout } = await execAsync(
 				`docker run -d \
                 --name cpp-compiler-instance \
@@ -81,13 +77,9 @@ export default class CompilerContainerManager extends Singleton {
 			this.containerId = stdout.trim()
 			console.log("Started compiler container with ID:", this.containerId)
 
-			// Print container info for debugging
+			// Print configuration info
 			const { stdout: inspect } = await execAsync(`docker inspect ${this.containerId}`)
 			console.log("Container configuration:", inspect)
-
-			// Log cache volume info
-			const { stdout: volumeInfo } = await execAsync(`docker volume inspect ${PIO_CACHE_VOLUME}`)
-			console.log("Cache volume info:", volumeInfo)
 
 		} catch (error) {
 			console.error("Failed to start container:", error)
@@ -99,7 +91,6 @@ export default class CompilerContainerManager extends Singleton {
 		try {
 			await execAsync("docker rm -f cpp-compiler-instance")
 		} catch (error) {
-			// Ignore error if container doesn't exist
 			if (!(error as Error).message.includes("No such container")) {
 				console.error(error)
 				throw error
@@ -108,12 +99,13 @@ export default class CompilerContainerManager extends Singleton {
 	}
 
 	private async warmupContainer(): Promise<void> {
-		if (!this.containerId) return
+		if (!this.containerId || this.isWarmedUp) return
 
 		try {
 			console.log("Warming up container...")
 			const dummyCode = "delay(1000);"
 			await this.executeCompilation(this.containerId, dummyCode, true)
+			this.isWarmedUp = true
 			console.log("Container warmup complete")
 		} catch (error) {
 			console.error("Container warmup failed:", error)
@@ -122,9 +114,8 @@ export default class CompilerContainerManager extends Singleton {
 	}
 
 	public async compile(userCode: string): Promise<Buffer> {
-		if (!this.containerId) {
+		if (!this.containerId || !this.isWarmedUp) {
 			await this.startContainer()
-			await this.warmupContainer()
 		}
 
 		const startTime = Date.now()
@@ -132,7 +123,7 @@ export default class CompilerContainerManager extends Singleton {
 			const cleanUserCode = this.sanitizeUserCode(userCode)
 			const binary = await this.executeCompilation(this.containerId as string, cleanUserCode)
 
-			// Update metrics
+			// Update metrics only for non-warmup compilations
 			const compileTime = Date.now() - startTime
 			this.lastCompileTime = compileTime
 			this.compileCount++
@@ -160,7 +151,9 @@ export default class CompilerContainerManager extends Singleton {
 		userCode: string,
 		isWarmup = false
 	): Promise<Buffer> {
-		console.log(`Compiling code in container: ${containerId} (Warmup: ${isWarmup})`)
+		if (!isWarmup) {
+			console.log(`Compiling code in container: ${containerId}`)
+		}
 
 		const { stdout, stderr } = await execAsync(
 			`docker exec -e "USER_CODE='${userCode}'" cpp-compiler-instance /entrypoint.sh`,
@@ -194,6 +187,7 @@ export default class CompilerContainerManager extends Singleton {
 			if (error.message.includes("No such container")) {
 				console.log("Container not found, restarting...")
 				this.containerId = null
+				this.isWarmedUp = false
 				await this.compile(userCode) // Retry compilation
 				return
 			}
@@ -212,16 +206,14 @@ export default class CompilerContainerManager extends Singleton {
 		console.log("Shutting down container...")
 		await this.cleanup()
 		this.containerId = null
+		this.isWarmedUp = false
+	}
+
+	public getMetrics(): { lastCompileTime: number; averageCompileTime: number; totalCompiles: number } {
+		return {
+			lastCompileTime: this.lastCompileTime,
+			averageCompileTime: this.compileCount ? this.totalCompileTime / this.compileCount : 0,
+			totalCompiles: this.compileCount
+		}
 	}
 }
-
-// Add cleanup on process exit
-process.on("SIGINT", async () => {
-	await CompilerContainerManager.getInstance().shutdown()
-	process.exit()
-})
-
-process.on("SIGTERM", async () => {
-	await CompilerContainerManager.getInstance().shutdown()
-	process.exit()
-})
