@@ -9,7 +9,8 @@ export default async function doesUUIDUserRecordExist(userId: number, pipUUID: P
 				user_id: userId,
 				pip_uuid: {
 					uuid: pipUUID
-				}
+				},
+				is_active: true
 			}
 		})
 
