@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import compileUserCode from "../../utils/cpp/send-cpp-to-docker"
-import Esp32SocketManager from "../../classes/esp32-socket-manager"
+import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 
 export default async function compileAndSendCppToPip(req: Request, res: Response): Promise<void> {
 	try {

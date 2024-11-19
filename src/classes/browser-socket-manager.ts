@@ -1,7 +1,7 @@
 import _ from "lodash"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import Singleton from "./singleton"
-import Esp32SocketManager from "./esp32-socket-manager"
+import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
 
 export default class BrowserSocketManager extends Singleton {
