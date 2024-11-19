@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import Esp32SocketManager from "../../classes/esp32-socket-manager"
+import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 
 export default function confirmPipIsActive(
 	req: Request,

@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { Response, Request } from "express"
-import Esp32SocketManager from "../../classes/esp32-socket-manager"
+import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import espStatusToPipConnectionStatus from "../../utils/esp-status-to-pip-connection-status"
 import addUserPipUUIDMapRecord from "../../db-operations/write/user-pip-uuid-map/add-user-pip-uuid-map-record"

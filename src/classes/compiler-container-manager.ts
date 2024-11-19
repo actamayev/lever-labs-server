@@ -77,9 +77,7 @@ export default class CompilerContainerManager extends Singleton {
 			this.containerId = stdout.trim()
 			console.log("Started compiler container with ID:", this.containerId)
 
-			// Print configuration info
-			const { stdout: inspect } = await execAsync(`docker inspect ${this.containerId}`)
-			console.log("Container configuration:", inspect)
+			await execAsync(`docker inspect ${this.containerId}`)
 
 		} catch (error) {
 			console.error("Failed to start container:", error)
