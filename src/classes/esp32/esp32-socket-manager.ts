@@ -3,9 +3,9 @@ import { IncomingMessage } from "http"
 import { Server as WSServer } from "ws"
 import Singleton from "../singleton"
 import isPipUUID from "../../utils/type-checks"
-import ESP32DataTransferManager from "./esp32-data-transfer-manager"
-import BrowserSocketManager from "../browser-socket-manager"
 import ESP32PingManager from "./esp32-ping-manager"
+import BrowserSocketManager from "../browser-socket-manager"
+import ESP32DataTransferManager from "./esp32-data-transfer-manager"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
@@ -170,24 +170,6 @@ export default class Esp32SocketManager extends Singleton {
 		return connectionInfo?.status || "inactive"
 	}
 
-	// private setupStatusHandler(socket: ExtendedWebSocket, socketId: string): (data: string) => void {
-	// 	return (data: string) => {
-	// 		try {
-	// 			const message = JSON.parse(data)
-	// 			if (message.event === "update_status" && message.status === "error") {
-	// 				console.error(`ESP reported error: ${message.error}`)
-	// 				this.setupPingInterval(socketId, socket)
-	// 				return false
-	// 			}
-	// 		} catch (e) {
-	// 			console.error(e)
-	// 			throw e
-	// 			// Handle non-JSON messages
-	// 		}
-	// 		return true
-	// 	}
-	// }
-
 	public async emitBinaryCodeToPip(pipUUID: PipUUID, binary: Buffer): Promise<void> {
 		try {
 			const connectionInfo = this.connections.get(pipUUID)
@@ -205,28 +187,6 @@ export default class Esp32SocketManager extends Singleton {
 			if (!success) {
 				throw new Error("Failed to transfer binary data")
 			}
-
-			// Pause ping-pong checks during transfer
-			// const interval = this.pingIntervals.get(connectionInfo.socketId)
-			// if (interval) {
-			// 	clearInterval(interval)
-			// 	this.pingIntervals.delete(connectionInfo.socketId)
-			// }
-
-			// // Perform the transfer
-			// const success = await this.esp32DataTransferManager.transferBinaryData(
-			// 	connectionInfo.socket,
-			// 	connectionInfo.socketId,
-			// 	binary
-			// )
-
-			// // Resume ping-pong checks
-			// this.setupPingInterval(connectionInfo.socketId, connectionInfo.socket)
-
-			// if (!success) {
-			// 	throw new Error("Failed to transfer binary data")
-			// }
-
 		} catch (error) {
 			console.error(`Failed to send binary code to pip ${pipUUID}:`, error)
 			throw error
