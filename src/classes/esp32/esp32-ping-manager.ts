@@ -2,7 +2,7 @@ import Singleton from "../singleton"
 
 export default class ESP32PingManager extends Singleton {
 	private pingIntervals = new Map<string, NodeJS.Timeout>()
-	private readonly pingInterval = 10 * 1000 // 10 seconds
+	private readonly pingInterval = 3000 // 3 seconds
 
 	private constructor() {
 		super()

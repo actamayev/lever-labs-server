@@ -43,6 +43,8 @@ export default class Esp32SocketManager extends Singleton {
 				// console.debug(`Pong received from ${socketId}`)
 			})
 
+			this.esp32PingManager.setupPingInterval(socketId, ws, this.cleanupConnection.bind(this))
+
 			ws.on("message", (message) => {
 				this.handleMessage(socketId, message.toString(), isRegistered, (registered) => {
 					isRegistered = registered
