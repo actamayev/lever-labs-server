@@ -10,7 +10,7 @@ import { configureAppMiddleware, corsOptions } from "./middleware/init-config"
 
 import setupRoutes from "./setup-routes"
 
-import Esp32SocketManager from "./classes/esp32-socket-manager"
+import Esp32SocketManager from "./classes/esp32/esp32-socket-manager"
 import BrowserSocketManager from "./classes/browser-socket-manager"
 
 dotenv.config({ path: getEnvPath() })

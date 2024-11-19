@@ -1,18 +1,21 @@
 import _ from "lodash"
 import { IncomingMessage } from "http"
 import { Server as WSServer } from "ws"
-import Singleton from "./singleton"
-import isPipUUID from "../utils/type-checks"
-import BrowserSocketManager from "./browser-socket-manager"
+import Singleton from "../singleton"
+import isPipUUID from "../../utils/type-checks"
+import ESP32PingManager from "./esp32-ping-manager"
+import BrowserSocketManager from "../browser-socket-manager"
+import ESP32DataTransferManager from "./esp32-data-transfer-manager"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
-	private pingIntervals = new Map<string, NodeJS.Timeout>()  // Track intervals by socketId
-	private chunkSize = 12 * 1024 // 12KB
-	private pingInterval = 10 * 1000 // 10 seconds
+	private esp32PingManager: ESP32PingManager
+	private esp32DataTransferManager: ESP32DataTransferManager
 
 	private constructor(private readonly wss: WSServer) {
 		super()
+		this.esp32DataTransferManager = ESP32DataTransferManager.getInstance()
+		this.esp32PingManager = ESP32PingManager.getInstance()
 		this.initializeListeners()
 	}
 
@@ -40,8 +43,7 @@ export default class Esp32SocketManager extends Singleton {
 				// console.debug(`Pong received from ${socketId}`)
 			})
 
-			// Store interval reference
-			const interval = this.setupPingInterval(socketId, ws)
+			this.esp32PingManager.setupPingInterval(socketId, ws, this.cleanupConnection.bind(this))
 
 			ws.on("message", (message) => {
 				this.handleMessage(socketId, message.toString(), isRegistered, (registered) => {
@@ -51,37 +53,19 @@ export default class Esp32SocketManager extends Singleton {
 
 			ws.on("close", () => {
 				console.info(`WebSocket closed for ${socketId}`)
-				this.cleanupConnection(socketId, ws, interval)
+				this.cleanupConnection(socketId, ws)
 			})
 
 			ws.on("error", (error) => {
 				console.error(`WebSocket error for ${socketId}:`, error)
-				this.cleanupConnection(socketId, ws, interval)
+				this.cleanupConnection(socketId, ws)
 			})
 		})
 	}
 
-	private setupPingInterval(socketId: string, ws: ExtendedWebSocket): NodeJS.Timeout {
-		const interval = setInterval(() => {
-			if (!ws.isAlive) {
-				console.info(`Terminating inactive connection for socketId: ${socketId}`)
-				this.cleanupConnection(socketId, ws, interval)
-				return
-			}
-			ws.isAlive = false
-			ws.ping(() => {
-				// console.debug(`Ping sent to ${socketId}`)
-			})
-		}, this.pingInterval)
-
-		this.pingIntervals.set(socketId, interval)
-		return interval
-	}
-
-	private cleanupConnection(socketId: string, ws: ExtendedWebSocket, interval: NodeJS.Timeout | undefined): void {
+	private cleanupConnection(socketId: string, ws: ExtendedWebSocket): void {
 		// Clear the ping interval
-		clearInterval(interval)
-		this.pingIntervals.delete(socketId)
+		this.esp32PingManager.clearPingInterval(socketId)
 
 		// Terminate the WebSocket if it's still open
 		if (ws.readyState !== ws.CLOSED) {
@@ -140,8 +124,7 @@ export default class Esp32SocketManager extends Singleton {
 		if (existingConnection) {
 			this.cleanupConnection(
 				existingConnection.socketId,
-				existingConnection.socket,
-				this.pingIntervals.get(existingConnection.socketId)
+				existingConnection.socket
 			)
 		}
 
@@ -189,85 +172,6 @@ export default class Esp32SocketManager extends Singleton {
 		return connectionInfo?.status || "inactive"
 	}
 
-	private setupStatusHandler(socket: ExtendedWebSocket, socketId: string): (data: string) => void {
-		return (data: string) => {
-			try {
-				const message = JSON.parse(data)
-				if (message.event === "update_status" && message.status === "error") {
-					console.error(`ESP reported error: ${message.error}`)
-					this.setupPingInterval(socketId, socket)
-					return false
-				}
-			} catch (e) {
-				console.error(e)
-				throw e
-				// Handle non-JSON messages
-			}
-			return true
-		}
-	}
-
-	private createChunkMessage(
-		chunkIndex: number,
-		totalChunks: number,
-		totalSize: number,
-		data: string
-	): object {
-		return {
-			event: "new-user-code",
-			chunkIndex,
-			totalChunks,
-			totalSize,
-			isLast: chunkIndex === totalChunks - 1,
-			data
-		}
-	}
-
-	private async sendChunk(
-		socket: ExtendedWebSocket,
-		message: object
-	): Promise<boolean> {
-		return await new Promise((resolve) => {
-			socket.send(JSON.stringify(message), (error) => {
-				if (error) {
-					console.error("Failed to send chunk:", error)
-					resolve(false)
-				}
-				resolve(true)
-			})
-		})
-	}
-
-	private async sendAllChunks(
-		socket: ExtendedWebSocket,
-		base64Data: string,
-		totalSize: number,
-		chunks: number
-	): Promise<boolean> {
-		for (let currentChunk = 0; currentChunk < chunks; currentChunk++) {
-			const start = currentChunk * this.chunkSize
-			const end = Math.min(start + this.chunkSize, base64Data.length)
-			const chunk = base64Data.slice(start, end)
-
-			const message = this.createChunkMessage(
-				currentChunk,
-				chunks,
-				totalSize,
-				chunk
-			)
-
-			const success = await this.sendChunk(socket, message)
-			if (!success) {
-				return false
-			}
-
-			// Add delay between chunks
-			await new Promise(resolve => setTimeout(resolve, 200))
-		}
-
-		return true
-	}
-
 	public async emitBinaryCodeToPip(pipUUID: PipUUID, binary: Buffer): Promise<void> {
 		try {
 			const connectionInfo = this.connections.get(pipUUID)
@@ -275,43 +179,16 @@ export default class Esp32SocketManager extends Singleton {
 				throw Error("Pip Not connected")
 			}
 
-			// Pause ping-pong checks during transfer
-			const interval = this.pingIntervals.get(connectionInfo.socketId)
-			if (interval) {
-				clearInterval(interval)
-				this.pingIntervals.delete(connectionInfo.socketId)
-			}
-
-			// Setup status handler
-			const statusHandler = this.setupStatusHandler(
+			const success = await this.esp32DataTransferManager.transferBinaryData(
 				connectionInfo.socket,
-				connectionInfo.socketId
-			)
-			connectionInfo.socket.on("message", statusHandler)
-
-			// Prepare data
-			const base64Data = binary.toString("base64")
-			const chunks = Math.ceil(base64Data.length / this.chunkSize)
-
-			console.info(`Starting transfer of ${binary.length} bytes in ${chunks} chunks`)
-
-			// Send all chunks
-			const success = await this.sendAllChunks(
-				connectionInfo.socket,
-				base64Data,
-				binary.length,
-				chunks
+				connectionInfo.socketId,
+				binary,
+				this.cleanupConnection.bind(this)
 			)
 
-			// Cleanup
-			this.setupPingInterval(connectionInfo.socketId, connectionInfo.socket)
-
-			if (success) {
-				console.info(`Successfully sent all ${chunks} chunks to ${pipUUID}`)
-			} else {
-				console.error("Transfer stopped due to error")
+			if (!success) {
+				throw new Error("Failed to transfer binary data")
 			}
-
 		} catch (error) {
 			console.error(`Failed to send binary code to pip ${pipUUID}:`, error)
 			throw error
