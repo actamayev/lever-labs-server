@@ -2,7 +2,7 @@ import Singleton from "../singleton"
 import ESP32PingManager from "./esp32-ping-manager"
 
 export default class ESP32DataTransferManager extends Singleton {
-	private readonly chunkSize = 72 * 1024 // 72KB
+	private readonly chunkSize = 48 * 1024 // 72KB
 	private readonly pingManager: ESP32PingManager
 
 	private constructor() {
@@ -72,7 +72,7 @@ export default class ESP32DataTransferManager extends Singleton {
 			}
 
 			// Add delay between chunks
-			await new Promise(resolve => setTimeout(resolve, 200))
+			await new Promise(resolve => setTimeout(resolve, 300))
 		}
 
 		return true
