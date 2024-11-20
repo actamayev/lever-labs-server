@@ -2,7 +2,7 @@ import Singleton from "../singleton"
 import ESP32PingManager from "./esp32-ping-manager"
 
 export default class ESP32DataTransferManager extends Singleton {
-	private readonly chunkSize = 48 * 1024 // 72KB
+	private readonly chunkSize = 96 * 1024 // 96KB
 	private readonly pingManager: ESP32PingManager
 
 	private constructor() {
@@ -33,18 +33,21 @@ export default class ESP32DataTransferManager extends Singleton {
 		}
 	}
 
-	private async sendChunk(
-		socket: ExtendedWebSocket,
-		message: object
-	): Promise<boolean> {
+	// In esp32-data-transfer-manager.ts
+	private async sendChunk(socket: ExtendedWebSocket, message: object): Promise<boolean> {
 		return await new Promise((resolve) => {
-			socket.send(JSON.stringify(message), (error) => {
-				if (error) {
-					console.error("Failed to send chunk:", error)
-					resolve(false)
-				}
-				resolve(true)
-			})
+			try {
+				socket.send(JSON.stringify(message), (error) => {
+					if (error) {
+						console.error("Failed to send chunk:", error)
+						resolve(false)
+					}
+					resolve(true)
+				})
+			} catch (e) {
+				console.error("Error stringifying message:", e)
+				resolve(false)
+			}
 		})
 	}
 
