@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import _ from "lodash"
 import { promisify } from "util"
 import { exec } from "child_process"
 import Singleton from "./singleton"
@@ -20,6 +19,7 @@ export default class CompilerContainerManager extends Singleton {
 
 	private constructor() {
 		super()
+		void this.startContainer()
 	}
 
 	public static getInstance(): CompilerContainerManager {
@@ -153,7 +153,7 @@ export default class CompilerContainerManager extends Singleton {
 			console.log(`Compiling code in container: ${containerId}`)
 		}
 
-		const { stdout, stderr } = await execAsync(
+		const { stdout } = await execAsync(
 			`docker exec -e "USER_CODE='${userCode}'" cpp-compiler-instance /entrypoint.sh`,
 			{
 				encoding: "buffer",
@@ -162,22 +162,11 @@ export default class CompilerContainerManager extends Singleton {
 			}
 		)
 
-		this.handleStderr(stderr)
-
 		if (!stdout || stdout.length === 0) {
 			throw new Error("No binary output received from container")
 		}
 
 		return stdout
-	}
-
-	private handleStderr(stderr: Buffer): void {
-		if (!stderr || _.isEmpty(stderr)) return
-		const stderrStr = stderr.toString()
-		if (!stderrStr.includes("Checking python version") &&
-            !stderrStr.includes("Checking python dependencies")) {
-			console.error(`stderr: ${stderrStr}`)
-		}
 	}
 
 	private async handleCompilationError(error: unknown, userCode: string): Promise<void> {
@@ -196,22 +185,6 @@ export default class CompilerContainerManager extends Singleton {
 			} catch (logError) {
 				console.error("Failed to get container logs:", logError)
 			}
-		}
-	}
-
-	public async shutdown(): Promise<void> {
-		if (!this.containerId) return
-		console.log("Shutting down container...")
-		await this.cleanup()
-		this.containerId = null
-		this.isWarmedUp = false
-	}
-
-	public getMetrics(): { lastCompileTime: number; averageCompileTime: number; totalCompiles: number } {
-		return {
-			lastCompileTime: this.lastCompileTime,
-			averageCompileTime: this.compileCount ? this.totalCompileTime / this.compileCount : 0,
-			totalCompiles: this.compileCount
 		}
 	}
 }
