@@ -2,7 +2,7 @@ import Singleton from "../singleton"
 import ESP32PingManager from "./esp32-ping-manager"
 
 export default class ESP32DataTransferManager extends Singleton {
-	private readonly chunkSize = 12 * 1024 // 12KB
+	private readonly chunkSize = 72 * 1024 // 72KB
 	private readonly pingManager: ESP32PingManager
 
 	private constructor() {
