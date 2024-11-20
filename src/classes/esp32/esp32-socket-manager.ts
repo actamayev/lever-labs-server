@@ -9,8 +9,8 @@ import ESP32DataTransferManager from "./esp32-data-transfer-manager"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
-	private esp32PingManager: ESP32PingManager
-	private esp32DataTransferManager: ESP32DataTransferManager
+	private readonly esp32PingManager: ESP32PingManager
+	private readonly esp32DataTransferManager: ESP32DataTransferManager
 
 	private constructor(private readonly wss: WSServer) {
 		super()

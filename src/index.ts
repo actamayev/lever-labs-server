@@ -10,8 +10,9 @@ import { configureAppMiddleware, corsOptions } from "./middleware/init-config"
 
 import setupRoutes from "./setup-routes"
 
-import Esp32SocketManager from "./classes/esp32/esp32-socket-manager"
 import BrowserSocketManager from "./classes/browser-socket-manager"
+import Esp32SocketManager from "./classes/esp32/esp32-socket-manager"
+import CompilerContainerManager from "./classes/compiler-container-manager"
 
 dotenv.config({ path: getEnvPath() })
 
@@ -30,6 +31,8 @@ BrowserSocketManager.getInstance(io) // Directly use getInstance with io
 // Initialize WebSocket server for ESP32 connections
 const esp32WSServer = new WSServer({ noServer: true })
 Esp32SocketManager.getInstance(esp32WSServer) // Directly use getInstance with wss
+
+CompilerContainerManager.getInstance() // Starts up/warms up the container
 
 // Handle WebSocket upgrade for ESP32 connections
 httpServer.on("upgrade", (request, socket, head) => {
