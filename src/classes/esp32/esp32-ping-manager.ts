@@ -40,6 +40,5 @@ export default class ESP32PingManager extends Singleton {
 		const interval = this.pingIntervals.get(socketId)
 		clearInterval(interval)
 		this.pingIntervals.delete(socketId)
-		// if (!interval) return
 	}
 }
