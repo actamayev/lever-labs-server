@@ -32,7 +32,8 @@ BrowserSocketManager.getInstance(io) // Directly use getInstance with io
 const esp32WSServer = new WSServer({ noServer: true })
 Esp32SocketManager.getInstance(esp32WSServer) // Directly use getInstance with wss
 
-CompilerContainerManager.getInstance() // Starts up/warms up the container
+// TODO: Uncomment when ECS setup:
+// CompilerContainerManager.getInstance() // Starts up/warms up the container
 
 // Handle WebSocket upgrade for ESP32 connections
 httpServer.on("upgrade", (request, socket, head) => {
