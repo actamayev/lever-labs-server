@@ -62,14 +62,14 @@ pipRoutes.get(
 )
 
 // TODO: Comment this out when pushing to staging
-// pipRoutes.post(
-// 	"/compile-and-send-cpp-to-pip",
-// 	validateCppCode,
-// 	confirmPipIsActive,
-// 	jwtVerifyAttachUser,
-// 	confirmUserPreviouslyAddedUUID,
-// 	confirmUserConnectedToPip,
-// 	compileAndSendCppToPip
-// )
+pipRoutes.post(
+	"/compile-and-send-cpp-to-pip",
+	validateCppCode,
+	confirmPipIsActive,
+	jwtVerifyAttachUser,
+	confirmUserPreviouslyAddedUUID,
+	confirmUserConnectedToPip,
+	compileAndSendCppToPip
+)
 
 export default pipRoutes

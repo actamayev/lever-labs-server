@@ -2,7 +2,7 @@ import Singleton from "../singleton"
 import ESP32PingManager from "./esp32-ping-manager"
 
 export default class ESP32DataTransferManager extends Singleton {
-	private readonly chunkSize = 120 * 1024 // 96KB
+	private readonly chunkSize = 120 * 1024 // 120KB
 	private readonly pingManager: ESP32PingManager
 
 	private constructor() {
@@ -17,68 +17,112 @@ export default class ESP32DataTransferManager extends Singleton {
 		return ESP32DataTransferManager.instance
 	}
 
-	private createChunkMessage(
+	// eslint-disable-next-line max-lines-per-function
+	private async sendChunkWithMetadata(
+		socket: ExtendedWebSocket,
 		chunkIndex: number,
 		totalChunks: number,
 		totalSize: number,
-		data: string
-	): object {
-		return {
-			event: "new-user-code",
+		isLast: boolean,
+		binaryData: Buffer
+	): Promise<boolean> {
+		// First send metadata
+		const metadata = {
+			event: "new-user-code-meta",
 			chunkIndex,
 			totalChunks,
 			totalSize,
-			isLast: chunkIndex === totalChunks - 1,
-			data
+			isLast,
+			chunkSize: binaryData.length  // Add this for debugging
+		}
+
+		console.log("Sending chunk metadata:", metadata)
+
+		try {
+			// Send metadata
+			await new Promise<void>((resolve, reject) => {
+				socket.send(JSON.stringify(metadata), (error) => {
+					if (error) reject(error)
+					else resolve()
+				})
+			})
+
+			// Wait a bit between metadata and binary
+			await new Promise(resolve => setTimeout(resolve, 50))
+
+			// Send binary data
+			console.log(`Sending binary data of size: ${binaryData.length} bytes`)
+
+			await new Promise<void>((resolve, reject) => {
+				// Send as Buffer directly
+				socket.send(binaryData, { binary: true }, (error) => {
+					if (error) {
+						console.error(`Failed to send binary chunk ${chunkIndex}:`, error)
+						reject(error)
+					} else {
+						console.log(`Successfully sent binary chunk ${chunkIndex}`)
+						resolve()
+					}
+				})
+			})
+
+			return true
+		} catch (error) {
+			console.error(`Error in sendChunkWithMetadata for chunk ${chunkIndex}:`, error)
+			return false
 		}
 	}
 
-	// In esp32-data-transfer-manager.ts
-	private async sendChunk(socket: ExtendedWebSocket, message: object): Promise<boolean> {
-		return await new Promise((resolve) => {
-			try {
-				socket.send(JSON.stringify(message), (error) => {
-					if (error) {
-						console.error("Failed to send chunk:", error)
-						resolve(false)
-					}
-					resolve(true)
-				})
-			} catch (e) {
-				console.error("Error stringifying message:", e)
-				resolve(false)
-			}
-		})
-	}
-
+	// eslint-disable-next-line max-lines-per-function
 	private async sendAllChunks(
 		socket: ExtendedWebSocket,
-		base64Data: string,
-		totalSize: number,
+		binary: Buffer,
 		chunks: number
 	): Promise<boolean> {
-		for (let currentChunk = 0; currentChunk < chunks; currentChunk++) {
-			const start = currentChunk * this.chunkSize
-			const end = Math.min(start + this.chunkSize, base64Data.length)
-			const chunk = base64Data.slice(start, end)
+		try {
+			console.log(`Total binary size: ${binary.length} bytes`)
 
-			const message = this.createChunkMessage(
-				currentChunk,
-				chunks,
-				totalSize,
-				chunk
-			)
+			for (let currentChunk = 0; currentChunk < chunks; currentChunk++) {
+				const start = currentChunk * this.chunkSize
+				const end = Math.min(start + this.chunkSize, binary.length)
+				const chunk = Buffer.from(binary.subarray(start, end))
 
-			const success = await this.sendChunk(socket, message)
-			if (!success) {
-				return false
+				console.log(`Chunk ${currentChunk}:`, {
+					start,
+					end,
+					expectedSize: end - start,
+					actualSize: chunk.length,
+					isLastChunk: currentChunk === chunks - 1
+				})
+
+				// Verify chunk content
+				if (chunk.length === 0) {
+					console.error(`Empty chunk detected at index ${currentChunk}`)
+					return false
+				}
+
+				const success = await this.sendChunkWithMetadata(
+					socket,
+					currentChunk,
+					chunks,
+					binary.length,
+					currentChunk === chunks - 1,
+					chunk
+				)
+
+				if (!success) {
+					console.error(`Failed to send chunk ${currentChunk}`)
+					return false
+				}
+
+				await new Promise(resolve => setTimeout(resolve, 300))
 			}
 
-			// Add delay between chunks
-			await new Promise(resolve => setTimeout(resolve, 300))
+			return true
+		} catch (error) {
+			console.error("Error in sendAllChunks:", error)
+			throw error
 		}
-
-		return true
 	}
 
 	private setupStatusHandler(
@@ -117,16 +161,14 @@ export default class ESP32DataTransferManager extends Singleton {
 			socket.on("message", statusHandler)
 
 			// Prepare data
-			const base64Data = binary.toString("base64")
-			const chunks = Math.ceil(base64Data.length / this.chunkSize)
+			const chunks = Math.ceil(binary.length / this.chunkSize)
 
 			console.info(`Starting transfer of ${binary.length} bytes in ${chunks} chunks`)
 
 			// Send all chunks
 			const success = await this.sendAllChunks(
 				socket,
-				base64Data,
-				binary.length,
+				binary,
 				chunks
 			)
 
