@@ -18,5 +18,6 @@ declare namespace NodeJS {
 		NODE_ENV: "local" | "staging" | "production"
 
 		PIP_HARDWARE_VERSION: string
+		PIO_CACHE_VOLUME: string
 	}
 }

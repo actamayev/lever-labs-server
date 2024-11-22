@@ -7,6 +7,7 @@ export default class Encryptor {
 	constructor() {
 		this.secretsManagerInstance = SecretsManager.getInstance()
 	}
+
 	public async deterministicEncrypt(data: string, encryptionKeyName: DeterministicEncryptionKeys): Promise<DeterministicEncryptedString> {
 		try {
 			const iv = Buffer.alloc(16, 0) // Fixed IV (not recommended for production)

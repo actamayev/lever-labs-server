@@ -2,11 +2,11 @@
 import { promisify } from "util"
 import { exec } from "child_process"
 import Singleton from "./singleton"
+import SecretsManager from "./secrets-manager"
 
 const execAsync = promisify(exec)
 
 const FIRMWARE_PATH = "/Users/arieltamayev/Documents/PlatformIO/pip-bot-firmware"
-const PIO_CACHE_VOLUME = "pio-cache"
 
 export default class CompilerContainerManager extends Singleton {
 	private containerId: string | null = null
@@ -16,9 +16,11 @@ export default class CompilerContainerManager extends Singleton {
 	private compileCount: number = 0
 	private totalCompileTime: number = 0
 	private isWarmedUp = false
+	private secretsManagerInstance: SecretsManager
 
 	private constructor() {
 		super()
+		this.secretsManagerInstance = SecretsManager.getInstance()
 		void this.startContainer()
 	}
 
@@ -30,11 +32,12 @@ export default class CompilerContainerManager extends Singleton {
 	}
 
 	private async ensureCacheVolume(): Promise<void> {
+		const pioCacheVolume = await this.secretsManagerInstance.getSecret("PIO_CACHE_VOLUME")
 		try {
-			await execAsync(`docker volume inspect ${PIO_CACHE_VOLUME}`)
+			await execAsync(`docker volume inspect ${pioCacheVolume}`)
 		} catch (error) {
-			console.log("Creating PlatformIO cache volume...")
-			await execAsync(`docker volume create ${PIO_CACHE_VOLUME}`)
+			console.error("Creating PlatformIO cache volume...", error)
+			await execAsync(`docker volume create ${pioCacheVolume}`)
 		}
 	}
 
@@ -60,17 +63,19 @@ export default class CompilerContainerManager extends Singleton {
 		try {
 			await this.cleanup()
 			await this.ensureCacheVolume()
+			const pioCacheVolume = await this.secretsManagerInstance.getSecret("PIO_CACHE_VOLUME")
 
 			const { stdout } = await execAsync(
 				`docker run -d \
                 --name cpp-compiler-instance \
                 --cpus=2 \
                 --memory=2g \
+				-e ENVIRONMENT=${process.env.NODE_ENV} \
                 --memory-swap=4g \
                 --memory-swappiness=60 \
                 --shm-size=512m \
                 -v "${FIRMWARE_PATH}:/workspace" \
-                -v "${PIO_CACHE_VOLUME}:/root/.platformio" \
+                -v "${pioCacheVolume}:/root/.platformio" \
                 cpp-compiler tail -f /dev/null`
 			)
 
@@ -102,7 +107,8 @@ export default class CompilerContainerManager extends Singleton {
 		try {
 			console.log("Warming up container...")
 			const dummyCode = "delay(1000);"
-			await this.executeCompilation(this.containerId, dummyCode, true)
+			const dummyPipUUID = "12345" as PipUUID
+			await this.executeCompilation(this.containerId, dummyCode, dummyPipUUID, true)
 			this.isWarmedUp = true
 			console.log("Container warmup complete")
 		} catch (error) {
@@ -111,7 +117,7 @@ export default class CompilerContainerManager extends Singleton {
 		}
 	}
 
-	public async compile(userCode: string): Promise<Buffer> {
+	public async compile(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
 		if (!this.containerId || !this.isWarmedUp) {
 			await this.startContainer()
 		}
@@ -119,7 +125,7 @@ export default class CompilerContainerManager extends Singleton {
 		const startTime = Date.now()
 		try {
 			const cleanUserCode = this.sanitizeUserCode(userCode)
-			const binary = await this.executeCompilation(this.containerId as string, cleanUserCode)
+			const binary = await this.executeCompilation(this.containerId as string, cleanUserCode, pipUUID)
 
 			// Update metrics only for non-warmup compilations
 			const compileTime = Date.now() - startTime
@@ -135,7 +141,7 @@ export default class CompilerContainerManager extends Singleton {
 
 			return binary
 		} catch (error) {
-			await this.handleCompilationError(error, userCode)
+			await this.handleCompilationError(error, userCode, pipUUID)
 			throw error
 		}
 	}
@@ -147,6 +153,7 @@ export default class CompilerContainerManager extends Singleton {
 	private async executeCompilation(
 		containerId: string,
 		userCode: string,
+		pipUUID: PipUUID,
 		isWarmup = false
 	): Promise<Buffer> {
 		if (!isWarmup) {
@@ -154,7 +161,10 @@ export default class CompilerContainerManager extends Singleton {
 		}
 
 		const { stdout } = await execAsync(
-			`docker exec -e "USER_CODE='${userCode}'" cpp-compiler-instance /entrypoint.sh`,
+			`docker exec \
+			-e "USER_CODE='${userCode}'" \
+			-e "PIP_ID=${pipUUID}" \
+			cpp-compiler-instance /entrypoint.sh`,
 			{
 				encoding: "buffer",
 				maxBuffer: 10 * 1024 * 1024,
@@ -162,6 +172,7 @@ export default class CompilerContainerManager extends Singleton {
 			}
 		)
 
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		if (!stdout || stdout.length === 0) {
 			throw new Error("No binary output received from container")
 		}
@@ -169,13 +180,13 @@ export default class CompilerContainerManager extends Singleton {
 		return stdout
 	}
 
-	private async handleCompilationError(error: unknown, userCode: string): Promise<void> {
+	private async handleCompilationError(error: unknown, userCode: string, pipUUID: PipUUID): Promise<void> {
 		if (error instanceof Error) {
 			if (error.message.includes("No such container")) {
 				console.log("Container not found, restarting...")
 				this.containerId = null
 				this.isWarmedUp = false
-				await this.compile(userCode) // Retry compilation
+				await this.compile(userCode, pipUUID) // Retry compilation
 				return
 			}
 
