@@ -150,11 +150,12 @@ export default class LocalCompilationManager extends Singleton {
 		if (!isWarmup) {
 			console.log(`Compiling code in container: ${containerId}`)
 		}
+		const buildFlags = `-DDEFAULT_ENVIRONMENT=\\"${process.env.NODE_ENV}\\" -DDEFAULT_PIP_ID=\\"${pipUUID}\\"`
 
 		const { stdout } = await execAsync(
 			`docker exec \
 			-e "USER_CODE='${userCode}'" \
-			-e "PIP_ID=${pipUUID}" \
+       		-e "BUILD_FLAGS='${buildFlags}'" \
 			cpp-compiler-instance /entrypoint.sh`,
 			{
 				encoding: "buffer",

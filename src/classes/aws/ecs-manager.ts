@@ -60,7 +60,9 @@ export default class ECSManager extends Singleton {
 						name: `${process.env.NODE_ENV}-firmware-compiler`,
 						environment: [
 							{ name: "USER_CODE", value: sanitizeUserCode(userCode) },
-							{ name: "PIP_ID", value: pipUUID },
+							{ name: "BUILD_FLAGS",
+								value: `-DDEFAULT_ENVIRONMENT=\\"${process.env.NODE_ENV}\\" -DDEFAULT_PIP_ID=\\"${pipUUID}\\"`
+							},
 							{ name: "COMPILED_BINARY_OUTPUT_BUCKET", value: this.ecsConfig.compiledBinaryOutputBucket },
 							{ name: "OUTPUT_KEY", value: outputKeyValue }
 						]
@@ -82,7 +84,6 @@ export default class ECSManager extends Singleton {
 			throw error
 		}
 	}
-
 
 	private async waitForTaskCompletion(taskArn: string): Promise<void> {
 		try {
