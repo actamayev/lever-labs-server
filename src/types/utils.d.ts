@@ -46,7 +46,7 @@ declare global {
 		compiledBinaryOutputBucket: string
 	}
 
-	type CompilerEnvironment = "local" | "staging" | "production";
+	type CompilerEnvironment = "staging" | "production" | undefined
 
 }
 
