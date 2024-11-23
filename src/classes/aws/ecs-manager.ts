@@ -7,12 +7,20 @@ import sanitizeUserCode from "../../utils/cpp/sanitize-user-code"
 
 export default class ECSManager extends Singleton {
 	private secretsManagerInstance: SecretsManager
-	private ecsClient?: ECSClient
-	private ecsConfig?: ECSConfig
+	private ecsClient: ECSClient
+	private ecsConfig!: ECSConfig
 
 	private constructor() {
 		super()
 		this.secretsManagerInstance = SecretsManager.getInstance()
+		this.ecsClient = new ECSClient({
+			credentials: {
+				accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+				secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+			},
+
+			region: this.region
+		})
 		void this.initializeECSConfig()
 	}
 
@@ -31,22 +39,10 @@ export default class ECSManager extends Singleton {
 			securityGroup: await this.secretsManagerInstance.getSecret("ECS_SECURITY_GROUP"),
 			compiledBinaryOutputBucket: await this.secretsManagerInstance.getSecret("COMPILED_BINARY_OUTPUT_BUCKET"),
 		}
-		this.ecsClient = new ECSClient({
-			credentials: {
-				accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-				secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-			},
-
-			region: this.region
-		})
 	}
 
 	public async compileECS(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
 		try {
-			if (!this.ecsConfig || !this.ecsClient) {
-				throw new Error("ECS configuration not initialized")
-			}
-
 			const outputKeyValue = `${pipUUID}/output.bin`
 
 			const params = {
@@ -87,13 +83,9 @@ export default class ECSManager extends Singleton {
 		}
 	}
 
-	// eslint-disable-next-line complexity
+
 	private async waitForTaskCompletion(taskArn: string): Promise<void> {
 		try {
-			if (!this.ecsConfig || !this.ecsClient) {
-				throw new Error("ECS configuration not initialized")
-			}
-
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			while (true) {
 				const describeCommand = new DescribeTasksCommand({
