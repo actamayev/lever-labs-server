@@ -2,7 +2,6 @@
 import { promisify } from "util"
 import { exec } from "child_process"
 import Singleton from "./singleton"
-import SecretsManager from "./aws/secrets-manager"
 import sanitizeUserCode from "../utils/cpp/sanitize-user-code"
 
 const execAsync = promisify(exec)
@@ -15,12 +14,10 @@ export default class LocalCompilationManager extends Singleton {
 	private compileCount: number = 0
 	private totalCompileTime: number = 0
 	private isWarmedUp = false
-	private secretsManagerInstance: SecretsManager
 	private readonly localFirmwarePath = "/Users/arieltamayev/Documents/PlatformIO/pip-bot-firmware"
 
 	private constructor() {
 		super()
-		this.secretsManagerInstance = SecretsManager.getInstance()
 		void this.startContainer()
 	}
 
@@ -32,12 +29,11 @@ export default class LocalCompilationManager extends Singleton {
 	}
 
 	private async ensureCacheVolume(): Promise<void> {
-		const pioCacheVolume = await this.secretsManagerInstance.getSecret("PIO_CACHE_VOLUME")
 		try {
-			await execAsync(`docker volume inspect ${pioCacheVolume}`)
+			await execAsync("docker volume inspect pio-cache")
 		} catch (error) {
 			console.error("Creating PlatformIO cache volume...", error)
-			await execAsync(`docker volume create ${pioCacheVolume}`)
+			await execAsync("docker volume create pio-cache")
 		}
 	}
 
@@ -63,7 +59,6 @@ export default class LocalCompilationManager extends Singleton {
 		try {
 			await this.cleanup()
 			await this.ensureCacheVolume()
-			const pioCacheVolume = await this.secretsManagerInstance.getSecret("PIO_CACHE_VOLUME")
 
 			const { stdout } = await execAsync(
 				`docker run -d \
@@ -75,7 +70,7 @@ export default class LocalCompilationManager extends Singleton {
                 --memory-swappiness=60 \
                 --shm-size=512m \
                 -v "${this.localFirmwarePath}:/workspace" \
-                -v "${pioCacheVolume}:/root/.platformio" \
+                -v "pio-cache:/root/.platformio" \
                 cpp-compiler tail -f /dev/null`
 			)
 

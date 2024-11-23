@@ -31,8 +31,7 @@ declare global {
 		"JWT_KEY" |
 		"GOOGLE_CLIENT_ID" |
 		"GOOGLE_CLIENT_SECRET" |
-		"PIP_HARDWARE_VERSION" |
-		"PIO_CACHE_VOLUME"
+		"PIP_HARDWARE_VERSION"
 
 	type SecretsObject = { [K in SecretKeys]: string }
 
