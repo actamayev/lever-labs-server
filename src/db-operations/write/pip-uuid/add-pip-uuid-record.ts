@@ -1,4 +1,4 @@
-import SecretsManager from "../../../classes/secrets-manager"
+import SecretsManager from "../../../classes/aws/secrets-manager"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function addPipUUIDRecord(uuid: PipUUID): Promise<boolean> {

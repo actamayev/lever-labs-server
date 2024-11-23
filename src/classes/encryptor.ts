@@ -1,5 +1,5 @@
 import { createCipheriv, createDecipheriv } from "crypto"
-import SecretsManager from "./secrets-manager"
+import SecretsManager from "./aws/secrets-manager"
 
 export default class Encryptor {
 	private secretsManagerInstance: SecretsManager

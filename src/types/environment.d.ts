@@ -19,5 +19,12 @@ declare namespace NodeJS {
 
 		PIP_HARDWARE_VERSION: string
 		PIO_CACHE_VOLUME: string
+
+		// These aren't actualy used in local testing (process.env). They're only used in staging/prod
+		// They're here in case I want to simulate my environment as staging or prod
+		ECS_CLUSTER: string
+		ECS_TASK_DEFINITION: string
+		ECS_SUBNET: string
+		ECS_SECURITY_GROUP: string
 	}
 }

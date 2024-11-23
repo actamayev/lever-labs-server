@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import _ from "lodash"
 import { promisify } from "util"
 import { exec } from "child_process"
+import { AssignPublicIp, DescribeTasksCommand, ECSClient, RunTaskCommand } from "@aws-sdk/client-ecs"
 import Singleton from "./singleton"
-import SecretsManager from "./secrets-manager"
+import SecretsManager from "./aws/secrets-manager"
+import S3Manager from "./aws/s3-manager"
 
 const execAsync = promisify(exec)
 
@@ -17,11 +20,20 @@ export default class CompilerContainerManager extends Singleton {
 	private totalCompileTime: number = 0
 	private isWarmedUp = false
 	private secretsManagerInstance: SecretsManager
+	private ecsConfig?: ECSConfig
+	private environment: CompilerEnvironment
+	private ecsClient?: ECSClient
 
 	private constructor() {
 		super()
+		this.environment = process.env.NODE_ENV
 		this.secretsManagerInstance = SecretsManager.getInstance()
-		void this.startContainer()
+
+		if (this.environment !== "local") {
+			void this.initializeECSConfig()
+		} else {
+			void this.startContainer()
+		}
 	}
 
 	public static getInstance(): CompilerContainerManager {
@@ -39,6 +51,31 @@ export default class CompilerContainerManager extends Singleton {
 			console.error("Creating PlatformIO cache volume...", error)
 			await execAsync(`docker volume create ${pioCacheVolume}`)
 		}
+	}
+
+	private async initializeECSConfig(): Promise<void> {
+		this.ecsConfig = {
+			cluster: await this.secretsManagerInstance.getSecret("ECS_CLUSTER"),
+			taskDefinition: await this.secretsManagerInstance.getSecret("ECS_TASK_DEFINITION"),
+			subnet: await this.secretsManagerInstance.getSecret("ECS_SUBNET"),
+			securityGroup: await this.secretsManagerInstance.getSecret("ECS_SECURITY_GROUP"),
+			compiledBinaryOutputBucket: await this.secretsManagerInstance.getSecret("COMPILED_BINARY_OUTPUT_BUCKET"),
+		}
+		this.ecsClient = new ECSClient({
+			credentials: {
+				accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+				secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+			},
+
+			region: this.region
+		})
+	}
+
+	public async compile(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
+		if (this.environment === "local") {
+			return await this.compileLocal(userCode, pipUUID)
+		}
+		return this.compileECS(userCode, pipUUID)
 	}
 
 	private async startContainer(): Promise<void> {
@@ -117,7 +154,7 @@ export default class CompilerContainerManager extends Singleton {
 		}
 	}
 
-	public async compile(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
+	public async compileLocal(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
 		if (!this.containerId || !this.isWarmedUp) {
 			await this.startContainer()
 		}
@@ -142,6 +179,86 @@ export default class CompilerContainerManager extends Singleton {
 			return binary
 		} catch (error) {
 			await this.handleCompilationError(error, userCode, pipUUID)
+			throw error
+		}
+	}
+
+	private async compileECS(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
+		try {
+			if (!this.ecsConfig || !this.ecsClient) {
+				throw new Error("ECS configuration not initialized")
+			}
+
+			const outputKeyValue = `${pipUUID}/output.bin`
+
+			const params = {
+				cluster: this.ecsConfig.cluster,
+				taskDefinition: this.ecsConfig.taskDefinition,
+				networkConfiguration: {
+					awsvpcConfiguration: {
+						subnets: [this.ecsConfig.subnet],
+						securityGroups: [this.ecsConfig.securityGroup],
+						assignPublicIp: AssignPublicIp.ENABLED
+					}
+				},
+				overrides: {
+					containerOverrides: [{
+						name: `${process.env.NODE_ENV}-firmware-compiler`,
+						environment: [
+							{ name: "USER_CODE", value: this.sanitizeUserCode(userCode) },
+							{ name: "PIP_ID", value: pipUUID },
+							{ name: "COMPILED_BINARY_OUTPUT_BUCKET", value: this.ecsConfig.compiledBinaryOutputBucket },
+							{ name: "OUTPUT_KEY", value: outputKeyValue }
+						]
+					}]
+				}
+			}
+
+			const command = new RunTaskCommand(params)
+			const { tasks } = await this.ecsClient.send(command)
+
+			if (!tasks || _.isEmpty(tasks)) {
+				throw new Error("Failed to start ECS task")
+			}
+
+			await this.waitForTaskCompletion(tasks[0].taskArn as string)
+			return await S3Manager.getInstance().fetchOutputFromS3BinaryBucket(outputKeyValue)
+		} catch (error) {
+			console.error(error)
+			throw error
+		}
+	}
+
+	// eslint-disable-next-line complexity
+	private async waitForTaskCompletion(taskArn: string): Promise<void> {
+		try {
+			if (!this.ecsConfig || !this.ecsClient) {
+				throw new Error("ECS configuration not initialized")
+			}
+
+			while (true) {
+				const describeCommand = new DescribeTasksCommand({
+					cluster: this.ecsConfig.cluster,
+					tasks: [taskArn]
+				})
+				const { tasks } = await this.ecsClient.send(describeCommand)
+
+				if (!tasks || _.isEmpty(tasks)) {
+					throw new Error("Task not found")
+				}
+
+				if (tasks[0].lastStatus === "STOPPED") {
+					// eslint-disable-next-line max-depth
+					if (tasks[0].containers?.[0]?.exitCode !== 0) {
+						throw new Error("ECS task failed")
+					}
+					return
+				}
+
+				await new Promise((resolve) => setTimeout(resolve, 1000))
+			}
+		} catch (error) {
+			console.error(error)
 			throw error
 		}
 	}
