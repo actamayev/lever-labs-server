@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { PrismaClient } from "@prisma/client"
-import SecretsManager from "./secrets-manager"
+import SecretsManager from "./aws/secrets-manager"
 
 export default class PrismaClientClass {
 	private static prismaClient?: PrismaClient

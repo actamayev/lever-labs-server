@@ -1,7 +1,7 @@
 import _ from "lodash"
 import dotenv from "dotenv"
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager"
-import Singleton from "./singleton"
+import Singleton from "../singleton"
 
 export default class SecretsManager extends Singleton {
 	private secrets: Map<SecretKeys, string> = new Map()

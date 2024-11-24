@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"
-import SecretsManager from "../../classes/secrets-manager"
+import SecretsManager from "../../classes/aws/secrets-manager"
 
 export default async function getDecodedId(accessToken: string): Promise<number> {
 	try {
