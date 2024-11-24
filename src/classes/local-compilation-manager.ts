@@ -160,7 +160,7 @@ export default class LocalCompilationManager extends Singleton {
 				console.log(`Compiling code in container: ${containerId}`)
 			}
 
-			const escapedUserCode = userCode.replace(/'/g, "'\\''")
+			const escapedUserCode = sanitizeUserCode(userCode)
 
 			const commandParts = [
 				"docker",
