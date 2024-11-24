@@ -33,12 +33,22 @@ export default class ECSManager extends Singleton {
 
 	private async initializeECSConfig(): Promise<void> {
 		try {
+			const secretKeys: SecretKeys[] = [
+				"ECS_CLUSTER",
+				"ECS_TASK_DEFINITION",
+				"ECS_SUBNET",
+				"ECS_SECURITY_GROUP",
+				"COMPILED_BINARY_OUTPUT_BUCKET"
+			]
+
+			const secrets = await this.secretsManagerInstance.getSecrets(secretKeys)
+
 			this.ecsConfig = {
-				cluster: await this.secretsManagerInstance.getSecret("ECS_CLUSTER"),
-				taskDefinition: await this.secretsManagerInstance.getSecret("ECS_TASK_DEFINITION"),
-				subnet: await this.secretsManagerInstance.getSecret("ECS_SUBNET"),
-				securityGroup: await this.secretsManagerInstance.getSecret("ECS_SECURITY_GROUP"),
-				compiledBinaryOutputBucket: await this.secretsManagerInstance.getSecret("COMPILED_BINARY_OUTPUT_BUCKET"),
+				cluster: secrets["ECS_CLUSTER"],
+				taskDefinition: secrets["ECS_TASK_DEFINITION"],
+				subnet: secrets["ECS_SUBNET"],
+				securityGroup: secrets["ECS_SECURITY_GROUP"],
+				compiledBinaryOutputBucket: secrets["COMPILED_BINARY_OUTPUT_BUCKET"],
 			}
 		} catch (error) {
 			console.error(error)
