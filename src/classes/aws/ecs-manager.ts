@@ -32,12 +32,17 @@ export default class ECSManager extends Singleton {
 	}
 
 	private async initializeECSConfig(): Promise<void> {
-		this.ecsConfig = {
-			cluster: await this.secretsManagerInstance.getSecret("ECS_CLUSTER"),
-			taskDefinition: await this.secretsManagerInstance.getSecret("ECS_TASK_DEFINITION"),
-			subnet: await this.secretsManagerInstance.getSecret("ECS_SUBNET"),
-			securityGroup: await this.secretsManagerInstance.getSecret("ECS_SECURITY_GROUP"),
-			compiledBinaryOutputBucket: await this.secretsManagerInstance.getSecret("COMPILED_BINARY_OUTPUT_BUCKET"),
+		try {
+			this.ecsConfig = {
+				cluster: await this.secretsManagerInstance.getSecret("ECS_CLUSTER"),
+				taskDefinition: await this.secretsManagerInstance.getSecret("ECS_TASK_DEFINITION"),
+				subnet: await this.secretsManagerInstance.getSecret("ECS_SUBNET"),
+				securityGroup: await this.secretsManagerInstance.getSecret("ECS_SECURITY_GROUP"),
+				compiledBinaryOutputBucket: await this.secretsManagerInstance.getSecret("COMPILED_BINARY_OUTPUT_BUCKET"),
+			}
+		} catch (error) {
+			console.error(error)
+			// Not throwing error because this is in the constructor (the instantiation of this class doesn't occur inside of a try block)
 		}
 	}
 

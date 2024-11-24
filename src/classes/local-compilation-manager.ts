@@ -38,20 +38,25 @@ export default class LocalCompilationManager extends Singleton {
 	}
 
 	private async startContainer(): Promise<void> {
-		console.log("Starting container...")
-		if (this.isStarting) {
-			return this.startPromise as Promise<void>
-		}
-
-		this.isStarting = true
-		this.startPromise = this.doStartContainer()
-
 		try {
-			await this.startPromise
-			await this.warmupContainer()  // Warmup after container starts
-		} finally {
-			this.isStarting = false
-			this.startPromise = null
+			console.log("Starting container...")
+			if (this.isStarting) {
+				return this.startPromise as Promise<void>
+			}
+
+			this.isStarting = true
+			this.startPromise = this.doStartContainer()
+
+			try {
+				await this.startPromise
+				await this.warmupContainer()  // Warmup after container starts
+			} finally {
+				this.isStarting = false
+				this.startPromise = null
+			}
+		} catch (error) {
+			console.error(error)
+			// Not throwing error because this is in the constructor (the instantiation of this class doesn't occur inside of a try block)
 		}
 	}
 
