@@ -1,5 +1,5 @@
 import { OAuth2Client } from "google-auth-library"
-import SecretsManager from "../../classes/secrets-manager"
+import SecretsManager from "../../classes/aws/secrets-manager"
 
 export default async function createGoogleAuthClient(): Promise<OAuth2Client> {
 	try {

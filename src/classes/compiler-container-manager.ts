@@ -1,25 +1,22 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import { promisify } from "util"
-import { exec } from "child_process"
+import _ from "lodash"
 import Singleton from "./singleton"
-
-const execAsync = promisify(exec)
-
-const FIRMWARE_PATH = "/Users/arieltamayev/Documents/PlatformIO/pip-bot-firmware"
-const PIO_CACHE_VOLUME = "pio-cache"
+import ECSManager from "./aws/ecs-manager"
+import LocalCompilationManager from "./local-compilation-manager"
 
 export default class CompilerContainerManager extends Singleton {
-	private containerId: string | null = null
-	private isStarting = false
-	private startPromise: Promise<void> | null = null
-	private lastCompileTime: number = 0
-	private compileCount: number = 0
-	private totalCompileTime: number = 0
-	private isWarmedUp = false
+	private environment: CompilerEnvironment
+	private ecsManagerInstance?: ECSManager
+	private localCompilationManagerInstance?: LocalCompilationManager
 
 	private constructor() {
 		super()
-		void this.startContainer()
+		this.environment = process.env.NODE_ENV
+
+		if (_.isUndefined(this.environment)) { // Means localdev
+			this.localCompilationManagerInstance = LocalCompilationManager.getInstance()
+		} else {
+			this.ecsManagerInstance = ECSManager.getInstance()
+		}
 	}
 
 	public static getInstance(): CompilerContainerManager {
@@ -29,162 +26,17 @@ export default class CompilerContainerManager extends Singleton {
 		return CompilerContainerManager.instance
 	}
 
-	private async ensureCacheVolume(): Promise<void> {
-		try {
-			await execAsync(`docker volume inspect ${PIO_CACHE_VOLUME}`)
-		} catch (error) {
-			console.log("Creating PlatformIO cache volume...")
-			await execAsync(`docker volume create ${PIO_CACHE_VOLUME}`)
-		}
-	}
-
-	private async startContainer(): Promise<void> {
-		console.log("Starting container...")
-		if (this.isStarting) {
-			return this.startPromise as Promise<void>
-		}
-
-		this.isStarting = true
-		this.startPromise = this.doStartContainer()
-
-		try {
-			await this.startPromise
-			await this.warmupContainer()  // Warmup after container starts
-		} finally {
-			this.isStarting = false
-			this.startPromise = null
-		}
-	}
-
-	private async doStartContainer(): Promise<void> {
-		try {
-			await this.cleanup()
-			await this.ensureCacheVolume()
-
-			const { stdout } = await execAsync(
-				`docker run -d \
-                --name cpp-compiler-instance \
-                --cpus=2 \
-                --memory=2g \
-                --memory-swap=4g \
-                --memory-swappiness=60 \
-                --shm-size=512m \
-                -v "${FIRMWARE_PATH}:/workspace" \
-                -v "${PIO_CACHE_VOLUME}:/root/.platformio" \
-                cpp-compiler tail -f /dev/null`
-			)
-
-			this.containerId = stdout.trim()
-			console.log("Started compiler container with ID:", this.containerId)
-
-			await execAsync(`docker inspect ${this.containerId}`)
-
-		} catch (error) {
-			console.error("Failed to start container:", error)
-			throw error
-		}
-	}
-
-	private async cleanup(): Promise<void> {
-		try {
-			await execAsync("docker rm -f cpp-compiler-instance")
-		} catch (error) {
-			if (!(error as Error).message.includes("No such container")) {
-				console.error(error)
-				throw error
+	public async compile(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
+		if (_.isUndefined(this.environment)) {
+			if (_.isUndefined(this.localCompilationManagerInstance)) {
+				throw Error("Can't find localCompilationManagerInstance")
 			}
-		}
-	}
-
-	private async warmupContainer(): Promise<void> {
-		if (!this.containerId || this.isWarmedUp) return
-
-		try {
-			console.log("Warming up container...")
-			const dummyCode = "delay(1000);"
-			await this.executeCompilation(this.containerId, dummyCode, true)
-			this.isWarmedUp = true
-			console.log("Container warmup complete")
-		} catch (error) {
-			console.error("Container warmup failed:", error)
-			// Continue despite warmup failure
-		}
-	}
-
-	public async compile(userCode: string): Promise<Buffer> {
-		if (!this.containerId || !this.isWarmedUp) {
-			await this.startContainer()
-		}
-
-		const startTime = Date.now()
-		try {
-			const cleanUserCode = this.sanitizeUserCode(userCode)
-			const binary = await this.executeCompilation(this.containerId as string, cleanUserCode)
-
-			// Update metrics only for non-warmup compilations
-			const compileTime = Date.now() - startTime
-			this.lastCompileTime = compileTime
-			this.compileCount++
-			this.totalCompileTime += compileTime
-
-			console.log(`Compilation metrics:
-                Last compile time: ${this.lastCompileTime}ms
-                Average compile time: ${this.totalCompileTime / this.compileCount}ms
-                Total compilations: ${this.compileCount}
-            `)
-
-			return binary
-		} catch (error) {
-			await this.handleCompilationError(error, userCode)
-			throw error
-		}
-	}
-
-	private sanitizeUserCode(userCode: string): string {
-		return userCode.trim().replace(/'/g, "'\\''")
-	}
-
-	private async executeCompilation(
-		containerId: string,
-		userCode: string,
-		isWarmup = false
-	): Promise<Buffer> {
-		if (!isWarmup) {
-			console.log(`Compiling code in container: ${containerId}`)
-		}
-
-		const { stdout } = await execAsync(
-			`docker exec -e "USER_CODE='${userCode}'" cpp-compiler-instance /entrypoint.sh`,
-			{
-				encoding: "buffer",
-				maxBuffer: 10 * 1024 * 1024,
-				shell: "/bin/bash",
+			return await this.localCompilationManagerInstance.compileLocal(userCode, pipUUID)
+		} else {
+			if (_.isUndefined(this.ecsManagerInstance)) {
+				throw Error("Can't find ecsManagerInstance")
 			}
-		)
-
-		if (!stdout || stdout.length === 0) {
-			throw new Error("No binary output received from container")
-		}
-
-		return stdout
-	}
-
-	private async handleCompilationError(error: unknown, userCode: string): Promise<void> {
-		if (error instanceof Error) {
-			if (error.message.includes("No such container")) {
-				console.log("Container not found, restarting...")
-				this.containerId = null
-				this.isWarmedUp = false
-				await this.compile(userCode) // Retry compilation
-				return
-			}
-
-			try {
-				const { stdout: logs } = await execAsync("docker logs cpp-compiler-instance")
-				console.error("Container logs:", logs)
-			} catch (logError) {
-				console.error("Failed to get container logs:", logError)
-			}
+			return this.ecsManagerInstance.compileECS(userCode, pipUUID)
 		}
 	}
 }

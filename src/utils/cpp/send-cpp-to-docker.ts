@@ -1,8 +1,8 @@
 import CompilerContainerManager from "../../classes/compiler-container-manager"
 
-export default async function compileUserCode(userCode: string): Promise<Buffer> {
+export default async function compileUserCode(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
 	try {
-		const binary = await compileCode(userCode)
+		const binary = await compileCode(userCode, pipUUID)
 		validateBinary(binary)
 		return binary
 	} catch (error) {
@@ -11,8 +11,8 @@ export default async function compileUserCode(userCode: string): Promise<Buffer>
 	}
 }
 
-async function compileCode(userCode: string): Promise<Buffer> {
-	const binary = await CompilerContainerManager.getInstance().compile(userCode)
+async function compileCode(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
+	const binary = await CompilerContainerManager.getInstance().compile(userCode, pipUUID)
 
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	if (!binary || binary.length === 0) {
