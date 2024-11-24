@@ -60,9 +60,10 @@ export default class ECSManager extends Singleton {
 						name: `${process.env.NODE_ENV}-firmware-compiler`,
 						environment: [
 							{ name: "USER_CODE", value: sanitizeUserCode(userCode) },
-							{ name: "BUILD_FLAGS",
-								value: `-DDEFAULT_ENVIRONMENT=\\"${process.env.NODE_ENV}\\" -DDEFAULT_PIP_ID=\\"${pipUUID}\\"`
-							},
+							{ name: "ENVIRONMENT", value: process.env.NODE_ENV },
+							{ name: "PIP_ID", value: pipUUID},
+							// value: `-DDEFAULT_ENVIRONMENT=\\"${process.env.NODE_ENV}\\" -DDEFAULT_PIP_ID=\\"${pipUUID}\\"`
+							// },
 							{ name: "COMPILED_BINARY_OUTPUT_BUCKET", value: this.ecsConfig.compiledBinaryOutputBucket },
 							{ name: "OUTPUT_KEY", value: outputKeyValue }
 						]

@@ -118,8 +118,8 @@ export default class LocalCompilationManager extends Singleton {
 		}
 
 		const startTime = Date.now()
+		const cleanUserCode = sanitizeUserCode(userCode)
 		try {
-			const cleanUserCode = sanitizeUserCode(userCode)
 			const binary = await this.executeCompilation(this.containerId as string, cleanUserCode, pipUUID)
 
 			// Update metrics only for non-warmup compilations
@@ -136,7 +136,7 @@ export default class LocalCompilationManager extends Singleton {
 
 			return binary
 		} catch (error) {
-			await this.handleCompilationError(error, userCode, pipUUID)
+			await this.handleCompilationError(error, cleanUserCode, pipUUID)
 			throw error
 		}
 	}
@@ -147,29 +147,42 @@ export default class LocalCompilationManager extends Singleton {
 		pipUUID: PipUUID,
 		isWarmup = false
 	): Promise<Buffer> {
-		if (!isWarmup) {
-			console.log(`Compiling code in container: ${containerId}`)
-		}
-		const buildFlags = `-DDEFAULT_ENVIRONMENT=\\"${process.env.NODE_ENV}\\" -DDEFAULT_PIP_ID=\\"${pipUUID}\\"`
+		try {
+			if (!isWarmup) {
+				console.log(`Compiling code in container: ${containerId}`)
+			}
 
-		const { stdout } = await execAsync(
-			`docker exec \
-			-e "USER_CODE='${userCode}'" \
-       		-e "BUILD_FLAGS='${buildFlags}'" \
-			cpp-compiler-instance /entrypoint.sh`,
-			{
+			const escapedUserCode = userCode.replace(/'/g, "'\\''")
+
+			const command = [
+				"docker",
+				"exec",
+				"-e",
+				`USER_CODE='${escapedUserCode}'`,  // Note the single quotes around the value
+				"-e",
+				"ENVIRONMENT=local",
+				"-e",
+				`PIP_ID=${pipUUID}`,
+				"cpp-compiler-instance",
+				"/entrypoint.sh"
+			].join(" ")
+
+			const { stdout } = await execAsync(command, {
 				encoding: "buffer",
 				maxBuffer: 10 * 1024 * 1024,
 				shell: "/bin/bash",
+			})
+
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+			if (!stdout || stdout.length === 0) {
+				throw new Error("No binary output received from container")
 			}
-		)
 
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-		if (!stdout || stdout.length === 0) {
-			throw new Error("No binary output received from container")
+			return stdout
+		} catch (error) {
+			console.error(error)
+			throw error
 		}
-
-		return stdout
 	}
 
 	private async handleCompilationError(error: unknown, userCode: string, pipUUID: PipUUID): Promise<void> {
