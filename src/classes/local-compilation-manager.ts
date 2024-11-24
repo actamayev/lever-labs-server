@@ -108,6 +108,7 @@ export default class LocalCompilationManager extends Singleton {
 			console.log("Warming up container...")
 			const dummyCode = "delay(1000);"
 			const dummyPipUUID = "12345" as PipUUID
+			await execAsync("docker exec cpp-compiler-instance mkdir -p /workspace-temp")
 			await this.executeCompilation(this.containerId, dummyCode, dummyPipUUID, true)
 			this.isWarmedUp = true
 			console.log("Container warmup complete")
@@ -146,6 +147,8 @@ export default class LocalCompilationManager extends Singleton {
 		}
 	}
 
+
+	// eslint-disable-next-line max-lines-per-function
 	private async executeCompilation(
 		containerId: string,
 		userCode: string,
@@ -159,26 +162,37 @@ export default class LocalCompilationManager extends Singleton {
 
 			const escapedUserCode = userCode.replace(/'/g, "'\\''")
 
-			const command = [
+			const commandParts = [
 				"docker",
 				"exec",
 				"-e",
-				`USER_CODE='${escapedUserCode}'`,  // Note the single quotes around the value
+				`USER_CODE='${escapedUserCode}'`,
 				"-e",
 				"ENVIRONMENT=local",
 				"-e",
-				`PIP_ID=${pipUUID}`,
+				`PIP_ID=${pipUUID}`
+			]
+
+			if (isWarmup) {
+				commandParts.push("-e", "WORKSPACE_DIR=/workspace-temp")
+			}
+
+			commandParts.push(
 				"cpp-compiler-instance",
 				"/entrypoint.sh"
-			].join(" ")
+			)
 
-			const { stdout } = await execAsync(command, {
+			const { stdout } = await execAsync(commandParts.join(" "), {
 				encoding: "buffer",
 				maxBuffer: 10 * 1024 * 1024,
 				shell: "/bin/bash",
 			})
 
-			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+			// Clean up temp workspace after warmup
+			if (isWarmup) {
+				await execAsync("docker exec cpp-compiler-instance rm -rf /workspace-temp")
+			}
+
 			if (!stdout || stdout.length === 0) {
 				throw new Error("No binary output received from container")
 			}
