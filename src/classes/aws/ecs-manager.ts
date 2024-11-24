@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { AssignPublicIp, DescribeTasksCommand, ECSClient, RunTaskCommand } from "@aws-sdk/client-ecs"
+import { AssignPublicIp, DescribeTasksCommand, ECSClient, RunTaskCommand, RunTaskCommandInput } from "@aws-sdk/client-ecs"
 import S3Manager from "./s3-manager"
 import Singleton from "../singleton"
 import SecretsManager from "./secrets-manager"
@@ -60,9 +60,10 @@ export default class ECSManager extends Singleton {
 		try {
 			const outputKeyValue = `${pipUUID}/output.bin`
 
-			const params = {
+			const params: RunTaskCommandInput = {
 				cluster: this.ecsConfig.cluster,
 				taskDefinition: this.ecsConfig.taskDefinition,
+				launchType: "FARGATE",
 				networkConfiguration: {
 					awsvpcConfiguration: {
 						subnets: [this.ecsConfig.subnet],
