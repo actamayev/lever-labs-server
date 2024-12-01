@@ -102,9 +102,9 @@ export default class ECSManager extends Singleton {
 		}
 	}
 
+	// eslint-disable-next-line complexity, max-lines-per-function
 	private async waitForTaskCompletion(taskArn: string): Promise<void> {
 		try {
-			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			while (true) {
 				const describeCommand = new DescribeTasksCommand({
 					cluster: this.ecsConfig.cluster,
@@ -116,10 +116,36 @@ export default class ECSManager extends Singleton {
 					throw new Error("Task not found")
 				}
 
-				if (tasks[0].lastStatus === "STOPPED") {
-					// eslint-disable-next-line max-depth
-					if (tasks[0].containers?.[0]?.exitCode !== 0) {
-						throw new Error("ECS task failed")
+				const task = tasks[0]
+				console.log("Task Status:", task.lastStatus)
+				console.log("Task Stopped Reason:", task.stoppedReason)
+
+				// Log container details
+				if (task.containers) {
+					task.containers.forEach((container, index) => {
+						console.log(`Container ${index} Details:`)
+						console.log("  Name:", container.name)
+						console.log("  Status:", container.lastStatus)
+						console.log("  Exit Code:", container.exitCode)
+						console.log("  Reason:", container.reason)
+
+						// Log runtime ID if available
+						if (container.runtimeId) {
+							console.log("  Runtime ID:", container.runtimeId)
+						}
+					})
+				}
+
+				// Log network bindings if any
+				if (task.attachments) {
+					console.log("Network Details:", JSON.stringify(task.attachments, null, 2))
+				}
+
+				if (task.lastStatus === "STOPPED") {
+					console.log("Task stopped with full details:", JSON.stringify(task, null, 2))
+
+					if (task.containers?.[0]?.exitCode !== 0) {
+						throw new Error(`ECS task failed: ${task.stoppedReason || "Unknown reason"}`)
 					}
 					return
 				}
@@ -127,7 +153,17 @@ export default class ECSManager extends Singleton {
 				await new Promise((resolve) => setTimeout(resolve, 1000))
 			}
 		} catch (error) {
-			console.error(error)
+			console.error("Task monitoring error:", error)
+
+			// Add additional error context if available
+			if (error instanceof Error) {
+				console.error("Error details:", {
+					message: error.message,
+					name: error.name,
+					stack: error.stack,
+				})
+			}
+
 			throw error
 		}
 	}
