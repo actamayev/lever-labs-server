@@ -24,7 +24,7 @@ export default async function login (req: Request, res: Response): Promise<void>
 
 		const doPasswordsMatch = await Hash.checkPassword(password, credentialsResult.password as HashedString)
 		if (doPasswordsMatch === false) {
-			res.status(400).json({ message: "Wrong Username or Password!" })
+			res.status(400).json({ message: "Wrong username or password!" })
 			return
 		}
 
