@@ -5,9 +5,9 @@ export default class SingleESP32Connection {
 	private isCleaningUp = false
 
 	constructor(
-        public readonly socketId: string,
-        public readonly socket: ExtendedWebSocket,
-        private readonly onDisconnect: (socketId: string) => void
+		public readonly socketId: string,
+		public readonly socket: ExtendedWebSocket,
+		private readonly onDisconnect: (socketId: string) => void
 	) {
 		this.initializeSocket()
 	}
