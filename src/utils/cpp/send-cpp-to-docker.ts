@@ -12,15 +12,20 @@ export default async function compileUserCode(userCode: string, pipUUID: PipUUID
 }
 
 async function compileCode(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
-	const binary = await CompilerContainerManager.getInstance().compile(userCode, pipUUID)
+	try {
+		const binary = await CompilerContainerManager.getInstance().compile(userCode, pipUUID)
 
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-	if (!binary || binary.length === 0) {
-		throw new Error("No binary data received from compilation")
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		if (!binary || binary.length === 0) {
+			throw new Error("No binary data received from compilation")
+		}
+
+		console.info(`Binary size: ${binary.length} bytes`)
+		return binary
+	} catch (error) {
+		console.error(error)
+		throw error
 	}
-
-	console.info(`Binary size: ${binary.length} bytes`)
-	return binary
 }
 
 function validateBinary(binary: Buffer): void {
