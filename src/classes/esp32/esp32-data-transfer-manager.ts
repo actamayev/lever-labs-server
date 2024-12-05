@@ -1,15 +1,6 @@
 import Singleton from "../singleton"
 import SingleESP32Connection from "./single-esp32-connection"
 
-interface TransferMetadata {
-    event: "new-user-code-meta"
-    chunkIndex: number
-    totalChunks: number
-    totalSize: number
-    isLast: boolean
-    chunkSize: number
-}
-
 export default class ESP32DataTransferManager extends Singleton {
 	private readonly chunkSize = 128 * 1024 // 128KB
 	private readonly defaultChunkDelay = 300 // ms

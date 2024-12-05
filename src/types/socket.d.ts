@@ -22,8 +22,16 @@ declare global {
 		isAlive: boolean
 	}
 
-	type DisconnectReason = "ping_timeout" | "ping_failed" | "socket_closed" |
-    "socket_error" | "disposed";
+	type DisconnectReason = "ping_timeout" | "ping_failed" | "socket_closed" | "socket_error" | "disposed"
+
+	interface TransferMetadata {
+		event: "new-user-code-meta"
+		chunkIndex: number
+		totalChunks: number
+		totalSize: number
+		isLast: boolean
+		chunkSize: number
+	}
 }
 
 export {}
