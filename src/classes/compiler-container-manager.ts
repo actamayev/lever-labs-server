@@ -27,16 +27,21 @@ export default class CompilerContainerManager extends Singleton {
 	}
 
 	public async compile(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
-		if (_.isUndefined(this.environment)) {
-			if (_.isUndefined(this.localCompilationManagerInstance)) {
-				throw Error("Can't find localCompilationManagerInstance")
+		try {
+			if (_.isUndefined(this.environment)) {
+				if (_.isUndefined(this.localCompilationManagerInstance)) {
+					throw Error("Can't find localCompilationManagerInstance")
+				}
+				return await this.localCompilationManagerInstance.compileLocal(userCode, pipUUID)
+			} else {
+				if (_.isUndefined(this.ecsManagerInstance)) {
+					throw Error("Can't find ecsManagerInstance")
+				}
+				return this.ecsManagerInstance.compileECS(userCode, pipUUID)
 			}
-			return await this.localCompilationManagerInstance.compileLocal(userCode, pipUUID)
-		} else {
-			if (_.isUndefined(this.ecsManagerInstance)) {
-				throw Error("Can't find ecsManagerInstance")
-			}
-			return this.ecsManagerInstance.compileECS(userCode, pipUUID)
+		} catch (error) {
+			console.error(error)
+			throw error
 		}
 	}
 }

@@ -27,7 +27,7 @@ model credentials {
 
 	auth_method                                                 AuthMethods
 
-	email__encrypted                                            String
+	email__encrypted                                            String @unique
 
 	created_at                                                  DateTime @default(now())
 	updated_at                                                  DateTime @default(now()) @updatedAt
@@ -72,4 +72,12 @@ model user_pip_uuid_map {
 	@@index([user_id], name: "user_pip_uuid_map__user_id_idx")
 	@@index([pip_uuid_id], name: "user_pip_uuid_map__pip_uuid_id_idx")
 	@@unique([user_id, pip_uuid_id])
+}
+
+model email_update_subscriber {
+	email_update_subscriber_id									Int       @id @default(autoincrement())
+	email__encrypted                                            String @unique
+
+	created_at                                                  DateTime  @default(now())
+	is_active                                                   Boolean  @default(true)
 }

@@ -192,6 +192,7 @@ export default class LocalCompilationManager extends Singleton {
 				await execAsync("docker exec cpp-compiler-instance rm -rf /workspace-temp")
 			}
 
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!stdout || stdout.length === 0) {
 				throw new Error("No binary output received from container")
 			}
