@@ -9,6 +9,7 @@ import ESP32DataTransferManager from "./esp32-data-transfer-manager"
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
 	private readonly esp32DataTransferManager: ESP32DataTransferManager
+	// This map is redundant, but it's faster to search this map for a uuid directly than finding from the connections map
 	private socketToPip = new Map<string, PipUUID>()
 
 	private constructor(private readonly wss: WSServer) {
