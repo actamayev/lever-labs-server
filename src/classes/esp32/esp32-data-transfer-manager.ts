@@ -28,15 +28,11 @@ export default class ESP32DataTransferManager extends Singleton {
 	public async transferBinaryData(
 		connection: SingleESP32Connection,
 		binary: Buffer,
-		// options: TransferOptions = {}
 	): Promise<void> {
 		// Pause ping-pong checks during transfer
 		// TODO: Make sure this is paused
 		// this.pingManager.clearPingInterval(socketId)
 
-		// Setup status handler
-
-		// Prepare data
 		const chunks = Math.ceil(binary.length / this.chunkSize)
 		console.info(`Starting transfer of ${binary.length} bytes in ${chunks} chunks`)
 
