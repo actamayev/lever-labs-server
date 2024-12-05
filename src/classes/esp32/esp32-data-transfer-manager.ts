@@ -29,10 +29,6 @@ export default class ESP32DataTransferManager extends Singleton {
 		connection: SingleESP32Connection,
 		binary: Buffer,
 	): Promise<void> {
-		// Pause ping-pong checks during transfer
-		// TODO: Make sure this is paused
-		// this.pingManager.clearPingInterval(socketId)
-
 		const chunks = Math.ceil(binary.length / this.chunkSize)
 		console.info(`Starting transfer of ${binary.length} bytes in ${chunks} chunks`)
 
