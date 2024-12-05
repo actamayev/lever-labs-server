@@ -1,4 +1,5 @@
 import { WebSocket } from "ws"
+import ESP32Connection from "../classes/esp32/single-esp32-connection"
 
 declare global {
 	interface PreviouslyConnectedPipUUIDs {
@@ -14,12 +15,15 @@ declare global {
 	type ESP32SocketConnectionInfo = {
 		socketId: string
 		status: ESPConnectionStatus
-		socket: ExtendedWebSocket
+		connection: ESP32Connection
 	}
 
 	interface ExtendedWebSocket extends WebSocket {
 		isAlive: boolean
 	}
+
+	type DisconnectReason = "ping_timeout" | "ping_failed" | "socket_closed" |
+    "socket_error" | "disposed";
 }
 
 export {}
