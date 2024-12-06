@@ -66,6 +66,7 @@ export default class LocalCompilationManager extends Singleton {
 
 			const { stdout } = await execAsync(
 				`docker run -d \
+				--platform linux/amd64 \
 				--name firmware-compiler-instance \
 				--cpus=2 \
 				--memory=2g \
