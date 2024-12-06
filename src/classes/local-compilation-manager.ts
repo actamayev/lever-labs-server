@@ -66,16 +66,18 @@ export default class LocalCompilationManager extends Singleton {
 
 			const { stdout } = await execAsync(
 				`docker run -d \
-                --name cpp-compiler-instance \
-                --cpus=2 \
-                --memory=2g \
+				--name firmware-compiler-instance \
+				--cpus=2 \
+				--memory=2g \
 				-e ENVIRONMENT=local \
-                --memory-swap=4g \
-                --memory-swappiness=60 \
-                --shm-size=512m \
-                -v "${this.localFirmwarePath}:/workspace" \
-                -v "pio-cache:/root/.platformio" \
-                cpp-compiler tail -f /dev/null`
+				-e FIRMWARE_SOURCE=/firmware \
+				--memory-swap=4g \
+				--memory-swappiness=60 \
+				--shm-size=512m \
+				-v "${this.localFirmwarePath}:/firmware:ro" \
+				-v "cpp-workspace-vol:/workspace" \
+				-v "pio-cache:/root/.platformio" \
+				firmware-compiler:latest tail -f /dev/null`
 			)
 
 			this.containerId = stdout.trim()
@@ -91,7 +93,7 @@ export default class LocalCompilationManager extends Singleton {
 
 	private async cleanup(): Promise<void> {
 		try {
-			await execAsync("docker rm -f cpp-compiler-instance")
+			await execAsync("docker rm -f firmware-compiler-instance")
 		} catch (error) {
 			if (!(error as Error).message.includes("No such container")) {
 				console.error(error)
@@ -107,7 +109,7 @@ export default class LocalCompilationManager extends Singleton {
 			console.log("Warming up container...")
 			const dummyCode = "delay(1000);"
 			const dummyPipUUID = "12345" as PipUUID
-			await execAsync("docker exec cpp-compiler-instance mkdir -p /workspace-temp")
+			await execAsync("docker exec firmware-compiler-instance mkdir -p /workspace-temp")
 			await this.executeCompilation(this.containerId, dummyCode, dummyPipUUID, true)
 			this.isWarmedUp = true
 			console.log("Container warmup complete")
@@ -147,7 +149,6 @@ export default class LocalCompilationManager extends Singleton {
 	}
 
 
-	// eslint-disable-next-line max-lines-per-function
 	private async executeCompilation(
 		containerId: string,
 		userCode: string,
@@ -159,37 +160,27 @@ export default class LocalCompilationManager extends Singleton {
 				console.log(`Compiling code in container: ${containerId}`)
 			}
 
-			const escapedUserCode = sanitizeUserCode(userCode)
-
-			const commandParts = [
-				"docker",
-				"exec",
-				"-e",
-				`USER_CODE='${escapedUserCode}'`,
-				"-e",
-				"ENVIRONMENT=local",
-				"-e",
-				`PIP_ID=${pipUUID}`
-			]
-
-			if (isWarmup) {
-				commandParts.push("-e", "WORKSPACE_DIR=/workspace-temp")
-			}
-
-			commandParts.push(
-				"cpp-compiler-instance",
-				"/entrypoint.sh"
+			await execAsync(
+				`docker exec \
+				-e USER_CODE='${sanitizeUserCode(userCode)}' \
+				-e ENVIRONMENT=local \
+				-e FIRMWARE_SOURCE=/firmware \
+				-e PIP_ID=${pipUUID} \
+				${isWarmup ? "-e WORKSPACE_DIR=/workspace-temp" : ""} \
+				firmware-compiler-instance \
+				bash -c "/entrypoint.sh >/dev/null"`,  // Redirect stdout to null
+				{ maxBuffer: 5 * 1024 * 1024 }  // Increase stderr buffer
 			)
 
-			const { stdout } = await execAsync(commandParts.join(" "), {
-				encoding: "buffer",
-				maxBuffer: 10 * 1024 * 1024,
-				shell: "/bin/bash",
-			})
+			// Then just get the binary file with smaller buffer
+			const { stdout } = await execAsync(
+				"docker exec firmware-compiler-instance cat /workspace/.pio/build/local/firmware.bin",
+				{ encoding: "buffer" }
+			)
 
 			// Clean up temp workspace after warmup
 			if (isWarmup) {
-				await execAsync("docker exec cpp-compiler-instance rm -rf /workspace-temp")
+				await execAsync("docker exec firmware-compiler-instance rm -rf /workspace-temp")
 			}
 
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -215,7 +206,7 @@ export default class LocalCompilationManager extends Singleton {
 			}
 
 			try {
-				const { stdout: logs } = await execAsync("docker logs cpp-compiler-instance")
+				const { stdout: logs } = await execAsync("docker logs firmware-compiler-instance")
 				console.error("Container logs:", logs)
 			} catch (logError) {
 				console.error("Failed to get container logs:", logError)

@@ -56,5 +56,4 @@ export default class S3Manager extends Singleton {
 			throw error
 		}
 	}
-
 }
