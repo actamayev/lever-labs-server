@@ -149,7 +149,6 @@ export default class LocalCompilationManager extends Singleton {
 		}
 	}
 
-
 	private async executeCompilation(
 		containerId: string,
 		userCode: string,
