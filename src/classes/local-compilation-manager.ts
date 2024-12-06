@@ -178,14 +178,10 @@ export default class LocalCompilationManager extends Singleton {
 				{ encoding: "buffer" }
 			)
 
-			console.log("First 10 bytes:", stdout.slice(0, 10))
-			console.log("First byte as string:", stdout.slice(0, 1).toString())
-			console.log("First 20 chars as string:", stdout.slice(0, 20).toString())
-
 			// Clean up temp workspace after warmup
-			// if (isWarmup) {
-			// 	await execAsync("docker exec firmware-compiler-instance rm -rf /workspace-temp")
-			// }
+			if (isWarmup) {
+				await execAsync("docker exec firmware-compiler-instance rm -rf /workspace-temp")
+			}
 
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!stdout || stdout.length === 0) {
