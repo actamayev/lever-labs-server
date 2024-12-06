@@ -149,7 +149,6 @@ export default class LocalCompilationManager extends Singleton {
 	}
 
 
-	// eslint-disable-next-line max-lines-per-function
 	private async executeCompilation(
 		containerId: string,
 		userCode: string,
@@ -161,46 +160,32 @@ export default class LocalCompilationManager extends Singleton {
 				console.log(`Compiling code in container: ${containerId}`)
 			}
 
-			const escapedUserCode = sanitizeUserCode(userCode)
-
-			const commandParts = [
-				"docker",
-				"exec",
-				"-e",
-				`USER_CODE='${escapedUserCode}'`,
-				"-e",
-				"ENVIRONMENT=local",
-				"-e",
-				"FIRMWARE_SOURCE=/firmware",
-				"-e",
-				`PIP_ID=${pipUUID}`
-			]
-
-			if (isWarmup) {
-				commandParts.push("-e", "WORKSPACE_DIR=/workspace-temp")
-			}
-
-			commandParts.push(
-				"firmware-compiler-instance",
-				"bash",  // Add this
-				"-c",    // Add this
-				"'cd /workspace/.pio/build/local && cat firmware.bin'"  // Add this - explicit path
+			await execAsync(
+				`docker exec \
+				-e USER_CODE='${sanitizeUserCode(userCode)}' \
+				-e ENVIRONMENT=local \
+				-e FIRMWARE_SOURCE=/firmware \
+				-e PIP_ID=${pipUUID} \
+				${isWarmup ? "-e WORKSPACE_DIR=/workspace-temp" : ""} \
+				firmware-compiler-instance \
+				bash -c "/entrypoint.sh >/dev/null"`,  // Redirect stdout to null
+				{ maxBuffer: 5 * 1024 * 1024 }  // Increase stderr buffer
 			)
 
-			const { stdout } = await execAsync(commandParts.join(" "), {
-				encoding: "buffer",
-				maxBuffer: 10 * 1024 * 1024,
-				shell: "/bin/bash",
-			})
+			// Then just get the binary file with smaller buffer
+			const { stdout } = await execAsync(
+				"docker exec firmware-compiler-instance cat /workspace/.pio/build/local/firmware.bin",
+				{ encoding: "buffer" }
+			)
 
 			console.log("First 10 bytes:", stdout.slice(0, 10))
 			console.log("First byte as string:", stdout.slice(0, 1).toString())
 			console.log("First 20 chars as string:", stdout.slice(0, 20).toString())
 
 			// Clean up temp workspace after warmup
-			if (isWarmup) {
-				await execAsync("docker exec firmware-compiler-instance rm -rf /workspace-temp")
-			}
+			// if (isWarmup) {
+			// 	await execAsync("docker exec firmware-compiler-instance rm -rf /workspace-temp")
+			// }
 
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!stdout || stdout.length === 0) {
