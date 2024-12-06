@@ -171,6 +171,8 @@ export default class LocalCompilationManager extends Singleton {
 				"-e",
 				"ENVIRONMENT=local",
 				"-e",
+				"FIRMWARE_SOURCE=/firmware",
+				"-e",
 				`PIP_ID=${pipUUID}`
 			]
 
@@ -180,7 +182,9 @@ export default class LocalCompilationManager extends Singleton {
 
 			commandParts.push(
 				"firmware-compiler-instance",
-				"/entrypoint.sh"
+				"bash",  // Add this
+				"-c",    // Add this
+				"'cd /workspace/.pio/build/local && cat firmware.bin'"  // Add this - explicit path
 			)
 
 			const { stdout } = await execAsync(commandParts.join(" "), {
@@ -188,6 +192,10 @@ export default class LocalCompilationManager extends Singleton {
 				maxBuffer: 10 * 1024 * 1024,
 				shell: "/bin/bash",
 			})
+
+			console.log("First 10 bytes:", stdout.slice(0, 10))
+			console.log("First byte as string:", stdout.slice(0, 1).toString())
+			console.log("First 20 chars as string:", stdout.slice(0, 20).toString())
 
 			// Clean up temp workspace after warmup
 			if (isWarmup) {
