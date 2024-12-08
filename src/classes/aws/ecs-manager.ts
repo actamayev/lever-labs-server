@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { AssignPublicIp, DescribeTasksCommand, ECSClient, RunTaskCommand, RunTaskCommandInput } from "@aws-sdk/client-ecs"
+import { DescribeTasksCommand, ECSClient, RunTaskCommand, RunTaskCommandInput } from "@aws-sdk/client-ecs"
 import S3Manager from "./s3-manager"
 import Singleton from "../singleton"
 import SecretsManager from "./secrets-manager"
@@ -63,23 +63,14 @@ export default class ECSManager extends Singleton {
 			const params: RunTaskCommandInput = {
 				cluster: this.ecsConfig.cluster,
 				taskDefinition: this.ecsConfig.taskDefinition,
-				launchType: "FARGATE",
-				networkConfiguration: {
-					awsvpcConfiguration: {
-						subnets: [this.ecsConfig.subnet],
-						securityGroups: [this.ecsConfig.securityGroup],
-						assignPublicIp: AssignPublicIp.ENABLED
-					}
-				},
+				launchType: "EC2",
 				overrides: {
 					containerOverrides: [{
-						name: `${process.env.NODE_ENV}-firmware-compiler`,
+						name: `${process.env.NODE_ENV}-firmware-compiler-ec2-task`,
 						environment: [
 							{ name: "USER_CODE", value: sanitizeUserCode(userCode) },
 							{ name: "ENVIRONMENT", value: process.env.NODE_ENV },
 							{ name: "PIP_ID", value: pipUUID},
-							// value: `-DDEFAULT_ENVIRONMENT=\\"${process.env.NODE_ENV}\\" -DDEFAULT_PIP_ID=\\"${pipUUID}\\"`
-							// },
 							{ name: "COMPILED_BINARY_OUTPUT_BUCKET", value: this.ecsConfig.compiledBinaryOutputBucket },
 							{ name: "OUTPUT_KEY", value: outputKeyValue }
 						]
