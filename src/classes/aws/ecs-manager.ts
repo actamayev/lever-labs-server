@@ -21,7 +21,7 @@ export default class ECSManager extends Singleton {
 
 			region: this.region
 		})
-		void this.initializeECSConfig()
+		void this.initialize()
 	}
 
 	public static getInstance(): ECSManager {
@@ -29,6 +29,11 @@ export default class ECSManager extends Singleton {
 			ECSManager.instance = new ECSManager()
 		}
 		return ECSManager.instance
+	}
+
+	private async initialize(): Promise<void> {
+		await this.initializeECSConfig()
+		await this.warmupEC2Instance()
 	}
 
 	private async initializeECSConfig(): Promise<void> {
@@ -53,6 +58,34 @@ export default class ECSManager extends Singleton {
 		} catch (error) {
 			console.error(error)
 			// Not throwing error because this is in the constructor (the instantiation of this class doesn't occur inside of a try block)
+		}
+	}
+
+	private async warmupEC2Instance(): Promise<void> {
+		try {
+			console.info("Starting warmup")
+			// Run a warmup task
+			const warmupParams: RunTaskCommandInput = {
+				cluster: this.ecsConfig.cluster,
+				taskDefinition: this.ecsConfig.taskDefinition,
+				launchType: "EC2",
+				overrides: {
+					containerOverrides: [{
+						name: `${process.env.NODE_ENV}-firmware-compiler-ec2-task`,
+						environment: [
+							{ name: "USER_CODE", value: "delay(1000);" },
+							{ name: "ENVIRONMENT", value: process.env.NODE_ENV },
+							{ name: "PIP_ID", value: "warmup" },
+							{ name: "WARMUP", value: "true" }
+						]
+					}]
+				}
+			}
+
+			await this.ecsClient.send(new RunTaskCommand(warmupParams))
+			console.info("EC2 instance warmed up")
+		} catch (error) {
+			console.error("Warmup failed:", error)
 		}
 	}
 
