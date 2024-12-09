@@ -4,6 +4,7 @@ import SingleESP32Connection from "./single-esp32-connection"
 export default class ESP32DataTransferManager extends Singleton {
 	private readonly chunkSize = 128 * 1024 // 128KB
 	private readonly defaultChunkDelay = 300 // ms
+	private readonly FINAL_UPDATE_TIMEOUT = 20000
 
 	private constructor() {
 		super()
@@ -16,6 +17,35 @@ export default class ESP32DataTransferManager extends Singleton {
 		return ESP32DataTransferManager.instance
 	}
 
+	private waitForUpdateCompletion(connection: SingleESP32Connection): Promise<void> {
+		return new Promise((resolve, reject) => {
+			const timeout = setTimeout(() => {
+				reject(new Error("Timeout waiting for update completion"))
+			}, this.FINAL_UPDATE_TIMEOUT)
+
+			const messageHandler = (data: string): void => {
+				try {
+					const message = JSON.parse(data)
+					if (message.event === "update_status") {
+						if (message.status === "complete") {
+							clearTimeout(timeout)
+							connection.socket.off("message", messageHandler)
+							resolve()
+						} else if (message.status === "failed") {
+							clearTimeout(timeout)
+							connection.socket.off("message", messageHandler)
+							reject(new Error(`Update failed: ${message.error || "Unknown error"}`))
+						}
+					}
+				} catch (e) {
+					console.error("e:", e)
+				}
+			}
+
+			connection.socket.on("message", messageHandler)
+		})
+	}
+
 	public async transferBinaryData(
 		connection: SingleESP32Connection,
 		binary: Buffer,
@@ -23,18 +53,22 @@ export default class ESP32DataTransferManager extends Singleton {
 		const chunks = Math.ceil(binary.length / this.chunkSize)
 		console.info(`Starting transfer of ${binary.length} bytes in ${chunks} chunks`)
 
+		connection.pausePing()
 		const statusHandler = this.createStatusHandler()
 		connection.socket.on("message", statusHandler)
 		try {
 			// Send all chunks
 			await this.sendAllChunks(connection, binary, chunks)
 			console.info(`Successfully transferred all ${chunks} chunks`)
+			await this.waitForUpdateCompletion(connection)
+			console.info("Update completed successfully")
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (error: any) {
 			console.error("Transfer failed:", error)
 			throw new Error(`Transfer failed: ${error?.message || "Unknown reason"}`)
 		} finally {
 			connection.socket.off("message", statusHandler)
+			connection.resumePing()
 		}
 	}
 
@@ -70,7 +104,7 @@ export default class ESP32DataTransferManager extends Singleton {
 				throw new Error(`Empty chunk detected at index ${chunkIndex}`)
 			}
 
-			console.debug(`Sending chunk ${chunkIndex}/${totalChunks}:`, {
+			console.debug(`Sending chunk ${chunkIndex + 1}/${totalChunks}:`, {
 				start,
 				end,
 				size: chunk.length,

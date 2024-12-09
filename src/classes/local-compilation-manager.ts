@@ -85,7 +85,6 @@ export default class LocalCompilationManager extends Singleton {
 			console.log("Started compiler container with ID:", this.containerId)
 
 			await execAsync(`docker inspect ${this.containerId}`)
-
 		} catch (error) {
 			console.error("Failed to start container:", error)
 			throw error
