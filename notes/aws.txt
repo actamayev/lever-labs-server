@@ -19,9 +19,9 @@ Production:
 
 To SSH into AWS:
 	Staging:
-		ssh -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ubuntu@3.94.205.5
+		aws ec2-instance-connect ssh --instance-id i-0151f137cb9067c1c --os-user ubuntu
 	Prod:
-		ssh -i /Users/arieltamayev/Documents/bdr-production-ec2.pem ubuntu@54.81.65.153
+		aws ec2-instance-connect ssh --instance-id i-0af414ad7e5d89c3e --os-user ubuntu
 
 In AWS:
 `cd blue-dot-robots`
