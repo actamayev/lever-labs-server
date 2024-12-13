@@ -1,0 +1,58 @@
+Note: This process doesn't end up deleting the publicIP
+
+1. Create a security group for the EIC endpoint:
+	`aws ec2 create-security-group \
+    --group-name eic-endpoint-sg \
+    --description "Security group for EIC Endpoint"`
+
+2. Modify the EC2 security group to allow inbound SSH traffic
+	`aws ec2 authorize-security-group-ingress \
+    --group-id sg-00cee4c86fd5edf03 \
+    --protocol tcp \
+    --port 22 \
+    --source-group <eic-endpoint-sg-id>`
+
+3. Make sure these IAM permissions are assigned to the user
+	{
+		"Version": "2012-10-17",
+		"Statement": [
+			{
+				"Effect": "Allow",
+				"Action": [
+					"ec2-instance-connect:OpenTunnel",
+					"ec2-instance-connect:SendSSHPublicKey"
+				],
+				"Resource": "*"
+			}
+		]
+	}
+
+4. Create the endpoint
+	Retrieve the subnet ID of the EC2 instance: `aws ec2 describe-instances --instance-id i-0151f137cb9067c1c --query 'Reservations[].Instances[].SubnetId' --output text`
+
+	`aws ec2 create-instance-connect-endpoint \
+		--subnet-id <your-subnet-id> \
+		--security-group-id sg-0c0e5b9aa437670f3`
+
+4. Wait for the EIC endpoint to be created (status should change to completed/created)
+	Track progress: `aws ec2 describe-instance-connect-endpoints`
+
+5. Connect:
+	`aws ec2-instance-connect ssh --instance-id i-0151f137cb9067c1c --os-user ubuntu`
+
+To remove the currnt public IP from the instance, need to stop and start it (a simple reboot won't change the IP)
+6. 
+	# Stop the instance
+	`aws ec2 stop-instances --instance-ids i-0151f137cb9067c1c`
+
+	# Wait for it to stop fully
+	`aws ec2 wait instance-stopped --instance-ids i-0151f137cb9067c1c`
+
+	# Start it again
+	`aws ec2 start-instances --instance-ids i-0151f137cb9067c1c`
+
+7. Optional (for future-proofing): This will make it so that all future instances started in this subnet don't get auto-assigned a public IP
+	`aws ec2 modify-subnet-attribute \
+		--subnet-id subnet-0959152cd39e174a7 \
+		--no-map-public-ip-on-launch`
+

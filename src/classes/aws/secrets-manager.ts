@@ -137,7 +137,7 @@ export default class SecretsManager extends Singleton {
 		if (process.env.NODE_ENV === "staging") {
 			return "blue-dot-staging-secrets"
 		} else if (process.env.NODE_ENV === "production") {
-			return "blue-dot-prod-secrets"
+			return "blue-dot-production-secrets"
 		}
 		return ""
 	}

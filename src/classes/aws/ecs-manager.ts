@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { AssignPublicIp, DescribeTasksCommand, ECSClient, RunTaskCommand, RunTaskCommandInput } from "@aws-sdk/client-ecs"
+import { DescribeTasksCommand, ECSClient, RunTaskCommand, RunTaskCommandInput } from "@aws-sdk/client-ecs"
 import S3Manager from "./s3-manager"
 import Singleton from "../singleton"
 import SecretsManager from "./secrets-manager"
@@ -21,7 +21,7 @@ export default class ECSManager extends Singleton {
 
 			region: this.region
 		})
-		void this.initializeECSConfig()
+		void this.initialize()
 	}
 
 	public static getInstance(): ECSManager {
@@ -29,6 +29,11 @@ export default class ECSManager extends Singleton {
 			ECSManager.instance = new ECSManager()
 		}
 		return ECSManager.instance
+	}
+
+	private async initialize(): Promise<void> {
+		await this.initializeECSConfig()
+		await this.warmupEC2Instance()
 	}
 
 	private async initializeECSConfig(): Promise<void> {
@@ -56,6 +61,34 @@ export default class ECSManager extends Singleton {
 		}
 	}
 
+	private async warmupEC2Instance(): Promise<void> {
+		try {
+			console.info("Starting warmup")
+			// Run a warmup task
+			const warmupParams: RunTaskCommandInput = {
+				cluster: this.ecsConfig.cluster,
+				taskDefinition: this.ecsConfig.taskDefinition,
+				launchType: "EC2",
+				overrides: {
+					containerOverrides: [{
+						name: `${process.env.NODE_ENV}-firmware-compiler-ec2-task`,
+						environment: [
+							{ name: "USER_CODE", value: "delay(1000);" },
+							{ name: "ENVIRONMENT", value: process.env.NODE_ENV },
+							{ name: "PIP_ID", value: "warmup" },
+							{ name: "WARMUP", value: "true" }
+						]
+					}]
+				}
+			}
+
+			await this.ecsClient.send(new RunTaskCommand(warmupParams))
+			console.info("EC2 instance warmed up")
+		} catch (error) {
+			console.error("Warmup failed:", error)
+		}
+	}
+
 	public async compileECS(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
 		try {
 			const outputKeyValue = `${pipUUID}/output.bin`
@@ -63,23 +96,14 @@ export default class ECSManager extends Singleton {
 			const params: RunTaskCommandInput = {
 				cluster: this.ecsConfig.cluster,
 				taskDefinition: this.ecsConfig.taskDefinition,
-				launchType: "FARGATE",
-				networkConfiguration: {
-					awsvpcConfiguration: {
-						subnets: [this.ecsConfig.subnet],
-						securityGroups: [this.ecsConfig.securityGroup],
-						assignPublicIp: AssignPublicIp.ENABLED
-					}
-				},
+				launchType: "EC2",
 				overrides: {
 					containerOverrides: [{
-						name: `${process.env.NODE_ENV}-firmware-compiler`,
+						name: `${process.env.NODE_ENV}-firmware-compiler-ec2-task`,
 						environment: [
 							{ name: "USER_CODE", value: sanitizeUserCode(userCode) },
 							{ name: "ENVIRONMENT", value: process.env.NODE_ENV },
 							{ name: "PIP_ID", value: pipUUID},
-							// value: `-DDEFAULT_ENVIRONMENT=\\"${process.env.NODE_ENV}\\" -DDEFAULT_PIP_ID=\\"${pipUUID}\\"`
-							// },
 							{ name: "COMPILED_BINARY_OUTPUT_BUCKET", value: this.ecsConfig.compiledBinaryOutputBucket },
 							{ name: "OUTPUT_KEY", value: outputKeyValue }
 						]
