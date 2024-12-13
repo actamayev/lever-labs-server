@@ -57,6 +57,12 @@ Other:
 - Update linux packages
 	sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
 
+To get into ECS EC2 instance:
+	Staging:
+		ssh -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem user@184.73.137.225
+	Production:
+		N/A
+
 To get into DB:
 	For Staging, access via PGAdmin
 	For production:
