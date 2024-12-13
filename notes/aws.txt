@@ -2,12 +2,12 @@ To copy important files to AWS, run the following commands from the blue-dot-rob
 Locally, run `npm run build`
 
 Staging:
-	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem -r ./dist ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots
-	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem -r ./prisma ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./package.json ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots
-	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./package-lock.json ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots
-	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./.env.production ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots/dist/src/.env
-	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./ecosystem.config.js ubuntu@3.94.205.5:/home/ubuntu/blue-dot-robots/dist/src
+	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem -r ./dist ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots
+	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem -r ./prisma ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src
+	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./package.json ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots
+	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./package-lock.json ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots
+	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./.env.production ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src/.env
+	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./ecosystem.config.js ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src
 
 Production:
 	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem -r ./dist ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots
