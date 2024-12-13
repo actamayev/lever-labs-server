@@ -66,6 +66,7 @@ export default class LocalCompilationManager extends Singleton {
 
 			const { stdout } = await execAsync(
 				`docker run -d \
+				--platform linux/amd64 \
 				--name firmware-compiler-instance \
 				--cpus=2 \
 				--memory=2g \
@@ -84,7 +85,6 @@ export default class LocalCompilationManager extends Singleton {
 			console.log("Started compiler container with ID:", this.containerId)
 
 			await execAsync(`docker inspect ${this.containerId}`)
-
 		} catch (error) {
 			console.error("Failed to start container:", error)
 			throw error
@@ -147,7 +147,6 @@ export default class LocalCompilationManager extends Singleton {
 			throw error
 		}
 	}
-
 
 	private async executeCompilation(
 		containerId: string,

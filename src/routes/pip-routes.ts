@@ -61,7 +61,6 @@ pipRoutes.get(
 	isValidPipUUID
 )
 
-// TODO: Comment this out when pushing to staging
 pipRoutes.post(
 	"/compile-and-send-cpp-to-pip",
 	validateCppCode,
