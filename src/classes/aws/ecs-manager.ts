@@ -93,8 +93,8 @@ export default class ECSManager extends Singleton {
 							environment: [
 								{ name: "USER_CODE", value: "delay(1000);" },
 								{ name: "ENVIRONMENT", value: process.env.NODE_ENV },
-								{ name: "PIP_ID", value: "warmup" },
-								{ name: "WARMUP", value: "true" }
+								{ name: "PIP_ID", value: "warmup" }
+								// { name: "WARMUP", value: "true" }
 							]
 						}]
 					}
@@ -154,45 +154,87 @@ export default class ECSManager extends Singleton {
 	// eslint-disable-next-line max-lines-per-function
 	public async compileECS(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
 		try {
-			// Make sure we have a running container
 			if (!this.runningTaskArn) {
 				await this.ensureCompilerContainerRunning()
 			}
 
 			const outputKeyValue = `${pipUUID}/output.bin`
 
-			// Fix the command type issue by joining the array into a single string
+			// Debug commands to check caching
+			const debugCommands = [
+				"echo '=== Checking PlatformIO Cache ==='",
+				"ls -la /root/.platformio/cache",
+				"echo '=== Checking Workspace ==='",
+				"ls -la /workspace",
+				"echo '=== Checking Build Directory ==='",
+				"ls -la /workspace/.pio/build/staging",
+				"echo '=== Current Environment ==='",
+				"env",
+			].join(" && ")
+
+			// Execute debug commands
+			const debugParams: ExecuteCommandCommandInput = {
+				cluster: this.ecsConfig.cluster,
+				task: this.runningTaskArn,
+				container: `${process.env.NODE_ENV}-firmware-compiler-ec2-task`,
+				interactive: true,
+				command: `/bin/bash -c "${debugCommands}"`
+			}
+
+			console.log("Running debug commands...")
+			await this.ecsClient.send(new ExecuteCommandCommand(debugParams))
+
+			// Clean workspace before compilation
+			const cleanCommand = "rm -rf /workspace/.pio/build/* /workspace/src/*"
+			const cleanParams: ExecuteCommandCommandInput = {
+				cluster: this.ecsConfig.cluster,
+				task: this.runningTaskArn,
+				container: `${process.env.NODE_ENV}-firmware-compiler-ec2-task`,
+				interactive: true,
+				command: `/bin/bash -c "${cleanCommand}"`
+			}
+
+			console.log("Cleaning workspace...")
+			await this.ecsClient.send(new ExecuteCommandCommand(cleanParams))
+
+			// Original compilation command
 			const commandString = [
-				"USER_CODE='" + sanitizeUserCode(userCode) + "'",
-				"PIP_ID='" + pipUUID + "'",
-				"OUTPUT_KEY='" + outputKeyValue + "'",
-				"ENVIRONMENT='" + process.env.NODE_ENV + "'",
-				"COMPILED_BINARY_OUTPUT_BUCKET='" + this.ecsConfig.compiledBinaryOutputBucket + "'",
-				"/entrypoint.sh"
-			].join(" ")
+				"set -x",  // Enable command tracing
+				"cd /workspace",
+				"echo 'Starting compilation at: ' $(date)",
+				"ls -la /workspace",  // Show workspace state before
+				"echo 'User code:' '$USER_CODE'",
+				"bash -x /entrypoint.sh 2>&1 | tee /tmp/compile.log",  // Capture full entrypoint output
+				"echo 'Compilation finished at: ' $(date)",
+				"echo 'Build output:'",
+				"ls -la /workspace/.pio/build/staging/",
+				"echo 'Binary hash:'",
+				"md5sum /workspace/.pio/build/staging/firmware.bin",
+				"aws s3 cp --debug /workspace/.pio/build/staging/firmware.bin s3://${COMPILED_BINARY_OUTPUT_BUCKET}/${OUTPUT_KEY}",
+				"echo 'Upload finished at: ' $(date)"
+			].join(" && ")
 
-			console.log(commandString)
-
-			// Execute compilation in the running container
 			const execParams: ExecuteCommandCommandInput = {
 				cluster: this.ecsConfig.cluster,
 				task: this.runningTaskArn,
 				container: `${process.env.NODE_ENV}-firmware-compiler-ec2-task`,
 				interactive: true,
-				command: `/bin/bash -c "${commandString}"`  // Now a single string
+				command: `/bin/bash -c "${commandString}"`
 			}
 
 			console.log("Executing compilation in container...")
 			await this.ecsClient.send(new ExecuteCommandCommand(execParams))
 
-			// Add retry logic for S3 fetch
+			// Add retry logic for S3 fetch with logging
 			const maxRetries = 30
 			let retries = 0
 			while (retries < maxRetries) {
 				try {
-					return await S3Manager.getInstance().fetchOutputFromS3BinaryBucket(outputKeyValue)
+					const output = await S3Manager.getInstance().fetchOutputFromS3BinaryBucket(outputKeyValue)
+					console.log(`Successfully fetched binary from S3, size: ${output.length} bytes`)
+					return output
 				} catch (error) {
-					// eslint-disable-next-line max-depth
+					console.log(`Retry ${retries + 1}/${maxRetries} fetching from S3...`)
 					if (retries === maxRetries - 1) throw error
 					await new Promise(resolve => setTimeout(resolve, 1000))
 					retries++
@@ -202,8 +244,8 @@ export default class ECSManager extends Singleton {
 			throw new Error("Failed to fetch compilation output")
 		} catch (error) {
 			// If the task died, clear the cached ARN and retry once
-			if ((error as any)?.message?.includes("execute command was not enabled")) {
-				console.log("Execute command not enabled, attempting to start new task...")
+			if ((error as any)?.message?.includes("STOPPED")) {
+				console.log("Container stopped, attempting restart...")
 				this.runningTaskArn = undefined
 				return this.compileECS(userCode, pipUUID)
 			}
