@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import _ from "lodash"
-import { DescribeTasksCommand, ECSClient, RunTaskCommand, RunTaskCommandInput } from "@aws-sdk/client-ecs"
+import { DescribeTasksCommand, ECSClient, ExecuteCommandCommand,
+	ExecuteCommandCommandInput, ListTasksCommand, RunTaskCommand, RunTaskCommandInput } from "@aws-sdk/client-ecs"
 import S3Manager from "./s3-manager"
 import Singleton from "../singleton"
 import SecretsManager from "./secrets-manager"
@@ -9,6 +11,7 @@ export default class ECSManager extends Singleton {
 	private secretsManagerInstance: SecretsManager
 	private ecsClient: ECSClient
 	private ecsConfig!: ECSConfig
+	private runningTaskArn: string | undefined = undefined
 
 	private constructor() {
 		super()
@@ -32,8 +35,13 @@ export default class ECSManager extends Singleton {
 	}
 
 	private async initialize(): Promise<void> {
-		await this.initializeECSConfig()
-		await this.warmupEC2Instance()
+		try {
+			await this.initializeECSConfig()
+			await this.ensureCompilerContainerRunning()
+		} catch (error) {
+			console.error("Failed to initialize ECS Manager:", error)
+			// Continue initialization even if container start fails
+		}
 	}
 
 	private async initializeECSConfig(): Promise<void> {
@@ -61,133 +69,145 @@ export default class ECSManager extends Singleton {
 		}
 	}
 
-	private async warmupEC2Instance(): Promise<void> {
+	// eslint-disable-next-line max-lines-per-function
+	private async ensureCompilerContainerRunning(): Promise<void> {
 		try {
-			console.info("Starting warmup")
-			// Run a warmup task
-			const warmupParams: RunTaskCommandInput = {
+			console.log("Checking for running compiler container...")
+
+			const listTasksResponse = await this.ecsClient.send(new ListTasksCommand({
 				cluster: this.ecsConfig.cluster,
-				taskDefinition: this.ecsConfig.taskDefinition,
-				launchType: "EC2",
-				overrides: {
-					containerOverrides: [{
-						name: `${process.env.NODE_ENV}-firmware-compiler-ec2-task`,
-						environment: [
-							{ name: "USER_CODE", value: "delay(1000);" },
-							{ name: "ENVIRONMENT", value: process.env.NODE_ENV },
-							{ name: "PIP_ID", value: "warmup" },
-							{ name: "WARMUP", value: "true" }
-						]
-					}]
+				family: this.ecsConfig.taskDefinition
+			}))
+
+			if (!listTasksResponse.taskArns || listTasksResponse.taskArns.length === 0) {
+				console.log("No compiler container found, starting new one...")
+
+				const startParams: RunTaskCommandInput = {
+					cluster: this.ecsConfig.cluster,
+					taskDefinition: this.ecsConfig.taskDefinition,
+					launchType: "EC2",
+					enableExecuteCommand: true,
+					overrides: {
+						containerOverrides: [{
+							name: `${process.env.NODE_ENV}-firmware-compiler-ec2-task`,
+							environment: [
+								{ name: "USER_CODE", value: "delay(1000);" },
+								{ name: "ENVIRONMENT", value: process.env.NODE_ENV },
+								{ name: "PIP_ID", value: "warmup" },
+								{ name: "WARMUP", value: "true" }
+							]
+						}]
+					}
 				}
-			}
 
-			await this.ecsClient.send(new RunTaskCommand(warmupParams))
-			console.info("EC2 instance warmed up")
-		} catch (error) {
-			console.error("Warmup failed:", error)
-		}
-	}
-
-	public async compileECS(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
-		try {
-			const outputKeyValue = `${pipUUID}/output.bin`
-
-			const params: RunTaskCommandInput = {
-				cluster: this.ecsConfig.cluster,
-				taskDefinition: this.ecsConfig.taskDefinition,
-				launchType: "EC2",
-				overrides: {
-					containerOverrides: [{
-						name: `${process.env.NODE_ENV}-firmware-compiler-ec2-task`,
-						environment: [
-							{ name: "USER_CODE", value: sanitizeUserCode(userCode) },
-							{ name: "ENVIRONMENT", value: process.env.NODE_ENV },
-							{ name: "PIP_ID", value: pipUUID},
-							{ name: "COMPILED_BINARY_OUTPUT_BUCKET", value: this.ecsConfig.compiledBinaryOutputBucket },
-							{ name: "OUTPUT_KEY", value: outputKeyValue }
-						]
-					}]
+				const startResponse = await this.ecsClient.send(new RunTaskCommand(startParams))
+				if (!startResponse.tasks || startResponse.tasks.length === 0) {
+					throw new Error("Failed to start compiler container")
 				}
+
+				this.runningTaskArn = startResponse.tasks[0].taskArn as string
+				await this.waitForContainerStart()
+				console.log("Compiler container started successfully")
+			} else {
+				this.runningTaskArn = listTasksResponse.taskArns[0]
+				console.log("Found existing compiler container:", this.runningTaskArn)
 			}
-
-			const command = new RunTaskCommand(params)
-			const { tasks } = await this.ecsClient.send(command)
-
-			if (!tasks || _.isEmpty(tasks)) {
-				throw new Error("Failed to start ECS task")
-			}
-
-			await this.waitForTaskCompletion(tasks[0].taskArn as string)
-			return await S3Manager.getInstance().fetchOutputFromS3BinaryBucket(outputKeyValue)
 		} catch (error) {
-			console.error(error)
+			console.error("Failed to ensure compiler container is running:", error)
 			throw error
 		}
 	}
 
-	// eslint-disable-next-line complexity, max-lines-per-function
-	private async waitForTaskCompletion(taskArn: string): Promise<void> {
+	private async waitForContainerStart(): Promise<void> {
+		console.log("Waiting for container to start...")
+		const maxAttempts = 30
+		let attempts = 0
+
+		while (attempts < maxAttempts) {
+			const describeCommand = new DescribeTasksCommand({
+				cluster: this.ecsConfig.cluster,
+				tasks: [this.runningTaskArn as string]
+			})
+
+			const { tasks } = await this.ecsClient.send(describeCommand)
+
+			if (!tasks || tasks.length === 0) {
+				throw new Error("Task not found during startup")
+			}
+
+			const task = tasks[0]
+			console.log("Container status:", task.lastStatus)
+
+			if (task.lastStatus === "RUNNING") {
+				return
+			} else if (task.lastStatus === "STOPPED") {
+				throw new Error(`Container stopped during startup: ${task.stoppedReason}`)
+			}
+
+			await new Promise(resolve => setTimeout(resolve, 1000))
+			attempts++
+		}
+
+		throw new Error("Container startup timed out")
+	}
+
+	// eslint-disable-next-line max-lines-per-function
+	public async compileECS(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
 		try {
-			while (true) {
-				const describeCommand = new DescribeTasksCommand({
-					cluster: this.ecsConfig.cluster,
-					tasks: [taskArn]
-				})
-				const { tasks } = await this.ecsClient.send(describeCommand)
-
-				if (!tasks || _.isEmpty(tasks)) {
-					throw new Error("Task not found")
-				}
-
-				const task = tasks[0]
-				console.log("Task Status:", task.lastStatus)
-				console.log("Task Stopped Reason:", task.stoppedReason)
-
-				// Log container details
-				if (task.containers) {
-					task.containers.forEach((container, index) => {
-						console.log(`Container ${index} Details:`)
-						console.log("  Name:", container.name)
-						console.log("  Status:", container.lastStatus)
-						console.log("  Exit Code:", container.exitCode)
-						console.log("  Reason:", container.reason)
-
-						// Log runtime ID if available
-						if (container.runtimeId) {
-							console.log("  Runtime ID:", container.runtimeId)
-						}
-					})
-				}
-
-				// Log network bindings if any
-				if (task.attachments) {
-					console.log("Network Details:", JSON.stringify(task.attachments, null, 2))
-				}
-
-				if (task.lastStatus === "STOPPED") {
-					console.log("Task stopped with full details:", JSON.stringify(task, null, 2))
-
-					if (task.containers?.[0]?.exitCode !== 0) {
-						throw new Error(`ECS task failed: ${task.stoppedReason || "Unknown reason"}`)
-					}
-					return
-				}
-
-				await new Promise((resolve) => setTimeout(resolve, 1000))
+			// Make sure we have a running container
+			if (!this.runningTaskArn) {
+				await this.ensureCompilerContainerRunning()
 			}
+
+			const outputKeyValue = `${pipUUID}/output.bin`
+
+			// Fix the command type issue by joining the array into a single string
+			const commandString = [
+				"USER_CODE='" + sanitizeUserCode(userCode) + "'",
+				"PIP_ID='" + pipUUID + "'",
+				"OUTPUT_KEY='" + outputKeyValue + "'",
+				"ENVIRONMENT='" + process.env.NODE_ENV + "'",
+				"COMPILED_BINARY_OUTPUT_BUCKET='" + this.ecsConfig.compiledBinaryOutputBucket + "'",
+				"/entrypoint.sh"
+			].join(" ")
+
+			console.log(commandString)
+
+			// Execute compilation in the running container
+			const execParams: ExecuteCommandCommandInput = {
+				cluster: this.ecsConfig.cluster,
+				task: this.runningTaskArn,
+				container: `${process.env.NODE_ENV}-firmware-compiler-ec2-task`,
+				interactive: true,
+				command: `/bin/bash -c "${commandString}"`  // Now a single string
+			}
+
+			console.log("Executing compilation in container...")
+			await this.ecsClient.send(new ExecuteCommandCommand(execParams))
+
+			// Add retry logic for S3 fetch
+			const maxRetries = 30
+			let retries = 0
+			while (retries < maxRetries) {
+				try {
+					return await S3Manager.getInstance().fetchOutputFromS3BinaryBucket(outputKeyValue)
+				} catch (error) {
+					// eslint-disable-next-line max-depth
+					if (retries === maxRetries - 1) throw error
+					await new Promise(resolve => setTimeout(resolve, 1000))
+					retries++
+				}
+			}
+
+			throw new Error("Failed to fetch compilation output")
 		} catch (error) {
-			console.error("Task monitoring error:", error)
-
-			// Add additional error context if available
-			if (error instanceof Error) {
-				console.error("Error details:", {
-					message: error.message,
-					name: error.name,
-					stack: error.stack,
-				})
+			// If the task died, clear the cached ARN and retry once
+			if ((error as any)?.message?.includes("execute command was not enabled")) {
+				console.log("Execute command not enabled, attempting to start new task...")
+				this.runningTaskArn = undefined
+				return this.compileECS(userCode, pipUUID)
 			}
-
+			console.error("ECS Task Error:", error)
 			throw error
 		}
 	}
