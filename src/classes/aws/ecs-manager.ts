@@ -2,16 +2,15 @@
 import _ from "lodash"
 import axios from "axios"
 import Singleton from "../singleton"
+import SecretsManager from "./secrets-manager"
 import sanitizeUserCode from "../../utils/cpp/sanitize-user-code"
 
 export default class ECSManager extends Singleton {
-	private compilerEndpoint: string
+	private compilerEndpoint!: string
 
 	private constructor() {
 		super()
-		this.compilerEndpoint = process.env.NODE_ENV === "production"
-			? "http://production-compiler.ec2.internal:3001"
-			: "http://ip-172-31-94-240.ec2.internal:3001"
+		void this.assignCompilerEndpoint()
 	}
 
 	public static getInstance(): ECSManager {
@@ -19,6 +18,16 @@ export default class ECSManager extends Singleton {
 			ECSManager.instance = new ECSManager()
 		}
 		return ECSManager.instance
+	}
+
+	private async assignCompilerEndpoint(): Promise<void> {
+		try {
+			const secretsManagerInstance = SecretsManager.getInstance()
+			this.compilerEndpoint = await secretsManagerInstance.getSecret("COMPILER_ENDPOINT")
+		} catch (error) {
+			console.error(error)
+			throw error
+		}
 	}
 
 	public async compileCode(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
