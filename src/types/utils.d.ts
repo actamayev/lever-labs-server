@@ -12,25 +12,15 @@ declare global {
 	type EncryptionKeys = DeterministicEncryptionKeys
 	// Non-deterministic keys aren't searchable (encrypting the same string yields different results| NonDeterministicEncryptionKeys
 
-	type ECSKeys =
-		"ECS_CLUSTER" |
-		"ECS_TASK_DEFINITION" |
-		"ECS_SUBNET" |
-		"ECS_SECURITY_GROUP"
-
-	type S3Keys =
-		"COMPILED_BINARY_OUTPUT_BUCKET"
-
 	type SecretKeys =
 		EncryptionKeys |
-		ECSKeys |
-		S3Keys |
 		"AWS_ACCESS_KEY_ID" |
 		"AWS_SECRET_ACCESS_KEY" |
 		"DATABASE_URL" |
 		"JWT_KEY" |
 		"GOOGLE_CLIENT_ID" |
 		"GOOGLE_CLIENT_SECRET" |
+		"COMPILER_ENDPOINT" |
 		"PIP_HARDWARE_VERSION"
 
 	type SecretsObject = { [K in SecretKeys]: string }
@@ -46,7 +36,6 @@ declare global {
 	}
 
 	type CompilerEnvironment = "staging" | "production" | undefined
-
 }
 
 export {}
