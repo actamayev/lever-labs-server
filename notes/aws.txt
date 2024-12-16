@@ -61,7 +61,7 @@ To get into ECS EC2 instance:
 	Staging:
 		ssh -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ec2-user@ec2-54-84-250-136.compute-1.amazonaws.com
 	Production:
-		N/A
+		ssh -i /Users/arieltamayev/Documents/bdr-production-ec2.pem ec2-user@ec2-34-207-230-116.compute-1.amazonaws.com
 
 To get into the Docker container inside the instance:
 	Run: `sudo docker ps`
