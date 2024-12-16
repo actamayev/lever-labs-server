@@ -37,7 +37,7 @@ export default class CompilerContainerManager extends Singleton {
 				if (_.isUndefined(this.ecsManagerInstance)) {
 					throw Error("Can't find ecsManagerInstance")
 				}
-				return this.ecsManagerInstance.compileECS(userCode, pipUUID)
+				return this.ecsManagerInstance.compileCode(userCode, pipUUID)
 			}
 		} catch (error) {
 			console.error(error)
