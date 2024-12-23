@@ -6,5 +6,9 @@
 	},
 	"eslint.validate": ["typescript", "javascript"],
 	"editor.insertSpaces": false,
-    "editor.tabSize": 4
+    "editor.tabSize": 4,
+	"shellcheck.exclude": ["SC2148", "SC2034"],
+	"shellcheck.ignorePatterns": {
+		"**/*.env*": true
+	}
 }
