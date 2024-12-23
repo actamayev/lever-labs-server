@@ -57,12 +57,6 @@ Other:
 - Update linux packages
 	sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
 
-To get into ECS EC2 instance:
-	Staging:
-		ssh -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ec2-user@ec2-184-73-137-225.compute-1.amazonaws.com
-	Production:
-		N/A
-
 To get into the Docker container inside the instance:
 	Run: `sudo docker ps`
 	`sudo docker exec -it <container_id> /bin/bash`
