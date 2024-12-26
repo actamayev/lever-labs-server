@@ -12,8 +12,8 @@ export default async function getPersonalInfo(req: Request, res: Response): Prom
 			username: user.username,
 			email,
 			defaultSiteTheme: user.default_site_theme,
-			profilePictureUrl: null, // TODO: Later retrieve this
-			defaultSidebarState: user.default_sidebar_state
+			defaultSidebarState: user.default_sidebar_state,
+			profilePictureUrl: null
 		})
 		return
 	} catch (error) {
