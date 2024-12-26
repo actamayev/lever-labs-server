@@ -8,7 +8,7 @@ export default async function setDefaultSiteTheme(req: Request, res: Response): 
 		const defaultSiteTheme = req.params.defaultSiteTheme as SiteThemes
 		await updateDefaultSiteTheme(user.user_id, defaultSiteTheme)
 
-		res.status(200).json({ success: `Set new default site theme to ${defaultSiteTheme}` })
+		res.status(200).json({ success: `Default site theme set to ${defaultSiteTheme}` })
 		return
 	} catch (error) {
 		console.error(error)

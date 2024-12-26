@@ -1,7 +1,7 @@
 When making changes to tables (or creating new tables), edit the schema.prisma file.
 When making changes, change the name of the .env.local to .env so that prisma.schema reads the correct config file.
-Then, run the `npx prisma migrate dev --name [name_of_operation (ie add_login_history)]`
-If manual changes have been made to the Schema (non-migration), run `npx prisma generate`
+Then, run the `sudo npx prisma migrate dev --name [name_of_operation (ie add_login_history)]`
+If manual changes have been made to the Schema (non-migration), run `sudo npx prisma generate`
 
 AFTER FINISHING THE CHANGES, CHANGE RENAME `.env` BACK TO `.env.local`
 
