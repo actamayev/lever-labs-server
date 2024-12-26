@@ -16,13 +16,7 @@ export default async function isValidPipUUID(req: Request, res: Response): Promi
 
 		const pipConnectionStatus = Esp32SocketManager.getInstance().getESPStatus(pipUUID)
 
-		if (_.isNull(pipUUIDData.pip_name)) {
-			res.status(200).json({ needsToAddName: true, pipConnectionStatus })
-		}
-		else {
-			res.status(200).json({ needsToAddName: false, pipConnectionStatus})
-		}
-
+		res.status(200).json({ pipName: pipUUIDData.pip_name, pipConnectionStatus})
 		return
 	} catch (error) {
 		console.error(error)
