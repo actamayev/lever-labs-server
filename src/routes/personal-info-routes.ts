@@ -1,10 +1,12 @@
 import express from "express"
 
 import jwtVerifyAttachUser from "../middleware/jwt/jwt-verify-attach-user"
+import validateSetSidebarState from "../middleware/request-validation/personal-info/validate-set-sidebar-state"
 import validateSetDefaultSiteTheme from "../middleware/request-validation/personal-info/validate-set-default-site-theme"
 
 import getPersonalInfo from "../controllers/personal-info/get-personal-info"
 import setDefaultSiteTheme from "../controllers/personal-info/set-default-site-theme"
+import setDefaultSidebarState from "../controllers/personal-info/set-default-sidebar-state"
 
 const personalInfoRoutes = express.Router()
 
@@ -19,6 +21,13 @@ personalInfoRoutes.post(
 	validateSetDefaultSiteTheme,
 	jwtVerifyAttachUser,
 	setDefaultSiteTheme
+)
+
+personalInfoRoutes.post(
+	"/set-default-sidebar-state/:defaultSidebarState",
+	validateSetSidebarState,
+	jwtVerifyAttachUser,
+	setDefaultSidebarState
 )
 
 export default personalInfoRoutes
