@@ -1,6 +1,7 @@
 import _ from "lodash"
 import { Response, Request } from "express"
 import findPipUUID from "../../db-operations/read/find/find-pip-uuid"
+import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 
 export default async function isValidPipUUID(req: Request, res: Response): Promise<void> {
 	try {
@@ -13,13 +14,13 @@ export default async function isValidPipUUID(req: Request, res: Response): Promi
 			return
 		}
 
-		if (_.isNull(pipUUIDData.pip_name)) res.status(200).json({ success: "Please add name." })
-		else res.status(200).json({ success: "Name already added" })
+		const pipConnectionStatus = Esp32SocketManager.getInstance().getESPStatus(pipUUID)
 
+		res.status(200).json({ pipName: pipUUIDData.pip_name, pipConnectionStatus})
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to connect to Pip" })
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm Pip UUID is valid" })
 		return
 	}
 }
