@@ -14,12 +14,12 @@ import validateAddPipToAccount from "../middleware/request-validation/pip/valida
 import confirmUserHasntAlreadyAddedUUID from "../middleware/confirm/confirm-user-hasnt-already-added-uuid"
 import confirmOtherUserIsntConnectedToPip from "../middleware/confirm/confirm-other-user-isnt-connected-to-pip"
 
-import isValidPipUUID from "../controllers/pip/is-valid-pip-uuid"
 import addPipToAccount from "../controllers/pip/add-pip-to-account"
+import retrievePipUUIDStatus from "../controllers/pip/retrieve-pip-uuid-status"
 import compileAndSendCppToPip from "../controllers/pip/compile-and-send-cpp-to-pip"
 import clientConnectToPipRequest from "../controllers/pip/client-connect-to-pip-request"
 import retrievePreviouslyAddedPips from "../controllers/pip/retrieve-previously-added-pips"
-import clientDisconnectFromPipRequest from "../controllers/pip/client-disconnect-from-pip-request copy"
+import clientDisconnectFromPipRequest from "../controllers/pip/client-disconnect-from-pip-request"
 
 const pipRoutes = express.Router()
 
@@ -55,10 +55,10 @@ pipRoutes.post(
 pipRoutes.get("/retrieve-previously-added-pips", jwtVerifyAttachUser, retrievePreviouslyAddedPips)
 
 pipRoutes.get(
-	"/check-if-pip-uuid-is-valid/:pipUUID",
+	"/retrieve-pip-uuid-status/:pipUUID",
 	validatePipUUID,
 	jwtVerifyAttachUser,
-	isValidPipUUID
+	retrievePipUUIDStatus
 )
 
 pipRoutes.post(
