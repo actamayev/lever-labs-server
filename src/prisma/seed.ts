@@ -1,5 +1,6 @@
 import parseCSV from "../utils/parse-csv"
 import PrismaClientClass from "../classes/prisma-client"
+import { isUndefined } from "lodash"
 
 // eslint-disable-next-line max-lines-per-function
 async function main(): Promise<void> {
@@ -12,8 +13,12 @@ async function main(): Promise<void> {
 
 		// Seed activities
 		console.info("Seeding activities...")
-		await Promise.all(activities.map(activity =>
-			prismaClient.activity.upsert({
+		await Promise.all(activities.map(activity => {
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+			if (!activity.activity_id || !activity.lesson_name || !activity.activity_type) {
+				throw new Error(`Invalid activity data: ${JSON.stringify(activity)}`)
+			}
+			return prismaClient.activity.upsert({
 				where: {
 					activity_id: activity.activity_id
 				},
@@ -27,12 +32,15 @@ async function main(): Promise<void> {
 					lesson_name: activity.lesson_name
 				}
 			})
-		))
+		}))
 
 		// Seed reading questions
 		console.info("Seeding reading questions...")
-		await Promise.all(questions.map(question =>
-			prismaClient.reading_question.upsert({
+		await Promise.all(questions.map(question => {
+			if (!question.reading_question_id || !question.question_text || !question.activity_id) {
+				throw new Error(`Invalid question data: ${JSON.stringify(question)}`)
+			}
+			return prismaClient.reading_question.upsert({
 				where: {
 					reading_question_id: question.reading_question_id
 				},
@@ -46,12 +54,20 @@ async function main(): Promise<void> {
 					question_text: question.question_text
 				}
 			})
-		))
+		}))
 
 		// Seed answer choices
 		console.info("Seeding answer choices...")
-		await Promise.all(answerChoices.map(choice =>
-			prismaClient.reading_question_answer_choice.upsert({
+		await Promise.all(answerChoices.map(choice => {
+			if (
+				!choice.reading_question_answer_choice_id ||
+				!choice.reading_question_id ||
+				!choice.answer_text ||
+				isUndefined(choice.is_correct)
+			) {
+				throw new Error(`Invalid choice data: ${JSON.stringify(choice)}`)
+			}
+			return prismaClient.reading_question_answer_choice.upsert({
 				where: {
 					reading_question_answer_choice_id: choice.reading_question_answer_choice_id
 				},
@@ -67,7 +83,7 @@ async function main(): Promise<void> {
 					is_correct: choice.is_correct
 				}
 			})
-		))
+		} ))
 
 		console.info("Seeding completed successfully")
 	} catch (error) {
