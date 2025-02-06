@@ -14,17 +14,17 @@ export default async function login (req: Request, res: Response): Promise<void>
 
 		const credentialsResult = await retrieveUserFromContact(contact, loginContactType)
 		if (_.isNull(credentialsResult)) {
-			res.status(400).json({ message: `${loginContactType} not found!` })
+			res.status(400).json({ message: `There is no Blue Dot Robots account associated with ${contact}. Please try again.` })
 			return
 		}
 		if (credentialsResult.auth_method === "google") {
-			res.status(400).json({ message: "Please log in via Google" })
+			res.status(400).json({ message: "Please log in with Google" })
 			return
 		}
 
 		const doPasswordsMatch = await Hash.checkPassword(password, credentialsResult.password as HashedString)
 		if (doPasswordsMatch === false) {
-			res.status(400).json({ message: "Wrong username or password!" })
+			res.status(400).json({ message: "Wrong password. Please try again." })
 			return
 		}
 

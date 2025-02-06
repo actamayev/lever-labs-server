@@ -25,7 +25,8 @@
 	},
 	"include": [
 	  "src/**/*",
-	  "./.eslint.config.mjs"
+	  "./.eslint.config.mjs",
+	  "prisma/seed.ts"
 	],
 	"exclude": [
 	  "node_modules"

@@ -8,7 +8,7 @@ import doesUsernameExist from "../../db-operations/read/does-x-exist/does-userna
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-hisory-record"
 import constructLocalUserFields from "../../utils/auth-helpers/register/construct-local-user-fields"
 
-export default async function register (req: Request, res: Response): Promise<void> {
+export default async function register(req: Request, res: Response): Promise<void> {
 	try {
 		const registerInformation = req.body.registerInformation as RegisterInformation
 
@@ -16,13 +16,13 @@ export default async function register (req: Request, res: Response): Promise<vo
 		const encryptedEmail = await encryptor.deterministicEncrypt(registerInformation.email, "EMAIL_ENCRYPTION_KEY")
 		const emailExists = await doesEmailExist(encryptedEmail)
 		if (emailExists === true) {
-			res.status(400).json({ message: "Email already exists" })
+			res.status(400).json({ message: "Email already taken" })
 			return
 		}
 
 		const usernameExists = await doesUsernameExist(registerInformation.username)
 		if (usernameExists === true) {
-			res.status(400).json({ message: "Username taken" })
+			res.status(400).json({ message: "Username already taken" })
 			return
 		}
 

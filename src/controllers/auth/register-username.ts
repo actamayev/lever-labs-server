@@ -7,13 +7,13 @@ export default async function registerUsername (req: Request, res: Response): Pr
 	try {
 		const { user } = req
 		if (!_.isNull(user.username)) {
-			res.status(400).json({ message: "Username already registered" })
+			res.status(400).json({ message: "You've already registered a username for this account" })
 			return
 		}
 		const username = req.body.username as string
 		const usernameExists = await doesUsernameExist(username)
 		if (usernameExists === true) {
-			res.status(400).json({ message: "Username taken" })
+			res.status(400).json({ message: "Username already taken" })
 			return
 		}
 
@@ -23,7 +23,7 @@ export default async function registerUsername (req: Request, res: Response): Pr
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Register username" })
+		res.status(500).json({ error: "Internal Server Error: Unable to register username" })
 		return
 	}
 }
