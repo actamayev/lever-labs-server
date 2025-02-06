@@ -1,0 +1,6 @@
+activity_id ,lesson_name ,activity_type
+          1 ,LED         ,Reading
+          2 ,LED         ,Code
+          3 ,LED         ,Video
+          4 ,Motor       ,Reading
+          5 ,Motor       ,Code
