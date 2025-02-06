@@ -1,4 +1,4 @@
-import _ from "lodash"
+import isUndefined from "lodash-es/isUndefined"
 import { PrismaClient } from "@prisma/client"
 import SecretsManager from "./aws/secrets-manager"
 
@@ -10,7 +10,7 @@ export default class PrismaClientClass {
 
 	public static async getPrismaClient(): Promise<PrismaClient> {
 		try {
-			if (_.isUndefined(this.prismaClient)) {
+			if (isUndefined(this.prismaClient)) {
 				const databaseUrl = await SecretsManager.getInstance().getSecret("DATABASE_URL")
 				this.prismaClient = new PrismaClient({
 					datasources: {

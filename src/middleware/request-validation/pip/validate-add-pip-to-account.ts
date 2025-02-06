@@ -1,5 +1,5 @@
 import Joi from "joi"
-import _ from "lodash"
+import isUndefined from "lodash-es/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import pipUUIdValidator from "../../joi/pip-uuid-validator"
 
@@ -15,7 +15,7 @@ export default function validateAddPipToAccount (req: Request, res: Response, ne
 	try {
 		const { error } = addPipToAccountSchema.validate(req.body)
 
-		if (!_.isUndefined(error)) {
+		if (!isUndefined(error)) {
 			res.status(400).json({ validationError: error.details[0].message })
 			return
 		}

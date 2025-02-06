@@ -1,6 +1,5 @@
-
-import _ from "lodash"
 import axios from "axios"
+import isNull from "lodash-es/isNull"
 import Singleton from "../singleton"
 import SecretsManager from "./secrets-manager"
 import sanitizeUserCode from "../../utils/cpp/sanitize-user-code"
@@ -14,7 +13,7 @@ export default class ECSManager extends Singleton {
 	}
 
 	public static getInstance(): ECSManager {
-		if (_.isNull(ECSManager.instance)) {
+		if (isNull(ECSManager.instance)) {
 			ECSManager.instance = new ECSManager()
 		}
 		return ECSManager.instance

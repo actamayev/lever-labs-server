@@ -1,5 +1,5 @@
 import Joi from "joi"
-import _ from "lodash"
+import isUndefined from "lodash-es/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import Encryptor from "../../../classes/encryptor"
 
@@ -11,7 +11,7 @@ export default function validateDecodeEmailSubscriber(req: Request, res: Respons
 	try {
 		const { error } = subscribeForEmailUpdatesSchema.validate(req.body)
 
-		if (!_.isUndefined(error)) {
+		if (!isUndefined(error)) {
 			res.status(400).json({ validationError: error.details[0].message })
 			return
 		}

@@ -1,4 +1,4 @@
-import _ from "lodash"
+import isNull from "lodash-es/isNull"
 import { Response, Request } from "express"
 import findPipUUID from "../../db-operations/read/find/find-pip-uuid"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
@@ -9,7 +9,7 @@ export default async function retrievePipUUIDStatus(req: Request, res: Response)
 
 		const pipUUIDData = await findPipUUID(pipUUID)
 
-		if (_.isNull(pipUUIDData)) {
+		if (isNull(pipUUIDData)) {
 			res.status(400).json({ message: "Pip UUID doesn't exist"})
 			return
 		}

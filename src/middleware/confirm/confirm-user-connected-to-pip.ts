@@ -1,4 +1,4 @@
-import _ from "lodash"
+import isUndefined from "lodash-es/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 
@@ -13,7 +13,7 @@ export default function confirmUserConnectedToPip(
 
 		const connectedUserId = BrowserSocketManager.getInstance().whichUserConnectedToPipUUID(pipUUID)
 
-		if (_.isUndefined(connectedUserId)) {
+		if (isUndefined(connectedUserId)) {
 			BrowserSocketManager.getInstance().addPipStatusToAccount(user.user_id, pipUUID, "connected")
 			next()
 			return

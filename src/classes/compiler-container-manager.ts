@@ -1,4 +1,4 @@
-import _ from "lodash"
+import isUndefined from "lodash-es/isUndefined"
 import Singleton from "./singleton"
 import ECSManager from "./aws/ecs-manager"
 import LocalCompilationManager from "./local-compilation-manager"
@@ -12,7 +12,7 @@ export default class CompilerContainerManager extends Singleton {
 		super()
 		this.environment = process.env.NODE_ENV
 
-		if (_.isUndefined(this.environment)) { // Means localdev
+		if (isUndefined(this.environment)) { // Means localdev
 			this.localCompilationManagerInstance = LocalCompilationManager.getInstance()
 		} else {
 			this.ecsManagerInstance = ECSManager.getInstance()
@@ -28,13 +28,13 @@ export default class CompilerContainerManager extends Singleton {
 
 	public async compile(userCode: string, pipUUID: PipUUID): Promise<Buffer> {
 		try {
-			if (_.isUndefined(this.environment)) {
-				if (_.isUndefined(this.localCompilationManagerInstance)) {
+			if (isUndefined(this.environment)) {
+				if (isUndefined(this.localCompilationManagerInstance)) {
 					throw Error("Can't find localCompilationManagerInstance")
 				}
 				return await this.localCompilationManagerInstance.compileLocal(userCode, pipUUID)
 			} else {
-				if (_.isUndefined(this.ecsManagerInstance)) {
+				if (isUndefined(this.ecsManagerInstance)) {
 					throw Error("Can't find ecsManagerInstance")
 				}
 				return this.ecsManagerInstance.compileCode(userCode, pipUUID)

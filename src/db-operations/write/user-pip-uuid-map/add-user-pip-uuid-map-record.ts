@@ -1,4 +1,4 @@
-import _ from "lodash"
+import isUndefined from "lodash-es/isUndefined"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function addUserPipUUIDMapRecord(
@@ -10,7 +10,7 @@ export default async function addUserPipUUIDMapRecord(
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
 		const result = await prismaClient.$transaction(async (prisma) => {
-			if (!_.isUndefined(pipName)) {
+			if (!isUndefined(pipName)) {
 				await prisma.pip_uuid.update({
 					where: {
 						uuid: pipUUIDData.uuid

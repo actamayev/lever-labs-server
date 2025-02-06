@@ -1,5 +1,5 @@
 import Joi from "joi"
-import _ from "lodash"
+import isUndefined from "lodash-es/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import passwordValidatorSchema from "../../joi/password-validator"
 
@@ -14,7 +14,7 @@ export default function validateLogin (req: Request, res: Response, next: NextFu
 	try {
 		const { error } = loginInformationSchema.validate(req.body)
 
-		if (!_.isUndefined(error)) {
+		if (!isUndefined(error)) {
 			res.status(400).json({ validationError: error.details[0].message })
 			return
 		}

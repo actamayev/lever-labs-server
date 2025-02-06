@@ -1,6 +1,6 @@
+import isUndefined from "lodash-es/isUndefined"
 import parseCSV from "../utils/parse-csv"
 import PrismaClientClass from "../classes/prisma-client"
-import { isUndefined } from "lodash"
 
 // eslint-disable-next-line max-lines-per-function
 async function main(): Promise<void> {

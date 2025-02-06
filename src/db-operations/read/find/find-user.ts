@@ -1,4 +1,4 @@
-import _ from "lodash"
+import isNull from "lodash-es/isNull"
 import PrismaClientClass from "../../../classes/prisma-client"
 import { validateExtendedCredentials } from "../../../utils/type-guards"
 
@@ -13,7 +13,7 @@ export async function findUserById(userId: number): Promise<ExtendedCredentials 
 			}
 		})
 
-		if (_.isNull(user) || validateExtendedCredentials(user) === false) return null
+		if (isNull(user) || validateExtendedCredentials(user) === false) return null
 
 		return user
 	} catch (error) {
@@ -34,7 +34,7 @@ export async function findUserByWhereCondition(
 			where: { ...whereCondition, is_active: true }
 		})
 
-		if (_.isNull(user) || validateExtendedCredentials(user) === false) return null
+		if (isNull(user) || validateExtendedCredentials(user) === false) return null
 
 		return user
 	} catch (error) {

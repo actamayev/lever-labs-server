@@ -1,4 +1,4 @@
-import _ from "lodash"
+import isUndefined from "lodash-es/isUndefined"
 import BrowserSocketManager from "../classes/browser-socket-manager"
 
 export default function espStatusToPipConnectionStatus(
@@ -13,7 +13,7 @@ export default function espStatusToPipConnectionStatus(
 		}
 		// The ESP is connected to the internet
 		const connectedUserId = BrowserSocketManager.getInstance().whichUserConnectedToPipUUID(pipUUID)
-		if (!_.isUndefined(connectedUserId) && connectedUserId !== userId) {
+		if (!isUndefined(connectedUserId) && connectedUserId !== userId) {
 			// If the ESP is connected to the internet, and the UUID is connected to a user
 			// That means the Pip is already connected to someone else
 			return "connected to other user"

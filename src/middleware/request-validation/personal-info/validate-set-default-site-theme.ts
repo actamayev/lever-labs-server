@@ -1,5 +1,5 @@
 import Joi from "joi"
-import _ from "lodash"
+import isUndefined from "lodash-es/isUndefined"
 import { Request, Response, NextFunction } from "express"
 
 const setDefaultSiteThemeSchema = Joi.object({
@@ -10,7 +10,7 @@ export default function validateSetDefaultSiteTheme (req: Request, res: Response
 	try {
 		const { error } = setDefaultSiteThemeSchema.validate(req.params)
 
-		if (!_.isUndefined(error)) {
+		if (!isUndefined(error)) {
 			res.status(400).json({ validationError: "Invalid default site theme" })
 			return
 		}

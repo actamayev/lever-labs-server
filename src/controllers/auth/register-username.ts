@@ -1,4 +1,4 @@
-import _ from "lodash"
+import isNull from "lodash-es/isNull"
 import { Response, Request } from "express"
 import setUsername from "../../db-operations/write/credentials/set-username"
 import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"
@@ -6,7 +6,7 @@ import doesUsernameExist from "../../db-operations/read/does-x-exist/does-userna
 export default async function registerUsername (req: Request, res: Response): Promise<void> {
 	try {
 		const { user } = req
-		if (!_.isNull(user.username)) {
+		if (!isNull(user.username)) {
 			res.status(400).json({ message: "You've already registered a username for this account" })
 			return
 		}

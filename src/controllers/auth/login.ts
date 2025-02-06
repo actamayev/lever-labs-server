@@ -1,4 +1,4 @@
-import _ from "lodash"
+import isNull from "lodash-es/isNull"
 import { Response, Request } from "express"
 import Hash from "../../classes/hash"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
@@ -13,7 +13,7 @@ export default async function login (req: Request, res: Response): Promise<void>
 		const loginContactType = determineLoginContactType(contact)
 
 		const credentialsResult = await retrieveUserFromContact(contact, loginContactType)
-		if (_.isNull(credentialsResult)) {
+		if (isNull(credentialsResult)) {
 			res.status(400).json({ message: `There is no Blue Dot Robots account associated with ${contact}. Please try again.` })
 			return
 		}
