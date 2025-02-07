@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run copy-seed-data",
+    "copy-seed-data": "cp -r src/db-seed-data dist/src/",
     "start": "nodemon",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
