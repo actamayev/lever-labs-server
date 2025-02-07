@@ -32,6 +32,10 @@ declare global {
 		isLast: boolean
 		chunkSize: number
 	}
+
+	interface MotorControlTransferData extends MotorControlData {
+		event: "motor-control-data"
+	}
 }
 
 export {}
