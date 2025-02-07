@@ -1,4 +1,4 @@
-import _ from "lodash"
+import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 
@@ -16,7 +16,7 @@ export default function confirmOtherUserIsntConnectedToPip(
 		if (userId === user.user_id) {
 			res.status(200).json({ success: "You are already connected to this Pip" })
 			return
-		} else if (!_.isUndefined(userId)) {
+		} else if (!isUndefined(userId)) {
 			res.status(400).json({ message: "Someone is already connected to this Pip"})
 			return
 		}

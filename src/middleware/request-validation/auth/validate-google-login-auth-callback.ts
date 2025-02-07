@@ -1,5 +1,5 @@
 import Joi from "joi"
-import _ from "lodash"
+import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 
 const googleLoginAuthCallback = Joi.object({
@@ -11,7 +11,7 @@ export default function validateGoogleLoginAuthCallback (req: Request, res: Resp
 	try {
 		const { error } = googleLoginAuthCallback.validate(req.body)
 
-		if (!_.isUndefined(error)) {
+		if (!isUndefined(error)) {
 			res.status(400).json({ validationError: error.details[0].message })
 			return
 		}

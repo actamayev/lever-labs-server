@@ -1,5 +1,5 @@
-import _ from "lodash"
 import dotenv from "dotenv"
+import _ from "lodash"
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager"
 import Singleton from "../singleton"
 

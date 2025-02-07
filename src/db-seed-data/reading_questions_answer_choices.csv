@@ -1,0 +1,6 @@
+reading_question_answer_choice_id ,reading_question_id ,answer_text                                              ,is_correct
+                                1 ,                  1 ,"1.8-2.2V"                                               ,true
+                                2 ,                  1 ,"5V"                                                     ,false
+                                3 ,                  1 ,"12V"                                                    ,false
+                                4 ,                  1 ,"0.7V"                                                   ,false
+                                5 ,                  2 ,"To prevent excessive current that could damage the LED" ,true

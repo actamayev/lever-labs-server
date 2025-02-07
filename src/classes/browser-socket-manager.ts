@@ -1,4 +1,4 @@
-import _ from "lodash"
+import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
@@ -29,7 +29,7 @@ export default class BrowserSocketManager extends Singleton {
 	}
 
 	private async handleBrowserConnection(socket: Socket): Promise<void> {
-		if (_.isUndefined(socket.userId)) {
+		if (isUndefined(socket.userId)) {
 			console.error(`User ${socket.userId} is not authenticated`)
 			return
 		}
@@ -46,10 +46,10 @@ export default class BrowserSocketManager extends Singleton {
 	}
 
 	private handleDisconnection(userId: number | undefined): void {
-		if (_.isUndefined(userId) || !this.connections.has(userId)) return
+		if (isUndefined(userId) || !this.connections.has(userId)) return
 		const previouslyConnectedPipUUIDs = this.connections.get(userId)?.previouslyConnectedPipUUIDs
 
-		if (!_.isUndefined(previouslyConnectedPipUUIDs)) {
+		if (!isUndefined(previouslyConnectedPipUUIDs)) {
 			previouslyConnectedPipUUIDs.forEach((previousConnection) => {
 				if (previousConnection.status === "connected") {
 					// Esp32SocketManager.getInstance().handleClientLogoff(previousConnection.pipUUID)
@@ -130,7 +130,7 @@ export default class BrowserSocketManager extends Singleton {
 		status: PipBrowserConnectionStatus
 	): void {
 		const connectionInfo = this.connections.get(userId)
-		if (_.isUndefined(connectionInfo)) return
+		if (isUndefined(connectionInfo)) return
 		this.io.to(connectionInfo.socketId).emit("pip-connection-status-update", {
 			pipUUID,
 			newConnectionStatus: status

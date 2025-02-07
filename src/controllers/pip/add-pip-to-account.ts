@@ -1,4 +1,4 @@
-import _ from "lodash"
+import isUndefined from "lodash/isUndefined"
 import { Response, Request } from "express"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
@@ -22,7 +22,7 @@ export default async function addPipToAccount(req: Request, res: Response): Prom
 
 		BrowserSocketManager.getInstance().addPipStatusToAccount(user.user_id, pipUUIDData.uuid, pipConnectionStatus)
 
-		if (_.isUndefined(pipName)) pipName = pipUUIDData.pip_name || ""
+		if (isUndefined(pipName)) pipName = pipUUIDData.pip_name || ""
 
 		res.status(200).json({ pipName, userPipUUIDId, pipConnectionStatus })
 		return
