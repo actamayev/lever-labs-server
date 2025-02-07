@@ -8,6 +8,7 @@ function isActivityData(data: unknown): data is SeededActivityData {
 	const d = data as SeededActivityData
 	return (
 		typeof d === "object" &&
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         d !== null &&
         typeof d.activity_id === "number" &&
         Object.values(LessonNames).includes(d.lesson_name) &&
@@ -19,6 +20,7 @@ function isReadingQuestionData(data: unknown): data is ReadingQuestionData {
 	const d = data as ReadingQuestionData
 	return (
 		typeof d === "object" &&
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         d !== null &&
         typeof d.reading_question_id === "number" &&
         typeof d.activity_id === "number" &&
@@ -30,6 +32,7 @@ function isAnswerChoiceData(data: unknown): data is ReadingQuestionAnswerChoice 
 	const d = data as ReadingQuestionAnswerChoice
 	return (
 		typeof d === "object" &&
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         d !== null &&
         typeof d.reading_question_answer_choice_id === "number" &&
         typeof d.reading_question_id === "number" &&
