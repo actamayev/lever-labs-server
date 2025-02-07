@@ -1,5 +1,6 @@
 import Joi from "joi"
-import _ from "lodash"
+import isNull from "lodash/isNull"
+import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import getDecodedId from "../../utils/auth-helpers/get-decoded-id"
 import { findUserById } from "../../db-operations/read/find/find-user"
@@ -12,7 +13,7 @@ export default async function jwtVerifyAttachUser(req: Request, res: Response, n
 	try {
 		const { error } = authorizationSchema.validate(req.headers)
 
-		if (!_.isUndefined(error)) return handleUnauthorized()
+		if (!isUndefined(error)) return handleUnauthorized()
 
 		const accessToken = req.headers.authorization as string
 
@@ -20,7 +21,7 @@ export default async function jwtVerifyAttachUser(req: Request, res: Response, n
 
 		const user = await findUserById(userId)
 
-		if (_.isNull(user)) return handleUnauthorized()
+		if (isNull(user)) return handleUnauthorized()
 
 		req.user = user
 		next()

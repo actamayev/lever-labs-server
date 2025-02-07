@@ -1,13 +1,17 @@
 {
 	"compilerOptions": {
 	  /* Language and Environment */
-	  "target": "es2021",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-
+	  "target": "ES2023",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
+	  "typeRoots": [
+		"./src/types",
+		"./node_modules/@types"
+	  ],
+	  "types": ["node"],
 	  /* Modules */
 	  "module": "commonjs",                                /* Specify what module code is generated. */
 	  "rootDir": "./",                                  /* Specify the root folder within your source files. */
 	  "moduleResolution": "Node",                     /* Specify how TypeScript looks up a file from a given module specifier. */
-	  "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. */
+	  "baseUrl": "./src",     // Changed to ./src
 
 	  /* Emit */
 	  "outDir": "./dist",                                   /* Specify an output folder for all emitted files. */
@@ -21,11 +25,17 @@
 	  "strictNullChecks": true,                         /* When type checking, take into account 'null' and 'undefined'. */
 
 	  /* Completeness */
-	  "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
+	  "skipLibCheck": true,                                 /* Skip type checking all .d.ts files. */
+	  "paths": {              // Add paths for cleaner imports
+            "@/*": ["*"],
+            "@types/*": ["types/*"]
+        }
 	},
 	"include": [
 	  "src/**/*",
-	  "./.eslint.config.mjs"
+	  "src/**/*.d.ts",        // Explicitly include .d.ts files
+	  "./.eslint.config.mjs",
+	  "src/prisma/seed.ts"
 	],
 	"exclude": [
 	  "node_modules"

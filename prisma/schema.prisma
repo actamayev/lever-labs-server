@@ -40,6 +40,8 @@ model credentials {
 
 	login_history                                               login_history[]
 	user_pip_uuid_map											user_pip_uuid_map[]
+	user_activity_progress										user_activity_progress[]
+	user_answers												user_answers[]
 }
 
 model login_history {
@@ -86,4 +88,99 @@ model email_update_subscriber {
 
 	created_at                                                  DateTime  @default(now())
 	is_active                                                   Boolean  @default(true)
+}
+
+enum ActivityTypes {
+	Reading
+	Code
+	Video
+	Demo
+}
+
+enum LessonNames {
+	LED
+	Motor
+	IMU
+	Button
+}
+
+// Reference Configuration data
+model activity {
+	activity_id													Int       @id @default(autoincrement())
+	lesson_name													LessonNames
+	activity_type	                                            ActivityTypes
+
+	created_at                                                  DateTime  @default(now())
+	updated_at                                                  DateTime @default(now()) @updatedAt
+	
+	user_activity_progress										user_activity_progress[]
+	reading_questions											reading_question[]
+}
+
+enum ProgressStatus {
+	NOT_STARTED
+	IN_PROGRESS
+	COMPLETED
+}
+
+model user_activity_progress {
+	user_activity_progress_id									Int       @id @default(autoincrement())
+	user_id             										Int
+	activity_id                                               	Int
+  	status    													ProgressStatus
+
+  	completed_at  												DateTime?
+	created_at                                                  DateTime  @default(now())
+
+	user                                                        credentials @relation(fields: [user_id], references: [user_id])
+	activity                                                    activity @relation(fields: [activity_id], references: [activity_id])
+
+	@@index([user_id], name: "user_activity_progress__user_id_idx")
+	@@index([activity_id], name: "user_activity_progress__activity_id_idx")
+	@@unique([user_id, activity_id])
+}
+
+// Reference Configuration data
+model reading_question {
+	reading_question_id											Int       @id @default(autoincrement())
+	activity_id                                               	Int
+	question_text												String
+
+	created_at                                                  DateTime  @default(now())
+
+	activity                                                    activity @relation(fields: [activity_id], references: [activity_id])
+	reading_question_answer_choice								reading_question_answer_choice[]
+
+	@@index([activity_id], name: "reading_question__activity_id_idx")
+	@@unique([activity_id, question_text])
+}
+
+// Reference Configuration data
+model reading_question_answer_choice {
+	reading_question_answer_choice_id							Int       @id @default(autoincrement())
+	reading_question_id                                         Int
+	answer_text													String
+	is_correct													Boolean
+
+	created_at                                                  DateTime  @default(now())
+
+	reading_question                                            reading_question @relation(fields: [reading_question_id], references: [reading_question_id])
+	user_answers												user_answers[]
+	@@index([reading_question_id], name: "reading_question_answer_choice__reading_question_id_idx")
+	@@unique([reading_question_id, answer_text])
+}
+
+model user_answers {
+	user_answers_id												Int       @id @default(autoincrement())
+	reading_question_answer_choice_id                           Int
+	user_id             										Int
+
+	created_at                                                  DateTime  @default(now())
+
+	reading_question                                            reading_question_answer_choice @relation(fields: [reading_question_answer_choice_id], references: [reading_question_answer_choice_id])
+	user                                                        credentials @relation(fields: [user_id], references: [user_id])
+
+	@@index([reading_question_answer_choice_id], name: "user_answers__reading_question_answer_choice_id_idx")
+	@@index([user_id], name: "user_answers__user_id_idx")
+	@@unique([reading_question_answer_choice_id, user_id])
 }

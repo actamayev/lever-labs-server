@@ -1,4 +1,4 @@
-import _ from "lodash"
+import isNull from "lodash/isNull"
 import { Response, Request } from "express"
 import Hash from "../../classes/hash"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
@@ -13,18 +13,18 @@ export default async function login (req: Request, res: Response): Promise<void>
 		const loginContactType = determineLoginContactType(contact)
 
 		const credentialsResult = await retrieveUserFromContact(contact, loginContactType)
-		if (_.isNull(credentialsResult)) {
-			res.status(400).json({ message: `${loginContactType} not found!` })
+		if (isNull(credentialsResult)) {
+			res.status(400).json({ message: `There is no Blue Dot Robots account associated with ${contact}. Please try again.` })
 			return
 		}
 		if (credentialsResult.auth_method === "google") {
-			res.status(400).json({ message: "Please log in via Google" })
+			res.status(400).json({ message: "Please log in with Google" })
 			return
 		}
 
 		const doPasswordsMatch = await Hash.checkPassword(password, credentialsResult.password as HashedString)
 		if (doPasswordsMatch === false) {
-			res.status(400).json({ message: "Wrong username or password!" })
+			res.status(400).json({ message: "Wrong password. Please try again." })
 			return
 		}
 

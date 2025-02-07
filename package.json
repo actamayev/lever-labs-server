@@ -4,13 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run copy-seed-data",
+    "copy-seed-data": "cp -r src/db-seed-data dist/src/",
     "start": "nodemon",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "type-check": "tsc --noEmit",
     "validate": "npm run lint && npm run type-check",
-    "update-dependencies": "ncu -u && npm install"
+    "seed": "prisma db seed",
+    "cloud-seed": "node dist/src/prisma/seed.js"
+  },
+  "prisma": {
+    "seed": "ts-node --files src/prisma/seed.ts"
+  },
+  "ts-node": {
+    "files": true,
+    "require": ["tsconfig-paths/register"]
   },
   "nodemonConfig": {
     "watch": [
@@ -31,6 +40,7 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/lodash": "^4.17.13",
     "@types/node": "^22.10.2",
+    "@types/papaparse": "^5.3.15",
     "@types/validator": "^13.12.2",
     "@types/ws": "^8.5.13",
     "@typescript-eslint/eslint-plugin": "^8.18.2",
@@ -38,9 +48,9 @@
     "eslint": "^9.17.0",
     "eslint-plugin-security": "^3.0.1",
     "nodemon": "^3.1.9",
-    "npm-check-updates": "^17.1.12",
     "prisma": "^6.1.0",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "5.7.2"
   },
   "dependencies": {
@@ -56,6 +66,7 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
+    "papaparse": "^5.5.2",
     "socket.io": "^4.8.1",
     "validator": "^13.12.0",
     "ws": "^8.18.0"

@@ -1,5 +1,5 @@
-import _ from "lodash"
 import axios from "axios"
+import isNull from "lodash/isNull"
 import Singleton from "./singleton"
 import sanitizeUserCode from "../utils/cpp/sanitize-user-code"
 
@@ -11,7 +11,7 @@ export default class LocalCompilationManager extends Singleton {
 	}
 
 	public static getInstance(): LocalCompilationManager {
-		if (_.isNull(LocalCompilationManager.instance)) {
+		if (isNull(LocalCompilationManager.instance)) {
 			LocalCompilationManager.instance = new LocalCompilationManager()
 		}
 		return LocalCompilationManager.instance
