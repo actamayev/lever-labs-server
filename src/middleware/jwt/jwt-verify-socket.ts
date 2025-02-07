@@ -1,5 +1,5 @@
 import { Socket } from "socket.io"
-import isUndefined from "lodash-es/isUndefined"
+import isUndefined from "lodash/isUndefined"
 import getDecodedId from "../../utils/auth-helpers/get-decoded-id"
 
 export default async function jwtVerifySocket (socket: Socket, next: (err?: Error) => void): Promise<void> {

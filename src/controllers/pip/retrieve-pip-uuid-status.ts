@@ -1,4 +1,4 @@
-import isNull from "lodash-es/isNull"
+import isNull from "lodash/isNull"
 import { Response, Request } from "express"
 import findPipUUID from "../../db-operations/read/find/find-pip-uuid"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"

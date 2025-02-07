@@ -33,6 +33,7 @@ For Database migrations, navigate to dist/src, and run::
 	Run `npx prisma generate` in the src directory.
 	`pm2 restart <app_name or app_id>`
 	If nothing is working after doing a migration, try restarting the pm2 `pm2 restart <app_name or app_id>`
+	If there is new data to seed, run `npm run cloud-seed`
 
 I am using the package pm2 to run the server on the instance (even after I close my connection)
 Important pm2 commands:

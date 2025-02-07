@@ -1,4 +1,4 @@
-import isUndefined from "lodash-es/isUndefined"
+import isUndefined from "lodash/isUndefined"
 import { PrismaClient } from "@prisma/client"
 import SecretsManager from "./aws/secrets-manager"
 

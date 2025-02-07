@@ -1,6 +1,6 @@
 import Joi from "joi"
-import isNull from "lodash-es/isNull"
-import isUndefined from "lodash-es/isUndefined"
+import isNull from "lodash/isNull"
+import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import getDecodedId from "../../utils/auth-helpers/get-decoded-id"
 import { findUserById } from "../../db-operations/read/find/find-user"

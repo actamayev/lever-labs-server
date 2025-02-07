@@ -1,4 +1,4 @@
-import isUndefined from "lodash-es/isUndefined"
+import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 

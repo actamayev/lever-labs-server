@@ -1,5 +1,5 @@
 import axios from "axios"
-import isNull from "lodash-es/isNull"
+import isNull from "lodash/isNull"
 import Singleton from "./singleton"
 import sanitizeUserCode from "../utils/cpp/sanitize-user-code"
 

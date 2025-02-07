@@ -1,4 +1,4 @@
-import isUndefined from "lodash-es/isUndefined"
+import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"

@@ -1,4 +1,4 @@
-import isNull from "lodash-es/isNull"
+import isNull from "lodash/isNull"
 import { Response, Request } from "express"
 import Hash from "../../classes/hash"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"

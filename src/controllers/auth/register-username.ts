@@ -1,4 +1,4 @@
-import isNull from "lodash-es/isNull"
+import isNull from "lodash/isNull"
 import { Response, Request } from "express"
 import setUsername from "../../db-operations/write/credentials/set-username"
 import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"

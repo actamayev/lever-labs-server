@@ -1,5 +1,5 @@
 import Joi from "joi"
-import isUndefined from "lodash-es/isUndefined"
+import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import passwordValidatorSchema from "../../joi/password-validator"
 

@@ -1,4 +1,4 @@
-import isNull from "lodash-es/isNull"
+import isNull from "lodash/isNull"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function retrieveUserIdByEmail(encryptedEmail: DeterministicEncryptedString): Promise<number | null | undefined> {

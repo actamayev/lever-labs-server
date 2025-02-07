@@ -1,5 +1,4 @@
-import isNull from "lodash-es/isNull"
-import isUndefined from "lodash-es/isUndefined"
+import _ from "lodash"
 import { Request, Response } from "express"
 import { SiteThemes } from "@prisma/client"
 import Encryptor from "../../classes/encryptor"
@@ -22,11 +21,11 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 			audience: googleClientId
 		})
 		const payload = ticket.getPayload()
-		if (isUndefined(payload)) {
+		if (_.isUndefined(payload)) {
 			res.status(500).json({ error: "Unable to get payload" })
 			return
 		}
-		if (isUndefined(payload.email)) {
+		if (_.isUndefined(payload.email)) {
 			res.status(500).json({ error: "Unable to find user email from payload" })
 			return
 		}
@@ -38,10 +37,10 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 		let isNewUser = false
 		let userPipData: PipData[] = []
 
-		if (isUndefined(userId)) {
+		if (_.isUndefined(userId)) {
 			res.status(500).json({ error: "Unable to login with this email. Account inactive." })
 			return
-		} else if (!isNull(userId)) {
+		} else if (!_.isNull(userId)) {
 			accessToken = await signJWT({ userId, newUser: false })
 			userPipData = await retrieveUserPipUUIDsDetails(userId)
 		} else {

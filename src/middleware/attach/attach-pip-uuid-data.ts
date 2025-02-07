@@ -1,4 +1,4 @@
-import isNull from "lodash-es/isNull"
+import isNull from "lodash/isNull"
 import { Request, Response, NextFunction } from "express"
 import { validateExtendedPipUUID } from "../../utils/type-guards"
 import findPipUUID from "../../db-operations/read/find/find-pip-uuid"

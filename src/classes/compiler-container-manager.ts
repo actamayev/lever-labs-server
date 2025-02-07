@@ -1,4 +1,4 @@
-import isUndefined from "lodash-es/isUndefined"
+import isUndefined from "lodash/isUndefined"
 import Singleton from "./singleton"
 import ECSManager from "./aws/ecs-manager"
 import LocalCompilationManager from "./local-compilation-manager"

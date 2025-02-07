@@ -1,4 +1,4 @@
-import isNull from "lodash-es/isNull"
+import isNull from "lodash/isNull"
 import PrismaClientClass from "../../../classes/prisma-client"
 import { validateExtendedCredentials } from "../../../utils/type-guards"
 
