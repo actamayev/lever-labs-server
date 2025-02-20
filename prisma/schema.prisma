@@ -95,6 +95,7 @@ enum ActivityTypes {
 	Code
 	Video
 	Demo
+	Summary
 }
 
 enum LessonNames {
@@ -109,12 +110,15 @@ model activity {
 	activity_id													Int       @id @default(autoincrement())
 	lesson_name													LessonNames
 	activity_type	                                            ActivityTypes
+	activity_uuid												String		@unique
+	activity_name												String
 
 	created_at                                                  DateTime  @default(now())
 	updated_at                                                  DateTime @default(now()) @updatedAt
 	
 	user_activity_progress										user_activity_progress[]
 	reading_questions											reading_question[]
+	@@unique([activity_type, activity_name])
 }
 
 enum ProgressStatus {
@@ -145,6 +149,7 @@ model reading_question {
 	reading_question_id											Int       @id @default(autoincrement())
 	activity_id                                               	Int
 	question_text												String
+	reading_question_uuid										String		@unique
 
 	created_at                                                  DateTime  @default(now())
 
@@ -161,6 +166,7 @@ model reading_question_answer_choice {
 	reading_question_id                                         Int
 	answer_text													String
 	is_correct													Boolean
+	explanation													String
 
 	created_at                                                  DateTime  @default(now())
 

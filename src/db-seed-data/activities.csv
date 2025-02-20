@@ -1,6 +1,12 @@
-activity_id ,lesson_name ,activity_type
-          1 ,LED         ,Reading
-          2 ,LED         ,Code
-          3 ,LED         ,Video
-          4 ,Motor       ,Reading
-          5 ,Motor       ,Code
+activity_id ,lesson_name ,activity_type ,activity_name
+          1 ,LED         ,Reading       ,Intro to LEDs
+          2 ,LED         ,Reading       ,Voltage
+          3 ,LED         ,Reading       ,RGB LEDs
+          4 ,LED         ,Reading       ,Intro to code
+          5 ,LED         ,Code          ,LED Control
+          6 ,LED         ,Reading       ,LEDs and Loops
+          7 ,LED         ,Code          ,Breathing LEDs
+          8 ,LED         ,Reading       ,LED Advantages
+          9 ,LED         ,Reading       ,LEDs in Robotics
+         10 ,LED         ,Code          ,Warehouse Pip
+         11 ,LED         ,Summary       ,LED Summary

@@ -4,6 +4,7 @@ declare global {
 		activity_id: number
 		lesson_name: LessonNames
 		activity_type: ActivityTypes
+		activity_name: string
 	}
 
 	interface ReadingQuestionData {
@@ -17,6 +18,7 @@ declare global {
 		reading_question_id: number
 		answer_text: string
 		is_correct: boolean
+		explanation: string
 	}
 
 	type AllSeedData =
