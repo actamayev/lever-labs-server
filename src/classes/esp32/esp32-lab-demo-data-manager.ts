@@ -23,8 +23,6 @@ export default class ESP32LabDemoDataManager extends Singleton {
 				rightMotor: data.rightMotor
 			}
 
-			console.log("metadata", metadata)
-
 			return new Promise((resolve, reject) => {
 				socket.send(JSON.stringify(metadata), (error) => {
 					if (error) {

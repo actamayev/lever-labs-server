@@ -134,12 +134,11 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	public async emitMotorControlToPip(motorControlData: IncomingMotorControlData): Promise<void> {
-		const connection = this.getConnection(motorControlData.pipUUID)
-		if (!connection) {
-			throw new Error(`No active connection for PIP ${motorControlData.pipUUID}`)
-		}
-
 		try {
+			const connection = this.getConnection(motorControlData.pipUUID)
+			if (!connection) {
+				throw new Error(`No active connection for PIP ${motorControlData.pipUUID}`)
+			}
 			await this.esp32LabDemoDataManager.transferMotorControlData(connection.socket, motorControlData)
 		} catch (error) {
 			console.error(`Failed to transfer code to PIP ${motorControlData.pipUUID}:`, error)

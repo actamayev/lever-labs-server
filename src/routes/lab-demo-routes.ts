@@ -6,11 +6,11 @@ import validateMotorControl from "../middleware/request-validation/lab-demo/vali
 
 const labDemoRoutes = express.Router()
 
-labDemoRoutes.post(
-	"/motor-control",
-	validateMotorControl,
-	jwtVerifyAttachUserId,
-	motorControl
-)
+// labDemoRoutes.post(
+// 	"/motor-control",
+// 	validateMotorControl,
+// 	jwtVerifyAttachUserId,
+// 	motorControl
+// )
 
 export default labDemoRoutes
