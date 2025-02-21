@@ -2,10 +2,11 @@ import { ProgressStatus } from "@prisma/client"
 
 declare global {
 	type ActivityUUID = string & { readonly __brand: unique symbol }
+	type QuestionUUID = string & { readonly __brand: unique symbol }
 
 	interface UserActivityProgress {
 		status: ProgressStatus
-		activity_uuid: ActivityUUID
+		activityUUID: ActivityUUID
 	}
 
 	interface RetrievedQuestions {

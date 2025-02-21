@@ -20,7 +20,7 @@ export default async function retrieveUserActivityProgressDB(userId: number): Pr
 
 		return retrievedUserActivityProgress.map(singleProgress => ({
 			status: singleProgress.status,
-			activity_uuid: singleProgress.activity.activity_uuid as ActivityUUID
+			activityUUID: singleProgress.activity.activity_uuid as ActivityUUID
 		}))
 	} catch (error) {
 		console.error(error)

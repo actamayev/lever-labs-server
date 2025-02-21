@@ -5,9 +5,9 @@ export default async function markActivityComplete(req: Request, res: Response):
 	try {
 		const { userId, activityId } = req
 
-		const userActivityProgress = await markActivityCompleteDb(userId, activityId)
+		await markActivityCompleteDb(userId, activityId)
 
-		res.status(200).json({ userActivityProgress })
+		res.status(200).json({ success: "" })
 		return
 	} catch (error: unknown) {
 		console.error(error)

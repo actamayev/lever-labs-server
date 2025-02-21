@@ -6,11 +6,10 @@ export default async function submitQuizAnswer(req: Request, res: Response): Pro
 		const { userId } = req
 		const { readingQuestionAnswerChoiceId } = req.params
 
-		const userActivityProgress = await submitQuestionAnswerDb(userId, Number(readingQuestionAnswerChoiceId))
+		await submitQuestionAnswerDb(userId, Number(readingQuestionAnswerChoiceId))
 
-		res.status(200).json({ userActivityProgress })
+		res.status(200).json({ success: "" })
 		return
-
 	} catch (error: unknown) {
 		console.error(error)
 		res.status(500).json({ error: "Internal Server Error: Unable to submit quiz answer" })

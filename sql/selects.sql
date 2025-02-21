@@ -5,3 +5,5 @@
 -- SELECT * FROM activity;
 -- SELECT * FROM reading_question;
 -- SELECT * FROM reading_question_answer_choice;
+
+-- DELETE FROM activity;

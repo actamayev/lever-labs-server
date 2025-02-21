@@ -5,12 +5,14 @@ declare global {
 		lesson_name: LessonNames
 		activity_type: ActivityTypes
 		activity_name: string
+		uuid: ActivityUUID
 	}
 
 	interface ReadingQuestionData {
 		reading_question_id: number
 		activity_id: number
 		question_text: string
+		uuid: QuestionUUID
 	}
 
 	interface ReadingQuestionAnswerChoice {

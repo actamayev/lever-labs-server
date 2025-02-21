@@ -8,11 +8,16 @@ async function seedActivities(): Promise<void> {
 
 	console.info("Seeding activities...")
 	await Promise.all(activities.map(activity => {
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-		if (!activity.activity_id || !activity.lesson_name || !activity.activity_type || !activity.activity_name) {
+		if (
+			!activity.activity_id ||
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+			!activity.lesson_name || !activity.activity_type ||
+			!activity.activity_name ||
+			!activity.uuid
+		) {
 			throw new Error(`Invalid activity data: ${JSON.stringify(activity)}`)
 		}
-		const uuid = crypto.randomUUID()
+		// const uuid = crypto.randomUUID()
 		return prismaClient.activity.upsert({
 			where: {
 				activity_id: activity.activity_id
@@ -26,7 +31,7 @@ async function seedActivities(): Promise<void> {
 				activity_id: activity.activity_id,
 				activity_type: activity.activity_type,
 				lesson_name: activity.lesson_name,
-				activity_uuid: uuid,
+				activity_uuid: activity.uuid,
 				activity_name: activity.activity_name
 			}
 		})
@@ -40,10 +45,15 @@ async function seedReadingQuestions(): Promise<void> {
 	// Seed reading questions
 	console.info("Seeding reading questions...")
 	await Promise.all(questions.map(question => {
-		if (!question.reading_question_id || !question.question_text || !question.activity_id) {
+		if (
+			!question.reading_question_id ||
+			!question.question_text ||
+			!question.activity_id ||
+			!question.uuid
+		) {
 			throw new Error(`Invalid question data: ${JSON.stringify(question)}`)
 		}
-		const uuid = crypto.randomUUID()
+		// const uuid = crypto.randomUUID()
 		return prismaClient.reading_question.upsert({
 			where: {
 				reading_question_id: question.reading_question_id
@@ -56,7 +66,7 @@ async function seedReadingQuestions(): Promise<void> {
 				reading_question_id: question.reading_question_id,
 				activity_id: question.activity_id,
 				question_text: question.question_text,
-				reading_question_uuid: uuid
+				reading_question_uuid: question.uuid
 			}
 		})
 	}))
