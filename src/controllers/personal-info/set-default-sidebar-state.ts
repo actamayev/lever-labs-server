@@ -4,9 +4,9 @@ import updateDefaultSidebarState from "../../db-operations/write/credentials/upd
 
 export default async function setDefaultSidebarState(req: Request, res: Response): Promise<void> {
 	try {
-		const { user } = req
+		const { userId } = req
 		const defaultSidebarState = req.params.defaultSidebarState as SidebarStates
-		await updateDefaultSidebarState(user.user_id, defaultSidebarState)
+		await updateDefaultSidebarState(userId, defaultSidebarState)
 
 		res.status(200).json({ success: `Sidebar state set to ${defaultSidebarState}` })
 		return
