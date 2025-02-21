@@ -4,23 +4,28 @@ export default async function retrieveUserActivityProgressDB(userId: number): Pr
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		const retrievedUserActivityProgress = await prismaClient.user_activity_progress.findMany({
-			where: {
-				user_id: userId
-			},
+		const retrievedActivities = await prismaClient.activity.findMany({
 			select: {
-				status: true,
-				activity: {
+				activity_type: true,
+				activity_name: true,
+				activity_uuid: true,
+				user_activity_progress: {
+					where: {
+						user_id: userId
+					},
 					select: {
-						activity_uuid: true
-					}
+						status: true
+					},
+					take: 1
 				}
 			}
 		})
 
-		return retrievedUserActivityProgress.map(singleProgress => ({
-			status: singleProgress.status,
-			activityUUID: singleProgress.activity.activity_uuid as ActivityUUID
+		return retrievedActivities.map(singleActivity => ({
+			status: singleActivity.user_activity_progress[0]?.status ?? null,
+			activityUUID: singleActivity.activity_uuid as ActivityUUID,
+			activityName: singleActivity.activity_name,
+			activityType: singleActivity.activity_type
 		}))
 	} catch (error) {
 		console.error(error)

@@ -1,4 +1,4 @@
-import { ProgressStatus } from "@prisma/client"
+import { ActivityTypes, ProgressStatus } from "@prisma/client"
 
 declare global {
 	type ActivityUUID = string & { readonly __brand: unique symbol }
@@ -7,6 +7,8 @@ declare global {
 	interface UserActivityProgress {
 		status: ProgressStatus
 		activityUUID: ActivityUUID
+		activityType: ActivityTypes
+		activityName: string
 	}
 
 	interface RetrievedQuestions {
