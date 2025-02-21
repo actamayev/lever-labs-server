@@ -9,8 +9,7 @@ export default async function motorControl(req: Request, res: Response): Promise
 
 		res.status(200).json({ success: "" })
 		return
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error(error)
 		res.status(500).json({ error: "Internal Server Error: Unable to control motor" })
 		return

@@ -4,6 +4,7 @@ declare global {
 			user: ExtendedCredentials
 			pipUUIDData: ExtendedPipUUID
 			userId: number
+			activityId: number
 		}
 	}
 }

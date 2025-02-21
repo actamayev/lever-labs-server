@@ -9,8 +9,7 @@ export default async function retrieveUserActivityProgress(req: Request, res: Re
 
 		res.status(200).json({ userActivityProgress })
 		return
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	} catch (error: any) {
+	} catch (error: unknown) {
 		console.error(error)
 		res.status(500).json({ error: "Internal Server Error: Unable to retrieve user activity progress" })
 		return

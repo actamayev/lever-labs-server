@@ -6,7 +6,7 @@ import labDemoRoutes from "./routes/lab-demo-routes"
 import internalRoutes from "./routes/internal-routes"
 import personalInfoRoutes from "./routes/personal-info-routes"
 import checkHealth from "./controllers/health-checks/check-health"
-import labActivityTrackingRoutes from "./routes/lab-lesson-tracking"
+import labActivityTrackingRoutes from "./routes/lab-activity-tracking-routes"
 
 export default function setupRoutes(app: Express): void {
 	app.use("/auth", authRoutes)
