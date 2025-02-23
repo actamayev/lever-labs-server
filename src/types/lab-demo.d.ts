@@ -2,7 +2,10 @@ declare global {
 	type MotorDirection = "up" | "down" | "left" | "right"
 
 	interface IncomingMotorControlData {
-		motorControl: { vertical?: -1 | 1; horizontal?: -1 | 1 }
+		motorControl: {
+			vertical: -1 | 1 | 0
+			horizontal: -1 | 1 | 0
+		}
 		pipUUID: PipUUID
 	}
 

@@ -19,18 +19,15 @@ export default class ESP32LabDemoDataManager extends Singleton {
 		try {
 			const speeds = this.calculateMotorSpeeds(data)
 
-			// Create a 5-byte binary message:
-			// Byte 1: Message type (1 = motor control)
-			// Bytes 2-3: Left motor speed (signed 16-bit: -255 to 255)
-			// Bytes 4-5: Right motor speed (signed 16-bit: -255 to 255)
 			const buffer = new ArrayBuffer(5)
 			const view = new DataView(buffer)
 
-			view.setUint8(0, 1) // Message type: motor control
-			view.setInt16(1, speeds.leftMotor, true) // Left motor speed (little-endian)
-			view.setInt16(3, speeds.rightMotor, true) // Right motor speed (little-endian)
+			view.setUint8(0, 1)
+			view.setInt16(1, speeds.leftMotor, true)
+			view.setInt16(3, speeds.rightMotor, true)
 
-			console.log(`Sending motor binary - Left: ${speeds.leftMotor}, Right: ${speeds.rightMotor}`)
+			// console.log(`Sending motor binary - Left: ${speeds.leftMotor}, Right: ${speeds.rightMotor},
+			// 	Buffer: [${Array.from(new Uint8Array(buffer)).join(", ")}]`)
 
 			return new Promise((resolve, reject) => {
 				socket.send(buffer, { binary: true }, (error) => {
@@ -48,26 +45,25 @@ export default class ESP32LabDemoDataManager extends Singleton {
 	}
 
 	private calculateMotorSpeeds(data: IncomingMotorControlData): MotorSpeeds {
-		console.log("data", data)
+		// console.log("Incoming data:", JSON.stringify(data))
 		const speeds = { leftMotor: 0, rightMotor: 0 }
 		const { vertical, horizontal } = data.motorControl
 
-		// Base speeds
 		const maxSpeed = 255
-		const forward = vertical ? vertical * maxSpeed : 0 // 1 = 255, -1 = -255, undefined = 0
-		const turn = horizontal ? horizontal * maxSpeed : 0 // 1 = 255, -1 = -255, undefined = 0
+		const forward = vertical * maxSpeed // -255, 0, or 255
+		const turn = horizontal * maxSpeed  // -255, 0, or 255
 
-		// Mix forward and turn
 		if (turn === 0) {
 			speeds.leftMotor = forward
 			speeds.rightMotor = forward
 		} else if (forward === 0) {
-			speeds.leftMotor = -turn  // Left: -255 (back) for turn -255 (left), 255 (forward) for turn 255 (right)
-			speeds.rightMotor = turn  // Right: 255 (forward) for turn -255 (left), -255 (back) for turn 255 (right)
+			speeds.leftMotor = turn       // Left follows turn direction
+			speeds.rightMotor = -turn     // Right opposes turn direction
 		} else {
-			// Diagonal movement: adjust speeds for turning while moving forward/backward
-			speeds.leftMotor = Math.max(-255, Math.min(255, forward - turn / 2))
-			speeds.rightMotor = Math.max(-255, Math.min(255, forward + turn / 2))
+			// Diagonal movement: amplify turn by reducing the slower wheel more
+			const turnFactor = turn > 0 ? 1.5 : -1.5 // Right turn: positive, Left turn: negative
+			speeds.leftMotor = Math.max(-255, Math.min(255, forward - turnFactor * turn / 2))
+			speeds.rightMotor = Math.max(-255, Math.min(255, forward + turnFactor * turn / 2))
 		}
 
 		return speeds
