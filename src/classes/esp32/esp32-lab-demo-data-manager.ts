@@ -25,10 +25,8 @@ export default class ESP32LabDemoDataManager extends Singleton {
 			const buffer = new ArrayBuffer(2)
 			const view = new Uint8Array(buffer)
 
-			// Set first byte to 1 to indicate motor control message
-			view[0] = 1
+			view[0] = 1  // Message type: motor control
 
-			// Pack both motors into second byte
 			const leftValue = this.motorSpeedToByte(data.leftMotor)
 			const rightValue = this.motorSpeedToByte(data.rightMotor)
 			view[1] = (leftValue << 4) | rightValue
@@ -52,10 +50,10 @@ export default class ESP32LabDemoDataManager extends Singleton {
 
 	private motorSpeedToByte(speed: number): number {
 		switch (speed) {
-		case -1: return 1  // 0001
-		case 0:  return 2  // 0010
-		case 1:  return 3  // 0011
-		default: return 2  // Default to 0
+		case -1: return 0  // Backward
+		case 0:  return 1  // Stop
+		case 1:  return 2  // Forward
+		default: return 1  // Default to stop
 		}
 	}
 }
