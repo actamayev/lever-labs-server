@@ -52,7 +52,7 @@ export default class ESP32LabDemoDataManager extends Singleton {
 
 		const maxSpeed = 255
 		const spinSpeed = 100
-		const turnSpeed = 100 // Slower wheel speed for diagonal turns (adjust as needed)
+		const turnSpeed = 30 // Slower wheel speed for diagonal turns (adjust as needed)
 
 		// Define speeds based on vertical and horizontal inputs
 		if (vertical === 0 && horizontal === 0) {
