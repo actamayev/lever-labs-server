@@ -26,9 +26,6 @@ export default class ESP32LabDemoDataManager extends Singleton {
 			view.setInt16(1, speeds.leftMotor, true)
 			view.setInt16(3, speeds.rightMotor, true)
 
-			// console.log(`Sending motor binary - Left: ${speeds.leftMotor}, Right: ${speeds.rightMotor},
-			// 	Buffer: [${Array.from(new Uint8Array(buffer)).join(", ")}]`)
-
 			return new Promise((resolve, reject) => {
 				socket.send(buffer, { binary: true }, (error) => {
 					if (error) {
@@ -44,9 +41,8 @@ export default class ESP32LabDemoDataManager extends Singleton {
 		}
 	}
 
-	// eslint-disable-next-line complexity, max-lines-per-function
+	// eslint-disable-next-line complexity
 	public calculateMotorSpeeds(data: IncomingMotorControlData): MotorSpeeds {
-		// console.log("Incoming data:", JSON.stringify(data));
 		const speeds = { leftMotor: 0, rightMotor: 0 }
 		const { vertical, horizontal } = data.motorControl
 
@@ -57,47 +53,38 @@ export default class ESP32LabDemoDataManager extends Singleton {
 		// Define speeds based on vertical and horizontal inputs
 		if (vertical === 0 && horizontal === 0) {
 			// Stop
-			console.log("stop ---------------------")
 			speeds.leftMotor = 0
 			speeds.rightMotor = 0
 		} else if (vertical === 1 && horizontal === 0) {
 			// Forward
-			console.log("forward---------------------")
 			speeds.leftMotor = maxSpeed
 			speeds.rightMotor = maxSpeed
 		} else if (vertical === -1 && horizontal === 0) {
 			// Backward
-			console.log("backward---------------------")
 			speeds.leftMotor = -maxSpeed
 			speeds.rightMotor = -maxSpeed
 		} else if (vertical === 0 && horizontal === -1) {
 			// Left turn
-			console.log("left turn---------------------")
 			speeds.leftMotor = -spinSpeed
 			speeds.rightMotor = spinSpeed
 		} else if (vertical === 0 && horizontal === 1) {
 			// Right turn
-			console.log("right turn---------------------")
 			speeds.leftMotor = spinSpeed
 			speeds.rightMotor = -spinSpeed
 		} else if (vertical === 1 && horizontal === -1) {
 			// Forward + Left
-			console.log("forward + left---------------------")
 			speeds.leftMotor = turnSpeed
 			speeds.rightMotor = maxSpeed
 		} else if (vertical === 1 && horizontal === 1) {
 			// Forward + Right
-			console.log("forward + right---------------------")
 			speeds.leftMotor = maxSpeed
 			speeds.rightMotor = turnSpeed
 		} else if (vertical === -1 && horizontal === -1) {
 			// Backward + Left
-			console.log("backward + left---------------------")
 			speeds.leftMotor = -maxSpeed
 			speeds.rightMotor = -turnSpeed
 		} else if (vertical === -1 && horizontal === 1) {
 			// Backward + Right
-			console.log("backward + right---------------------")
 			speeds.leftMotor = -turnSpeed
 			speeds.rightMotor = -maxSpeed
 		}
