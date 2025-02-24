@@ -44,26 +44,62 @@ export default class ESP32LabDemoDataManager extends Singleton {
 		}
 	}
 
-	private calculateMotorSpeeds(data: IncomingMotorControlData): MotorSpeeds {
-		// console.log("Incoming data:", JSON.stringify(data))
+	// eslint-disable-next-line complexity, max-lines-per-function
+	public calculateMotorSpeeds(data: IncomingMotorControlData): MotorSpeeds {
+		// console.log("Incoming data:", JSON.stringify(data));
 		const speeds = { leftMotor: 0, rightMotor: 0 }
 		const { vertical, horizontal } = data.motorControl
 
 		const maxSpeed = 255
-		const forward = vertical * maxSpeed // -255, 0, or 255
-		const turn = horizontal * maxSpeed  // -255, 0, or 255
+		const spinSpeed = 100
+		const turnSpeed = 100 // Slower wheel speed for diagonal turns (adjust as needed)
 
-		if (turn === 0) {
-			speeds.leftMotor = forward
-			speeds.rightMotor = forward
-		} else if (forward === 0) {
-			speeds.leftMotor = turn       // Left follows turn direction
-			speeds.rightMotor = -turn     // Right opposes turn direction
-		} else {
-			// Diagonal movement: amplify turn by reducing the slower wheel more
-			const turnFactor = turn > 0 ? 1.5 : -1.5 // Right turn: positive, Left turn: negative
-			speeds.leftMotor = Math.max(-255, Math.min(255, forward - turnFactor * turn / 2))
-			speeds.rightMotor = Math.max(-255, Math.min(255, forward + turnFactor * turn / 2))
+		// Define speeds based on vertical and horizontal inputs
+		if (vertical === 0 && horizontal === 0) {
+			// Stop
+			console.log("stop ---------------------")
+			speeds.leftMotor = 0
+			speeds.rightMotor = 0
+		} else if (vertical === 1 && horizontal === 0) {
+			// Forward
+			console.log("forward---------------------")
+			speeds.leftMotor = maxSpeed
+			speeds.rightMotor = maxSpeed
+		} else if (vertical === -1 && horizontal === 0) {
+			// Backward
+			console.log("backward---------------------")
+			speeds.leftMotor = -maxSpeed
+			speeds.rightMotor = -maxSpeed
+		} else if (vertical === 0 && horizontal === -1) {
+			// Left turn
+			console.log("left turn---------------------")
+			speeds.leftMotor = -spinSpeed
+			speeds.rightMotor = spinSpeed
+		} else if (vertical === 0 && horizontal === 1) {
+			// Right turn
+			console.log("right turn---------------------")
+			speeds.leftMotor = spinSpeed
+			speeds.rightMotor = -spinSpeed
+		} else if (vertical === 1 && horizontal === -1) {
+			// Forward + Left
+			console.log("forward + left---------------------")
+			speeds.leftMotor = turnSpeed
+			speeds.rightMotor = maxSpeed
+		} else if (vertical === 1 && horizontal === 1) {
+			// Forward + Right
+			console.log("forward + right---------------------")
+			speeds.leftMotor = maxSpeed
+			speeds.rightMotor = turnSpeed
+		} else if (vertical === -1 && horizontal === -1) {
+			// Backward + Left
+			console.log("backward + left---------------------")
+			speeds.leftMotor = -maxSpeed
+			speeds.rightMotor = -turnSpeed
+		} else if (vertical === -1 && horizontal === 1) {
+			// Backward + Right
+			console.log("backward + right---------------------")
+			speeds.leftMotor = -turnSpeed
+			speeds.rightMotor = -maxSpeed
 		}
 
 		return speeds
