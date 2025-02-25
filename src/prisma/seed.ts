@@ -47,8 +47,8 @@ async function seedReadingQuestions(): Promise<void> {
 	await Promise.all(questions.map(question => {
 		if (
 			!question.reading_question_id ||
-			!question.question_text ||
 			!question.activity_id ||
+			!question.question_text ||
 			!question.uuid
 		) {
 			throw new Error(`Invalid question data: ${JSON.stringify(question)}`)

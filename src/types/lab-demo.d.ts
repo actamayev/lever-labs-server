@@ -13,7 +13,6 @@ declare global {
 		leftMotor: number
 		rightMotor: number
 	}
-
 }
 
 export {}
