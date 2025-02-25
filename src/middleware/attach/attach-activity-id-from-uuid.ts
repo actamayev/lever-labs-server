@@ -18,7 +18,7 @@ export default async function attachActivityIdFromUUID(req: Request, res: Respon
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm New Pip UUID Exists" })
+		res.status(500).json({ error: "Internal Server Error: Unable to attach activity Id from UUID" })
 		return
 	}
 }
