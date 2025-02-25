@@ -7,12 +7,12 @@ export default function checkIfUserConnectedToPip(
 	next: NextFunction
 ): void {
 	try {
-		const { user } = req
+		const { userId } = req
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
 		const connectedUserId = BrowserSocketManager.getInstance().whichUserConnectedToPipUUID(pipUUID)
 
-		if (connectedUserId !== user.user_id) {
+		if (connectedUserId !== userId) {
 			res.status(400).json({ message: "Another user is connected to this Pip"})
 			return
 		}

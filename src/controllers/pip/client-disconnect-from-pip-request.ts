@@ -3,10 +3,10 @@ import BrowserSocketManager from "../../classes/browser-socket-manager"
 
 export default function clientDisconnectFromPipRequest (req: Request, res: Response): void {
 	try {
-		const { user } = req
+		const { userId } = req
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		BrowserSocketManager.getInstance().addPipStatusToAccount(user.user_id, pipUUID, "online")
+		BrowserSocketManager.getInstance().addPipStatusToAccount(userId, pipUUID, "online")
 
 		res.status(200).json({ success: "" })
 		return

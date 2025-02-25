@@ -8,15 +8,15 @@ export default function confirmOtherUserIsntConnectedToPip(
 	next: NextFunction
 ): void {
 	try {
-		const { user } = req
+		const { userId } = req
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		const userId = BrowserSocketManager.getInstance().whichUserConnectedToPipUUID(pipUUID)
+		const userIdConnectToPip = BrowserSocketManager.getInstance().whichUserConnectedToPipUUID(pipUUID)
 
-		if (userId === user.user_id) {
+		if (userIdConnectToPip === userId) {
 			res.status(200).json({ success: "You are already connected to this Pip" })
 			return
-		} else if (!isUndefined(userId)) {
+		} else if (!isUndefined(userIdConnectToPip)) {
 			res.status(400).json({ message: "Someone is already connected to this Pip"})
 			return
 		}

@@ -1,6 +1,5 @@
-reading_question_answer_choice_id ,reading_question_id ,answer_text                                              ,is_correct
-                                1 ,                  1 ,"1.8-2.2V"                                               ,true
-                                2 ,                  1 ,"5V"                                                     ,false
-                                3 ,                  1 ,"12V"                                                    ,false
-                                4 ,                  1 ,"0.7V"                                                   ,false
-                                5 ,                  2 ,"To prevent excessive current that could damage the LED" ,true
+reading_question_answer_choice_id ,reading_question_id ,answer_text                  ,is_correct ,explanation
+                                1 ,                  1 ,"A parking lot full of cars" ,true       ,"Correct. The N-layer has an abundance of free electrons, like a parking lot full of cars. The dopant atoms provide extra electrons that can move through the material."
+                                2 ,                  1 ,"An empty parking lot"       ,false      ,"Incorrect. An empty parking lot would represent a P-layer, which has a shortage of electrons. The N-layer has an abundance of electrons, not a shortage."
+                                3 ,                  1 ,"A traffic light"            ,false      ,"Incorrect. While a traffic light controls flow, the N-layer is characterized by having extra electrons, not by controlling their movement. It's more like a storage area for excess electrons."
+                                4 ,                  1 ,"A solar panel"              ,false      ,"Incorrect. A solar panel converts light to electrical energy, unlike the N-layer's function. The N-layer is a region with extra electrons, similar to a parking lot with many available cars."

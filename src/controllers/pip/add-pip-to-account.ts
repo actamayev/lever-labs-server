@@ -7,20 +7,20 @@ import addUserPipUUIDMapRecord from "../../db-operations/write/user-pip-uuid-map
 
 export default async function addPipToAccount(req: Request, res: Response): Promise<void> {
 	try {
-		const { user, pipUUIDData } = req
+		const { userId, pipUUIDData } = req
 		const { shouldAutoConnect } = req.body.addPipToAccountData as { shouldAutoConnect: boolean }
 		let { pipName } = req.body.addPipToAccountData as { pipName?: string }
 		const userPipUUIDId = await addUserPipUUIDMapRecord(
-			user.user_id,
+			userId,
 			pipUUIDData,
 			pipName
 		)
 
 		const espStatus = Esp32SocketManager.getInstance().getESPStatus(pipUUIDData.uuid)
 
-		const pipConnectionStatus = espStatusToPipConnectionStatus(espStatus, pipUUIDData.uuid, user.user_id, shouldAutoConnect)
+		const pipConnectionStatus = espStatusToPipConnectionStatus(espStatus, pipUUIDData.uuid, userId, shouldAutoConnect)
 
-		BrowserSocketManager.getInstance().addPipStatusToAccount(user.user_id, pipUUIDData.uuid, pipConnectionStatus)
+		BrowserSocketManager.getInstance().addPipStatusToAccount(userId, pipUUIDData.uuid, pipConnectionStatus)
 
 		if (isUndefined(pipName)) pipName = pipUUIDData.pip_name || ""
 

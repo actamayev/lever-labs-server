@@ -1,8 +1,8 @@
 import express from "express"
 
 import attachPipUUIDData from "../middleware/attach/attach-pip-uuid-data"
-import jwtVerifyAttachUser from "../middleware/jwt/jwt-verify-attach-user"
 import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
+import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
 import validatePipUUID from "../middleware/request-validation/pip/validate-pip-uuid"
 import validateCppCode from "../middleware/request-validation/pip/validate-cpp-code"
 import checkIfUserConnectedToPip from "../middleware/check/check-if-user-connect-to-pip"
@@ -26,7 +26,7 @@ const pipRoutes = express.Router()
 pipRoutes.post(
 	"/add-pip-to-account",
 	validateAddPipToAccount,
-	jwtVerifyAttachUser,
+	jwtVerifyAttachUserId,
 	attachPipUUIDData,
 	confirmUserHasntAlreadyAddedUUID,
 	addPipToAccount
@@ -36,7 +36,7 @@ pipRoutes.post(
 	"/client-connect-to-pip-request",
 	validateClientConnectOrDisconnectToPipRequest,
 	confirmPipIsActive,
-	jwtVerifyAttachUser,
+	jwtVerifyAttachUserId,
 	confirmOtherUserIsntConnectedToPip,
 	confirmUserPreviouslyAddedUUID,
 	clientConnectToPipRequest
@@ -46,18 +46,18 @@ pipRoutes.post(
 	"/disconnect-from-pip",
 	validateClientConnectOrDisconnectToPipRequest,
 	confirmPipIsActive,
-	jwtVerifyAttachUser,
+	jwtVerifyAttachUserId,
 	checkIfUserConnectedToPip,
 	confirmUserPreviouslyAddedUUID,
 	clientDisconnectFromPipRequest
 )
 
-pipRoutes.get("/retrieve-previously-added-pips", jwtVerifyAttachUser, retrievePreviouslyAddedPips)
+pipRoutes.get("/retrieve-previously-added-pips", jwtVerifyAttachUserId, retrievePreviouslyAddedPips)
 
 pipRoutes.get(
 	"/retrieve-pip-uuid-status/:pipUUID",
 	validatePipUUID,
-	jwtVerifyAttachUser,
+	jwtVerifyAttachUserId,
 	retrievePipUUIDStatus
 )
 
@@ -65,7 +65,7 @@ pipRoutes.post(
 	"/compile-and-send-cpp-to-pip",
 	validateCppCode,
 	confirmPipIsActive,
-	jwtVerifyAttachUser,
+	jwtVerifyAttachUserId,
 	confirmUserPreviouslyAddedUUID,
 	confirmUserConnectedToPip,
 	compileAndSendCppToPip

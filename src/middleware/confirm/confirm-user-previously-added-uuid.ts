@@ -7,10 +7,10 @@ export default async function confirmUserPreviouslyAddedUUID(
 	next: NextFunction
 ): Promise<void> {
 	try {
-		const { user } = req
+		const { userId } = req
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		const uuidUserRecord = await doesUUIDUserRecordExist(user.user_id, pipUUID)
+		const uuidUserRecord = await doesUUIDUserRecordExist(userId, pipUUID)
 
 		if (uuidUserRecord === false) {
 			res.status(400).json({ message: "User hasn't registered this UUID"})

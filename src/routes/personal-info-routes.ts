@@ -1,6 +1,7 @@
 import express from "express"
 
 import jwtVerifyAttachUser from "../middleware/jwt/jwt-verify-attach-user"
+import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
 import validateSetSidebarState from "../middleware/request-validation/personal-info/validate-set-sidebar-state"
 import validateSetDefaultSiteTheme from "../middleware/request-validation/personal-info/validate-set-default-site-theme"
 
@@ -19,14 +20,14 @@ personalInfoRoutes.get(
 personalInfoRoutes.post(
 	"/set-default-site-theme/:defaultSiteTheme",
 	validateSetDefaultSiteTheme,
-	jwtVerifyAttachUser,
+	jwtVerifyAttachUserId,
 	setDefaultSiteTheme
 )
 
 personalInfoRoutes.post(
 	"/set-default-sidebar-state/:defaultSidebarState",
 	validateSetSidebarState,
-	jwtVerifyAttachUser,
+	jwtVerifyAttachUserId,
 	setDefaultSidebarState
 )
 

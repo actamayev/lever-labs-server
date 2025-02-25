@@ -3,8 +3,8 @@ import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-
 
 export default async function retrievePreviouslyAddedPips (req: Request, res: Response): Promise<void> {
 	try {
-		const { user } = req
-		const userPipData = await retrieveUserPipUUIDsDetails(user.user_id)
+		const { userId } = req
+		const userPipData = await retrieveUserPipUUIDsDetails(userId)
 
 		res.status(200).json({ userPipData })
 		return
