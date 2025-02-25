@@ -1,7 +1,7 @@
 import Singleton from "../singleton"
 import SingleESP32Connection from "./single-esp32-connection"
 
-export default class ESP32DataTransferManager extends Singleton {
+export default class ESP32FirmwareUpdateManager extends Singleton {
 	private readonly chunkSize = 128 * 1024 // 128KB
 	private readonly defaultChunkDelay = 300 // ms
 	private readonly FINAL_UPDATE_TIMEOUT = 20000
@@ -10,11 +10,11 @@ export default class ESP32DataTransferManager extends Singleton {
 		super()
 	}
 
-	public static getInstance(): ESP32DataTransferManager {
-		if (!ESP32DataTransferManager.instance) {
-			ESP32DataTransferManager.instance = new ESP32DataTransferManager()
+	public static getInstance(): ESP32FirmwareUpdateManager {
+		if (!ESP32FirmwareUpdateManager.instance) {
+			ESP32FirmwareUpdateManager.instance = new ESP32FirmwareUpdateManager()
 		}
-		return ESP32DataTransferManager.instance
+		return ESP32FirmwareUpdateManager.instance
 	}
 
 	private waitForUpdateCompletion(connection: SingleESP32Connection): Promise<void> {

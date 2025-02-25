@@ -10,3 +10,4 @@ Might have to restart TS server for the changes to take effect in VS code (ie. a
 To add data to the reference configuration tables (this is data that has to be in the table when it's first built (ie. lessons, questions, answers)):
 	Edit the csv fils in `db-seed-data` folder, and
 	Run: `npx prisma db seed`
+	To seed in cloud, run `npm run cloud-seed`

@@ -7,9 +7,9 @@ export default async function confirmUserHasntAlreadyAddedUUID(
 	next: NextFunction
 ): Promise<void> {
 	try {
-		const { user, pipUUIDData } = req
+		const { userId, pipUUIDData } = req
 
-		const uuidUserRecord = await doesUUIDIdUserRecordExist(user.user_id, pipUUIDData.pip_uuid_id)
+		const uuidUserRecord = await doesUUIDIdUserRecordExist(userId, pipUUIDData.pip_uuid_id)
 
 		if (uuidUserRecord === true) {
 			res.status(400).json({ message: "User already registered this Pip UUID"})

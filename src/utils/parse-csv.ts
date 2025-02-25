@@ -11,6 +11,7 @@ function isActivityData(data: unknown): data is SeededActivityData {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         d !== null &&
         typeof d.activity_id === "number" &&
+		typeof d.uuid === "string" &&
         Object.values(LessonNames).includes(d.lesson_name) &&
         Object.values(ActivityTypes).includes(d.activity_type)
 	)
@@ -51,7 +52,6 @@ function cleanObjectKeys<T extends { [K in keyof T]: unknown }>(
 	}, {} as T)
 }
 
-// eslint-disable-next-line max-lines-per-function
 export default function parseCSV(filePath: string): AllSeedData[] {
 	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const csvFile = readFileSync(path.join(__dirname, filePath), "utf-8")
@@ -80,18 +80,14 @@ export default function parseCSV(filePath: string): AllSeedData[] {
 			}
 			return row as SeededActivityData
 		})
-	}
-
-	if (fileName === "reading_questions.csv") {
+	} else if (fileName === "reading_questions.csv") {
 		return cleanedData.map((row, index) => {
 			if (!isReadingQuestionData(row)) {
 				throw new Error(`Invalid reading question data at row ${index + 1}: ${JSON.stringify(row)}`)
 			}
 			return row as ReadingQuestionData
 		})
-	}
-
-	if (fileName === "reading_questions_answer_choices.csv") {
+	} else if (fileName === "reading_questions_answer_choices.csv") {
 		return cleanedData.map((row, index) => {
 			if (!isAnswerChoiceData(row)) {
 				throw new Error(`Invalid answer choice data at row ${index + 1}: ${JSON.stringify(row)}`)

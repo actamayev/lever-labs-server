@@ -25,6 +25,7 @@ export default class BrowserSocketManager extends Singleton {
 	private initializeListeners(): void {
 		this.io.on("connection", async (socket: Socket) => {
 			await this.handleBrowserConnection(socket)
+			this.setupMotorControlListener(socket)
 		})
 	}
 
@@ -39,6 +40,21 @@ export default class BrowserSocketManager extends Singleton {
 			previouslyConnectedPipUUIDs: this.getLivePipStatuses(socket.userId, userPipUUIDs)
 		})
 		socket.on("disconnect", () => this.handleDisconnection(socket.userId))
+	}
+
+	private setupMotorControlListener(socket: Socket): void {
+		socket.on("motor-control", async (motorControlData: IncomingMotorControlData) => {
+			try {
+				await Esp32SocketManager.getInstance().emitMotorControlToPip(motorControlData)
+				socket.emit("motor-control-ack", { success: true })
+			} catch (error) {
+				console.error("Motor control error:", error)
+				socket.emit("motor-control-ack", {
+					success: false,
+					error: "Failed to control motor"
+				})
+			}
+		})
 	}
 
 	private addConnection(userId: number, info: BrowserSocketConnectionInfo): void {

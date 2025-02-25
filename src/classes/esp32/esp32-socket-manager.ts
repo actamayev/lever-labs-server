@@ -4,18 +4,22 @@ import Singleton from "../singleton"
 import isPipUUID from "../../utils/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"
 import SingleESP32Connection from "./single-esp32-connection"
-import ESP32DataTransferManager from "./esp32-data-transfer-manager"
+import ESP32FirmwareUpdateManager from "./esp32-firmware-update-manager"
+import ESP32LabDemoDataManager from "./esp32-lab-demo-data-manager"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
-	private readonly esp32DataTransferManager: ESP32DataTransferManager
+	private readonly esp32FirmwareUpdateManager: ESP32FirmwareUpdateManager
+	private readonly esp32LabDemoDataManager: ESP32LabDemoDataManager
+
 	// This map is redundant, but it's faster to search this map for a uuid directly than finding from the connections map
-	private socketToPip = new Map<string, PipUUID>()
+	private socketToPip = new Map<string, PipUUID>() // socketId--> PipUUID
 
 	private constructor(private readonly wss: WSServer) {
 		super()
 		this.initializeWSServer()
-		this.esp32DataTransferManager = ESP32DataTransferManager.getInstance()
+		this.esp32FirmwareUpdateManager = ESP32FirmwareUpdateManager.getInstance()
+		this.esp32LabDemoDataManager = ESP32LabDemoDataManager.getInstance()
 	}
 
 	public static getInstance(wss?: WSServer): Esp32SocketManager {
@@ -122,9 +126,22 @@ export default class Esp32SocketManager extends Singleton {
 		}
 
 		try {
-			await this.esp32DataTransferManager.transferBinaryData(connection, binary)
+			await this.esp32FirmwareUpdateManager.transferBinaryData(connection, binary)
 		} catch (error) {
 			console.error(`Failed to transfer code to PIP ${pipUUID}:`, error)
+			throw error
+		}
+	}
+
+	public async emitMotorControlToPip(motorControlData: IncomingMotorControlData): Promise<void> {
+		try {
+			const connection = this.getConnection(motorControlData.pipUUID)
+			if (!connection) {
+				throw new Error(`No active connection for PIP ${motorControlData.pipUUID}`)
+			}
+			await this.esp32LabDemoDataManager.transferMotorControlData(connection.socket, motorControlData)
+		} catch (error) {
+			console.error(`Failed to transfer code to PIP ${motorControlData.pipUUID}:`, error)
 			throw error
 		}
 	}

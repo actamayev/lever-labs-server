@@ -3,6 +3,8 @@ declare global {
 		interface Request {
 			user: ExtendedCredentials
 			pipUUIDData: ExtendedPipUUID
+			userId: number
+			activityId: number
 		}
 	}
 }
