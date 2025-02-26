@@ -4,8 +4,8 @@ import Singleton from "../singleton"
 import isPipUUID from "../../utils/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"
 import SingleESP32Connection from "./single-esp32-connection"
-import ESP32FirmwareUpdateManager from "./esp32-firmware-update-manager"
 import ESP32LabDemoDataManager from "./esp32-lab-demo-data-manager"
+import ESP32FirmwareUpdateManager from "./esp32-firmware-update-manager"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
@@ -43,32 +43,99 @@ export default class Esp32SocketManager extends Singleton {
 				(newSocketId) => this.handleDisconnection(newSocketId)
 			)
 
-			// Wait for registration message
+			// Wait for registration message first
 			socket.once("message", (message) => {
-				this.handleRegistration(socketId, message.toString(), connection)
+				this.handleRegistrationMessage(socketId, message.toString(), connection)
+
+				// After registration, set up ongoing message handler
+				this.setupOngoingMessageHandler(socketId, socket)
 			})
 		})
 	}
 
-	private handleRegistration(
+	private handleRegistrationMessage(
 		socketId: string,
 		message: string,
 		connection: SingleESP32Connection
 	): void {
 		try {
-			const { pipUUID } = JSON.parse(message)
+			const parsed = JSON.parse(message) as ESPMessage
+			const { route, payload } = parsed
 
-			if (!isPipUUID(pipUUID)) {
+			if (route === "/register") {
+				this.handleRegistration(socketId, payload as PipUUIDPayload, connection)
+			} else {
+				console.warn(`Expected registration message, got: ${route}`)
+				connection.dispose()
+			}
+		} catch (error) {
+			console.error(`Failed to process registration message from ${socketId}:`, error)
+			connection.dispose()
+		}
+	}
+
+	private setupOngoingMessageHandler(
+		socketId: string,
+		socket: ExtendedWebSocket,
+	): void {
+		socket.on("message", (message) => {
+			this.handleOngoingMessage(socketId, message.toString())
+		})
+	}
+
+	private handleOngoingMessage(
+		socketId: string,
+		message: string
+	): void {
+		try {
+			const parsed = JSON.parse(message) as ESPMessage
+			const { route, payload } = parsed
+
+			switch (route) {
+			  case "/sensor-data":
+				this.handleSensorData(socketId, payload as SensorPayload)
+				break
+			  // Handle other non-registration message types here
+			  default:
+				console.warn(`Unknown route: ${route}`)
+				break
+			}
+		} catch (error) {
+			console.error(`Failed to process message from ${socketId}:`, error)
+		}
+	}
+
+	private handleRegistration(
+		socketId: string,
+		payload: PipUUIDPayload,
+		connection: SingleESP32Connection
+	): void {
+		try {
+			if (!isPipUUID(payload.pipUUID)) {
 				console.warn(`Invalid registration from ${socketId}`)
 				connection.dispose()
 				return
 			}
 
-			this.registerConnection(socketId, pipUUID, connection)
+			this.registerConnection(socketId, payload.pipUUID, connection)
 		} catch (error) {
 			console.error(`Registration failed for ${socketId}:`, error)
 			connection.dispose()
 		}
+	}
+
+	private handleSensorData(
+		socketId: string,
+		payload: SensorPayload,
+	): void {
+		const pipUUID = this.socketToPip.get(socketId)
+		if (!pipUUID) {
+			console.warn(`Received sensor data from unregistered connection: ${socketId}`)
+			return
+		}
+
+		// Forward to lab demo data manager
+		BrowserSocketManager.getInstance().sendBrowserPipSensorData(pipUUID, payload)
 	}
 
 	private registerConnection(
