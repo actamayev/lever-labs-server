@@ -44,6 +44,7 @@ declare global {
 	interface SensorPayload {
 		leftWheelRPM: number
 		rightWheelRPM: number
+		irSensorData: number[] & { length: 5 }
 	}
 
 	interface PipUUIDPayload {
