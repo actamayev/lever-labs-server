@@ -112,7 +112,7 @@ export default class Esp32SocketManager extends Singleton {
 
 	private handleSensorData(
 		socketId: string,
-		payload: SensorPayload,
+		payload: SensorPayload
 	): void {
 		const pipUUID = this.socketToPip.get(socketId)
 		if (!pipUUID) {
