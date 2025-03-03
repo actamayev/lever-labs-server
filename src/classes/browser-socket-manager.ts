@@ -237,4 +237,17 @@ export default class BrowserSocketManager extends Singleton {
 		// Return "online" if no matching pipUUID or userId was found
 		return "online"
 	}
+
+	public sendBrowserPipSensorData(pipUUID: PipUUID, sensorPayload: SensorPayload): void {
+		this.connections.forEach((connectionInfo) => {
+			// Check if the specified pipUUID exists in this connection's previouslyConnectedPipUUIDs
+			const foundPip = connectionInfo.previouslyConnectedPipUUIDs.find(
+				(pip) => pip.pipUUID === pipUUID
+			)
+
+			if (foundPip) {
+				this.io.to(connectionInfo.socketId).emit("sensor-data", { pipUUID, sensorPayload })
+			}
+		})
+	}
 }
