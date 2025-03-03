@@ -31,9 +31,6 @@ declare global {
 	// Routes derived from the keys of the mapping
 	type ESPRoutes = keyof RoutePayloadMap
 
-	// Payload types derived from the values of the mapping
-	type ESPPayloadData = RoutePayloadMap[ESPRoutes]
-
 	// Type-safe message interface
 	interface ESPMessage<R extends ESPRoutes = ESPRoutes> {
 		route: R

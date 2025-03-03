@@ -63,7 +63,12 @@ export default class Esp32SocketManager extends Singleton {
 			const { route, payload } = parsed
 
 			if (route === "/register") {
-				this.handleRegistration(socketId, payload as PipUUIDPayload, connection)
+				if (!isPipUUID((payload as PipUUIDPayload).pipUUID)) {
+					console.warn(`Invalid registration from ${socketId}`)
+					connection.dispose()
+					return
+				}
+				this.registerConnection(socketId, (payload as PipUUIDPayload).pipUUID, connection)
 			} else {
 				console.warn(`Expected registration message, got: ${route}`)
 				connection.dispose()
@@ -76,7 +81,7 @@ export default class Esp32SocketManager extends Singleton {
 
 	private setupOngoingMessageHandler(
 		socketId: string,
-		socket: ExtendedWebSocket,
+		socket: ExtendedWebSocket
 	): void {
 		socket.on("message", (message) => {
 			this.handleOngoingMessage(socketId, message.toString())
@@ -102,25 +107,6 @@ export default class Esp32SocketManager extends Singleton {
 			}
 		} catch (error) {
 			console.error(`Failed to process message from ${socketId}:`, error)
-		}
-	}
-
-	private handleRegistration(
-		socketId: string,
-		payload: PipUUIDPayload,
-		connection: SingleESP32Connection
-	): void {
-		try {
-			if (!isPipUUID(payload.pipUUID)) {
-				console.warn(`Invalid registration from ${socketId}`)
-				connection.dispose()
-				return
-			}
-
-			this.registerConnection(socketId, payload.pipUUID, connection)
-		} catch (error) {
-			console.error(`Registration failed for ${socketId}:`, error)
-			connection.dispose()
 		}
 	}
 
