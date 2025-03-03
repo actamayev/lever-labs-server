@@ -2,16 +2,6 @@ import { WebSocket } from "ws"
 import ESP32Connection from "../classes/esp32/single-esp32-connection"
 
 declare global {
-	interface PreviouslyConnectedPipUUIDs {
-		pipUUID: PipUUID
-		status: PipBrowserConnectionStatus
-	}
-
-	type BrowserSocketConnectionInfo = {
-		socketId: string
-		previouslyConnectedPipUUIDs: PreviouslyConnectedPipUUIDs[]
-	}
-
 	type ESP32SocketConnectionInfo = {
 		socketId: string
 		status: ESPConnectionStatus
@@ -31,6 +21,34 @@ declare global {
 		totalSize: number
 		isLast: boolean
 		chunkSize: number
+	}
+
+	type RoutePayloadMap = {
+		"/register": PipUUIDPayload
+		"/sensor-data": SensorPayload
+	}
+
+	// Routes derived from the keys of the mapping
+	type ESPRoutes = keyof RoutePayloadMap
+
+	// Type-safe message interface
+	interface ESPMessage<R extends ESPRoutes = ESPRoutes> {
+		route: R
+		payload: RoutePayloadMap[R]
+	}
+
+	// Payload type definitions
+	interface SensorPayload {
+		leftWheelRPM: number
+		rightWheelRPM: number
+		irSensorData: number[] & { length: 5 }
+		redValue: number
+		greenValue: number
+		blueValue: number
+	}
+
+	interface PipUUIDPayload {
+		pipUUID: PipUUID
 	}
 }
 
