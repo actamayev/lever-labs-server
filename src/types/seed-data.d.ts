@@ -23,10 +23,17 @@ declare global {
 		explanation: string
 	}
 
+	interface ReadingSection {
+		reading_block_id: number
+		reading_id: number
+		reading_block_name: string
+	}
+
 	type AllSeedData =
 		| SeededActivityData
 		| ReadingQuestionData
 		| ReadingQuestionAnswerChoice
+		| ReadingSection
 }
 
 export {}
