@@ -5,6 +5,7 @@ declare global {
 			pipUUIDData: ExtendedPipUUID
 			userId: number
 			activityId: number
+			readingBlockId: number
 		}
 	}
 }

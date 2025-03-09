@@ -14,6 +14,7 @@ declare global {
 	interface RetrievedQuestions {
 		questionText: string
 		readingQuestionId: number
+		readingQuestionUUID: QuestionUUID
 		questionAnswerChoices: {
 			answerText: string
 			isCorrect: boolean
