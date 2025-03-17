@@ -17,11 +17,6 @@ enum AuthMethods {
 	google
 }
 
-enum SidebarStates {
-	expanded
-	collapsed
-}
-
 model credentials {
 	user_id                                                     Int      @id @default(autoincrement())
 	username                                                    String?     @unique
@@ -29,7 +24,6 @@ model credentials {
 	password                                                    String?
 	is_active                                                   Boolean  @default(true)
 	default_site_theme                                          SiteThemes
-	default_sidebar_state										SidebarStates @default(expanded)
 
 	auth_method                                                 AuthMethods
 
