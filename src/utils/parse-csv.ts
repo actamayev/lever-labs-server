@@ -42,6 +42,18 @@ function isAnswerChoiceData(data: unknown): data is ReadingQuestionAnswerChoice 
 	)
 }
 
+function isReadingSectionData(data: unknown): data is ReadingSection {
+	const d = data as ReadingSection
+	return (
+		typeof d === "object" &&
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        d !== null &&
+        typeof d.reading_block_id === "number" &&
+        typeof d.reading_id === "number" &&
+        typeof d.reading_block_name === "string"
+	)
+}
+
 function cleanObjectKeys<T extends { [K in keyof T]: unknown }>(
 	obj: Record<string, unknown>
 ): T {
@@ -52,6 +64,7 @@ function cleanObjectKeys<T extends { [K in keyof T]: unknown }>(
 	}, {} as T)
 }
 
+// eslint-disable-next-line max-lines-per-function
 export default function parseCSV(filePath: string): AllSeedData[] {
 	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const csvFile = readFileSync(path.join(__dirname, filePath), "utf-8")
@@ -93,6 +106,14 @@ export default function parseCSV(filePath: string): AllSeedData[] {
 				throw new Error(`Invalid answer choice data at row ${index + 1}: ${JSON.stringify(row)}`)
 			}
 			return row as ReadingQuestionAnswerChoice
+		})
+	}
+	else if (fileName === "reading_sections.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isReadingSectionData(row)) {
+				throw new Error(`Invalid reading section data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as ReadingSection
 		})
 	}
 
