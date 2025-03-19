@@ -4,9 +4,9 @@ import findActivityIdFromUUID from "../../db-operations/read/find/find-activity-
 
 export default async function attachActivityIdFromUUID(req: Request, res: Response, next: NextFunction): Promise<void> {
 	try {
-		const { activityUUID } = req.params as { activityUUID: ActivityUUID }
+		const { readingUUID } = req.params as { readingUUID: ActivityUUID }
 
-		const activityId = await findActivityIdFromUUID(activityUUID)
+		const activityId = await findActivityIdFromUUID(readingUUID)
 
 		if (isNull(activityId)) {
 			res.status(400).json({ message: "Activity ID doesn't exist"})

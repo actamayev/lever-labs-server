@@ -1,2 +1,10 @@
 reading_question_id ,activity_id ,question_text, uuid
                   1 ,          1 ,"If cars are like electrons, The N-layer is like:", 2fd6c830-3da8-4444-8d04-01cc7e7481c6
+                  2 ,          2 ,"Which statement best describes what happens in an LED's P-N junction?", 21f41e66-84c2-4c4e-abfd-13c36b4c7cad
+                  3 ,          2 ,"Using our cliff analogy, what represents the voltage in an LED?", c5d5fec1-3965-486d-ad04-02f3e84bc817
+                  4 ,          3 ,"Based on what we've learned about RGB codes for red and green, what would be the color code for blue?", 8e1e49c2-c399-41f6-968d-147822db7318
+                  5 ,          3 ,"If you wanted to create yellow, which two colors would you mix?", d6116452-927a-4946-8c8c-8590c8c31459
+                  6 ,          3 ,"To make a color darker, what should you do to its RGB values?", 9642e7c9-0e57-46d1-ad87-fd430f5ae878
+                  7 ,          8 ,"How do LEDs fundamentally differ from both incandescent and fluorescent lights?", ee0e9ef4-be3c-4363-b157-f1668395e572
+                  8 ,          9 ,"Which LED setup works best for manufacturing robots?", 1397c07f-889e-41b0-a8c0-08385fbdb7c3
+                  9 ,          9 ,"Why do factory robots use strobed LED lighting?", eb00e7a7-d155-4dcc-87c2-d84535045419

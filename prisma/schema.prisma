@@ -17,11 +17,6 @@ enum AuthMethods {
 	google
 }
 
-enum SidebarStates {
-	expanded
-	collapsed
-}
-
 model credentials {
 	user_id                                                     Int      @id @default(autoincrement())
 	username                                                    String?     @unique
@@ -29,7 +24,6 @@ model credentials {
 	password                                                    String?
 	is_active                                                   Boolean  @default(true)
 	default_site_theme                                          SiteThemes
-	default_sidebar_state										SidebarStates @default(expanded)
 
 	auth_method                                                 AuthMethods
 
@@ -42,6 +36,7 @@ model credentials {
 	user_pip_uuid_map											user_pip_uuid_map[]
 	user_activity_progress										user_activity_progress[]
 	user_answer													user_answer[]
+	completed_reading_block													completed_reading_block[]
 }
 
 model login_history {
@@ -112,6 +107,7 @@ model activity {
 	activity_type	                                            ActivityTypes
 	activity_uuid												String		@unique
 	activity_name												String
+	reading_block                                               reading_block[]
 
 	created_at                                                  DateTime  @default(now())
 	updated_at                                                  DateTime @default(now()) @updatedAt
@@ -141,6 +137,35 @@ model user_activity_progress {
 	@@index([user_id], name: "user_activity_progress__user_id_idx")
 	@@index([activity_id], name: "user_activity_progress__activity_id_idx")
 	@@unique([user_id, activity_id])
+}
+
+// Reference Configuration data
+model reading_block {
+	reading_block_id											Int       @id @default(autoincrement())
+	reading_id                                               	Int
+  	reading_block_name    										String		@unique
+
+	created_at                                                  DateTime  @default(now())
+
+	reading                                                     activity @relation(fields: [reading_id], references: [activity_id])
+	completed_reading_block										completed_reading_block[]
+	@@index([reading_id], name: "reading_block__reading_id_idx")
+}
+
+model completed_reading_block {
+	completed_reading_block_id									Int       @id @default(autoincrement())
+	reading_block_id											Int
+	user_id														Int
+
+	created_at                                                  DateTime  @default(now())
+	is_active													Boolean @default(true)
+
+	user                                                        credentials @relation(fields: [user_id], references: [user_id])
+	reading_block                                               reading_block @relation(fields: [reading_block_id], references: [reading_block_id])
+
+	@@index([user_id], name: "completed_reading_block__user_id_idx")
+	@@index([reading_block_id], name: "completed_reading_block__reading_block_id_idx")
+	@@unique([user_id, reading_block_id])
 }
 
 // Reference Configuration data

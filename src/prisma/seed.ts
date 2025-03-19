@@ -108,6 +108,36 @@ async function seedAnswerChoices(): Promise<void> {
 	} ))
 }
 
+async function seedReadingSections(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const readingSections = parseCSV("../db-seed-data/reading_sections.csv") as ReadingSection[]
+
+	console.info("Seeding reading sections...")
+	await Promise.all(readingSections.map(readingSection => {
+		if (
+			!readingSection.reading_block_id ||
+			!readingSection.reading_id ||
+			!readingSection.reading_block_name
+		) {
+			throw new Error(`Invalid reading section data: ${JSON.stringify(readingSection)}`)
+		}
+		return prismaClient.reading_block.upsert({
+			where: {
+				reading_block_id: readingSection.reading_block_id
+			},
+			update: {
+				reading_id: readingSection.reading_id,
+				reading_block_name: readingSection.reading_block_name
+			},
+			create: {
+				reading_block_id: readingSection.reading_block_id,
+				reading_id: readingSection.reading_id,
+				reading_block_name: readingSection.reading_block_name
+			}
+		})
+	} ))
+}
+
 async function main(): Promise<void> {
 	try {
 		await seedActivities()
@@ -115,6 +145,8 @@ async function main(): Promise<void> {
 		await seedReadingQuestions()
 
 		await seedAnswerChoices()
+
+		await seedReadingSections()
 
 		console.info("Seeding completed successfully")
 	} catch (error) {

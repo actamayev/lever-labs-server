@@ -12,6 +12,7 @@ export default async function retrieveQuestionsFromActivity(userId: number, acti
 			select: {
 				question_text: true,
 				reading_question_id: true,
+				reading_question_uuid: true,
 				reading_question_answer_choice: {
 					select: {
 						answer_text: true,
@@ -33,6 +34,7 @@ export default async function retrieveQuestionsFromActivity(userId: number, acti
 		return retrievedQuestions.map(question => ({
 			questionText: question.question_text,
 			readingQuestionId: question.reading_question_id,
+			readingQuestionUUID: question.reading_question_uuid as QuestionUUID,
 			questionAnswerChoices: question.reading_question_answer_choice.map(choice => ({
 				answerText: choice.answer_text,
 				isCorrect: choice.is_correct,
