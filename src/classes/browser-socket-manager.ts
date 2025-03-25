@@ -208,8 +208,8 @@ export default class BrowserSocketManager extends Singleton {
 	public getLivePipStatus(userId: number, pipUUID: PipUUID): PipBrowserConnectionStatus {
 		const espStatus = Esp32SocketManager.getInstance().getESPStatus(pipUUID)
 
-		// Check if the ESP32 is inactive or updating firmware
-		if (espStatus === "inactive" || espStatus === "updating firmware") {
+		// Check if the ESP32 is offline or updating firmware
+		if (espStatus === "offline" || espStatus === "updating firmware") {
 			return espStatus
 		}
 
