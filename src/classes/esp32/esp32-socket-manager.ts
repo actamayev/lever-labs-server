@@ -156,11 +156,11 @@ export default class Esp32SocketManager extends Singleton {
 		this.socketToPip.delete(socketId)
 
 		// Notify of status change
-		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "inactive")
+		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "offline")
 	}
 
 	public getESPStatus(pipUUID: PipUUID): ESPConnectionStatus {
-		return this.connections.get(pipUUID)?.status || "inactive"
+		return this.connections.get(pipUUID)?.status || "offline"
 	}
 
 	private getConnection(pipUUID: PipUUID): SingleESP32Connection | undefined {

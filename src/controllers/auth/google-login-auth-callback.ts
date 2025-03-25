@@ -38,7 +38,7 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 		let userPipData: PipData[] = []
 
 		if (_.isUndefined(userId)) {
-			res.status(500).json({ error: "Unable to login with this email. Account inactive." })
+			res.status(500).json({ error: "Unable to login with this email. Account offline." })
 			return
 		} else if (!_.isNull(userId)) {
 			accessToken = await signJWT({ userId, newUser: false })

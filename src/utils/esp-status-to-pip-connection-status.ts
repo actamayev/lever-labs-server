@@ -8,7 +8,7 @@ export default function espStatusToPipConnectionStatus(
 	shouldAutoConnect: boolean
 ): PipBrowserConnectionStatus {
 	try {
-		if (espStatus === "updating firmware" || espStatus === "inactive") {
+		if (espStatus === "updating firmware" || espStatus === "offline") {
 			return espStatus
 		}
 		// The ESP is connected to the internet
