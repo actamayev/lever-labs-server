@@ -42,9 +42,26 @@ declare global {
 		leftWheelRPM: number
 		rightWheelRPM: number
 		irSensorData: number[] & { length: 5 }
+
 		redValue: number
 		greenValue: number
 		blueValue: number
+
+		pitch: number
+		yaw: number
+		roll: number
+
+		aX: number
+		aY: number
+		aZ: number
+
+		gX: number
+		gY: number
+		gZ: number
+
+		mX: number
+		mY: number
+		mZ: number
 	}
 
 	interface PipUUIDPayload {
