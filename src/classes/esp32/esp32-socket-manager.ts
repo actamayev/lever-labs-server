@@ -211,4 +211,17 @@ export default class Esp32SocketManager extends Singleton {
 			throw error
 		}
 	}
+
+	public async emitChangeAudibleStatus(audibleStatus: boolean, pipUUID: PipUUID): Promise<void> {
+		try {
+			const connection = this.getConnection(pipUUID)
+			if (!connection) {
+				throw new Error(`No active connection for Pip ${pipUUID}`)
+			}
+			await this.esp32LabDemoDataManager.changeAudibleStatus(connection.socket, audibleStatus)
+		} catch (error) {
+			console.error(`Failed to transfer code to PIP ${pipUUID}:`, error)
+			throw error
+		}
+	}
 }

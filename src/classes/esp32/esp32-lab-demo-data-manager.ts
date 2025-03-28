@@ -127,4 +127,32 @@ export default class ESP32LabDemoDataManager extends Singleton {
 			throw new Error(`Sound transfer failed: ${error || "Unknown reason"}`)
 		}
 	}
+
+	public changeAudibleStatus(
+		socket: ExtendedWebSocket,
+		audibleStatus: boolean
+	): Promise<void> {
+		try {
+			const buffer = new ArrayBuffer(2)
+			const view = new DataView(buffer)
+
+			// Set message type to 3 (mute command)
+			view.setUint8(0, 3)
+
+			view.setUint8(1, audibleStatus ? 0 : 1)
+
+			return new Promise((resolve, reject) => {
+				socket.send(buffer, { binary: true }, (error) => {
+					if (error) {
+						reject(new Error(`Failed to send mute command: ${error.message}`))
+					} else {
+						resolve()
+					}
+				})
+			})
+		} catch (error: unknown) {
+			console.error("Mute command failed:", error)
+			throw new Error(`Mute command failed: ${error || "Unknown reason"}`)
+		}
+	}
 }
