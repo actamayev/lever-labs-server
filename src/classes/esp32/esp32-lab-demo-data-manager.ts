@@ -42,7 +42,7 @@ export default class ESP32LabDemoDataManager extends Singleton {
 	}
 
 	// eslint-disable-next-line complexity
-	public calculateMotorSpeeds(data: IncomingMotorControlData): MotorSpeeds {
+	private calculateMotorSpeeds(data: IncomingMotorControlData): MotorSpeeds {
 		const speeds = { leftMotor: 0, rightMotor: 0 }
 		const { vertical, horizontal } = data.motorControl
 
@@ -90,5 +90,41 @@ export default class ESP32LabDemoDataManager extends Singleton {
 		}
 
 		return speeds
+	}
+
+	public playSound(
+		socket: ExtendedWebSocket,
+		tune: TuneToPlay
+	): Promise<void> {
+		try {
+			const buffer = new ArrayBuffer(2)
+			const view = new DataView(buffer)
+
+			// Set message type to 2 (sound command)
+			view.setUint8(0, 2)
+
+			// Set tune type:
+			// 0 = Alert
+			// 1 = Beep
+			// 2 = Chime
+			let tuneId = 0
+			if (tune === "Beep") tuneId = 1
+			else if (tune === "Chime") tuneId = 2
+
+			view.setUint8(1, tuneId)
+
+			return new Promise((resolve, reject) => {
+				socket.send(buffer, { binary: true }, (error) => {
+					if (error) {
+						reject(new Error(`Failed to send sound data: ${error.message}`))
+					} else {
+						resolve()
+					}
+				})
+			})
+		} catch (error: unknown) {
+			console.error("Sound transfer failed:", error)
+			throw new Error(`Sound transfer failed: ${error || "Unknown reason"}`)
+		}
 	}
 }

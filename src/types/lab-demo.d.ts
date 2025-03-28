@@ -13,6 +13,8 @@ declare global {
 		leftMotor: number
 		rightMotor: number
 	}
+
+	type TuneToPlay = "Alert" | "Beep" | "Chime"
 }
 
 export {}
