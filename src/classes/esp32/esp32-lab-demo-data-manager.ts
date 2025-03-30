@@ -1,4 +1,6 @@
 import Singleton from "../singleton"
+import { MessageBuilder } from "./message-builder"
+import { tuneToSoundType } from "../../utils/protocol"
 
 export default class ESP32LabDemoDataManager extends Singleton {
 	private constructor() {
@@ -18,23 +20,12 @@ export default class ESP32LabDemoDataManager extends Singleton {
 	): Promise<void> {
 		try {
 			const speeds = this.calculateMotorSpeeds(data)
+			const buffer = MessageBuilder.createMotorControlMessage(
+				speeds.leftMotor,
+				speeds.rightMotor
+			)
 
-			const buffer = new ArrayBuffer(5)
-			const view = new DataView(buffer)
-
-			view.setUint8(0, 1)
-			view.setInt16(1, speeds.leftMotor, true)
-			view.setInt16(3, speeds.rightMotor, true)
-
-			return new Promise((resolve, reject) => {
-				socket.send(buffer, { binary: true }, (error) => {
-					if (error) {
-						reject(new Error(`Failed to send data: ${error.message}`))
-					} else {
-						resolve()
-					}
-				})
-			})
+			return this.sendBinaryMessage(socket, buffer)
 		} catch (error: unknown) {
 			console.error("Transfer failed:", error)
 			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
@@ -48,7 +39,7 @@ export default class ESP32LabDemoDataManager extends Singleton {
 
 		const maxSpeed = 255
 		const spinSpeed = 100
-		const turnSpeed = 30 // Slower wheel speed for diagonal turns (adjust as needed)
+		const turnSpeed = 50 // Slower wheel speed for diagonal turns (adjust as needed)
 
 		// Define speeds based on vertical and horizontal inputs
 		if (vertical === 0 && horizontal === 0) {
@@ -97,31 +88,10 @@ export default class ESP32LabDemoDataManager extends Singleton {
 		tune: TuneToPlay
 	): Promise<void> {
 		try {
-			const buffer = new ArrayBuffer(2)
-			const view = new DataView(buffer)
+			const soundType = tuneToSoundType[tune]
+			const buffer = MessageBuilder.createSoundMessage(soundType)
 
-			// Set message type to 2 (sound command)
-			view.setUint8(0, 2)
-
-			// Set tune type:
-			// 0 = Alert
-			// 1 = Beep
-			// 2 = Chime
-			let tuneId = 0
-			if (tune === "Beep") tuneId = 1
-			else if (tune === "Chime") tuneId = 2
-
-			view.setUint8(1, tuneId)
-
-			return new Promise((resolve, reject) => {
-				socket.send(buffer, { binary: true }, (error) => {
-					if (error) {
-						reject(new Error(`Failed to send sound data: ${error.message}`))
-					} else {
-						resolve()
-					}
-				})
-			})
+			return this.sendBinaryMessage(socket, buffer)
 		} catch (error: unknown) {
 			console.error("Sound transfer failed:", error)
 			throw new Error(`Sound transfer failed: ${error || "Unknown reason"}`)
@@ -133,26 +103,24 @@ export default class ESP32LabDemoDataManager extends Singleton {
 		audibleStatus: boolean
 	): Promise<void> {
 		try {
-			const buffer = new ArrayBuffer(2)
-			const view = new DataView(buffer)
+			const buffer = MessageBuilder.createSpeakerMuteMessage(audibleStatus)
 
-			// Set message type to 3 (mute command)
-			view.setUint8(0, 3)
-
-			view.setUint8(1, audibleStatus ? 0 : 1)
-
-			return new Promise((resolve, reject) => {
-				socket.send(buffer, { binary: true }, (error) => {
-					if (error) {
-						reject(new Error(`Failed to send mute command: ${error.message}`))
-					} else {
-						resolve()
-					}
-				})
-			})
+			return this.sendBinaryMessage(socket, buffer)
 		} catch (error: unknown) {
 			console.error("Mute command failed:", error)
 			throw new Error(`Mute command failed: ${error || "Unknown reason"}`)
 		}
+	}
+
+	private sendBinaryMessage(socket: ExtendedWebSocket, buffer: ArrayBuffer): Promise<void> {
+		return new Promise((resolve, reject) => {
+			socket.send(buffer, { binary: true }, (error) => {
+				if (error) {
+					reject(new Error(`Failed to send data: ${error.message}`))
+				} else {
+					resolve()
+				}
+			})
+		})
 	}
 }
