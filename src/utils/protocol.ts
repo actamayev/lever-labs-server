@@ -2,7 +2,8 @@ export enum MessageType {
     FIRMWARE_CHUNK = 0,
     MOTOR_CONTROL = 1,
     SOUND_COMMAND = 2,
-    SPEAKER_MUTE = 3
+    SPEAKER_MUTE = 3,
+    BALANCE_CONTROL = 4
 }
 
 export enum SoundType {
@@ -14,6 +15,11 @@ export enum SoundType {
 export enum SpeakerStatus {
     UNMUTED = 0,
     MUTED = 1
+}
+
+export enum BalanceStatus {
+    UNBALANCED = 0,
+    BALANCED = 1
 }
 
 export type TuneToPlay = "Alert" | "Beep" | "Chime";

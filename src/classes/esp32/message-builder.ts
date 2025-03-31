@@ -1,4 +1,4 @@
-import { MessageType, SoundType, SpeakerStatus } from "../../utils/protocol"
+import { BalanceStatus, MessageType, SoundType, SpeakerStatus } from "../../utils/protocol"
 
 export class MessageBuilder {
 	// Create motor control message
@@ -31,6 +31,16 @@ export class MessageBuilder {
 
 		view.setUint8(0, MessageType.SPEAKER_MUTE)
 		view.setUint8(1, audibleStatus ? SpeakerStatus.MUTED : SpeakerStatus.UNMUTED)
+
+		return buffer
+	}
+
+	static createBalanceMessage(balanceStatus: boolean): ArrayBuffer {
+		const buffer = new ArrayBuffer(2)
+		const view = new DataView(buffer)
+
+		view.setUint8(0, MessageType.BALANCE_CONTROL)
+		view.setUint8(1, balanceStatus ? BalanceStatus.BALANCED : BalanceStatus.UNBALANCED)
 
 		return buffer
 	}
