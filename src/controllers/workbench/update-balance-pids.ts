@@ -5,7 +5,7 @@ export default async function updateBalancePids(req: Request, res: Response): Pr
 	try {
 		const body = req.body as BalancePidsProps
 
-		await Esp32SocketManager.getInstance().emitChangeBalancePids(body)
+		await Esp32SocketManager.getInstance().emitChangeBalancePids(body.pipUUID, body)
 
 		res.status(200).json({ success: "" })
 		return

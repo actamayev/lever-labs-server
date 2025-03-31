@@ -3,9 +3,9 @@ import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 
 export default async function changeBalanceStatus(req: Request, res: Response): Promise<void> {
 	try {
-		const { balanceStatus, pipUUID } = req.body as { balanceStatus: boolean, pipUUID: PipUUID }
+		const { pipUUID, balanceStatus } = req.body as { pipUUID: PipUUID, balanceStatus: boolean }
 
-		await Esp32SocketManager.getInstance().emitChangeBalanceStatus(balanceStatus, pipUUID)
+		await Esp32SocketManager.getInstance().emitChangeBalanceStatus(pipUUID, balanceStatus)
 
 		res.status(200).json({ success: "" })
 		return

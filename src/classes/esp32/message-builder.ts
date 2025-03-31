@@ -45,7 +45,7 @@ export class MessageBuilder {
 		return buffer
 	}
 
-	static createUpdateBalancePidsMessage(props: BalancePidsProps): ArrayBuffer {
+	static createUpdateBalancePidsMessage(props: Omit<BalancePidsProps, "pipUUID">): ArrayBuffer {
 		const buffer = new ArrayBuffer(10) // 1 byte for type + 9 bytes for values
 		const view = new DataView(buffer)
 

@@ -5,7 +5,7 @@ export default async function playTune (req: Request, res: Response): Promise<vo
 	try {
 		const { tuneToPlay, pipUUID } = req.body as { tuneToPlay: TuneToPlay, pipUUID: PipUUID }
 
-		await Esp32SocketManager.getInstance().emitTuneToPlay(tuneToPlay, pipUUID)
+		await Esp32SocketManager.getInstance().emitTuneToPlay(pipUUID, tuneToPlay)
 
 		res.status(200).json({ success: "" })
 		return

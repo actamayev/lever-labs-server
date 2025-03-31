@@ -16,7 +16,7 @@ export default class ESP32LabDemoDataManager extends Singleton {
 
 	public transferMotorControlData(
 		socket: ExtendedWebSocket,
-		data: IncomingMotorControlData
+		data: Omit<IncomingMotorControlData, "pipUUID">
 	): Promise<void> {
 		try {
 			const speeds = this.calculateMotorSpeeds(data)
@@ -33,7 +33,7 @@ export default class ESP32LabDemoDataManager extends Singleton {
 	}
 
 	// eslint-disable-next-line complexity
-	private calculateMotorSpeeds(data: IncomingMotorControlData): MotorSpeeds {
+	private calculateMotorSpeeds(data: Omit<IncomingMotorControlData, "pipUUID">): MotorSpeeds {
 		const speeds = { leftMotor: 0, rightMotor: 0 }
 		const { vertical, horizontal } = data.motorControl
 
@@ -128,7 +128,7 @@ export default class ESP32LabDemoDataManager extends Singleton {
 
 	public changeBalancePids(
 		socket: ExtendedWebSocket,
-		balancePids: BalancePidsProps
+		balancePids: Omit<BalancePidsProps, "pipUUID">
 	): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createUpdateBalancePidsMessage(balancePids)
