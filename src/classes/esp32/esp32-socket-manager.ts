@@ -97,11 +97,11 @@ export default class Esp32SocketManager extends Singleton {
 			const { route, payload } = parsed
 
 			switch (route) {
-			  case "/sensor-data":
+			case "/sensor-data":
 				this.handleSensorData(socketId, payload as SensorPayload)
 				break
-			  // Handle other non-registration message types here
-			  default:
+			// Handle other non-registration message types here
+			default:
 				console.warn(`Unknown route: ${route}`)
 				break
 			}
@@ -129,7 +129,7 @@ export default class Esp32SocketManager extends Singleton {
 		pipUUID: PipUUID,
 		connection: SingleESP32Connection
 	): void {
-		// Clean up any existing connection for this PIP
+	// Clean up any existing connection for this PIP
 		const existing = this.connections.get(pipUUID)
 		if (existing) existing.connection.dispose()
 
@@ -177,74 +177,74 @@ export default class Esp32SocketManager extends Singleton {
 		commandFn: (socket: ExtendedWebSocket, data: T) => Promise<void>,
 		data: T,
 		errorMessage: string = "Failed to transfer code to PIP"
-	  ): Promise<void> {
-		// Get connection
+	): Promise<void> {
+	// Get connection
 		const connection = this.getConnection(pipUUID)
 		if (!connection) {
-		  throw new Error(`No active connection for Pip ${pipUUID}`)
+			throw new Error(`No active connection for Pip ${pipUUID}`)
 		}
 
 		try {
-		  return await commandFn(connection.socket, data)
+			return await commandFn(connection.socket, data)
 		} catch (error) {
-		  console.error(`${errorMessage} ${pipUUID}:`, error)
-		  throw error
+			console.error(`${errorMessage} ${pipUUID}:`, error)
+			throw error
 		}
-	  }
+	}
 
-	  // Keep the original binary transfer method
-	  public async emitBinaryCodeToPip(pipUUID: PipUUID, binary: Buffer): Promise<void> {
+	// Keep the original binary transfer method
+	public async emitBinaryCodeToPip(pipUUID: PipUUID, binary: Buffer): Promise<void> {
 		const connection = this.getConnection(pipUUID)
 		if (!connection) {
-		  throw new Error(`No active connection for PIP ${pipUUID}`)
+			throw new Error(`No active connection for PIP ${pipUUID}`)
 		}
 
 		try {
-		  await this.esp32FirmwareUpdateManager.transferBinaryData(connection, binary)
+			await this.esp32FirmwareUpdateManager.transferBinaryData(connection, binary)
 		} catch (error) {
-		  console.error(`Failed to transfer code to PIP ${pipUUID}:`, error)
-		  throw error
+			console.error(`Failed to transfer code to PIP ${pipUUID}:`, error)
+			throw error
 		}
-	  }
+	}
 
-	  // Refactor the rest of the methods
-	  public async emitMotorControlToPip(pipUUID: PipUUID, motorControlData: Omit<IncomingMotorControlData, "pipUUID">): Promise<void> {
+	// Refactor the rest of the methods
+	public async emitMotorControlToPip(pipUUID: PipUUID, motorControlData: Omit<IncomingMotorControlData, "pipUUID">): Promise<void> {
 		return await this.emitSocketCommand<Omit<IncomingMotorControlData, "pipUUID">>(
-		  pipUUID,
-		  this.esp32LabDemoDataManager.transferMotorControlData.bind(this.esp32LabDemoDataManager),
-		  motorControlData
+			pipUUID,
+			this.esp32LabDemoDataManager.transferMotorControlData.bind(this.esp32LabDemoDataManager),
+			motorControlData
 		)
-	  }
+	}
 
-	  public async emitTuneToPlay(pipUUID: PipUUID, tuneToPlay: TuneToPlay): Promise<void> {
+	public async emitTuneToPlay(pipUUID: PipUUID, tuneToPlay: TuneToPlay): Promise<void> {
 		return await this.emitSocketCommand<TuneToPlay>(
-		  pipUUID,
-		  this.esp32LabDemoDataManager.playSound.bind(this.esp32LabDemoDataManager),
-		  tuneToPlay
+			pipUUID,
+			this.esp32LabDemoDataManager.playSound.bind(this.esp32LabDemoDataManager),
+			tuneToPlay
 		)
-	  }
+	}
 
-	  public async emitChangeAudibleStatus(pipUUID: PipUUID, audibleStatus: boolean): Promise<void> {
+	public async emitChangeAudibleStatus(pipUUID: PipUUID, audibleStatus: boolean): Promise<void> {
 		return await this.emitSocketCommand<boolean>(
-		  pipUUID,
-		  this.esp32LabDemoDataManager.changeAudibleStatus.bind(this.esp32LabDemoDataManager),
-		  audibleStatus
+			pipUUID,
+			this.esp32LabDemoDataManager.changeAudibleStatus.bind(this.esp32LabDemoDataManager),
+			audibleStatus
 		)
-	  }
+	}
 
-	  public async emitChangeBalanceStatus(pipUUID: PipUUID, balanceStatus: boolean): Promise<void> {
+	public async emitChangeBalanceStatus(pipUUID: PipUUID, balanceStatus: boolean): Promise<void> {
 		return await this.emitSocketCommand<boolean>(
-		  pipUUID,
-		  this.esp32LabDemoDataManager.changeBalanceStatus.bind(this.esp32LabDemoDataManager),
-		  balanceStatus
+			pipUUID,
+			this.esp32LabDemoDataManager.changeBalanceStatus.bind(this.esp32LabDemoDataManager),
+			balanceStatus
 		)
-	  }
+	}
 
-	  public async emitChangeBalancePids(pipUUID: PipUUID, pidsData: Omit<BalancePidsProps, "pipUUID">): Promise<void> {
+	public async emitChangeBalancePids(pipUUID: PipUUID, pidsData: Omit<BalancePidsProps, "pipUUID">): Promise<void> {
 		return await this.emitSocketCommand<Omit<BalancePidsProps, "pipUUID">>(
-		  pipUUID,
-		  this.esp32LabDemoDataManager.changeBalancePids.bind(this.esp32LabDemoDataManager),
-		  pidsData
+			pipUUID,
+			this.esp32LabDemoDataManager.changeBalancePids.bind(this.esp32LabDemoDataManager),
+			pidsData
 		)
-	  }
+	}
 }
