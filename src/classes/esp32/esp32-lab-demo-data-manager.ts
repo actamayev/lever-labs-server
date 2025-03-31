@@ -126,6 +126,20 @@ export default class ESP32LabDemoDataManager extends Singleton {
 		}
 	}
 
+	public changeBalancePids(
+		socket: ExtendedWebSocket,
+		balancePids: BalancePidsProps
+	): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createUpdateBalancePidsMessage(balancePids)
+
+			return this.sendBinaryMessage(socket, buffer)
+		} catch (error: unknown) {
+			console.error("Balance command failed:", error)
+			throw new Error(`Balance command failed: ${error || "Unknown reason"}`)
+		}
+	}
+
 	private sendBinaryMessage(socket: ExtendedWebSocket, buffer: ArrayBuffer): Promise<void> {
 		return new Promise((resolve, reject) => {
 			socket.send(buffer, { binary: true }, (error) => {

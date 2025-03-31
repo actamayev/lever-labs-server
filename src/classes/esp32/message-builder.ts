@@ -44,4 +44,22 @@ export class MessageBuilder {
 
 		return buffer
 	}
+
+	static createUpdateBalancePidsMessage(props: BalancePidsProps): ArrayBuffer {
+		const buffer = new ArrayBuffer(10) // 1 byte for type + 9 bytes for values
+		const view = new DataView(buffer)
+
+		view.setUint8(0, MessageType.UPDATE_BALANCE_PIDS) // Message type
+		view.setUint8(1, props.pValue)          // 0-255 range
+		view.setUint8(2, props.iValue)          // 0-255 range
+		view.setUint8(3, props.dValue)          // 0-255 range
+		view.setUint8(4, props.ffValue)         // 0-255 range
+		view.setUint8(5, props.targetAngle)     // 0-255 range
+		view.setUint8(6, props.maxSafeAngleDeviation) // 0-255 range
+		view.setUint8(7, props.updateInterval)  // 0-255 range
+		view.setUint8(8, props.deadbandAngle)   // 0-255 range
+		view.setUint8(9, props.maxStableRotation) // 0-255 range
+
+		return buffer
+	}
 }

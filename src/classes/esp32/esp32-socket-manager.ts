@@ -237,4 +237,17 @@ export default class Esp32SocketManager extends Singleton {
 			throw error
 		}
 	}
+
+	public async emitChangeBalancePids(body: BalancePidsProps): Promise<void> {
+		try {
+			const connection = this.getConnection(body.pipUUID)
+			if (!connection) {
+				throw new Error(`No active connection for Pip ${body.pipUUID}`)
+			}
+			await this.esp32LabDemoDataManager.changeBalancePids(connection.socket, body)
+		} catch (error) {
+			console.error(`Failed to transfer code to PIP ${body.pipUUID}:`, error)
+			throw error
+		}
+	}
 }

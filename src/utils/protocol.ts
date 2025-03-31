@@ -3,7 +3,8 @@ export enum MessageType {
     MOTOR_CONTROL = 1,
     SOUND_COMMAND = 2,
     SPEAKER_MUTE = 3,
-    BALANCE_CONTROL = 4
+    BALANCE_CONTROL = 4,
+    UPDATE_BALANCE_PIDS = 5
 }
 
 export enum SoundType {
