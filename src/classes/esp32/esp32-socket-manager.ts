@@ -176,7 +176,7 @@ export default class Esp32SocketManager extends Singleton {
 		pipUUID: PipUUID,
 		commandFn: (socket: ExtendedWebSocket, data: T) => Promise<void>,
 		data: T,
-		errorMessage: string = "Failed to transfer code to PIP"
+		errorMessage: string
 	): Promise<void> {
 	// Get connection
 		const connection = this.getConnection(pipUUID)
@@ -212,7 +212,8 @@ export default class Esp32SocketManager extends Singleton {
 		return await this.emitSocketCommand<Omit<IncomingMotorControlData, "pipUUID">>(
 			pipUUID,
 			this.esp32LabDemoDataManager.transferMotorControlData.bind(this.esp32LabDemoDataManager),
-			motorControlData
+			motorControlData,
+			"Failed to send motor control command"
 		)
 	}
 
@@ -220,7 +221,8 @@ export default class Esp32SocketManager extends Singleton {
 		return await this.emitSocketCommand<TuneToPlay>(
 			pipUUID,
 			this.esp32LabDemoDataManager.playSound.bind(this.esp32LabDemoDataManager),
-			tuneToPlay
+			tuneToPlay,
+			"Failed to send tune to play"
 		)
 	}
 
@@ -228,7 +230,8 @@ export default class Esp32SocketManager extends Singleton {
 		return await this.emitSocketCommand<boolean>(
 			pipUUID,
 			this.esp32LabDemoDataManager.changeAudibleStatus.bind(this.esp32LabDemoDataManager),
-			audibleStatus
+			audibleStatus,
+			"Failed to audible status"
 		)
 	}
 
@@ -236,7 +239,8 @@ export default class Esp32SocketManager extends Singleton {
 		return await this.emitSocketCommand<boolean>(
 			pipUUID,
 			this.esp32LabDemoDataManager.changeBalanceStatus.bind(this.esp32LabDemoDataManager),
-			balanceStatus
+			balanceStatus,
+			"Failed to change balance status"
 		)
 	}
 
@@ -244,7 +248,8 @@ export default class Esp32SocketManager extends Singleton {
 		return await this.emitSocketCommand<Omit<BalancePidsProps, "pipUUID">>(
 			pipUUID,
 			this.esp32LabDemoDataManager.changeBalancePids.bind(this.esp32LabDemoDataManager),
-			pidsData
+			pidsData,
+			"Failed to change balance PIDs"
 		)
 	}
 }

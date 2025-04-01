@@ -46,19 +46,19 @@ export class MessageBuilder {
 	}
 
 	static createUpdateBalancePidsMessage(props: Omit<BalancePidsProps, "pipUUID">): ArrayBuffer {
-		const buffer = new ArrayBuffer(10) // 1 byte for type + 9 bytes for values
+		const buffer = new ArrayBuffer(37) // 1 byte for type + 9 float values * 4 bytes each = 37 bytes
 		const view = new DataView(buffer)
 
 		view.setUint8(0, MessageType.UPDATE_BALANCE_PIDS) // Message type
-		view.setUint8(1, props.pValue)          // 0-255 range
-		view.setUint8(2, props.iValue)          // 0-255 range
-		view.setUint8(3, props.dValue)          // 0-255 range
-		view.setUint8(4, props.ffValue)         // 0-255 range
-		view.setUint8(5, props.targetAngle)     // 0-255 range
-		view.setUint8(6, props.maxSafeAngleDeviation) // 0-255 range
-		view.setUint8(7, props.updateInterval)  // 0-255 range
-		view.setUint8(8, props.deadbandAngle)   // 0-255 range
-		view.setUint8(9, props.maxStableRotation) // 0-255 range
+		view.setFloat32(1, props.pValue, true)          // float value
+		view.setFloat32(5, props.iValue, true)          // float value
+		view.setFloat32(9, props.dValue, true)          // float value
+		view.setFloat32(13, props.ffValue, true)        // float value
+		view.setFloat32(17, props.targetAngle, true)    // float value
+		view.setFloat32(21, props.maxSafeAngleDeviation, true) // float value
+		view.setFloat32(25, props.updateInterval, true) // float value
+		view.setFloat32(29, props.deadbandAngle, true)  // float value
+		view.setFloat32(33, props.maxStableRotation, true) // float value
 
 		return buffer
 	}
