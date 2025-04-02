@@ -4,7 +4,7 @@ import findSandboxProjectIdFromUUID from "../../db-operations/read/find/find-san
 
 export default async function attachSandboxProjectIdFromUUID(req: Request, res: Response, next: NextFunction): Promise<void> {
 	try {
-		const { projectUUID } = req.body as { projectUUID: ProjectUUID }
+		const { projectUUID } = req.params as { projectUUID: ProjectUUID }
 
 		const sandboxProjectId = await findSandboxProjectIdFromUUID(projectUUID)
 

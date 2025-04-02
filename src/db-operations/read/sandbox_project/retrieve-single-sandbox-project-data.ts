@@ -1,5 +1,6 @@
 import { isNull } from "lodash"
 import PrismaClientClass from "../../../classes/prisma-client"
+import camelCaseSandboxProject from "../../../utils/sandbox/camel-case-sandbox-project"
 
 export default async function retrieveSingleSandboxProjectData(projectUUID: ProjectUUID): Promise<SandboxProject | null> {
 	try {
@@ -13,14 +14,7 @@ export default async function retrieveSingleSandboxProjectData(projectUUID: Proj
 
 		if (isNull(sandboxProject)) return null
 
-		return {
-			sandboxXml: sandboxProject.sandbox_xml,
-			projectUUID: sandboxProject.project_uuid as ProjectUUID,
-			isStarred: sandboxProject.is_starred,
-			projectName: sandboxProject.project_name,
-			createdAt: sandboxProject.created_at,
-			updatedAt: sandboxProject.updated_at
-		}
+		return camelCaseSandboxProject(sandboxProject)
 	} catch (error) {
 		console.error(error)
 		throw error

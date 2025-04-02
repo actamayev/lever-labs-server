@@ -3,7 +3,7 @@ import retrieveSingleSandboxProjectData from "../../db-operations/read/sandbox_p
 
 export default async function getSingleSandboxProject(req: Request, res: Response): Promise<void> {
 	try {
-		const { projectUUID } = req.body as { projectUUID: ProjectUUID }
+		const { projectUUID } = req.params as { projectUUID: ProjectUUID }
 
 		const sandboxProject = await retrieveSingleSandboxProjectData(projectUUID)
 

@@ -5,9 +5,9 @@ export default async function createSandboxProject(req: Request, res: Response):
 	try {
 		const { userId } = req
 
-		const uuid = await createSandboxProjectDB(userId)
+		const sandboxProject = await createSandboxProjectDB(userId)
 
-		res.status(200).json({ uuid })
+		res.status(200).json({ sandboxProject })
 		return
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (error: any) {
