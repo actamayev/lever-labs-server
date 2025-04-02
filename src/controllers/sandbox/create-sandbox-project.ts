@@ -1,0 +1,18 @@
+import { Response, Request } from "express"
+import createSandboxProjectDB from "../../db-operations/write/sandbox-project/create-sandbox-project"
+
+export default async function createSandboxProject(req: Request, res: Response): Promise<void> {
+	try {
+		const { userId } = req
+
+		const uuid = await createSandboxProjectDB(userId)
+
+		res.status(200).json({ uuid })
+		return
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} catch (error: any) {
+		console.error(error)
+		res.status(500).json({ error: "Internal Server Error: Unable to create sandbox project" })
+		return
+	}
+}

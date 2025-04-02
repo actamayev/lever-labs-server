@@ -36,7 +36,8 @@ model credentials {
 	user_pip_uuid_map											user_pip_uuid_map[]
 	user_activity_progress										user_activity_progress[]
 	user_answer													user_answer[]
-	completed_reading_block													completed_reading_block[]
+	completed_reading_block										completed_reading_block[]
+	sandbox_project												sandbox_project[]
 }
 
 model login_history {
@@ -213,4 +214,20 @@ model user_answer {
 	@@index([reading_question_answer_choice_id], name: "user_answers__reading_question_answer_choice_id_idx")
 	@@index([user_id], name: "user_answers__user_id_idx")
 	@@unique([reading_question_answer_choice_id, user_id])
+}
+
+model sandbox_project {
+	sandbox_project_id											Int       @id @default(autoincrement())
+	sandbox_xml													String
+	project_owner_id       										Int
+	project_uuid												String		@unique
+	project_name												String?
+	is_starred													Boolean @default(false)
+
+	created_at                                                  DateTime  @default(now())
+	updated_at                                                  DateTime @default(now()) @updatedAt
+
+	user                                                        credentials @relation(fields: [project_owner_id], references: [user_id])
+
+	@@index([project_owner_id], name: "sandbox_project__project_owner_id_idx")
 }

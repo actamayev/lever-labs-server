@@ -1,0 +1,24 @@
+import { isUndefined } from "lodash"
+import { Request, Response, NextFunction } from "express"
+import findSandboxProjectIdFromUUID from "../../db-operations/read/find/find-sandbox-project-id-from-uuid"
+
+export default async function attachSandboxProjectIdFromUUID(req: Request, res: Response, next: NextFunction): Promise<void> {
+	try {
+		const { projectUUID } = req.body as { projectUUID: ProjectUUID }
+
+		const sandboxProjectId = await findSandboxProjectIdFromUUID(projectUUID)
+
+		if (isUndefined(sandboxProjectId)) {
+			res.status(400).json({ message: "Sandbox Project ID doesn't exist"})
+			return
+		}
+
+		req.sandboxProjectId = sandboxProjectId
+
+		next()
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ error: "Internal Server Error: Unable to attach sandbox project Id from UUID" })
+		return
+	}
+}
