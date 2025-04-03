@@ -24,6 +24,7 @@ model credentials {
 	password                                                    String?
 	is_active                                                   Boolean  @default(true)
 	default_site_theme                                          SiteThemes
+	sandbox_notes_open											Boolean @default(false)
 
 	auth_method                                                 AuthMethods
 
