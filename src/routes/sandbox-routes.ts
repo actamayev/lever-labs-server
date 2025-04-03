@@ -12,6 +12,8 @@ import validateEditSandboxProject from "../middleware/request-validation/sandbox
 import validateEditSandboxProjectName from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-name"
 import confirmSandboxProjectExistsAndValidUserId from "../middleware/confirm/confirm-sandbox-project-exists-and-valid-user-id"
 import validateProjectUUIDInParams from "../middleware/request-validation/sandbox/validate-project-uuid-in-params"
+import validateStarSandboxProject from "../middleware/request-validation/sandbox/validate-star-sandbox-project"
+import starSandboxProject from "../controllers/sandbox/star-sandbox-project"
 
 const sandboxRoutes = express.Router()
 
@@ -35,6 +37,16 @@ sandboxRoutes.post(
 	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	editSandboxProjectName
+)
+
+sandboxRoutes.post(
+	"/star-sandbox-project/:projectUUID",
+	validateProjectUUIDInParams,
+	validateStarSandboxProject,
+	jwtVerifyAttachUserId,
+	attachSandboxProjectIdFromUUID,
+	confirmSandboxProjectExistsAndValidUserId,
+	starSandboxProject
 )
 
 sandboxRoutes.get("/retrieve-all-sandbox-projects", jwtVerifyAttachUserId, getAllSandboxProjects)
