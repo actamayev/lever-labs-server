@@ -9,7 +9,7 @@ export default function camelCaseSandboxProject(sandboxProject: sandbox_project)
 			projectName: sandboxProject.project_name,
 			createdAt: sandboxProject.created_at,
 			updatedAt: sandboxProject.updated_at,
-			notes: sandboxProject.project_notes
+			projectNotes: sandboxProject.project_notes
 		}
 	} catch (error) {
 		console.error(error)
