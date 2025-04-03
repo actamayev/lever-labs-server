@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import updateSandboxStarStatus from "../../db-operations/write/sandbox-project/udpate-sandbox-project-star-status"
+import updateSandboxStarStatus from "../../db-operations/write/sandbox-project/update-sandbox-project-star-status"
 
 export default async function starSandboxProject(req: Request, res: Response): Promise<void> {
 	try {

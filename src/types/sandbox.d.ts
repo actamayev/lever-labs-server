@@ -8,6 +8,7 @@ declare global {
 		projectName: string | null
 		createdAt: Date
 		updatedAt: Date
+		notes: string | null
 	}
 }
 

@@ -1,6 +1,8 @@
 import express from "express"
 
+import starSandboxProject from "../controllers/sandbox/star-sandbox-project"
 import editSandboxProject from "../controllers/sandbox/edit-sandbox-project"
+import deleteSandboxProject from "../controllers/sandbox/delete-sandbox-project"
 import createSandboxProject from "../controllers/sandbox/create-sandbox-project"
 import getAllSandboxProjects from "../controllers/sandbox/get-all-sandbox-projects"
 import editSandboxProjectName from "../controllers/sandbox/edit-sandbox-project-name"
@@ -13,7 +15,8 @@ import validateEditSandboxProjectName from "../middleware/request-validation/san
 import confirmSandboxProjectExistsAndValidUserId from "../middleware/confirm/confirm-sandbox-project-exists-and-valid-user-id"
 import validateProjectUUIDInParams from "../middleware/request-validation/sandbox/validate-project-uuid-in-params"
 import validateStarSandboxProject from "../middleware/request-validation/sandbox/validate-star-sandbox-project"
-import starSandboxProject from "../controllers/sandbox/star-sandbox-project"
+import validateEditSandboxProjectNotes from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-notes"
+import editSandboxProjectNotes from "../controllers/sandbox/edit-sandbox-project-notes"
 
 const sandboxRoutes = express.Router()
 
@@ -40,6 +43,16 @@ sandboxRoutes.post(
 )
 
 sandboxRoutes.post(
+	"/edit-sandbox-project-notes/:projectUUID",
+	validateProjectUUIDInParams,
+	validateEditSandboxProjectNotes,
+	jwtVerifyAttachUserId,
+	attachSandboxProjectIdFromUUID,
+	confirmSandboxProjectExistsAndValidUserId,
+	editSandboxProjectNotes
+)
+
+sandboxRoutes.post(
 	"/star-sandbox-project/:projectUUID",
 	validateProjectUUIDInParams,
 	validateStarSandboxProject,
@@ -47,6 +60,15 @@ sandboxRoutes.post(
 	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	starSandboxProject
+)
+
+sandboxRoutes.post(
+	"/delete-sandbox-project/:projectUUID",
+	validateProjectUUIDInParams,
+	jwtVerifyAttachUserId,
+	attachSandboxProjectIdFromUUID,
+	confirmSandboxProjectExistsAndValidUserId,
+	deleteSandboxProject
 )
 
 sandboxRoutes.get("/retrieve-all-sandbox-projects", jwtVerifyAttachUserId, getAllSandboxProjects)

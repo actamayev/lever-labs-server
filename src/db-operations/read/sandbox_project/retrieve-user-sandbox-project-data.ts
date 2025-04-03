@@ -1,4 +1,5 @@
 import PrismaClientClass from "../../../classes/prisma-client"
+import camelCaseSandboxProject from "../../../utils/sandbox/camel-case-sandbox-project"
 
 export default async function retrieveUserSandboxProjectData(userId: number): Promise<SandboxProject[]> {
 	try {
@@ -6,18 +7,12 @@ export default async function retrieveUserSandboxProjectData(userId: number): Pr
 
 		const sandboxProjects = await prismaClient.sandbox_project.findMany({
 			where: {
-				project_owner_id: userId
+				project_owner_id: userId,
+				is_active: true
 			}
 		})
 
-		return sandboxProjects.map(sandboxProject => ({
-			sandboxXml: sandboxProject.sandbox_xml,
-			projectUUID: sandboxProject.project_uuid as ProjectUUID,
-			isStarred: sandboxProject.is_starred,
-			projectName: sandboxProject.project_name,
-			createdAt: sandboxProject.created_at,
-			updatedAt: sandboxProject.updated_at
-		}))
+		return sandboxProjects.map(sandboxProject => camelCaseSandboxProject(sandboxProject))
 	} catch (error) {
 		console.error(error)
 		throw error

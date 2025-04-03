@@ -222,7 +222,10 @@ model sandbox_project {
 	project_owner_id       										Int
 	project_uuid												String		@unique
 	project_name												String?
+	project_notes												String?
 	is_starred													Boolean @default(false)
+
+	is_active													Boolean @default(true)
 
 	created_at                                                  DateTime  @default(now())
 	updated_at                                                  DateTime @default(now()) @updatedAt

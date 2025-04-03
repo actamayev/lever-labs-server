@@ -1,15 +1,15 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function updateSandboxProjectName(sandboxProjectId: number, newProjectName: string): Promise<void> {
+export default async function updateSandboxProjectNotes(sandboxProjectId: number, newProjectNotes: string): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
 		await prismaClient.sandbox_project.update({
 			where: {
-				sandbox_project_id:sandboxProjectId
+				sandbox_project_id: sandboxProjectId
 			},
 			data: {
-				project_name: newProjectName
+				project_notes: newProjectNotes
 			}
 		})
 

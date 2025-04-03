@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import updateSandboxProject from "../../db-operations/write/sandbox-project/udpate-sandbox-project"
+import updateSandboxProject from "../../db-operations/write/sandbox-project/update-sandbox-project"
 
 export default async function editSandboxProject(req: Request, res: Response): Promise<void> {
 	try {

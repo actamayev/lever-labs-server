@@ -8,7 +8,8 @@ export default async function retrieveSingleSandboxProjectData(projectUUID: Proj
 
 		const sandboxProject = await prismaClient.sandbox_project.findFirst({
 			where: {
-				project_uuid: projectUUID
+				project_uuid: projectUUID,
+				is_active: true
 			}
 		})
 

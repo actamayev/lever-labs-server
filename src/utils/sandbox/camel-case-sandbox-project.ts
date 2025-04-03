@@ -8,7 +8,8 @@ export default function camelCaseSandboxProject(sandboxProject: sandbox_project)
 			isStarred: sandboxProject.is_starred,
 			projectName: sandboxProject.project_name,
 			createdAt: sandboxProject.created_at,
-			updatedAt: sandboxProject.updated_at
+			updatedAt: sandboxProject.updated_at,
+			notes: sandboxProject.project_notes
 		}
 	} catch (error) {
 		console.error(error)
