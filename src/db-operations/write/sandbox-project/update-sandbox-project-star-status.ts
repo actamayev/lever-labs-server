@@ -6,7 +6,7 @@ export default async function updateSandboxStarStatus(sandboxProjectId: number, 
 
 		await prismaClient.sandbox_project.update({
 			where: {
-				sandbox_project_id:sandboxProjectId
+				sandbox_project_id: sandboxProjectId
 			},
 			data: {
 				is_starred: newStarStatus

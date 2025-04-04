@@ -6,7 +6,7 @@ export default async function updateSandboxProject(sandboxProjectId: number, new
 
 		await prismaClient.sandbox_project.update({
 			where: {
-				sandbox_project_id:sandboxProjectId
+				sandbox_project_id: sandboxProjectId
 			},
 			data: {
 				sandbox_xml: newXml
