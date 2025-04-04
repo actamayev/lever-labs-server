@@ -1,6 +1,6 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function findSandboxProjectIdFromUUID(sandboxProjectUUID: ProjectUUID): Promise<number | undefined> {
+export default async function findSandboxProjectIdFromUUID(projectUUID: ProjectUUID): Promise<number | undefined> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -9,7 +9,7 @@ export default async function findSandboxProjectIdFromUUID(sandboxProjectUUID: P
 				sandbox_project_id: true
 			},
 			where: {
-				project_uuid: sandboxProjectUUID
+				project_uuid: projectUUID
 			}
 		})
 
