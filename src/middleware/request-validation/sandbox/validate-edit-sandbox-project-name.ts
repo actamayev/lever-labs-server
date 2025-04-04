@@ -3,7 +3,7 @@ import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 
 const editSandboxProjectNameSchema = Joi.object({
-	projectName: Joi.string().max(100).required()
+	projectName: Joi.string().max(50).required()
 }).required()
 
 export default function validateEditSandboxProjectName(req: Request, res: Response, next: NextFunction): void {
