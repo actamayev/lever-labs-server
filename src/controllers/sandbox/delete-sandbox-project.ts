@@ -9,8 +9,7 @@ export default async function deleteSandboxProject(req: Request, res: Response):
 
 		res.status(200).json({ success: "" })
 		return
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	} catch (error: any) {
+	} catch (error) {
 		console.error(error)
 		res.status(500).json({ error: "Internal Server Error: Unable to delete sandbox project" })
 		return
