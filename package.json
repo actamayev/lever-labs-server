@@ -18,7 +18,9 @@
   },
   "ts-node": {
     "files": true,
-    "require": ["tsconfig-paths/register"]
+    "require": [
+      "tsconfig-paths/register"
+    ]
   },
   "nodemonConfig": {
     "watch": [
@@ -38,6 +40,7 @@
     "@types/express-serve-static-core": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/lodash": "^4.17.13",
+    "@types/multer": "^1.4.12",
     "@types/node": "^22.10.2",
     "@types/papaparse": "^5.3.15",
     "@types/validator": "^13.12.2",
@@ -53,6 +56,7 @@
     "typescript": "5.7.2"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.782.0",
     "@aws-sdk/client-secrets-manager": "^3.716.0",
     "@prisma/client": "^6.1.0",
     "axios": "^1.7.9",
@@ -65,6 +69,7 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
+    "multer": "^1.4.5-lts.2",
     "papaparse": "^5.5.2",
     "socket.io": "^4.8.1",
     "validator": "^13.12.0",

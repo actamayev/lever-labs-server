@@ -10,6 +10,28 @@ export async function findUserById(userId: number): Promise<ExtendedCredentials 
 			where: {
 				user_id: userId,
 				is_active: true
+			},
+			select: {
+				user_id: true,
+				username: true,
+				password: true,
+				is_active: true,
+				default_site_theme: true,
+				sandbox_notes_open: true,
+				auth_method: true,
+				email__encrypted: true,
+				profile_picture_id: true,
+				name: true,
+				created_at: true,
+				updated_at: true,
+				profile_picture: {
+					select: {
+						image_url: true
+					},
+					where: {
+						is_active: true
+					}
+				}
 			}
 		})
 
