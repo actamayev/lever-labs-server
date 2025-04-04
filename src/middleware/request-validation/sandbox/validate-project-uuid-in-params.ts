@@ -1,10 +1,9 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import sandboxUUIDValidator from "../../joi/sandbox-uuid-validator"
 
 const retrieveSingleSandboxProject = Joi.object({
-	projectUUID: sandboxUUIDValidator,
+	projectUUID: Joi.string().guid({ version: ["uuidv4", "uuidv5"] }).required(),
 }).required()
 
 export default function validateProjectUUIDInParams(req: Request, res: Response, next: NextFunction): void {
