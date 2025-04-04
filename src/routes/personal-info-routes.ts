@@ -6,6 +6,8 @@ import validateSetDefaultSiteTheme from "../middleware/request-validation/person
 
 import getPersonalInfo from "../controllers/personal-info/get-personal-info"
 import setDefaultSiteTheme from "../controllers/personal-info/set-default-site-theme"
+import validateSetSandboxNotesOpenStatus from "../middleware/request-validation/personal-info/validate-set-sandbox-notes-open-status"
+import setSandboxNotesOpenStatus from "../controllers/personal-info/set-sandbox-notes-open-status"
 
 const personalInfoRoutes = express.Router()
 
@@ -20,6 +22,13 @@ personalInfoRoutes.post(
 	validateSetDefaultSiteTheme,
 	jwtVerifyAttachUserId,
 	setDefaultSiteTheme
+)
+
+personalInfoRoutes.post(
+	"/set-sandbox-notes-open-status/:isOpen",
+	validateSetSandboxNotesOpenStatus,
+	jwtVerifyAttachUserId,
+	setSandboxNotesOpenStatus
 )
 
 export default personalInfoRoutes

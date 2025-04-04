@@ -6,6 +6,7 @@ declare global {
 			userId: number
 			activityId: number
 			readingBlockId: number
+			sandboxProjectId: number
 		}
 	}
 }
