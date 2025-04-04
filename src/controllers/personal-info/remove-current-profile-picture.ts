@@ -3,9 +3,9 @@ import markProfilePictureInactive from "../../db-operations/write/profile-pictur
 
 export default async function removeCurrentProfilePicture (req: Request, res: Response): Promise<void> {
 	try {
-		const { user } = req
+		const { userId } = req
 
-		await markProfilePictureInactive(user.user_id)
+		await markProfilePictureInactive(userId)
 
 		res.status(200).json({ success: "Removed Profile picture" })
 		return
