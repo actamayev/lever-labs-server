@@ -14,6 +14,7 @@ const updateBalancePipdsSchema = Joi.object({
 	updateInterval: Joi.number().required(),
 	deadbandAngle: Joi.number().required(),
 	maxStableRotation: Joi.number().required(),
+	minEffectivePwm: Joi.number().integer().required(),
 }).required()
 
 export default function validateUpdateBalancePids(req: Request, res: Response, next: NextFunction): void {

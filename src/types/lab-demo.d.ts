@@ -27,6 +27,7 @@ declare global {
 		updateInterval: number
 		deadbandAngle: number
 		maxStableRotation: number
+		minEffectivePwm: number
 	}
 }
 

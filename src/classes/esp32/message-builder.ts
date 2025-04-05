@@ -46,7 +46,7 @@ export class MessageBuilder {
 	}
 
 	static createUpdateBalancePidsMessage(props: Omit<BalancePidsProps, "pipUUID">): ArrayBuffer {
-		const buffer = new ArrayBuffer(37) // 1 byte for type + 9 float values * 4 bytes each = 37 bytes
+		const buffer = new ArrayBuffer(41) // 1 byte for type + 10 float values * 4 bytes each = 41 bytes
 		const view = new DataView(buffer)
 
 		view.setUint8(0, MessageType.UPDATE_BALANCE_PIDS) // Message type
@@ -59,6 +59,7 @@ export class MessageBuilder {
 		view.setFloat32(25, props.updateInterval, true) // float value
 		view.setFloat32(29, props.deadbandAngle, true)  // float value
 		view.setFloat32(33, props.maxStableRotation, true) // float value
+		view.setFloat32(37, props.minEffectivePwm, true) // float value
 
 		return buffer
 	}

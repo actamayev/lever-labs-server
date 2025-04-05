@@ -3,7 +3,7 @@ import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 
 const updateNameSchema = Joi.object({
-	username: Joi.string().required().trim().min(3).max(100)
+	username: Joi.string().required().trim().min(3).max(50)
 }).required()
 
 export default function validateUpdateUsername (req: Request, res: Response, next: NextFunction): void {
