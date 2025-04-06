@@ -5,7 +5,7 @@ import updateDefaultSiteTheme from "../../db-operations/write/credentials/update
 export default async function setDefaultSiteTheme(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
-		const defaultSiteTheme = req.params.defaultSiteTheme as SiteThemes
+		const { defaultSiteTheme } = req.params as { defaultSiteTheme: SiteThemes }
 		await updateDefaultSiteTheme(userId, defaultSiteTheme)
 
 		res.status(200).json({ success: `Default site theme set to ${defaultSiteTheme}` })

@@ -29,6 +29,8 @@ model credentials {
 	auth_method                                                 AuthMethods
 
 	email__encrypted                                            String @unique
+	profile_picture_id                                          Int?    @unique
+	name														String?
 
 	created_at                                                  DateTime @default(now())
 	updated_at                                                  DateTime @default(now()) @updatedAt
@@ -39,6 +41,10 @@ model credentials {
 	user_answer													user_answer[]
 	completed_reading_block										completed_reading_block[]
 	sandbox_project												sandbox_project[]
+
+	profile_picture                                             profile_picture? @relation(fields: [profile_picture_id], references: [profile_picture_id])
+
+	@@index([profile_picture_id], name:"credentials__profile_picture_id_idx")
 }
 
 model login_history {
@@ -237,4 +243,19 @@ model sandbox_project {
 
 	@@index([project_owner_id], name: "sandbox_project__project_owner_id_idx")
 	@@index([project_uuid], name: "sandbox_project__project_uuid_idx")
+}
+
+model profile_picture {
+	profile_picture_id                                          Int @id @default(autoincrement())
+	image_url                                                   String
+	file_name                                                   String
+	uuid                                                        String
+  	user_id             										Int    @unique
+
+	is_active                                                   Boolean  @default(true)
+
+	created_at                                                  DateTime  @default(now())
+	updated_at                                                  DateTime  @default(now()) @updatedAt
+
+	user                                                        credentials?
 }

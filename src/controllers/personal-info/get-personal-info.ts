@@ -12,8 +12,9 @@ export default async function getPersonalInfo(req: Request, res: Response): Prom
 			username: user.username,
 			email,
 			defaultSiteTheme: user.default_site_theme,
-			profilePictureUrl: null,
-			sandboxNotesOpen: user.sandbox_notes_open
+			profilePictureUrl: user.profile_picture?.image_url || null,
+			sandboxNotesOpen: user.sandbox_notes_open,
+			name: user.name
 		})
 		return
 	} catch (error) {
