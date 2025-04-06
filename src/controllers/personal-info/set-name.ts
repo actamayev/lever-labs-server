@@ -4,7 +4,7 @@ import updateName from "../../db-operations/write/credentials/update-name"
 export default async function setName(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
-		const name = req.params.name
+		const { name } = req.params
 		await updateName(userId, name)
 
 		res.status(200).json({ success: "" })
