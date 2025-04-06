@@ -1,6 +1,6 @@
 import Singleton from "../singleton"
 import { MessageBuilder } from "./message-builder"
-import { tuneToSoundType } from "../../utils/protocol"
+import { lightToLEDType, tuneToSoundType } from "../../utils/protocol"
 
 export default class ESP32LabDemoDataManager extends Singleton {
 	private constructor() {
@@ -95,6 +95,21 @@ export default class ESP32LabDemoDataManager extends Singleton {
 		} catch (error: unknown) {
 			console.error("Sound transfer failed:", error)
 			throw new Error(`Sound transfer failed: ${error || "Unknown reason"}`)
+		}
+	}
+
+	public displayLights(
+		socket: ExtendedWebSocket,
+		lightStatus: LightStatus
+	): Promise<void> {
+		try {
+			const lightType = lightToLEDType[lightStatus]
+			const buffer = MessageBuilder.createLightMessage(lightType)
+
+			return this.sendBinaryMessage(socket, buffer)
+		} catch (error: unknown) {
+			console.error("Light transfer failed:", error)
+			throw new Error(`Light transfer failed: ${error || "Unknown reason"}`)
 		}
 	}
 

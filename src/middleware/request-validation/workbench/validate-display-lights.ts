@@ -3,14 +3,14 @@ import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
 
-const validateTuneToPlaySchema = Joi.object({
-	tuneToPlay: Joi.string().valid("Alert", "Beep", "Chime").required(),
+const validateDisplayLightsSchema = Joi.object({
+	lightStatus: Joi.string().valid("Breathing", "Turn off", "Fade out", "Pause breathing").required(),
 	pipUUID: pipUUIDValidator.required()
 }).required()
 
-export default function validateTuneToPlay(req: Request, res: Response, next: NextFunction): void {
+export default function validateDisplayLights(req: Request, res: Response, next: NextFunction): void {
 	try {
-		const { error } = validateTuneToPlaySchema.validate(req.body)
+		const { error } = validateDisplayLightsSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
 			res.status(400).json({ validationError: error.details[0].message })
@@ -20,7 +20,7 @@ export default function validateTuneToPlay(req: Request, res: Response, next: Ne
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate tune to play" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate display lights" })
 		return
 	}
 }
