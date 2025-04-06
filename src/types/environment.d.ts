@@ -10,6 +10,8 @@ declare namespace NodeJS {
 		// Encryption:
 		EMAIL_ENCRYPTION_KEY: DeterministicEncryptionKeys
 
+		BDR_S3_BUCKET: string
+
 		// Production only:
 		DATABASE_URL: string
 		AWS_ACCESS_KEY_ID: string

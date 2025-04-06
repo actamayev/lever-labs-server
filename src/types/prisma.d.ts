@@ -5,6 +5,9 @@ declare global {
 		email__encrypted: DeterministicEncryptedString | null
 
 		password: HashedString | null
+		profile_picture: {
+			image_url: string
+		} | null
 	}
 
 	type ExtendedPipUUID = pip_uuid & {
