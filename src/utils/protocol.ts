@@ -15,11 +15,14 @@ export enum SoundType {
     CHIME = 2
 }
 
-export enum LightType {
-    BREATHING = 0,
-    TURN_OFF = 1,
-    FADE_OUT = 2,
-    PAUSE_BREATHING = 3
+export enum LightAnimationType {
+    NO_ANIMATION = 0,
+    BREATHING = 1,
+    RAINBOW = 2,
+    STROBE = 3,
+    TURN_OFF = 4,
+    FADE_OUT = 5,
+    PAUSE_BREATHING = 6
 }
 
 export enum SpeakerStatus {
@@ -39,9 +42,12 @@ export const tuneToSoundType: Record<TuneToPlay, SoundType> = {
 	"Chime": SoundType.CHIME
 }
 
-export const lightToLEDType: Record<LightStatus, LightType> = {
-	"Breathing": LightType.BREATHING,
-	"Turn off": LightType.TURN_OFF,
-	"Fade out": LightType.FADE_OUT,
-	"Pause breathing": LightType.PAUSE_BREATHING,
+export const lightToLEDType: Record<LightAnimation, LightAnimationType> = {
+	"No animation": LightAnimationType.NO_ANIMATION,
+	"Breathing": LightAnimationType.BREATHING,
+	"Rainbow": LightAnimationType.RAINBOW,
+	"Strobe": LightAnimationType.STROBE,
+	"Turn off": LightAnimationType.TURN_OFF,
+	"Fade out": LightAnimationType.FADE_OUT,
+	"Pause breathing": LightAnimationType.PAUSE_BREATHING,
 }

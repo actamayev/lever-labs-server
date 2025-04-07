@@ -31,7 +31,14 @@ declare global {
 
 	type TuneToPlay = "Alert" | "Beep" | "Chime"
 
-	type LightStatus = "Breathing" | "Turn off" | "Fade out" | "Pause breathing"
+	type LightAnimation =
+		| "No animation"
+		| "Breathing"
+		| "Rainbow"
+		| "Strobe"
+		| "Turn off"
+		| "Fade out"
+		| "Pause breathing"
 
 	interface BalancePidsProps {
 		pipUUID: PipUUID

@@ -1,4 +1,4 @@
-import { BalanceStatus, LightType, MessageType, SoundType, SpeakerStatus } from "../../utils/protocol"
+import { BalanceStatus, LightAnimationType, MessageType, SoundType, SpeakerStatus } from "../../utils/protocol"
 
 export class MessageBuilder {
 	// Create motor control message
@@ -24,7 +24,7 @@ export class MessageBuilder {
 		return buffer
 	}
 
-	static createLightMessage(lightMessageType: LightType): ArrayBuffer {
+	static createLightAnimationMessage(lightMessageType: LightAnimationType): ArrayBuffer {
 		const buffer = new ArrayBuffer(2)
 		const view = new DataView(buffer)
 

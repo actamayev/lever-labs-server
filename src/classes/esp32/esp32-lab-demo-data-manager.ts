@@ -114,11 +114,11 @@ export default class ESP32LabDemoDataManager extends Singleton {
 
 	public displayLights(
 		socket: ExtendedWebSocket,
-		lightStatus: LightStatus
+		lightAnimation: LightAnimation
 	): Promise<void> {
 		try {
-			const lightType = lightToLEDType[lightStatus]
-			const buffer = MessageBuilder.createLightMessage(lightType)
+			const lightType = lightToLEDType[lightAnimation]
+			const buffer = MessageBuilder.createLightAnimationMessage(lightType)
 
 			return this.sendBinaryMessage(socket, buffer)
 		} catch (error: unknown) {

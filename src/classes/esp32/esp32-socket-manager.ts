@@ -238,11 +238,11 @@ export default class Esp32SocketManager extends Singleton {
 		)
 	}
 
-	public async emitLightStatus(pipUUID: PipUUID, lightStatus: LightStatus): Promise<void> {
-		return await this.emitSocketCommand<LightStatus>(
+	public async emitLightAnimation(pipUUID: PipUUID, lightAnimation: LightAnimation): Promise<void> {
+		return await this.emitSocketCommand<LightAnimation>(
 			pipUUID,
 			this.esp32LabDemoDataManager.displayLights.bind(this.esp32LabDemoDataManager),
-			lightStatus,
+			lightAnimation,
 			"Failed to send light status"
 		)
 	}

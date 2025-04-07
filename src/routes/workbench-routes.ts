@@ -1,6 +1,7 @@
 import express from "express"
 
 import playTune from "../controllers/workbench/play-tune"
+import lightAnimation from "../controllers/workbench/light-animation"
 import updateBalancePids from "../controllers/workbench/update-balance-pids"
 import changeAudibleStatus from "../controllers/workbench/change-audible-status"
 import changeBalanceStatus from "../controllers/workbench/change-balance-status"
@@ -11,8 +12,7 @@ import validateTuneToPlay from "../middleware/request-validation/workbench/valid
 import validateUpdateBalancePids from "../middleware/request-validation/workbench/validate-update-balance-pids"
 import validateChangeAudibleStatus from "../middleware/request-validation/workbench/validate-change-audible-status"
 import validateChangeBalanceStatus from "../middleware/request-validation/workbench/validate-change-balance-status"
-import validateDisplayLights from "../middleware/request-validation/workbench/validate-display-lights"
-import displayLights from "../controllers/workbench/display-lights"
+import validateLightAnimation from "../middleware/request-validation/workbench/validate-light-animation"
 
 const workbenchRoutes = express.Router()
 
@@ -49,11 +49,11 @@ workbenchRoutes.post(
 )
 
 workbenchRoutes.post(
-	"/display-lights",
-	validateDisplayLights,
+	"/lights-animation",
+	validateLightAnimation,
 	confirmPipIsActive,
 	jwtVerifyAttachUserId,
-	displayLights
+	lightAnimation
 )
 
 export default workbenchRoutes
