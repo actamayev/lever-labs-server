@@ -5,7 +5,8 @@ export enum MessageType {
     SPEAKER_MUTE = 3,
     BALANCE_CONTROL = 4,
     UPDATE_BALANCE_PIDS = 5,
-    UPDATE_LIGHTS = 6
+    UPDATE_LIGHT_ANIMATION = 6,
+    UPDATE_LED_COLORS = 7,
 }
 
 export enum SoundType {

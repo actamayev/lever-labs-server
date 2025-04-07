@@ -28,8 +28,49 @@ export class MessageBuilder {
 		const buffer = new ArrayBuffer(2)
 		const view = new DataView(buffer)
 
-		view.setUint8(0, MessageType.UPDATE_LIGHTS)
+		view.setUint8(0, MessageType.UPDATE_LIGHT_ANIMATION)
 		view.setUint8(1, lightMessageType)
+
+		return buffer
+	}
+
+	static createLedMessage(data: Omit<IncomingNewLedControlData, "pipUUID">): ArrayBuffer {
+		// Calculate buffer size: 1 byte for message type + 6 RGB colors × 3 components × 1 byte per uint8
+		const buffer = new ArrayBuffer(1 + 6 * 3 * 1) // 19 bytes total
+		const view = new DataView(buffer)
+
+		// Set message type
+		view.setUint8(0, MessageType.UPDATE_LED_COLORS)
+
+		// Top Left Color
+		view.setUint8(1, data.topLeftColor.red)
+		view.setUint8(2, data.topLeftColor.green)
+		view.setUint8(3, data.topLeftColor.blue)
+
+		// Top Right Color
+		view.setUint8(4, data.topRightColor.red)
+		view.setUint8(5, data.topRightColor.green)
+		view.setUint8(6, data.topRightColor.blue)
+
+		// Middle Left Color
+		view.setUint8(7, data.middleLeftColor.red)
+		view.setUint8(8, data.middleLeftColor.green)
+		view.setUint8(9, data.middleLeftColor.blue)
+
+		// Middle Right Color
+		view.setUint8(10, data.middleRightColor.red)
+		view.setUint8(11, data.middleRightColor.green)
+		view.setUint8(12, data.middleRightColor.blue)
+
+		// Back Left Color
+		view.setUint8(13, data.backLeftColor.red)
+		view.setUint8(14, data.backLeftColor.green)
+		view.setUint8(15, data.backLeftColor.blue)
+
+		// Back Right Color
+		view.setUint8(16, data.backRightColor.red)
+		view.setUint8(17, data.backRightColor.green)
+		view.setUint8(18, data.backRightColor.blue)
 
 		return buffer
 	}

@@ -220,6 +220,15 @@ export default class Esp32SocketManager extends Singleton {
 		)
 	}
 
+	public async emitNewLedColorsToPip(pipUUID: PipUUID, ledControlData: Omit<IncomingNewLedControlData, "pipUUID">): Promise<void> {
+		return await this.emitSocketCommand<Omit<IncomingNewLedControlData, "pipUUID">>(
+			pipUUID,
+			this.esp32LabDemoDataManager.transferLedControlData.bind(this.esp32LabDemoDataManager),
+			ledControlData,
+			"Failed to led control command"
+		)
+	}
+
 	public async emitTuneToPlay(pipUUID: PipUUID, tuneToPlay: TuneToPlay): Promise<void> {
 		return await this.emitSocketCommand<TuneToPlay>(
 			pipUUID,

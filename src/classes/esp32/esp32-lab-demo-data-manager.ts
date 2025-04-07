@@ -32,6 +32,20 @@ export default class ESP32LabDemoDataManager extends Singleton {
 		}
 	}
 
+	public transferLedControlData(
+		socket: ExtendedWebSocket,
+		data: Omit<IncomingNewLedControlData, "pipUUID">
+	): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createLedMessage(data)
+
+			return this.sendBinaryMessage(socket, buffer)
+		} catch (error: unknown) {
+			console.error("Transfer failed:", error)
+			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
+		}
+	}
+
 	// eslint-disable-next-line complexity
 	private calculateMotorSpeeds(data: Omit<IncomingMotorControlData, "pipUUID">): MotorSpeeds {
 		const speeds = { leftMotor: 0, rightMotor: 0 }
