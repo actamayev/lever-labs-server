@@ -7,6 +7,7 @@ export enum MessageType {
     UPDATE_BALANCE_PIDS = 5,
     UPDATE_LIGHT_ANIMATION = 6,
     UPDATE_LED_COLORS = 7,
+    UPDATE_MOTOR_SPEEDS = 8
 }
 
 export enum SoundType {
@@ -23,7 +24,7 @@ export enum LightAnimationType {
     TURN_OFF = 4,
     FADE_OUT = 5,
     PAUSE_BREATHING = 6,
-    SNAKE = 7
+    // SNAKE = 7
 }
 
 export enum SpeakerStatus {
@@ -51,5 +52,5 @@ export const lightToLEDType: Record<LightAnimation, LightAnimationType> = {
 	"Turn off": LightAnimationType.TURN_OFF,
 	"Fade out": LightAnimationType.FADE_OUT,
 	"Pause breathing": LightAnimationType.PAUSE_BREATHING,
-	"Snake": LightAnimationType.SNAKE,
+	// "Snake": LightAnimationType.SNAKE,
 }

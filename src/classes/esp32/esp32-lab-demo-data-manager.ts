@@ -169,6 +169,20 @@ export default class ESP32LabDemoDataManager extends Singleton {
 		}
 	}
 
+	public changeMaxMotorSpeed(
+		socket: ExtendedWebSocket,
+		newMaxDriveSpeed: Omit<MaxDriveSpeed, "pipUUID">
+	): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createNewMotorSpeedsMessage(newMaxDriveSpeed.newMaxSpeed)
+
+			return this.sendBinaryMessage(socket, buffer)
+		} catch (error: unknown) {
+			console.error("Balance command failed:", error)
+			throw new Error(`Balance command failed: ${error || "Unknown reason"}`)
+		}
+	}
+
 	private sendBinaryMessage(socket: ExtendedWebSocket, buffer: ArrayBuffer): Promise<void> {
 		return new Promise((resolve, reject) => {
 			socket.send(buffer, { binary: true }, (error) => {

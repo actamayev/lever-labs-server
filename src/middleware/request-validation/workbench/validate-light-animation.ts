@@ -5,7 +5,7 @@ import pipUUIDValidator from "../../joi/pip-uuid-validator"
 
 const validateLightAnimationSchema = Joi.object({
 	lightAnimation: Joi.string().valid(
-		"No animation", "Breathing", "Rainbow", "Strobe", "Turn off", "Fade out", "Pause breathing", "Snake"
+		"No animation", "Breathing", "Rainbow", "Strobe", "Turn off", "Fade out", "Pause breathing"//, "Snake"
 	).required(),
 	pipUUID: pipUUIDValidator.required()
 }).required()

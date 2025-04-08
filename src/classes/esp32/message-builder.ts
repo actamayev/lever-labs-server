@@ -114,4 +114,14 @@ export class MessageBuilder {
 
 		return buffer
 	}
+
+	static createNewMotorSpeedsMessage(newMaxMotorSpeed: number): ArrayBuffer {
+		const buffer = new ArrayBuffer(2)
+		const view = new DataView(buffer)
+
+		view.setUint8(0, MessageType.UPDATE_MOTOR_SPEEDS)
+		view.setUint8(1, newMaxMotorSpeed)
+
+		return buffer
+	}
 }

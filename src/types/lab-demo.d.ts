@@ -36,7 +36,7 @@ declare global {
 		| "Breathing"
 		| "Rainbow"
 		| "Strobe"
-		| "Snake"
+		// | "Snake"
 		| "Turn off"
 		| "Fade out"
 		| "Pause breathing"
@@ -53,6 +53,11 @@ declare global {
 		deadbandAngle: number
 		maxStableRotation: number
 		minEffectivePwm: number
+	}
+
+	interface MaxDriveSpeed {
+		pipUUID: PipUUID
+		newMaxSpeed: number
 	}
 }
 
