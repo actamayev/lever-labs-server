@@ -72,7 +72,6 @@ export default class BrowserSocketManager extends Singleton {
 	private setupNewMaxDriveSpeedListener(socket: Socket): void {
 		socket.on("new-max-motor-speed", async (maxDriveSpeedData: MaxDriveSpeed) => {
 			try {
-				console.log(maxDriveSpeedData)
 				await Esp32SocketManager.getInstance().emitNewMaxDriveSpeed(maxDriveSpeedData.pipUUID, maxDriveSpeedData)
 			} catch (error) {
 				console.error("Motor control error:", error)
