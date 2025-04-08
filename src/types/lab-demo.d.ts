@@ -36,6 +36,7 @@ declare global {
 		| "Breathing"
 		| "Rainbow"
 		| "Strobe"
+		| "Snake"
 		| "Turn off"
 		| "Fade out"
 		| "Pause breathing"
