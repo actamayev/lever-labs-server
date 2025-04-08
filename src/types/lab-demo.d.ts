@@ -11,6 +11,7 @@ declare global {
 			vertical: -1 | 1 | 0
 			horizontal: -1 | 1 | 0
 		}
+		motorThrottlePercent: number
 		pipUUID: PipUUID
 	}
 
@@ -53,11 +54,6 @@ declare global {
 		deadbandAngle: number
 		maxStableRotation: number
 		minEffectivePwm: number
-	}
-
-	interface MaxDriveSpeed {
-		pipUUID: PipUUID
-		newMaxSpeed: number
 	}
 }
 

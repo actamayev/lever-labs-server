@@ -27,7 +27,6 @@ export default class BrowserSocketManager extends Singleton {
 			await this.handleBrowserConnection(socket)
 			this.setupMotorControlListener(socket)
 			this.setupNewLedColorListener(socket)
-			this.setupNewMaxDriveSpeedListener(socket)
 		})
 	}
 
@@ -63,16 +62,6 @@ export default class BrowserSocketManager extends Singleton {
 		socket.on("new-led-colors", async (ledControlData: IncomingNewLedControlData) => {
 			try {
 				await Esp32SocketManager.getInstance().emitNewLedColorsToPip(ledControlData.pipUUID, ledControlData)
-			} catch (error) {
-				console.error("Motor control error:", error)
-			}
-		})
-	}
-
-	private setupNewMaxDriveSpeedListener(socket: Socket): void {
-		socket.on("new-max-motor-speed", async (maxDriveSpeedData: MaxDriveSpeed) => {
-			try {
-				await Esp32SocketManager.getInstance().emitNewMaxDriveSpeed(maxDriveSpeedData.pipUUID, maxDriveSpeedData)
 			} catch (error) {
 				console.error("Motor control error:", error)
 			}

@@ -273,13 +273,4 @@ export default class Esp32SocketManager extends Singleton {
 			"Failed to change balance PIDs"
 		)
 	}
-
-	public async emitNewMaxDriveSpeed(pipUUID: PipUUID, maxDriveSpeedData: Omit<MaxDriveSpeed, "pipUUID">): Promise<void> {
-		return await this.emitSocketCommand<Omit<MaxDriveSpeed, "pipUUID">>(
-			pipUUID,
-			this.esp32LabDemoDataManager.changeMaxMotorSpeed.bind(this.esp32LabDemoDataManager),
-			maxDriveSpeedData,
-			"Failed to change balance PIDs"
-		)
-	}
 }

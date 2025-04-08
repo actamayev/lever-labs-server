@@ -1,6 +1,7 @@
 import Singleton from "../singleton"
 import { MessageBuilder } from "./message-builder"
 import { lightToLEDType, tuneToSoundType } from "../../utils/protocol"
+import { clamp } from "lodash"
 
 export default class ESP32LabDemoDataManager extends Singleton {
 	private constructor() {
@@ -22,7 +23,7 @@ export default class ESP32LabDemoDataManager extends Singleton {
 			const speeds = this.calculateMotorSpeeds(data)
 			const buffer = MessageBuilder.createMotorControlMessage(
 				speeds.leftMotor,
-				speeds.rightMotor
+				speeds.rightMotor,
 			)
 
 			return this.sendBinaryMessage(socket, buffer)
@@ -46,53 +47,75 @@ export default class ESP32LabDemoDataManager extends Singleton {
 		}
 	}
 
-	// eslint-disable-next-line complexity
+	// eslint-disable-next-line complexity, max-lines-per-function
 	private calculateMotorSpeeds(data: Omit<IncomingMotorControlData, "pipUUID">): MotorSpeeds {
 		const speeds = { leftMotor: 0, rightMotor: 0 }
 		const { vertical, horizontal } = data.motorControl
+		const { motorThrottlePercent } = data
 
 		const maxSpeed = 255
 		const spinSpeed = 100
-		const turnSpeed = 50 // Slower wheel speed for diagonal turns (adjust as needed)
+		const turnSpeed = 50
+
+		// Define min/max speeds for different directions
+		const forwardMinSpeed = 52
+		const backwardMaxSpeed = -56
+		const backwardMinSpeed = -255
+		const sideMaxSpeed = 71
+		const sideMinSpeed = -71
+
+		// Helper function to apply throttle with specific bounds
+		const applyThrottle = (baseSpeed: number, min: number, max: number): number => {
+		// Apply throttle percentage
+			const throttledSpeed = baseSpeed * motorThrottlePercent / 100
+			// Clamp to specified bounds
+			return clamp(throttledSpeed, min, max)
+		}
 
 		// Define speeds based on vertical and horizontal inputs
 		if (vertical === 0 && horizontal === 0) {
-			// Stop
+		// Stop
 			speeds.leftMotor = 0
 			speeds.rightMotor = 0
+			return speeds
 		} else if (vertical === 1 && horizontal === 0) {
-			// Forward
-			speeds.leftMotor = maxSpeed
-			speeds.rightMotor = maxSpeed
+		// Forward - minimum speed 52, maximum 255
+			const throttledSpeed = applyThrottle(maxSpeed, forwardMinSpeed, maxSpeed)
+			speeds.leftMotor = throttledSpeed
+			speeds.rightMotor = throttledSpeed
 		} else if (vertical === -1 && horizontal === 0) {
-			// Backward
-			speeds.leftMotor = -maxSpeed
-			speeds.rightMotor = -maxSpeed
+		// Backward - maximum speed -56, minimum -255
+			const throttledSpeed = applyThrottle(-maxSpeed, backwardMinSpeed, backwardMaxSpeed)
+			speeds.leftMotor = throttledSpeed
+			speeds.rightMotor = throttledSpeed
 		} else if (vertical === 0 && horizontal === -1) {
-			// Left turn
-			speeds.leftMotor = -spinSpeed
-			speeds.rightMotor = spinSpeed
+		// Left turn - capped at -71/71
+			speeds.leftMotor = applyThrottle(-spinSpeed, sideMinSpeed, sideMaxSpeed)
+			speeds.rightMotor = applyThrottle(spinSpeed, sideMinSpeed, sideMaxSpeed)
 		} else if (vertical === 0 && horizontal === 1) {
-			// Right turn
-			speeds.leftMotor = spinSpeed
-			speeds.rightMotor = -spinSpeed
+		// Right turn - capped at -71/71
+			speeds.leftMotor = applyThrottle(spinSpeed, sideMinSpeed, sideMaxSpeed)
+			speeds.rightMotor = applyThrottle(-spinSpeed, sideMinSpeed, sideMaxSpeed)
 		} else if (vertical === 1 && horizontal === -1) {
-			// Forward + Left
-			speeds.leftMotor = turnSpeed
-			speeds.rightMotor = maxSpeed
+		// Forward + Left
+			speeds.leftMotor = applyThrottle(turnSpeed, forwardMinSpeed / 2, maxSpeed / 2)
+			speeds.rightMotor = applyThrottle(maxSpeed, forwardMinSpeed, maxSpeed)
 		} else if (vertical === 1 && horizontal === 1) {
-			// Forward + Right
-			speeds.leftMotor = maxSpeed
-			speeds.rightMotor = turnSpeed
+		// Forward + Right
+			speeds.leftMotor = applyThrottle(maxSpeed, forwardMinSpeed, maxSpeed)
+			speeds.rightMotor = applyThrottle(turnSpeed, forwardMinSpeed / 2, maxSpeed / 2)
 		} else if (vertical === -1 && horizontal === -1) {
-			// Backward + Left
-			speeds.leftMotor = -maxSpeed
-			speeds.rightMotor = -turnSpeed
+		// Backward + Left
+			speeds.leftMotor = applyThrottle(-maxSpeed, backwardMinSpeed, backwardMaxSpeed)
+			speeds.rightMotor = applyThrottle(-turnSpeed, backwardMaxSpeed / 2, backwardMinSpeed / 2)
 		} else if (vertical === -1 && horizontal === 1) {
-			// Backward + Right
-			speeds.leftMotor = -turnSpeed
-			speeds.rightMotor = -maxSpeed
+		// Backward + Right
+			speeds.leftMotor = applyThrottle(-turnSpeed, backwardMaxSpeed / 2, backwardMinSpeed / 2)
+			speeds.rightMotor = applyThrottle(-maxSpeed, backwardMinSpeed, backwardMaxSpeed)
 		}
+
+		console.log("right:", speeds.rightMotor)
+		console.log("left:", speeds.leftMotor)
 
 		return speeds
 	}
@@ -161,20 +184,6 @@ export default class ESP32LabDemoDataManager extends Singleton {
 	): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createUpdateBalancePidsMessage(balancePids)
-
-			return this.sendBinaryMessage(socket, buffer)
-		} catch (error: unknown) {
-			console.error("Balance command failed:", error)
-			throw new Error(`Balance command failed: ${error || "Unknown reason"}`)
-		}
-	}
-
-	public changeMaxMotorSpeed(
-		socket: ExtendedWebSocket,
-		newMaxDriveSpeed: Omit<MaxDriveSpeed, "pipUUID">
-	): Promise<void> {
-		try {
-			const buffer = MessageBuilder.createNewMotorSpeedsMessage(newMaxDriveSpeed.newMaxSpeed)
 
 			return this.sendBinaryMessage(socket, buffer)
 		} catch (error: unknown) {

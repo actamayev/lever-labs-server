@@ -6,8 +6,7 @@ export enum MessageType {
     BALANCE_CONTROL = 4,
     UPDATE_BALANCE_PIDS = 5,
     UPDATE_LIGHT_ANIMATION = 6,
-    UPDATE_LED_COLORS = 7,
-    UPDATE_MOTOR_SPEEDS = 8
+    UPDATE_LED_COLORS = 7
 }
 
 export enum SoundType {
