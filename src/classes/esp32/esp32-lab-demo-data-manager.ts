@@ -61,8 +61,8 @@ export default class ESP32LabDemoDataManager extends Singleton {
 		const forwardMinSpeed = 52
 		const backwardMaxSpeed = -56
 		const backwardMinSpeed = -255
-		const sideMaxSpeed = 71
-		const sideMinSpeed = -71
+		const sideMaxSpeed = 100
+		const sideMinSpeed = -100
 
 		// Helper function to apply throttle with specific bounds
 		const applyThrottle = (baseSpeed: number, min: number, max: number): number => {
