@@ -47,13 +47,8 @@ export default class BrowserSocketManager extends Singleton {
 		socket.on("motor-control", async (motorControlData: IncomingMotorControlData) => {
 			try {
 				await Esp32SocketManager.getInstance().emitMotorControlToPip(motorControlData.pipUUID, motorControlData)
-				socket.emit("motor-control-ack", { success: true })
 			} catch (error) {
 				console.error("Motor control error:", error)
-				socket.emit("motor-control-ack", {
-					success: false,
-					error: "Failed to control motor"
-				})
 			}
 		})
 	}

@@ -1,18 +1,18 @@
+import { clamp } from "lodash"
 import Singleton from "../singleton"
 import { MessageBuilder } from "./message-builder"
 import { lightToLEDType, tuneToSoundType } from "../../utils/protocol"
-import { clamp } from "lodash"
 
-export default class ESP32LabDemoDataManager extends Singleton {
+export default class SendEsp32MessageManager extends Singleton {
 	private constructor() {
 		super()
 	}
 
-	public static getInstance(): ESP32LabDemoDataManager {
-		if (!ESP32LabDemoDataManager.instance) {
-			ESP32LabDemoDataManager.instance = new ESP32LabDemoDataManager()
+	public static getInstance(): SendEsp32MessageManager {
+		if (!SendEsp32MessageManager.instance) {
+			SendEsp32MessageManager.instance = new SendEsp32MessageManager()
 		}
-		return ESP32LabDemoDataManager.instance
+		return SendEsp32MessageManager.instance
 	}
 
 	public transferMotorControlData(
