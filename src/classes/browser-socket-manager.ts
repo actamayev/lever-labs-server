@@ -26,6 +26,7 @@ export default class BrowserSocketManager extends Singleton {
 		this.io.on("connection", async (socket: Socket) => {
 			await this.handleBrowserConnection(socket)
 			this.setupMotorControlListener(socket)
+			this.setupNewLedColorListener(socket)
 		})
 	}
 
@@ -46,13 +47,18 @@ export default class BrowserSocketManager extends Singleton {
 		socket.on("motor-control", async (motorControlData: IncomingMotorControlData) => {
 			try {
 				await Esp32SocketManager.getInstance().emitMotorControlToPip(motorControlData.pipUUID, motorControlData)
-				socket.emit("motor-control-ack", { success: true })
 			} catch (error) {
 				console.error("Motor control error:", error)
-				socket.emit("motor-control-ack", {
-					success: false,
-					error: "Failed to control motor"
-				})
+			}
+		})
+	}
+
+	private setupNewLedColorListener(socket: Socket): void {
+		socket.on("new-led-colors", async (ledControlData: IncomingNewLedControlData) => {
+			try {
+				await Esp32SocketManager.getInstance().emitNewLedColorsToPip(ledControlData.pipUUID, ledControlData)
+			} catch (error) {
+				console.error("Motor control error:", error)
 			}
 		})
 	}

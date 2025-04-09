@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
 
 const validateTuneToPlaySchema = Joi.object({
-	tuneToPlay: Joi.string().allow("Alert", "Beep", "Chime").required(),
+	tuneToPlay: Joi.string().valid("Alert", "Beep", "Chime").required(),
 	pipUUID: pipUUIDValidator.required()
 }).required()
 
