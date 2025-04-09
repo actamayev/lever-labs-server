@@ -23,7 +23,7 @@ export default class ESP32LabDemoDataManager extends Singleton {
 			const speeds = this.calculateMotorSpeeds(data)
 			const buffer = MessageBuilder.createMotorControlMessage(
 				speeds.leftMotor,
-				speeds.rightMotor,
+				speeds.rightMotor
 			)
 
 			return this.sendBinaryMessage(socket, buffer)
@@ -113,9 +113,6 @@ export default class ESP32LabDemoDataManager extends Singleton {
 			speeds.leftMotor = applyThrottle(-turnSpeed, backwardMaxSpeed / 2, backwardMinSpeed / 2)
 			speeds.rightMotor = applyThrottle(-maxSpeed, backwardMinSpeed, backwardMaxSpeed)
 		}
-
-		console.log("right:", speeds.rightMotor)
-		console.log("left:", speeds.leftMotor)
 
 		return speeds
 	}

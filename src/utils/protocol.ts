@@ -22,7 +22,7 @@ export enum LightAnimationType {
     STROBE = 3,
     TURN_OFF = 4,
     FADE_OUT = 5,
-    PAUSE_BREATHING = 6,
+    // PAUSE_BREATHING = 6,
     // SNAKE = 7
 }
 
@@ -50,6 +50,6 @@ export const lightToLEDType: Record<LightAnimation, LightAnimationType> = {
 	"Strobe": LightAnimationType.STROBE,
 	"Turn off": LightAnimationType.TURN_OFF,
 	"Fade out": LightAnimationType.FADE_OUT,
-	"Pause breathing": LightAnimationType.PAUSE_BREATHING,
+	// "Pause breathing": LightAnimationType.PAUSE_BREATHING,
 	// "Snake": LightAnimationType.SNAKE,
 }

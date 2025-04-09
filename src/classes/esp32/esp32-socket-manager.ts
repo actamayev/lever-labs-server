@@ -131,10 +131,7 @@ export default class Esp32SocketManager extends Singleton {
 	): void {
 		// Clean up any existing connection for this PIP
 		const existing = this.connections.get(pipUUID)
-		if (existing) {
-			console.info(`Reconnection detected for Pip: ${pipUUID}. Old socket: ${existing.socketId}, New socket: ${socketId}`)
-			existing.connection.dispose()
-		}
+		if (existing) existing.connection.dispose()
 
 		// Set up new connection
 		this.connections.set(pipUUID, {

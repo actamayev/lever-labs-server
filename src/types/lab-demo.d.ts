@@ -1,5 +1,4 @@
 declare global {
-	type MotorDirection = "up" | "down" | "left" | "right"
 	interface RGB {
 		red: number
 		green: number
@@ -37,10 +36,10 @@ declare global {
 		| "Breathing"
 		| "Rainbow"
 		| "Strobe"
-		// | "Snake"
 		| "Turn off"
 		| "Fade out"
-		| "Pause breathing"
+		// | "Pause breathing"
+		// | "Snake"
 
 	interface BalancePidsProps {
 		pipUUID: PipUUID
