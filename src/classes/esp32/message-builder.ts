@@ -43,34 +43,34 @@ export class MessageBuilder {
 		view.setUint8(0, MessageType.UPDATE_LED_COLORS)
 
 		// Top Left Color
-		view.setUint8(1, data.topLeftColor.red)
-		view.setUint8(2, data.topLeftColor.green)
-		view.setUint8(3, data.topLeftColor.blue)
+		view.setUint8(1, data.topLeftColor.r)
+		view.setUint8(2, data.topLeftColor.g)
+		view.setUint8(3, data.topLeftColor.b)
 
 		// Top Right Color
-		view.setUint8(4, data.topRightColor.red)
-		view.setUint8(5, data.topRightColor.green)
-		view.setUint8(6, data.topRightColor.blue)
+		view.setUint8(4, data.topRightColor.r)
+		view.setUint8(5, data.topRightColor.g)
+		view.setUint8(6, data.topRightColor.b)
 
 		// Middle Left Color
-		view.setUint8(7, data.middleLeftColor.red)
-		view.setUint8(8, data.middleLeftColor.green)
-		view.setUint8(9, data.middleLeftColor.blue)
+		view.setUint8(7, data.middleLeftColor.r)
+		view.setUint8(8, data.middleLeftColor.g)
+		view.setUint8(9, data.middleLeftColor.b)
 
 		// Middle Right Color
-		view.setUint8(10, data.middleRightColor.red)
-		view.setUint8(11, data.middleRightColor.green)
-		view.setUint8(12, data.middleRightColor.blue)
+		view.setUint8(10, data.middleRightColor.r)
+		view.setUint8(11, data.middleRightColor.g)
+		view.setUint8(12, data.middleRightColor.b)
 
 		// Back Left Color
-		view.setUint8(13, data.backLeftColor.red)
-		view.setUint8(14, data.backLeftColor.green)
-		view.setUint8(15, data.backLeftColor.blue)
+		view.setUint8(13, data.backLeftColor.r)
+		view.setUint8(14, data.backLeftColor.g)
+		view.setUint8(15, data.backLeftColor.b)
 
 		// Back Right Color
-		view.setUint8(16, data.backRightColor.red)
-		view.setUint8(17, data.backRightColor.green)
-		view.setUint8(18, data.backRightColor.blue)
+		view.setUint8(16, data.backRightColor.r)
+		view.setUint8(17, data.backRightColor.g)
+		view.setUint8(18, data.backRightColor.b)
 
 		return buffer
 	}
