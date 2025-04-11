@@ -58,7 +58,7 @@ export default class BrowserSocketManager extends Singleton {
 			try {
 				await Esp32SocketManager.getInstance().emitNewLedColorsToPip(ledControlData.pipUUID, ledControlData)
 			} catch (error) {
-				console.error("Motor control error:", error)
+				console.error("New LED Colors Error:", error)
 			}
 		})
 	}
