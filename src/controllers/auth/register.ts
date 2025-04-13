@@ -5,7 +5,7 @@ import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import { addLocalUser } from "../../db-operations/write/credentials/add-user"
 import doesEmailExist from "../../db-operations/read/does-x-exist/does-email-exist"
 import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"
-import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-hisory-record"
+import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import constructLocalUserFields from "../../utils/auth-helpers/register/construct-local-user-fields"
 
 export default async function register(req: Request, res: Response): Promise<void> {
