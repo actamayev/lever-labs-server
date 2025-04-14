@@ -6,7 +6,7 @@ export enum BytecodeOpCode {
 	DELAY = 0x02,
 	SET_LED = 0x10,
 	SET_ALL_LEDS = 0x11
-  }
+}
 
 export enum LedID {
 	ALL = 0,
@@ -16,7 +16,7 @@ export enum LedID {
 	MIDDLE_RIGHT = 4,
 	BACK_LEFT = 5,
 	BACK_RIGHT = 6
-  }
+}
 
 export enum CommandType {
 	TURN_LED_OFF = "TURN_LED_OFF",
@@ -33,15 +33,15 @@ export enum CommandType {
 	SET_BACK_LEFT_LED = "SET_BACK_LEFT_LED",
 	SET_BACK_RIGHT_LED = "SET_BACK_RIGHT_LED",
 	DELAY = "DELAY"
-  }
+}
 
 export interface BytecodeInstruction {
-	opcode: BytecodeOpCode;
-	operand1: number;
-	operand2: number;
-	operand3: number;
-	operand4: number;
-  }
+	opcode: BytecodeOpCode
+	operand1: number
+	operand2: number
+	operand3: number
+	operand4: number
+}
 
 export const MAX_LED_BRIGHTNESS = 255
 

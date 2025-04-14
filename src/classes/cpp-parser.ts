@@ -1,5 +1,5 @@
 import { MAX_LED_BRIGHTNESS } from "../utils/constants"
-import { BytecodeOpCode, CommandPatterns, CommandType, LedID } from "../utils/cpp/bytecode_types"
+import { BytecodeOpCode, CommandPatterns, CommandType, LedID } from "../utils/cpp/bytecode-types"
 
 export default class CppParser {
 	public static cppToByte(unsanitizedCpp: string): Uint8Array<ArrayBufferLike> {
