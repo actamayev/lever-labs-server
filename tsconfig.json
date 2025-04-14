@@ -6,7 +6,7 @@
 		"./src/types",
 		"./node_modules/@types"
 	  ],
-	  "types": ["node"],
+	"types": ["node", "jest"],
 	  /* Modules */
 	  "module": "commonjs",                                /* Specify what module code is generated. */
 	  "rootDir": "./",                                  /* Specify the root folder within your source files. */
@@ -35,7 +35,8 @@
 	  "src/**/*",
 	  "src/**/*.d.ts",        // Explicitly include .d.ts files
 	  "./.eslint.config.mjs",
-	  "src/prisma/seed.ts"
+	  "src/prisma/seed.ts",
+	  "tests/**/*"
 	],
 	"exclude": [
 	  "node_modules"
