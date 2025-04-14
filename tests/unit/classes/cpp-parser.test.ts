@@ -120,7 +120,5 @@ describe("CppParser", () => {
 			const lastIndex = bytecode.length - 5
 			expect(bytecode[lastIndex]).toBe(BytecodeOpCode.END)
 		})
-
-		// Add more complex tests here as you implement conditionals and loops
 	})
 })
