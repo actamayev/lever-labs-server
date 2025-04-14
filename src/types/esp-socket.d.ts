@@ -26,6 +26,7 @@ declare global {
 	type RoutePayloadMap = {
 		"/register": PipUUIDPayload
 		"/sensor-data": SensorPayload
+		"/bytecode-status": BytecodeMessage
 	}
 
 	// Routes derived from the keys of the mapping
@@ -66,6 +67,10 @@ declare global {
 
 	interface PipUUIDPayload {
 		pipUUID: PipUUID
+	}
+
+	interface BytecodeMessage {
+		message: string
 	}
 }
 

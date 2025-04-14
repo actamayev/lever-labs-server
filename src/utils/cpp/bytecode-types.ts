@@ -4,6 +4,14 @@ export enum BytecodeOpCode {
 	DELAY = 0x02,
 	SET_LED = 0x10,
 	SET_ALL_LEDS = 0x11,
+    DECLARE_VAR = 0x40,
+    SET_VAR = 0x41,
+}
+
+export enum VarType {
+    FLOAT = 0x01,
+    INT = 0x02,
+    BOOL = 0x03,
 }
 
 export enum LedID {

@@ -100,7 +100,9 @@ export default class Esp32SocketManager extends Singleton {
 			case "/sensor-data":
 				this.handleSensorData(socketId, payload as SensorPayload)
 				break
-			// Handle other non-registration message types here
+			case "/bytecode-status":
+				console.info("Bytecode status:", (payload as BytecodeMessage).message)
+				break
 			default:
 				console.warn(`Unknown route: ${route}`)
 				break
