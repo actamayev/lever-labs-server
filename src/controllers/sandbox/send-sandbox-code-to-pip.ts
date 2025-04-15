@@ -5,7 +5,6 @@ export default async function sendSandboxCodeToPip(req: Request, res: Response):
 	try {
 		const { pipUUID, bytecode } = req.body as { pipUUID: PipUUID, bytecode: Uint8Array }
 
-		console.log(bytecode)
 		await Esp32SocketManager.getInstance().emitBytecodeToPip(pipUUID, bytecode)
 
 		res.status(200).json({ success: "Sent bytecode to Pip" })
