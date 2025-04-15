@@ -285,28 +285,33 @@ export default class CppParser {
 					const block = blockStack.pop() as BlockStack
 
 					if (block.type === "if") {
-						// End of if block
-						// Add jump to skip else block
-						const skipElseIndex = instructions.length
-						instructions.push({
-							opcode: BytecodeOpCode.JUMP,
-							operand1: 0, // Will be filled later
-							operand2: 0,
-							operand3: 0,
-							operand4: 0
-						})
-
 						// Fix the conditional jump at start of if block
-						const offsetToElse = (instructions.length - block.jumpIndex) * 5
-						instructions[block.jumpIndex].operand1 = offsetToElse & 0xFF
-						instructions[block.jumpIndex].operand2 = (offsetToElse >> 8) & 0xFF
+						const offsetToHere = (instructions.length - block.jumpIndex) * 5
+						instructions[block.jumpIndex].operand1 = offsetToHere & 0xFF
+						instructions[block.jumpIndex].operand2 = (offsetToHere >> 8) & 0xFF
 
-						// Save for fixing after else block
-						pendingJumps.push({ index: skipElseIndex, targetType: "end_of_else" })
+						// Check if there's an "else" coming next by looking ahead
+						// Only add the jump to skip else block if there's an else coming
+						const nextStatementIndex = statements.indexOf(statement) + 1
+						const hasElseNext = nextStatementIndex < statements.length &&
+												statements[nextStatementIndex].trim() === "else"
+
+						if (hasElseNext) {
+							// Add jump to skip else block
+							const skipElseIndex = instructions.length
+							instructions.push({
+								opcode: BytecodeOpCode.JUMP,
+								operand1: 0, // Will be filled later
+								operand2: 0,
+								operand3: 0,
+								operand4: 0
+							})
+
+							// Save for fixing after else block
+							pendingJumps.push({ index: skipElseIndex, targetType: "end_of_else" })
+						}
 					}
 					else if (block.type === "else") {
-						// End of else block
-						// Fix any jumps to end of else
 						for (let i = pendingJumps.length - 1; i >= 0; i--) {
 							const jump = pendingJumps[i]
 							if (jump.targetType === "end_of_else") {
