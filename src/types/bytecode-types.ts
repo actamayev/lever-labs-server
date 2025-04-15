@@ -4,8 +4,23 @@ export enum BytecodeOpCode {
 	DELAY = 0x02,
 	SET_LED = 0x10,
 	SET_ALL_LEDS = 0x11,
+
+	COMPARE = 0x30,       // Compare values
+    JUMP = 0x31,          // Unconditional jump
+    JUMP_IF_TRUE = 0x32,  // Jump if comparison was true
+    JUMP_IF_FALSE = 0x33, // Jump if comparison was false
+
     DECLARE_VAR = 0x40,
     SET_VAR = 0x41,
+}
+
+export enum ComparisonOp {
+    EQUAL = 0x01,          // ==
+    NOT_EQUAL = 0x02,      // !=
+    GREATER_THAN = 0x03,   // >
+    LESS_THAN = 0x04,      //
+    GREATER_EQUAL = 0x05,  // >=
+    LESS_EQUAL = 0x06,     // <=
 }
 
 export enum VarType {
@@ -39,7 +54,13 @@ export enum CommandType {
 	SET_BACK_LEFT_LED = "SET_BACK_LEFT_LED",
 	SET_BACK_RIGHT_LED = "SET_BACK_RIGHT_LED",
 	DELAY = "DELAY",
+
     VARIABLE_ASSIGNMENT = "VARIABLE_ASSIGNMENT",
+
+	IF_STATEMENT = "IF_STATEMENT",
+    ELSE_STATEMENT = "ELSE_STATEMENT",
+    BLOCK_START = "BLOCK_START",
+    BLOCK_END = "BLOCK_END",
 }
 
 // Command patterns for validation
@@ -61,4 +82,9 @@ export const CommandPatterns: Record<CommandType, RegExp> = {
 	[CommandType.DELAY]: /^delay\(\s*(\d+)\s*\)$/,
 
 	[CommandType.VARIABLE_ASSIGNMENT]: /^(float|int|bool)\s+(\w+)\s*=\s*(.+)$/,
+
+	[CommandType.IF_STATEMENT]: /^if\s*\(\s*(\d+)\s*([<>=!][=]?)\s*(\d+)\s*\)$/,
+	[CommandType.ELSE_STATEMENT]: /^else$/,
+	[CommandType.BLOCK_START]: /^{$/,
+	[CommandType.BLOCK_END]: /^}$/,
 }

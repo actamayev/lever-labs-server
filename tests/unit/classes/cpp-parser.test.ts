@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import CppParser from "../../../src/classes/cpp-parser"
-import { BytecodeOpCode, LedID } from "../../../src/utils/cpp/bytecode-types"
+import { BytecodeOpCode, LedID } from "../../../src/types/bytecode-types"
 
 describe("CppParser", () => {
 	// 1. Test garbage input

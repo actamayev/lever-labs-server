@@ -1,6 +1,6 @@
 /* eslint-disable max-depth */
 import { MAX_LED_BRIGHTNESS } from "../utils/constants"
-import { BytecodeOpCode, CommandPatterns, CommandType, LedID, VarType } from "../utils/cpp/bytecode-types"
+import { BytecodeOpCode, CommandPatterns, CommandType, ComparisonOp, LedID, VarType } from "../types/bytecode-types"
 
 export default class CppParser {
 	public static cppToByte(unsanitizedCpp: string): Uint8Array<ArrayBufferLike> {
@@ -11,7 +11,7 @@ export default class CppParser {
 		return bytecode
 	}
 
-	private static identifyCommand(statement: string): { type: CommandType, matches: RegExpMatchArray | null } | null {
+	private static identifyCommand(statement: string): ValidCommand | null {
 		for (const [commandType, pattern] of Object.entries(CommandPatterns)) {
 			const matches = statement.match(pattern)
 			if (matches) {
@@ -32,6 +32,9 @@ export default class CppParser {
 
 		// Split code into statements
 		const statements = cppCode.split(";").map(s => s.trim()).filter(s => s.length > 0)
+
+		const blockStack: BlockStack[] = []
+		const pendingJumps: PendingJumps[] = []
 
 		for (const statement of statements) {
 			const command = this.identifyCommand(statement)
@@ -100,6 +103,7 @@ export default class CppParser {
 							operand3: 0,
 							operand4: 0
 						})
+					// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 					} else if (typeEnum === VarType.INT) {
 						// Parse integer value
 						const intValue = parseInt(varValue.trim(), 10)
@@ -229,6 +233,99 @@ export default class CppParser {
 					})
 				}
 				break
+
+			case CommandType.IF_STATEMENT:
+				if (command.matches && command.matches.length === 4) {
+					const leftValue = parseInt(command.matches[1], 10)
+					const operator = command.matches[2]
+					const rightValue = parseInt(command.matches[3], 10)
+
+					// Map operator to ComparisonOp
+					let compOp: ComparisonOp
+					switch (operator) {
+					case ">": compOp = ComparisonOp.GREATER_THAN; break
+					case "<": compOp = ComparisonOp.LESS_THAN; break
+					case ">=": compOp = ComparisonOp.GREATER_EQUAL; break
+					case "<=": compOp = ComparisonOp.LESS_EQUAL; break
+					case "==": compOp = ComparisonOp.EQUAL; break
+					case "!=": compOp = ComparisonOp.NOT_EQUAL; break
+					default: throw new Error(`Unsupported operator: ${operator}`)
+					}
+
+					// Add comparison instruction
+					instructions.push({
+						opcode: BytecodeOpCode.COMPARE,
+						operand1: compOp,
+						operand2: leftValue,
+						operand3: rightValue,
+						operand4: 0
+					})
+
+					// Add conditional jump (to be fixed later)
+					const jumpIndex = instructions.length
+					instructions.push({
+						opcode: BytecodeOpCode.JUMP_IF_FALSE,
+						operand1: 0, // Will be filled later
+						operand2: 0,
+						operand3: 0,
+						operand4: 0
+					})
+
+					// Track this block for later
+					blockStack.push({ type: "if", jumpIndex })
+				}
+				break
+
+			case CommandType.BLOCK_START:
+				// Nothing special for block start
+				break
+
+			case CommandType.BLOCK_END:
+				if (blockStack.length > 0) {
+					const block = blockStack.pop() as BlockStack
+
+					if (block.type === "if") {
+						// End of if block
+						// Add jump to skip else block
+						const skipElseIndex = instructions.length
+						instructions.push({
+							opcode: BytecodeOpCode.JUMP,
+							operand1: 0, // Will be filled later
+							operand2: 0,
+							operand3: 0,
+							operand4: 0
+						})
+
+						// Fix the conditional jump at start of if block
+						const offsetToElse = (instructions.length - block.jumpIndex) * 5
+						instructions[block.jumpIndex].operand1 = offsetToElse & 0xFF
+						instructions[block.jumpIndex].operand2 = (offsetToElse >> 8) & 0xFF
+
+						// Save for fixing after else block
+						pendingJumps.push({ index: skipElseIndex, targetType: "end_of_else" })
+					}
+					else if (block.type === "else") {
+						// End of else block
+						// Fix any jumps to end of else
+						for (let i = pendingJumps.length - 1; i >= 0; i--) {
+							const jump = pendingJumps[i]
+							if (jump.targetType === "end_of_else") {
+								const offsetToEnd = (instructions.length - jump.index) * 5
+								instructions[jump.index].operand1 = offsetToEnd & 0xFF
+								instructions[jump.index].operand2 = (offsetToEnd >> 8) & 0xFF
+								pendingJumps.splice(i, 1)
+							}
+						}
+					}
+				}
+				break
+
+			case CommandType.ELSE_STATEMENT:
+				// Mark start of else block
+				blockStack.push({ type: "else", jumpIndex: instructions.length })
+				break
+
+				// End of switch statement
 			}
 		}
 
@@ -275,13 +372,17 @@ export default class CppParser {
 	private static sanitizeUserCode(userCode: string): string {
 		return userCode
 			.trim()
-		// Remove single-line comments
+			// Remove comments
 			.replace(/\/\/.*$/gm, "")
-		// Remove multi-line comments
 			.replace(/\/\*[\s\S]*?\*\//g, "")
-		// Normalize whitespace
+			// Add spaces around braces and make them separate tokens
+			.replace(/{/g, " ; { ; ")
+			.replace(/}/g, " ; } ; ")
+			// Make sure else is a separate token
+			.replace(/}\s*else/g, "} ; else")
+			// Normalize whitespace
 			.replace(/\s+/g, " ")
-		// Escape single quotes
+			// Escape single quotes
 			.replace(/'/g, "'\\''")
 	}
 
