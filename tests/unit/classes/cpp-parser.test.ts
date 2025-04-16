@@ -48,6 +48,25 @@ describe("CppParser", () => {
 			// Float parsing is more complex, so we just verify it's a valid bytecode
 			expect(bytecode.length).toBeGreaterThan(10)
 		})
+		describe("Variable assignments error handling", () => {
+			test("should reject unsupported variable type", () => {
+			  expect(() => {
+					CppParser.cppToByte("char myVar = 'A';") // 'char' is not supported
+				}).toThrow(/Invalid command/)
+			})
+
+			test("should reject invalid boolean value", () => {
+			  expect(() => {
+					CppParser.cppToByte("bool myFlag = maybe;") // 'maybe' is not a valid boolean
+				}).toThrow(/Invalid boolean value/)
+			})
+
+			test("should reject invalid integer value", () => {
+			  expect(() => {
+					CppParser.cppToByte("int myNum = notAnInt;") // 'notAnInt' is not a valid integer
+				}).toThrow(/Invalid integer value/)
+			})
+		  })
 	})
 
 	// 2.2 Test LED operations
@@ -79,6 +98,59 @@ describe("CppParser", () => {
 			expect(bytecode[3]).toBe(20) // G
 			expect(bytecode[4]).toBe(30) // B
 		})
+
+		describe("Individual LED operations", () => {
+			test("should parse set_top_right_led command", () => {
+			  const bytecode = CppParser.cppToByte("rgbLed.set_top_right_led(10, 20, 30);")
+
+			  expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
+			  expect(bytecode[1]).toBe(LedID.TOP_RIGHT)
+			  expect(bytecode[2]).toBe(10) // R
+			  expect(bytecode[3]).toBe(20) // G
+			  expect(bytecode[4]).toBe(30) // B
+			})
+
+			test("should parse set_middle_left_led command", () => {
+			  const bytecode = CppParser.cppToByte("rgbLed.set_middle_left_led(40, 50, 60);")
+
+			  expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
+			  expect(bytecode[1]).toBe(LedID.MIDDLE_LEFT)
+			  expect(bytecode[2]).toBe(40) // R
+			  expect(bytecode[3]).toBe(50) // G
+			  expect(bytecode[4]).toBe(60) // B
+			})
+
+			test("should parse set_middle_right_led command", () => {
+			  const bytecode = CppParser.cppToByte("rgbLed.set_middle_right_led(70, 80, 90);")
+
+			  expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
+			  expect(bytecode[1]).toBe(LedID.MIDDLE_RIGHT)
+			  expect(bytecode[2]).toBe(70) // R
+			  expect(bytecode[3]).toBe(80) // G
+			  expect(bytecode[4]).toBe(90) // B
+			})
+
+			test("should parse set_back_left_led command", () => {
+			  const bytecode = CppParser.cppToByte("rgbLed.set_back_left_led(100, 110, 120);")
+
+			  expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
+			  expect(bytecode[1]).toBe(LedID.BACK_LEFT)
+			  expect(bytecode[2]).toBe(100) // R
+			  expect(bytecode[3]).toBe(110) // G
+			  expect(bytecode[4]).toBe(120) // B
+			})
+
+			test("should parse set_back_right_led command", () => {
+			  const bytecode = CppParser.cppToByte("rgbLed.set_back_right_led(130, 140, 150);")
+
+			  expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
+			  expect(bytecode[1]).toBe(LedID.BACK_RIGHT)
+			  expect(bytecode[2]).toBe(130) // R
+			  expect(bytecode[3]).toBe(140) // G
+			  expect(bytecode[4]).toBe(150) // B
+			})
+		  })
+
 	})
 
 	// 2.3 Test delay commands
@@ -276,6 +348,22 @@ describe("Control flow", () => {
 			expect(bytecode[1]).toBe(test.op)
 	  }
 	})
+
+	describe("Control flow error handling", () => {
+		// Testing a valid operator pattern that isn't supported in the switch statement
+		test("should reject unsupported comparison operator", () => {
+		  // The "=" operator should match the regex [<>=!][=]? but isn't handled in the switch
+		  expect(() => {
+				CppParser.cppToByte("if (5 = 10) { rgbLed.set_led_red(); }")
+		  }).toThrow(/Unsupported operator/)
+		})
+
+		test("should reject invalid command for malformed if statement", () => {
+		  expect(() => {
+				CppParser.cppToByte("if (5 <> 10) { rgbLed.set_led_red(); }") // '<>' doesn't match pattern
+		  }).toThrow(/Invalid command/)
+		})
+	  })
 })
 
 describe("While Loop Functionality", () => {
