@@ -114,4 +114,19 @@ export class MessageBuilder {
 
 		return buffer
 	}
+
+	static createBytecodeMessage(bytecode: Uint8Array): ArrayBuffer {
+		// Create buffer: 1 byte for message type + bytecode length
+		const buffer = new ArrayBuffer(1 + bytecode.length)
+		const view = new DataView(buffer)
+
+		// Set message type
+		view.setUint8(0, MessageType.BYTECODE_PROGRAM)
+
+		// Copy bytecode into buffer starting at offset 1
+		const bytecodeView = new Uint8Array(buffer, 1)
+		bytecodeView.set(bytecode)
+
+		return buffer
+	}
 }

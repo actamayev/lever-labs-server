@@ -4,7 +4,7 @@ import Hash from "../../classes/hash"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import determineLoginContactType from "../../utils/auth-helpers/determine-contact-type"
 import retrieveUserFromContact from "../../utils/auth-helpers/login/retrieve-user-from-contact"
-import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-hisory-record"
+import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
 
 export default async function login (req: Request, res: Response): Promise<void> {
