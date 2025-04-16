@@ -17,6 +17,12 @@ import validateProjectUUIDInParams from "../middleware/request-validation/sandbo
 import validateStarSandboxProject from "../middleware/request-validation/sandbox/validate-star-sandbox-project"
 import validateEditSandboxProjectNotes from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-notes"
 import editSandboxProjectNotes from "../controllers/sandbox/edit-sandbox-project-notes"
+import validateCppCode from "../middleware/request-validation/pip/validate-cpp-code"
+import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
+import confirmUserPreviouslyAddedUUID from "../middleware/confirm/confirm-user-previously-added-uuid"
+import confirmUserConnectedToPip from "../middleware/confirm/confirm-user-connected-to-pip"
+import sendSandboxCodeToPip from "../controllers/sandbox/send-sandbox-code-to-pip"
+import convertCppToBytecode from "../middleware/convert-cpp-to-bytecode"
 
 const sandboxRoutes = express.Router()
 
@@ -80,6 +86,17 @@ sandboxRoutes.get(
 	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	getSingleSandboxProject
+)
+
+sandboxRoutes.post(
+	"/send-sandbox-code-to-pip",
+	validateCppCode,
+	confirmPipIsActive,
+	jwtVerifyAttachUserId,
+	convertCppToBytecode,
+	confirmUserPreviouslyAddedUUID,
+	confirmUserConnectedToPip,
+	sendSandboxCodeToPip
 )
 
 export default sandboxRoutes

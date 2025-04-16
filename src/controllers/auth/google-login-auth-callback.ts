@@ -7,7 +7,7 @@ import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import { addGoogleUser } from "../../db-operations/write/credentials/add-user"
 import createGoogleAuthClient from "../../utils/google/create-google-auth-client"
 import retrieveUserIdByEmail from "../../db-operations/read/credentials/retrieve-user-id-by-email"
-import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-hisory-record"
+import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
 
 // eslint-disable-next-line max-lines-per-function

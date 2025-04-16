@@ -100,7 +100,9 @@ export default class Esp32SocketManager extends Singleton {
 			case "/sensor-data":
 				this.handleSensorData(socketId, payload as SensorPayload)
 				break
-			// Handle other non-registration message types here
+			case "/bytecode-status":
+				console.info("Bytecode status:", (payload as BytecodeMessage).message)
+				break
 			default:
 				console.warn(`Unknown route: ${route}`)
 				break
@@ -268,6 +270,15 @@ export default class Esp32SocketManager extends Singleton {
 			this.sendEsp32MessageManager.changeBalancePids.bind(this.sendEsp32MessageManager),
 			pidsData,
 			"Failed to change balance PIDs"
+		)
+	}
+
+	public async emitBytecodeToPip(pipUUID: PipUUID, byteCode: Uint8Array): Promise<void> {
+		return await this.emitSocketCommand<Uint8Array>(
+			pipUUID,
+			this.sendEsp32MessageManager.sendBytecodeToPip.bind(this.sendEsp32MessageManager),
+			byteCode,
+			"Failed to send motor control command"
 		)
 	}
 }
