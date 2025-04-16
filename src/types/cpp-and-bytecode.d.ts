@@ -8,7 +8,7 @@ declare global {
 	}
 
 	interface BlockStack {
-		type: string
+		type: "while" | "if" | "else"
 		jumpIndex: number
 	}
 

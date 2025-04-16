@@ -45,6 +45,21 @@ export default class CppParser {
 			}
 
 			switch (command.type) {
+			case CommandType.WHILE_STATEMENT: {
+				const whileStartIndex = instructions.length
+				instructions.push({
+					opcode: BytecodeOpCode.WHILE_START,
+					operand1: 0,
+					operand2: 0,
+					operand3: 0,
+					operand4: 0
+				})
+
+				// Track this while block for later
+				blockStack.push({ type: "while", jumpIndex: whileStartIndex })
+				break
+			}
+
 			case CommandType.VARIABLE_ASSIGNMENT:
 				  if (command.matches && command.matches.length === 4) {
 					const varType = command.matches[1] // float, int, bool
@@ -284,19 +299,31 @@ export default class CppParser {
 				if (blockStack.length > 0) {
 					const block = blockStack.pop() as BlockStack
 
-					if (block.type === "if") {
-						// Fix the conditional jump at start of if block
-						const offsetToHere = (instructions.length - block.jumpIndex) * 5
-						instructions[block.jumpIndex].operand1 = offsetToHere & 0xFF
-						instructions[block.jumpIndex].operand2 = (offsetToHere >> 8) & 0xFF
+					if (block.type === "while") {
+						// Add a WHILE_END instruction that jumps back to the start
+						const whileEndIndex = instructions.length
 
-						// Check if there's an "else" coming next by looking ahead
-						// Only add the jump to skip else block if there's an else coming
+						// Calculate bytes to jump back (each instruction is 5 bytes)
+						const offsetToStart = (whileEndIndex - block.jumpIndex) * 5
+
+						instructions.push({
+							opcode: BytecodeOpCode.WHILE_END,
+							operand1: offsetToStart & 0xFF, // Low byte
+							operand2: (offsetToStart >> 8) & 0xFF, // High byte
+							operand3: 0,
+							operand4: 0
+						})
+					} else if (block.type === "if") {
+						    // Check if there's an "else" coming next by looking ahead
 						const nextStatementIndex = statements.indexOf(statement) + 1
 						const hasElseNext = nextStatementIndex < statements.length &&
-												statements[nextStatementIndex].trim() === "else"
+                        statements[nextStatementIndex].trim() === "else"
 
 						if (hasElseNext) {
+							const offsetToElseBlock = (instructions.length + 1 - block.jumpIndex) * 5
+							instructions[block.jumpIndex].operand1 = offsetToElseBlock & 0xFF
+							instructions[block.jumpIndex].operand2 = (offsetToElseBlock >> 8) & 0xFF
+
 							// Add jump to skip else block
 							const skipElseIndex = instructions.length
 							instructions.push({
@@ -309,9 +336,13 @@ export default class CppParser {
 
 							// Save for fixing after else block
 							pendingJumps.push({ index: skipElseIndex, targetType: "end_of_else" })
+						} else {
+							// No else block, so jump-if-false should point to the current position
+							const offsetToEndOfIf = (instructions.length - block.jumpIndex) * 5
+							instructions[block.jumpIndex].operand1 = offsetToEndOfIf & 0xFF
+							instructions[block.jumpIndex].operand2 = (offsetToEndOfIf >> 8) & 0xFF
 						}
-					}
-					else if (block.type === "else") {
+					} else if (block.type === "else") {
 						for (let i = pendingJumps.length - 1; i >= 0; i--) {
 							const jump = pendingJumps[i]
 							if (jump.targetType === "end_of_else") {

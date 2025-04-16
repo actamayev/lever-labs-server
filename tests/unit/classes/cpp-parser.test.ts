@@ -277,3 +277,214 @@ describe("Control flow", () => {
 	  }
 	})
 })
+
+describe("While Loop Functionality", () => {
+	test("should parse basic while(true) loop", () => {
+		const code = `while(true) {
+		rgbLed.set_led_red();
+		delay(500);
+	}`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// The first instruction should be WHILE_START
+		expect(bytecode[0]).toBe(BytecodeOpCode.WHILE_START)
+
+		// Then set_led_red (SET_ALL_LEDS with red)
+		expect(bytecode[5]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[6]).toBe(255) // R
+		expect(bytecode[7]).toBe(0)   // G
+		expect(bytecode[8]).toBe(0)   // B
+
+		// Then delay
+		expect(bytecode[10]).toBe(BytecodeOpCode.DELAY)
+		expect(bytecode[11]).toBe(500 & 0xFF) // Low byte of 500
+		expect(bytecode[12]).toBe((500 >> 8) & 0xFF) // High byte of 500
+
+		// Find the WHILE_END instruction (should be before END)
+		let whileEndIndex = -1
+		for (let i = 0; i < bytecode.length - 5; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
+				whileEndIndex = i
+				break
+			}
+		}
+		expect(whileEndIndex).toBeGreaterThan(0) // Should find WHILE_END
+
+		// Check if jump offset is correct
+		const jumpOffset = bytecode[whileEndIndex + 1] |
+						(bytecode[whileEndIndex + 2] << 8)
+		expect(jumpOffset).toBe(15) // 3 instructions * 5 bytes
+
+		// The very last instruction should be END
+		const lastInstructionIndex = bytecode.length - 5
+		expect(bytecode[lastInstructionIndex]).toBe(BytecodeOpCode.END)
+	})
+
+	test("should handle nested while loops", () => {
+		const code = `while(true) {
+	rgbLed.set_led_red();
+	while(true) {
+	rgbLed.set_led_blue();
+	delay(100);
+	}
+	delay(500);
+}`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// Find all WHILE_START opcodes
+		const whileStartIndices = []
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.WHILE_START) {
+				whileStartIndices.push(i)
+			}
+		}
+		expect(whileStartIndices.length).toBe(2) // Should have two while loops
+
+		// Find all WHILE_END opcodes
+		const whileEndIndices = []
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
+				whileEndIndices.push(i)
+			}
+		}
+		expect(whileEndIndices.length).toBe(2) // Should have two loop ends
+
+		// Inner loop should end before outer loop
+		expect(whileEndIndices[0]).toBeLessThan(whileEndIndices[1])
+
+		// Check if inner loop's WHILE_END jumps to correct WHILE_START
+		const innerJumpOffset = bytecode[whileEndIndices[0] + 1] |
+						(bytecode[whileEndIndices[0] + 2] << 8)
+		// Inner loop should jump back to inner WHILE_START
+		const expectedInnerOffset = whileEndIndices[0] - whileStartIndices[1]
+		expect(innerJumpOffset).toBe(expectedInnerOffset)
+
+		// Check if outer loop's WHILE_END jumps to correct WHILE_START
+		const outerJumpOffset = bytecode[whileEndIndices[1] + 1] |
+						(bytecode[whileEndIndices[1] + 2] << 8)
+		// Outer loop should jump back to outer WHILE_START
+		const expectedOuterOffset = whileEndIndices[1] - whileStartIndices[0]
+		expect(outerJumpOffset).toBe(expectedOuterOffset)
+	})
+
+	test("should handle loops with conditionals", () => {
+		const code = `while(true) {
+	if (10 > 5) {
+	rgbLed.set_led_green();
+	} else {
+	rgbLed.set_led_red();
+	}
+	delay(1000);
+}`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// First instruction is WHILE_START
+		expect(bytecode[0]).toBe(BytecodeOpCode.WHILE_START)
+
+		// Then should be COMPARE opcode
+		expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+
+		// Find WHILE_END opcode
+		let whileEndIndex = -1
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
+				whileEndIndex = i
+				break
+			}
+		}
+		expect(whileEndIndex).toBeGreaterThan(0) // Should find WHILE_END
+
+		// Verify WHILE_END jumps back to WHILE_START
+		const jumpOffset = bytecode[whileEndIndex + 1] | (bytecode[whileEndIndex + 2] << 8)
+		expect(jumpOffset).toBe(whileEndIndex) // Should jump back to start
+	})
+
+	test("should handle multiple loops in sequence", () => {
+		const code = `
+while(true) {
+	rgbLed.set_led_red();
+	delay(100);
+}
+// This code should never execute because of the infinite loop above
+while(true) {
+	rgbLed.set_led_blue();
+	delay(200);
+}`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// Find all WHILE_START opcodes
+		const whileStartIndices = []
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.WHILE_START) {
+				whileStartIndices.push(i)
+			}
+		}
+		expect(whileStartIndices.length).toBe(2) // Should have two loop starts
+
+		// Find all WHILE_END opcodes
+		const whileEndIndices = []
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
+				whileEndIndices.push(i)
+			}
+		}
+		expect(whileEndIndices.length).toBe(2) // Should have two loop ends
+
+		// First loop's WHILE_END should jump to first WHILE_START
+		const firstJumpOffset = bytecode[whileEndIndices[0] + 1] |
+						(bytecode[whileEndIndices[0] + 2] << 8)
+		const expectedFirstOffset = whileEndIndices[0] - whileStartIndices[0]
+		expect(firstJumpOffset).toBe(expectedFirstOffset)
+
+		// Second loop's WHILE_END should jump to second WHILE_START
+		const secondJumpOffset = bytecode[whileEndIndices[1] + 1] |
+						(bytecode[whileEndIndices[1] + 2] << 8)
+		const expectedSecondOffset = whileEndIndices[1] - whileStartIndices[1]
+		expect(secondJumpOffset).toBe(expectedSecondOffset)
+	})
+
+	test("should handle empty while loop", () => {
+		const code = `while(true) {
+	// Empty loop
+}`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// Should have WHILE_START and WHILE_END with nothing in between
+		expect(bytecode[0]).toBe(BytecodeOpCode.WHILE_START)
+		expect(bytecode[5]).toBe(BytecodeOpCode.WHILE_END)
+
+		// Jump offset should be 5 bytes (just one instruction)
+		expect(bytecode[6]).toBe(5)
+		expect(bytecode[7]).toBe(0)
+	})
+
+	test("should handle while loop at the end of program", () => {
+		const code = `
+	rgbLed.set_led_green();
+	delay(2000);
+	while(true) {
+		rgbLed.set_led_blue();
+	}`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// Find the WHILE_END instruction
+		let whileEndIndex = -1
+		for (let i = 0; i < bytecode.length - 5; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
+				whileEndIndex = i
+				break
+			}
+		}
+		expect(whileEndIndex).toBeGreaterThan(0) // Should find WHILE_END
+
+		// The very last instruction should be END
+		const lastInstructionIndex = bytecode.length - 5
+		expect(bytecode[lastInstructionIndex]).toBe(BytecodeOpCode.END)
+	})
+})

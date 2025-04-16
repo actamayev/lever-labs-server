@@ -9,6 +9,8 @@ export enum BytecodeOpCode {
     JUMP = 0x31,          // Unconditional jump
     JUMP_IF_TRUE = 0x32,  // Jump if comparison was true
     JUMP_IF_FALSE = 0x33, // Jump if comparison was false
+	WHILE_START = 0x34,
+    WHILE_END = 0x35,
 
     DECLARE_VAR = 0x40,
     SET_VAR = 0x41,
@@ -61,6 +63,7 @@ export enum CommandType {
     ELSE_STATEMENT = "ELSE_STATEMENT",
     BLOCK_START = "BLOCK_START",
     BLOCK_END = "BLOCK_END",
+	WHILE_STATEMENT = "WHILE_STATEMENT",
 }
 
 // Command patterns for validation
@@ -87,4 +90,5 @@ export const CommandPatterns: Record<CommandType, RegExp> = {
 	[CommandType.ELSE_STATEMENT]: /^else$/,
 	[CommandType.BLOCK_START]: /^{$/,
 	[CommandType.BLOCK_END]: /^}$/,
+	[CommandType.WHILE_STATEMENT]: /^while\s*\(\s*true\s*\)$/,
 }
