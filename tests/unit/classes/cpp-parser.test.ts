@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 /* eslint-disable max-lines-per-function */
 import CppParser from "../../../src/classes/cpp-parser"
-import { BytecodeOpCode, ComparisonOp, LedID } from "../../../src/types/bytecode-types"
+import { BytecodeOpCode, CommandType, ComparisonOp, LedID } from "../../../src/types/bytecode-types"
 
 describe("CppParser", () => {
 	// 1. Test garbage input
@@ -66,7 +66,42 @@ describe("CppParser", () => {
 					CppParser.cppToByte("int myNum = notAnInt;") // 'notAnInt' is not a valid integer
 				}).toThrow(/Invalid integer value/)
 			})
-		  })
+			test("should parse boolean variable assigned to 'false'", () => {
+				const bytecode = CppParser.cppToByte("bool myFlag = false;")
+
+				expect(bytecode[0]).toBe(BytecodeOpCode.DECLARE_VAR)
+				expect(bytecode[5]).toBe(BytecodeOpCode.SET_VAR)
+				expect(bytecode[7]).toBe(0) // 0 for false
+			  })
+
+			  test("should parse boolean variable assigned to '0'", () => {
+				const bytecode = CppParser.cppToByte("bool myFlag = 0;")
+
+				expect(bytecode[0]).toBe(BytecodeOpCode.DECLARE_VAR)
+				expect(bytecode[5]).toBe(BytecodeOpCode.SET_VAR)
+				expect(bytecode[7]).toBe(0) // 0 for false
+			  })
+
+			  test("should throw for unsupported variable type", () => {
+				// This test requires a special approach since the regex validation happens before the type check
+
+				// Create a spy on the identifyCommand method to bypass the regex validation
+				const originalIdentifyCommand = CppParser["identifyCommand"]
+				CppParser["identifyCommand"] = jest.fn().mockReturnValue({
+				  type: CommandType.VARIABLE_ASSIGNMENT,
+				  matches: ["full match", "double", "testVar", "3.14"] // Using "double" as unsupported type
+				})
+
+				try {
+				  expect(() => {
+						CppParser.cppToByte("double testVar = 3.14;")
+				  }).toThrow(/Unsupported type: double/)
+				} finally {
+				  // Restore the original method
+				  CppParser["identifyCommand"] = originalIdentifyCommand
+				}
+			  })
+		})
 	})
 
 	// 2.2 Test LED operations
