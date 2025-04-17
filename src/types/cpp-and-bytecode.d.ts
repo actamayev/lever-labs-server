@@ -1,3 +1,5 @@
+import { CommandType } from "./bytecode-types"
+
 declare global {
 	interface BytecodeInstruction {
 		opcode: number

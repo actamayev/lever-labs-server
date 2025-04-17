@@ -427,7 +427,7 @@ export default class CppParser {
 
 						// Jump back to condition check
 						const forEndIndex = instructions.length
-						const offsetToStart = (forEndIndex - (block.startIndex as number)) * 5
+						const offsetToStart = (forEndIndex - (block.startIndex as number)) * 9
 
 						instructions.push({
 							opcode: BytecodeOpCode.JUMP_BACKWARD,
@@ -438,15 +438,15 @@ export default class CppParser {
 						})
 
 						// Fix the jump-if-false at start to point here
-						const offsetToHere = (instructions.length - block.jumpIndex) * 5
+						const offsetToHere = (instructions.length - block.jumpIndex) * 9
 						instructions[block.jumpIndex].operand1 = offsetToHere & 0xFF
 						instructions[block.jumpIndex].operand2 = (offsetToHere >> 8) & 0xFF
 					} else if (block.type === "while") {
 						// Add a WHILE_END instruction that jumps back to the start
 						const whileEndIndex = instructions.length
 
-						// Calculate bytes to jump back (each instruction is 5 bytes)
-						const offsetToStart = (whileEndIndex - block.jumpIndex) * 5
+						// Calculate bytes to jump back (each instruction is 9 bytes)
+						const offsetToStart = (whileEndIndex - block.jumpIndex) * 9
 
 						instructions.push({
 							opcode: BytecodeOpCode.WHILE_END,
@@ -462,7 +462,7 @@ export default class CppParser {
                                                 statements[nextStatementIndex].trim() === "else"
 
 						if (hasElseNext) {
-							const offsetToElseBlock = (instructions.length + 1 - block.jumpIndex) * 5
+							const offsetToElseBlock = (instructions.length + 1 - block.jumpIndex) * 9
 							instructions[block.jumpIndex].operand1 = offsetToElseBlock & 0xFF
 							instructions[block.jumpIndex].operand2 = (offsetToElseBlock >> 8) & 0xFF
 
@@ -480,7 +480,7 @@ export default class CppParser {
 							pendingJumps.push({ index: skipElseIndex, targetType: "end_of_else" })
 						} else {
 							// No else block, so jump-if-false should point to the current position
-							const offsetToEndOfIf = (instructions.length - block.jumpIndex) * 5
+							const offsetToEndOfIf = (instructions.length - block.jumpIndex) * 9
 							instructions[block.jumpIndex].operand1 = offsetToEndOfIf & 0xFF
 							instructions[block.jumpIndex].operand2 = (offsetToEndOfIf >> 8) & 0xFF
 						}
@@ -488,7 +488,7 @@ export default class CppParser {
 						for (let i = pendingJumps.length - 1; i >= 0; i--) {
 							const jump = pendingJumps[i]
 							if (jump.targetType === "end_of_else") {
-								const offsetToEnd = (instructions.length - jump.index) * 5
+								const offsetToEnd = (instructions.length - jump.index) * 9
 								instructions[jump.index].operand1 = offsetToEnd & 0xFF
 								instructions[jump.index].operand2 = (offsetToEnd >> 8) & 0xFF
 								pendingJumps.splice(i, 1)
@@ -532,16 +532,25 @@ export default class CppParser {
 	}
 
 	private static generateBytecode(instructions: BytecodeInstruction[]): Uint8Array {
-		// Each instruction is 5 bytes
-		const bytecode = new Uint8Array(instructions.length * 5)
+		// Each instruction is now 9 bytes
+		const bytecode = new Uint8Array(instructions.length * 9)
 
 		instructions.forEach((instruction, index) => {
-			const offset = index * 5
+			const offset = index * 9
 			bytecode[offset] = instruction.opcode
-			bytecode[offset + 1] = instruction.operand1
-			bytecode[offset + 2] = instruction.operand2
-			bytecode[offset + 3] = instruction.operand3
-			bytecode[offset + 4] = instruction.operand4
+
+			// Write 16-bit operands (little-endian)
+			bytecode[offset + 1] = instruction.operand1 & 0xFF
+			bytecode[offset + 2] = (instruction.operand1 >> 8) & 0xFF
+
+			bytecode[offset + 3] = instruction.operand2 & 0xFF
+			bytecode[offset + 4] = (instruction.operand2 >> 8) & 0xFF
+
+			bytecode[offset + 5] = instruction.operand3 & 0xFF
+			bytecode[offset + 6] = (instruction.operand3 >> 8) & 0xFF
+
+			bytecode[offset + 7] = instruction.operand4 & 0xFF
+			bytecode[offset + 8] = (instruction.operand4 >> 8) & 0xFF
 		})
 
 		return bytecode

@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 /* eslint-disable max-lines-per-function */
 import CppParser from "../../../src/classes/cpp-parser"
-import { BytecodeOpCode, CommandType, ComparisonOp, LedID } from "../../../src/types/bytecode-types"
+import { BytecodeOpCode, CommandType, ComparisonOp, LedID, SensorType } from "../../../src/types/bytecode-types"
 
 describe("CppParser", () => {
 	// 1. Test garbage input
@@ -28,25 +28,27 @@ describe("CppParser", () => {
 			expect(bytecode[0]).toBe(BytecodeOpCode.DECLARE_VAR)
 
 			// Check if SET_VAR follows the declaration
-			expect(bytecode[5]).toBe(BytecodeOpCode.SET_VAR)
-			expect(bytecode[7]).toBe(42) // Low byte of value
+			expect(bytecode[9]).toBe(BytecodeOpCode.SET_VAR)
+			expect(bytecode[12]).toBe(42) // Low byte of value
+			expect(bytecode[13]).toBe(0)  // High byte of value (0 for small numbers)
 		})
 
 		test("should parse boolean variable assignment", () => {
 			const bytecode = CppParser.cppToByte("bool myFlag = true;")
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.DECLARE_VAR)
-			expect(bytecode[5]).toBe(BytecodeOpCode.SET_VAR)
-			expect(bytecode[7]).toBe(1) // 1 for true
+			expect(bytecode[9]).toBe(BytecodeOpCode.SET_VAR)
+			expect(bytecode[12]).toBe(1) // 1 for true
+			expect(bytecode[13]).toBe(0) // High byte is 0
 		})
 
 		test("should parse float variable assignment", () => {
 			const bytecode = CppParser.cppToByte("float myFloat = 3.14;")
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.DECLARE_VAR)
-			expect(bytecode[5]).toBe(BytecodeOpCode.SET_VAR)
+			expect(bytecode[9]).toBe(BytecodeOpCode.SET_VAR)
 			// Float parsing is more complex, so we just verify it's a valid bytecode
-			expect(bytecode.length).toBeGreaterThan(10)
+			expect(bytecode.length).toBeGreaterThan(18)
 		})
 		describe("Variable assignments error handling", () => {
 			test("should reject unsupported variable type", () => {
@@ -70,16 +72,18 @@ describe("CppParser", () => {
 				const bytecode = CppParser.cppToByte("bool myFlag = false;")
 
 				expect(bytecode[0]).toBe(BytecodeOpCode.DECLARE_VAR)
-				expect(bytecode[5]).toBe(BytecodeOpCode.SET_VAR)
-				expect(bytecode[7]).toBe(0) // 0 for false
+				expect(bytecode[9]).toBe(BytecodeOpCode.SET_VAR)
+				expect(bytecode[12]).toBe(0) // 0 for false
+				expect(bytecode[13]).toBe(0) // High byte should be 0
 			  })
 
 			  test("should parse boolean variable assigned to '0'", () => {
 				const bytecode = CppParser.cppToByte("bool myFlag = 0;")
 
 				expect(bytecode[0]).toBe(BytecodeOpCode.DECLARE_VAR)
-				expect(bytecode[5]).toBe(BytecodeOpCode.SET_VAR)
-				expect(bytecode[7]).toBe(0) // 0 for false
+				expect(bytecode[9]).toBe(BytecodeOpCode.SET_VAR)
+				expect(bytecode[12]).toBe(0) // 0 for false
+				expect(bytecode[13]).toBe(0) // High byte should be 0
 			  })
 
 			  test("should throw for unsupported variable type", () => {
@@ -119,9 +123,12 @@ describe("CppParser", () => {
 			const bytecode = CppParser.cppToByte("set_all_leds_to_color(255, 127, 64);")
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-			expect(bytecode[1]).toBe(255) // R
-			expect(bytecode[2]).toBe(127) // G
-			expect(bytecode[3]).toBe(64)  // B
+			expect(bytecode[1]).toBe(255)
+			expect(bytecode[2]).toBe(0)
+			expect(bytecode[3]).toBe(127)
+			expect(bytecode[4]).toBe(0)
+			expect(bytecode[5]).toBe(64)
+			expect(bytecode[6]).toBe(0)
 		})
 
 		test("should parse individual LED setting", () => {
@@ -876,5 +883,250 @@ describe("For Loop Functionality", () => {
 
 		// Both loops should use different registers despite same variable name
 		expect(bytecode[forInitIndices[0] + 1]).not.toBe(bytecode[forInitIndices[1] + 1])
+	})
+})
+
+describe("Sensor Functionality", () => {
+	// UNTESTED:
+	// Helper function to check sensor bytecode generation
+	function testSensorReading(sensorMethod: string, expectedSensorType: SensorType) {
+		const code = `if (Sensors::getInstance().${sensorMethod}() > 10) {
+      rgbLed.set_led_red();
+    }`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// First instruction should be READ_SENSOR
+		expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
+		expect(bytecode[1]).toBe(expectedSensorType) // Sensor type
+		expect(bytecode[2]).toBe(0) // Register ID (first register)
+
+		// Second instruction should be COMPARE
+		expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+		expect(bytecode[6]).toBe(ComparisonOp.GREATER_THAN) // ">" operator
+		expect(bytecode[7]).toBe(0x80) // High bit indicates register reference
+		expect(bytecode[8]).toBe(10) // Right value (10)
+	}
+
+	// Test each orientation sensor (pitch, roll, yaw)
+	describe("Orientation Sensors", () => {
+		test("should parse Pitch sensor reading", () => {
+			testSensorReading("getPitch", SensorType.PITCH)
+		})
+
+		test("should parse Roll sensor reading", () => {
+			testSensorReading("getRoll", SensorType.ROLL)
+		})
+
+		test("should parse Yaw sensor reading", () => {
+			testSensorReading("getYaw", SensorType.YAW)
+		})
+	})
+
+	// Test accelerometer sensors
+	describe("Accelerometer Sensors", () => {
+		test("should parse X-axis acceleration reading", () => {
+			testSensorReading("getXAccel", SensorType.ACCEL_X)
+		})
+
+		test("should parse Y-axis acceleration reading", () => {
+			testSensorReading("getYAccel", SensorType.ACCEL_Y)
+		})
+
+		test("should parse Z-axis acceleration reading", () => {
+			testSensorReading("getZAccel", SensorType.ACCEL_Z)
+		})
+
+		test("should parse acceleration magnitude reading", () => {
+			testSensorReading("getAccelMagnitude", SensorType.ACCEL_MAG)
+		})
+	})
+
+	// Test gyroscope sensors
+	describe("Gyroscope Sensors", () => {
+		test("should parse X-axis rotation rate", () => {
+			testSensorReading("getXRotationRate", SensorType.ROT_RATE_X)
+		})
+
+		test("should parse Y-axis rotation rate", () => {
+			testSensorReading("getYRotationRate", SensorType.ROT_RATE_Y)
+		})
+
+		test("should parse Z-axis rotation rate", () => {
+			testSensorReading("getZRotationRate", SensorType.ROT_RATE_Z)
+		})
+	})
+
+	// Test magnetometer sensors
+	describe("Magnetometer Sensors", () => {
+		test("should parse X-axis magnetic field", () => {
+			testSensorReading("getMagneticFieldX", SensorType.MAG_FIELD_X)
+		})
+
+		test("should parse Y-axis magnetic field", () => {
+			testSensorReading("getMagneticFieldY", SensorType.MAG_FIELD_Y)
+		})
+
+		test("should parse Z-axis magnetic field", () => {
+			testSensorReading("getMagneticFieldZ", SensorType.MAG_FIELD_Z)
+		})
+	})
+
+	// Test different comparison operators with sensors
+	describe("Sensor Comparison Operators", () => {
+		test("should parse sensor equality comparison", () => {
+			const code = `if (Sensors::getInstance().getPitch() == 0) {
+        rgbLed.set_led_red();
+      }`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[1]).toBe(SensorType.PITCH)
+			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[6]).toBe(ComparisonOp.EQUAL) // "==" operator
+		})
+
+		test("should parse sensor inequality comparison", () => {
+			const code = `if (Sensors::getInstance().getYaw() != 45) {
+        rgbLed.set_led_green();
+      }`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[1]).toBe(SensorType.YAW)
+			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[6]).toBe(ComparisonOp.NOT_EQUAL) // "!=" operator
+		})
+
+		test("should parse sensor less than comparison", () => {
+			const code = `if (Sensors::getInstance().getXAccel() < -5) {
+        rgbLed.set_led_blue();
+      }`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[1]).toBe(SensorType.ACCEL_X)
+			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[6]).toBe(ComparisonOp.LESS_THAN) // "<" operator
+		})
+
+		test("should parse sensor greater than or equal comparison", () => {
+			const code = `if (Sensors::getInstance().getAccelMagnitude() >= 9.8) {
+        rgbLed.set_led_purple();
+      }`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[1]).toBe(SensorType.ACCEL_MAG)
+			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[6]).toBe(ComparisonOp.GREATER_EQUAL) // ">=" operator
+		})
+
+		test("should parse sensor less than or equal comparison", () => {
+			const code = `if (Sensors::getInstance().getZRotationRate() <= 180) {
+        rgbLed.set_led_white();
+      }`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[1]).toBe(SensorType.ROT_RATE_Z)
+			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[6]).toBe(ComparisonOp.LESS_EQUAL) // "<=" operator
+		})
+	})
+
+	// Test complex sensor usage
+	describe("Complex Sensor Usage", () => {
+		test("should handle sensors in if-else branches", () => {
+			const code = `if (Sensors::getInstance().getPitch() > 20) {
+        rgbLed.set_led_red();
+      } else {
+        if (Sensors::getInstance().getRoll() < -10) {
+          rgbLed.set_led_blue();
+        } else {
+          rgbLed.set_led_green();
+        }
+      }`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			// First READ_SENSOR for getPitch
+			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[1]).toBe(SensorType.PITCH)
+
+			// Look for the second READ_SENSOR for getRoll (should be after the first conditional jump)
+			let rollSensorIndex = -1
+			for (let i = 15; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.READ_SENSOR && bytecode[i + 1] === SensorType.ROLL) {
+					rollSensorIndex = i
+					break
+				}
+			}
+			expect(rollSensorIndex).toBeGreaterThan(0) // Should find the roll sensor reading
+		})
+
+		test("should handle sensors in loops", () => {
+			const code = `while (true) {
+        if (Sensors::getInstance().getAccelMagnitude() > 5) {
+          rgbLed.set_led_white();
+        }
+        delay(100);
+      }`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			// First instruction is WHILE_START
+			expect(bytecode[0]).toBe(BytecodeOpCode.WHILE_START)
+
+			// Second instruction should be READ_SENSOR
+			expect(bytecode[5]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[6]).toBe(SensorType.ACCEL_MAG)
+		})
+
+		test("should handle sensors in for loops", () => {
+			const code = `for (int i = 0; i < 10; i++) {
+        if (Sensors::getInstance().getYaw() > i) {
+          rgbLed.set_led_red();
+        }
+      }`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			// Find READ_SENSOR instruction
+			let sensorIndex = -1
+			for (let i = 15; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.READ_SENSOR && bytecode[i + 1] === SensorType.YAW) {
+					sensorIndex = i
+					break
+				}
+			}
+			expect(sensorIndex).toBeGreaterThan(0) // Should find the yaw sensor reading
+		})
+	})
+
+	// Error handling tests
+	test("should throw error for unknown sensor method", () => {
+	// Store original method
+		const originalParseCppCode = CppParser["parseCppCode"]
+
+		// Create a mock that properly passes a string to the original method
+		CppParser["parseCppCode"] = function(): BytecodeInstruction[] {
+		// Pass a single string instead of an array - this fixes the type error
+			return originalParseCppCode.call(this, "if (Sensors::getInstance().getNonExistent() > 10)")
+		}
+
+		try {
+			expect(() => {
+				CppParser.cppToByte("// This content doesn't matter due to the mock")
+			}).toThrow(/Unknown sensor method/)
+		} finally {
+		// Restore original method
+			CppParser["parseCppCode"] = originalParseCppCode
+		}
 	})
 })
