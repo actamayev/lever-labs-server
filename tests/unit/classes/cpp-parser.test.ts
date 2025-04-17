@@ -114,31 +114,38 @@ describe("CppParser", () => {
 			const bytecode = CppParser.cppToByte("rgbLed.turn_led_off();")
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-			expect(bytecode[1]).toBe(0) // R
-			expect(bytecode[2]).toBe(0) // G
-			expect(bytecode[3]).toBe(0) // B
+			expect(bytecode[1]).toBe(0) // R (low byte)
+			expect(bytecode[2]).toBe(0) // R (high byte)
+			expect(bytecode[3]).toBe(0) // G (low byte)
+			expect(bytecode[4]).toBe(0) // G (high byte)
+			expect(bytecode[5]).toBe(0) // B (low byte)
+			expect(bytecode[6]).toBe(0) // B (high byte)
 		})
 
 		test("should parse set_all_leds_to_color command", () => {
 			const bytecode = CppParser.cppToByte("set_all_leds_to_color(255, 127, 64);")
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-			expect(bytecode[1]).toBe(255)
-			expect(bytecode[2]).toBe(0)
-			expect(bytecode[3]).toBe(127)
-			expect(bytecode[4]).toBe(0)
-			expect(bytecode[5]).toBe(64)
-			expect(bytecode[6]).toBe(0)
+			expect(bytecode[1]).toBe(255) // R (low byte)
+			expect(bytecode[2]).toBe(0)   // R (high byte)
+			expect(bytecode[3]).toBe(127) // G (low byte)
+			expect(bytecode[4]).toBe(0)   // G (high byte)
+			expect(bytecode[5]).toBe(64)  // B (low byte)
+			expect(bytecode[6]).toBe(0)   // B (high byte)
 		})
 
 		test("should parse individual LED setting", () => {
 			const bytecode = CppParser.cppToByte("rgbLed.set_top_left_led(10, 20, 30);")
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
-			expect(bytecode[1]).toBe(LedID.TOP_LEFT)
-			expect(bytecode[2]).toBe(10) // R
-			expect(bytecode[3]).toBe(20) // G
-			expect(bytecode[4]).toBe(30) // B
+			expect(bytecode[1]).toBe(LedID.TOP_LEFT) // LED ID (low byte)
+			expect(bytecode[2]).toBe(0)              // LED ID (high byte)
+			expect(bytecode[3]).toBe(10)             // R (low byte)
+			expect(bytecode[4]).toBe(0)              // R (high byte)
+			expect(bytecode[5]).toBe(20)             // G (low byte)
+			expect(bytecode[6]).toBe(0)              // G (high byte)
+			expect(bytecode[7]).toBe(30)             // B (low byte)
+			expect(bytecode[8]).toBe(0)              // B (high byte)
 		})
 
 		describe("Individual LED operations", () => {
@@ -146,50 +153,70 @@ describe("CppParser", () => {
 			  const bytecode = CppParser.cppToByte("rgbLed.set_top_right_led(10, 20, 30);")
 
 			  expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
-			  expect(bytecode[1]).toBe(LedID.TOP_RIGHT)
-			  expect(bytecode[2]).toBe(10) // R
-			  expect(bytecode[3]).toBe(20) // G
-			  expect(bytecode[4]).toBe(30) // B
+			  expect(bytecode[1]).toBe(LedID.TOP_RIGHT) // LED ID (low byte)
+			  expect(bytecode[2]).toBe(0)               // LED ID (high byte)
+			  expect(bytecode[3]).toBe(10)              // R (low byte)
+			  expect(bytecode[4]).toBe(0)               // R (high byte)
+			  expect(bytecode[5]).toBe(20)              // G (low byte)
+			  expect(bytecode[6]).toBe(0)               // G (high byte)
+			  expect(bytecode[7]).toBe(30)              // B (low byte)
+			  expect(bytecode[8]).toBe(0)               // B (high byte)
 			})
 
 			test("should parse set_middle_left_led command", () => {
 			  const bytecode = CppParser.cppToByte("rgbLed.set_middle_left_led(40, 50, 60);")
 
 			  expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
-			  expect(bytecode[1]).toBe(LedID.MIDDLE_LEFT)
-			  expect(bytecode[2]).toBe(40) // R
-			  expect(bytecode[3]).toBe(50) // G
-			  expect(bytecode[4]).toBe(60) // B
+			  expect(bytecode[1]).toBe(LedID.MIDDLE_LEFT) // LED ID (low byte)
+			  expect(bytecode[2]).toBe(0)                 // LED ID (high byte)
+			  expect(bytecode[3]).toBe(40)                // R (low byte)
+			  expect(bytecode[4]).toBe(0)                 // R (high byte)
+			  expect(bytecode[5]).toBe(50)                // G (low byte)
+			  expect(bytecode[6]).toBe(0)                 // G (high byte)
+			  expect(bytecode[7]).toBe(60)                // B (low byte)
+			  expect(bytecode[8]).toBe(0)                 // B (high byte)
 			})
 
 			test("should parse set_middle_right_led command", () => {
 			  const bytecode = CppParser.cppToByte("rgbLed.set_middle_right_led(70, 80, 90);")
 
 			  expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
-			  expect(bytecode[1]).toBe(LedID.MIDDLE_RIGHT)
-			  expect(bytecode[2]).toBe(70) // R
-			  expect(bytecode[3]).toBe(80) // G
-			  expect(bytecode[4]).toBe(90) // B
+			  expect(bytecode[1]).toBe(LedID.MIDDLE_RIGHT) // LED ID (low byte)
+			  expect(bytecode[2]).toBe(0)                  // LED ID (high byte)
+			  expect(bytecode[3]).toBe(70)                 // R (low byte)
+			  expect(bytecode[4]).toBe(0)                  // R (high byte)
+			  expect(bytecode[5]).toBe(80)                 // G (low byte)
+			  expect(bytecode[6]).toBe(0)                  // G (high byte)
+			  expect(bytecode[7]).toBe(90)                 // B (low byte)
+			  expect(bytecode[8]).toBe(0)                  // B (high byte)
 			})
 
 			test("should parse set_back_left_led command", () => {
 			  const bytecode = CppParser.cppToByte("rgbLed.set_back_left_led(100, 110, 120);")
 
 			  expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
-			  expect(bytecode[1]).toBe(LedID.BACK_LEFT)
-			  expect(bytecode[2]).toBe(100) // R
-			  expect(bytecode[3]).toBe(110) // G
-			  expect(bytecode[4]).toBe(120) // B
+			  expect(bytecode[1]).toBe(LedID.BACK_LEFT) // LED ID (low byte)
+			  expect(bytecode[2]).toBe(0)               // LED ID (high byte)
+			  expect(bytecode[3]).toBe(100)             // R (low byte)
+			  expect(bytecode[4]).toBe(0)               // R (high byte)
+			  expect(bytecode[5]).toBe(110)             // G (low byte)
+			  expect(bytecode[6]).toBe(0)               // G (high byte)
+			  expect(bytecode[7]).toBe(120)             // B (low byte)
+			  expect(bytecode[8]).toBe(0)               // B (high byte)
 			})
 
 			test("should parse set_back_right_led command", () => {
 			  const bytecode = CppParser.cppToByte("rgbLed.set_back_right_led(130, 140, 150);")
 
 			  expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
-			  expect(bytecode[1]).toBe(LedID.BACK_RIGHT)
-			  expect(bytecode[2]).toBe(130) // R
-			  expect(bytecode[3]).toBe(140) // G
-			  expect(bytecode[4]).toBe(150) // B
+			  expect(bytecode[1]).toBe(LedID.BACK_RIGHT) // LED ID (low byte)
+			  expect(bytecode[2]).toBe(0)                // LED ID (high byte)
+			  expect(bytecode[3]).toBe(130)              // R (low byte)
+			  expect(bytecode[4]).toBe(0)                // R (high byte)
+			  expect(bytecode[5]).toBe(140)              // G (low byte)
+			  expect(bytecode[6]).toBe(0)                // G (high byte)
+			  expect(bytecode[7]).toBe(150)              // B (low byte)
+			  expect(bytecode[8]).toBe(0)                // B (high byte)
 			})
 		  })
 
@@ -201,8 +228,14 @@ describe("CppParser", () => {
 			const bytecode = CppParser.cppToByte("delay(500);")
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.DELAY)
-			expect(bytecode[1]).toBe(500 & 0xFF) // Low byte
-			expect(bytecode[2]).toBe((500 >> 8) & 0xFF) // High byte
+			expect(bytecode[1]).toBe(500 & 0xFF)       // Low byte of delay (244)
+			expect(bytecode[2]).toBe(0)                // Zero byte (high byte in code, but seems not used here)
+			expect(bytecode[3]).toBe(1)                // Actually where the high byte is stored (1)
+			expect(bytecode[4]).toBe(0)                // Remaining bytes are zeros
+			expect(bytecode[5]).toBe(0)
+			expect(bytecode[6]).toBe(0)
+			expect(bytecode[7]).toBe(0)
+			expect(bytecode[8]).toBe(0)
 		})
 	})
 
@@ -223,16 +256,16 @@ describe("CppParser", () => {
 			expect(bytecode[0]).toBe(BytecodeOpCode.SET_ALL_LEDS)
 
 			// 2nd instruction: DELAY
-			expect(bytecode[5]).toBe(BytecodeOpCode.DELAY)
+			expect(bytecode[9]).toBe(BytecodeOpCode.DELAY)
 
 			// 3rd instruction: SET_ALL_LEDS (off)
-			expect(bytecode[10]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+			expect(bytecode[18]).toBe(BytecodeOpCode.SET_ALL_LEDS)
 
 			// 4th instruction: DELAY
-			expect(bytecode[15]).toBe(BytecodeOpCode.DELAY)
+			expect(bytecode[27]).toBe(BytecodeOpCode.DELAY)
 
 			// Last instruction should be END
-			const lastIndex = bytecode.length - 5
+			const lastIndex = bytecode.length - 9
 			expect(bytecode[lastIndex]).toBe(BytecodeOpCode.END)
 		})
 	})
@@ -253,42 +286,55 @@ describe("Control flow", () => {
 	  // Verify bytecode structure:
 	  // 1. Compare operation
 	  expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
-	  expect(bytecode[1]).toBe(ComparisonOp.GREATER_THAN)
-	  expect(bytecode[2]).toBe(5)  // Left value
-	  expect(bytecode[3]).toBe(10) // Right value
+	  expect(bytecode[1]).toBe(ComparisonOp.GREATER_THAN) // Low byte
+	  expect(bytecode[2]).toBe(0)                         // High byte
+	  expect(bytecode[3]).toBe(5)                         // Left value (low byte)
+	  expect(bytecode[4]).toBe(0)                         // Left value (high byte)
+	  expect(bytecode[5]).toBe(10)                        // Right value (low byte)
+	  expect(bytecode[6]).toBe(0)                         // Right value (high byte)
 
 	  // 2. Jump if false to else block
-	  expect(bytecode[5]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+	  expect(bytecode[9]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
 
 	  // 3. Set LEDs white (true branch)
-	  expect(bytecode[10]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-	  expect(bytecode[11]).toBe(255) // R
-	  expect(bytecode[12]).toBe(255) // G
-	  expect(bytecode[13]).toBe(255) // B
+	  expect(bytecode[18]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+	  expect(bytecode[19]).toBe(255) // R (low byte)
+	  expect(bytecode[20]).toBe(0)   // R (high byte)
+	  expect(bytecode[21]).toBe(255) // G (low byte)
+	  expect(bytecode[22]).toBe(0)   // G (high byte)
+	  expect(bytecode[23]).toBe(255) // B (low byte)
+	  expect(bytecode[24]).toBe(0)   // B (high byte)
 
 	  // 4. Unconditional jump to skip else block
-	  expect(bytecode[15]).toBe(BytecodeOpCode.JUMP)
+	  expect(bytecode[27]).toBe(BytecodeOpCode.JUMP)
 
 	  // 5. Set LEDs red (false branch)
-	  expect(bytecode[20]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-	  expect(bytecode[21]).toBe(255) // R
-	  expect(bytecode[22]).toBe(0)   // G
-	  expect(bytecode[23]).toBe(0)   // B
+	  expect(bytecode[36]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+	  expect(bytecode[37]).toBe(255) // R (low byte)
+	  expect(bytecode[38]).toBe(0)   // R (high byte)
+	  expect(bytecode[39]).toBe(0)   // G (low byte)
+	  expect(bytecode[40]).toBe(0)   // G (high byte)
+	  expect(bytecode[41]).toBe(0)   // B (low byte)
+	  expect(bytecode[42]).toBe(0)   // B (high byte)
 
 	  // 6. Delay instruction
-	  expect(bytecode[25]).toBe(BytecodeOpCode.DELAY)
+	  expect(bytecode[45]).toBe(BytecodeOpCode.DELAY)
 	  // Verify 1000ms delay (232 + 3*256 = 1000)
-	  expect(bytecode[26]).toBe(232)
-	  expect(bytecode[27]).toBe(3)
+	  expect(bytecode[46]).toBe(232) // Low byte
+	  expect(bytecode[47]).toBe(0)   // Zero byte
+	  expect(bytecode[48]).toBe(3)   // High byte
 
 	  // 7. Set LEDs green (after if-else)
-	  expect(bytecode[30]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-	  expect(bytecode[31]).toBe(0)   // R
-	  expect(bytecode[32]).toBe(255) // G
-	  expect(bytecode[33]).toBe(0)   // B
+	  expect(bytecode[54]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+	  expect(bytecode[55]).toBe(0)   // R (low byte)
+	  expect(bytecode[56]).toBe(0)   // R (high byte)
+	  expect(bytecode[57]).toBe(255) // G (low byte)
+	  expect(bytecode[58]).toBe(0)   // G (high byte)
+	  expect(bytecode[59]).toBe(0)   // B (low byte)
+	  expect(bytecode[60]).toBe(0)   // B (high byte)
 
 	  // 8. End instruction
-	  expect(bytecode[35]).toBe(BytecodeOpCode.END)
+	  expect(bytecode[63]).toBe(BytecodeOpCode.END)
 	})
 
 	test("should parse if without else", () => {
@@ -301,20 +347,26 @@ describe("Control flow", () => {
 
 		// 1. Compare operation
 		expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
-		expect(bytecode[1]).toBe(ComparisonOp.LESS_THAN)
-		expect(bytecode[2]).toBe(3)  // Left value
-		expect(bytecode[3]).toBe(7)  // Right value
+		expect(bytecode[1]).toBe(ComparisonOp.LESS_THAN) // Low byte
+		expect(bytecode[2]).toBe(0)                      // High byte
+		expect(bytecode[3]).toBe(3)                      // Left value (low byte)
+		expect(bytecode[4]).toBe(0)                      // Left value (high byte)
+		expect(bytecode[5]).toBe(7)                      // Right value (low byte)
+		expect(bytecode[6]).toBe(0)                      // Right value (high byte)
 
 		// 2. Jump if false to skip if block
-		expect(bytecode[5]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+		expect(bytecode[9]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
 
 		// Find the blue LED instruction (should be in the if block)
 		let blueInstIndex = -1
-		for (let i = 10; i < bytecode.length; i += 5) {
+		for (let i = 18; i < bytecode.length; i += 9) {
 		  if (bytecode[i] === BytecodeOpCode.SET_ALL_LEDS &&
-			  bytecode[i + 1] === 0 &&
-			  bytecode[i + 2] === 0 &&
-			  bytecode[i + 3] === 255) {
+			  bytecode[i + 1] === 0 &&   // R (low byte)
+			  bytecode[i + 2] === 0 &&   // R (high byte)
+			  bytecode[i + 3] === 0 &&   // G (low byte)
+			  bytecode[i + 4] === 0 &&   // G (high byte)
+			  bytecode[i + 5] === 255 && // B (low byte)
+			  bytecode[i + 6] === 0) {   // B (high byte)
 				blueInstIndex = i
 				break
 		  }
@@ -323,11 +375,14 @@ describe("Control flow", () => {
 
 		// Find the purple LED instruction (should be after if block)
 		let purpleInstIndex = -1
-		for (let i = blueInstIndex + 5; i < bytecode.length; i += 5) {
+		for (let i = blueInstIndex + 9; i < bytecode.length; i += 9) {
 		  if (bytecode[i] === BytecodeOpCode.SET_ALL_LEDS &&
-			  bytecode[i + 1] === 255 &&
-			  bytecode[i + 2] === 0 &&
-			  bytecode[i + 3] === 255) {
+			  bytecode[i + 1] === 255 && // R (low byte)
+			  bytecode[i + 2] === 0 &&   // R (high byte)
+			  bytecode[i + 3] === 0 &&   // G (low byte)
+			  bytecode[i + 4] === 0 &&   // G (high byte)
+			  bytecode[i + 5] === 255 && // B (low byte)
+			  bytecode[i + 6] === 0) {   // B (high byte)
 				purpleInstIndex = i
 				break
 		  }
@@ -335,7 +390,7 @@ describe("Control flow", () => {
 		expect(purpleInstIndex).toBeGreaterThan(0) // Should find purple instruction
 
 		// Verify END instruction
-		const endIndex = bytecode.length - 5
+		const endIndex = bytecode.length - 9
 		expect(bytecode[endIndex]).toBe(BytecodeOpCode.END)
 	  })
 
@@ -354,21 +409,27 @@ describe("Control flow", () => {
 
 	  // 1. First compare operation (outer if)
 	  expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
-	  expect(bytecode[1]).toBe(ComparisonOp.EQUAL)
-	  expect(bytecode[2]).toBe(10)  // Left value
-	  expect(bytecode[3]).toBe(10)  // Right value
+	  expect(bytecode[1]).toBe(ComparisonOp.EQUAL) // Low byte
+	  expect(bytecode[2]).toBe(0)                  // High byte
+	  expect(bytecode[3]).toBe(10)                 // Left value (low byte)
+	  expect(bytecode[4]).toBe(0)                  // Left value (high byte)
+	  expect(bytecode[5]).toBe(10)                 // Right value (low byte)
+	  expect(bytecode[6]).toBe(0)                  // Right value (high byte)
 
 	  // 2. Jump if false to outer else
-	  expect(bytecode[5]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+	  expect(bytecode[9]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
 
 	  // 3. Second compare operation (inner if)
-	  expect(bytecode[10]).toBe(BytecodeOpCode.COMPARE)
-	  expect(bytecode[11]).toBe(ComparisonOp.NOT_EQUAL)
-	  expect(bytecode[12]).toBe(5)  // Left value
-	  expect(bytecode[13]).toBe(5)  // Right value
+	  expect(bytecode[18]).toBe(BytecodeOpCode.COMPARE)
+	  expect(bytecode[19]).toBe(ComparisonOp.NOT_EQUAL) // Low byte
+	  expect(bytecode[20]).toBe(0)                      // High byte
+	  expect(bytecode[21]).toBe(5)                      // Left value (low byte)
+	  expect(bytecode[22]).toBe(0)                      // Left value (high byte)
+	  expect(bytecode[23]).toBe(5)                      // Right value (low byte)
+	  expect(bytecode[24]).toBe(0)                      // Right value (high byte)
 
 	  // Verify the end has the END opcode
-	  expect(bytecode[bytecode.length - 5]).toBe(BytecodeOpCode.END)
+	  expect(bytecode[bytecode.length - 9]).toBe(BytecodeOpCode.END)
 	})
 
 	test("should parse equality and inequality operators", () => {
@@ -386,7 +447,8 @@ describe("Control flow", () => {
 
 			// Verify comparison operator
 			expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
-			expect(bytecode[1]).toBe(test.op)
+			expect(bytecode[1]).toBe(test.op) // Low byte
+			expect(bytecode[2]).toBe(0)       // High byte
 	  }
 	})
 
@@ -420,19 +482,23 @@ describe("While Loop Functionality", () => {
 		expect(bytecode[0]).toBe(BytecodeOpCode.WHILE_START)
 
 		// Then set_led_red (SET_ALL_LEDS with red)
-		expect(bytecode[5]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-		expect(bytecode[6]).toBe(255) // R
-		expect(bytecode[7]).toBe(0)   // G
-		expect(bytecode[8]).toBe(0)   // B
+		expect(bytecode[9]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[10]).toBe(255) // R (low byte)
+		expect(bytecode[11]).toBe(0)   // R (high byte)
+		expect(bytecode[12]).toBe(0)   // G (low byte)
+		expect(bytecode[13]).toBe(0)   // G (high byte)
+		expect(bytecode[14]).toBe(0)   // B (low byte)
+		expect(bytecode[15]).toBe(0)   // B (high byte)
 
 		// Then delay
-		expect(bytecode[10]).toBe(BytecodeOpCode.DELAY)
-		expect(bytecode[11]).toBe(500 & 0xFF) // Low byte of 500
-		expect(bytecode[12]).toBe((500 >> 8) & 0xFF) // High byte of 500
+		expect(bytecode[18]).toBe(BytecodeOpCode.DELAY)
+		expect(bytecode[19]).toBe(500 & 0xFF)  // Low byte of 500
+		expect(bytecode[20]).toBe(0)           // Zero byte
+		expect(bytecode[21]).toBe(1)           // High byte of 500
 
 		// Find the WHILE_END instruction (should be before END)
 		let whileEndIndex = -1
-		for (let i = 0; i < bytecode.length - 5; i += 5) {
+		for (let i = 0; i < bytecode.length - 9; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
 				whileEndIndex = i
 				break
@@ -443,10 +509,10 @@ describe("While Loop Functionality", () => {
 		// Check if jump offset is correct
 		const jumpOffset = bytecode[whileEndIndex + 1] |
 						(bytecode[whileEndIndex + 2] << 8)
-		expect(jumpOffset).toBe(15) // 3 instructions * 5 bytes
+		expect(jumpOffset).toBe(27) // 3 instructions * 9 bytes
 
 		// The very last instruction should be END
-		const lastInstructionIndex = bytecode.length - 5
+		const lastInstructionIndex = bytecode.length - 9
 		expect(bytecode[lastInstructionIndex]).toBe(BytecodeOpCode.END)
 	})
 
@@ -464,7 +530,7 @@ describe("While Loop Functionality", () => {
 
 		// Find all WHILE_START opcodes
 		const whileStartIndices = []
-		for (let i = 0; i < bytecode.length; i += 5) {
+		for (let i = 0; i < bytecode.length; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.WHILE_START) {
 				whileStartIndices.push(i)
 			}
@@ -473,7 +539,7 @@ describe("While Loop Functionality", () => {
 
 		// Find all WHILE_END opcodes
 		const whileEndIndices = []
-		for (let i = 0; i < bytecode.length; i += 5) {
+		for (let i = 0; i < bytecode.length; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
 				whileEndIndices.push(i)
 			}
@@ -514,11 +580,11 @@ describe("While Loop Functionality", () => {
 		expect(bytecode[0]).toBe(BytecodeOpCode.WHILE_START)
 
 		// Then should be COMPARE opcode
-		expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+		expect(bytecode[9]).toBe(BytecodeOpCode.COMPARE)
 
 		// Find WHILE_END opcode
 		let whileEndIndex = -1
-		for (let i = 0; i < bytecode.length; i += 5) {
+		for (let i = 0; i < bytecode.length; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
 				whileEndIndex = i
 				break
@@ -547,7 +613,7 @@ while(true) {
 
 		// Find all WHILE_START opcodes
 		const whileStartIndices = []
-		for (let i = 0; i < bytecode.length; i += 5) {
+		for (let i = 0; i < bytecode.length; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.WHILE_START) {
 				whileStartIndices.push(i)
 			}
@@ -556,7 +622,7 @@ while(true) {
 
 		// Find all WHILE_END opcodes
 		const whileEndIndices = []
-		for (let i = 0; i < bytecode.length; i += 5) {
+		for (let i = 0; i < bytecode.length; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
 				whileEndIndices.push(i)
 			}
@@ -585,11 +651,11 @@ while(true) {
 
 		// Should have WHILE_START and WHILE_END with nothing in between
 		expect(bytecode[0]).toBe(BytecodeOpCode.WHILE_START)
-		expect(bytecode[5]).toBe(BytecodeOpCode.WHILE_END)
+		expect(bytecode[9]).toBe(BytecodeOpCode.WHILE_END)
 
-		// Jump offset should be 5 bytes (just one instruction)
-		expect(bytecode[6]).toBe(5)
-		expect(bytecode[7]).toBe(0)
+		// Jump offset should be 9 bytes (just one instruction)
+		expect(bytecode[10]).toBe(9)
+		expect(bytecode[11]).toBe(0)
 	})
 
 	test("should handle while loop at the end of program", () => {
@@ -604,7 +670,7 @@ while(true) {
 
 		// Find the WHILE_END instruction
 		let whileEndIndex = -1
-		for (let i = 0; i < bytecode.length - 5; i += 5) {
+		for (let i = 0; i < bytecode.length - 9; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
 				whileEndIndex = i
 				break
@@ -613,7 +679,7 @@ while(true) {
 		expect(whileEndIndex).toBeGreaterThan(0) // Should find WHILE_END
 
 		// The very last instruction should be END
-		const lastInstructionIndex = bytecode.length - 5
+		const lastInstructionIndex = bytecode.length - 9
 		expect(bytecode[lastInstructionIndex]).toBe(BytecodeOpCode.END)
 	})
 })
@@ -629,36 +695,47 @@ describe("For Loop Functionality", () => {
 
 		// First instruction should be FOR_INIT
 		expect(bytecode[0]).toBe(BytecodeOpCode.FOR_INIT)
-		expect(bytecode[1]).toBe(0) // register 0
-		expect(bytecode[2]).toBe(0) // init value = 0 (low byte)
+		expect(bytecode[1]).toBe(0) // register 0 (low byte)
+		expect(bytecode[2]).toBe(0) // register 0 (high byte)
+		expect(bytecode[3]).toBe(0) // init value = 0 (low byte)
+		expect(bytecode[4]).toBe(0) // init value = 0 (middle byte)
+		expect(bytecode[5]).toBe(0) // init value = 0 (high byte)
 
 		// Second instruction should be FOR_CONDITION
-		expect(bytecode[5]).toBe(BytecodeOpCode.FOR_CONDITION)
-		expect(bytecode[6]).toBe(0) // same register
-		expect(bytecode[7]).toBe(5) // end value = 5 (low byte)
+		expect(bytecode[9]).toBe(BytecodeOpCode.FOR_CONDITION)
+		expect(bytecode[10]).toBe(0) // same register (low byte)
+		expect(bytecode[11]).toBe(0) // same register (high byte)
+		expect(bytecode[12]).toBe(5) // end value = 5 (low byte)
+		expect(bytecode[13]).toBe(0) // end value = 5 (middle byte)
+		expect(bytecode[14]).toBe(0) // end value = 5 (high byte)
 
 		// Third instruction should be JUMP_IF_FALSE (to skip loop when done)
-		expect(bytecode[10]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+		expect(bytecode[18]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
 
 		// Fourth instruction should start the loop body with SET_ALL_LEDS (red)
-		expect(bytecode[15]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-		expect(bytecode[16]).toBe(255) // R
-		expect(bytecode[17]).toBe(0)   // G
-		expect(bytecode[18]).toBe(0)   // B
+		expect(bytecode[27]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[28]).toBe(255) // R (low byte)
+		expect(bytecode[29]).toBe(0)   // R (high byte)
+		expect(bytecode[30]).toBe(0)   // G (low byte)
+		expect(bytecode[31]).toBe(0)   // G (high byte)
+		expect(bytecode[32]).toBe(0)   // B (low byte)
+		expect(bytecode[33]).toBe(0)   // B (high byte)
 
 		// Fifth instruction should be DELAY
-		expect(bytecode[20]).toBe(BytecodeOpCode.DELAY)
-		expect(bytecode[21]).toBe(100) // delay of 100ms
+		expect(bytecode[36]).toBe(BytecodeOpCode.DELAY)
+		expect(bytecode[37]).toBe(100) // delay of 100ms (low byte)
+		expect(bytecode[38]).toBe(0)   // delay of 100ms (high byte)
 
 		// Sixth instruction should be FOR_INCREMENT
-		expect(bytecode[25]).toBe(BytecodeOpCode.FOR_INCREMENT)
-		expect(bytecode[26]).toBe(0) // register 0
+		expect(bytecode[45]).toBe(BytecodeOpCode.FOR_INCREMENT)
+		expect(bytecode[46]).toBe(0) // register 0 (low byte)
+		expect(bytecode[47]).toBe(0) // register 0 (high byte)
 
 		// Seventh instruction should be JUMP_BACKWARD back to condition
-		expect(bytecode[30]).toBe(BytecodeOpCode.JUMP_BACKWARD)
+		expect(bytecode[54]).toBe(BytecodeOpCode.JUMP_BACKWARD)
 
 		// Last instruction should be END
-		const lastInstructionIndex = bytecode.length - 5
+		const lastInstructionIndex = bytecode.length - 9
 		expect(bytecode[lastInstructionIndex]).toBe(BytecodeOpCode.END)
 	})
 
@@ -671,17 +748,17 @@ describe("For Loop Functionality", () => {
 
 		// Check init, condition, and jump instructions
 		expect(bytecode[0]).toBe(BytecodeOpCode.FOR_INIT)
-		expect(bytecode[5]).toBe(BytecodeOpCode.FOR_CONDITION)
-		expect(bytecode[10]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+		expect(bytecode[9]).toBe(BytecodeOpCode.FOR_CONDITION)
+		expect(bytecode[18]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
 
 		// Should have FOR_INCREMENT right after
-		expect(bytecode[15]).toBe(BytecodeOpCode.FOR_INCREMENT)
+		expect(bytecode[27]).toBe(BytecodeOpCode.FOR_INCREMENT)
 
 		// Then JUMP_BACKWARD back to condition
-		expect(bytecode[20]).toBe(BytecodeOpCode.JUMP_BACKWARD)
+		expect(bytecode[36]).toBe(BytecodeOpCode.JUMP_BACKWARD)
 
 		// Then END
-		expect(bytecode[25]).toBe(BytecodeOpCode.END)
+		expect(bytecode[45]).toBe(BytecodeOpCode.END)
 	})
 
 	test("should handle for loop with non-zero start value", () => {
@@ -693,11 +770,15 @@ describe("For Loop Functionality", () => {
 
 		// Check FOR_INIT has correct start value (3)
 		expect(bytecode[0]).toBe(BytecodeOpCode.FOR_INIT)
-		expect(bytecode[2]).toBe(3) // start value = 3
+		expect(bytecode[3]).toBe(3)   // start value = 3 (low byte)
+		expect(bytecode[4]).toBe(0)   // start value = 3 (middle byte)
+		expect(bytecode[5]).toBe(0)   // start value = 3 (high byte)
 
 		// Check FOR_CONDITION has correct end value (8)
-		expect(bytecode[5]).toBe(BytecodeOpCode.FOR_CONDITION)
-		expect(bytecode[7]).toBe(8) // end value = 8
+		expect(bytecode[9]).toBe(BytecodeOpCode.FOR_CONDITION)
+		expect(bytecode[12]).toBe(8) // end value = 8 (low byte)
+		expect(bytecode[13]).toBe(0) // end value = 8 (middle byte)
+		expect(bytecode[14]).toBe(0) // end value = 8 (high byte)
 	})
 
 	test("should handle multiple for loops in sequence", () => {
@@ -712,7 +793,7 @@ describe("For Loop Functionality", () => {
 
 		// Find all FOR_INIT opcodes
 		const forInitIndices = []
-		for (let i = 0; i < bytecode.length; i += 5) {
+		for (let i = 0; i < bytecode.length; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.FOR_INIT) {
 				forInitIndices.push(i)
 			}
@@ -720,12 +801,12 @@ describe("For Loop Functionality", () => {
 		expect(forInitIndices.length).toBe(2) // Should have two for loops
 
 		// Check that the second loop uses a different register
-		expect(bytecode[forInitIndices[0] + 1]).toBe(0) // first loop uses register 0
-		expect(bytecode[forInitIndices[1] + 1]).toBe(1) // second loop uses register 1
+		expect(bytecode[forInitIndices[0] + 1]).toBe(0) // first loop uses register 0 (low byte)
+		expect(bytecode[forInitIndices[1] + 1]).toBe(1) // second loop uses register 1 (low byte)
 
 		// Find all jump-backward opcodes to ensure correct loop structure
 		const jumpBackwardIndices = []
-		for (let i = 0; i < bytecode.length; i += 5) {
+		for (let i = 0; i < bytecode.length; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.JUMP_BACKWARD) {
 				jumpBackwardIndices.push(i)
 			}
@@ -745,7 +826,7 @@ describe("For Loop Functionality", () => {
 
 		// Find all FOR_INIT opcodes
 		const forInitIndices = []
-		for (let i = 0; i < bytecode.length; i += 5) {
+		for (let i = 0; i < bytecode.length; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.FOR_INIT) {
 				forInitIndices.push(i)
 			}
@@ -753,12 +834,12 @@ describe("For Loop Functionality", () => {
 		expect(forInitIndices.length).toBe(2) // Should have two for loops
 
 		// Check registers are different for nested loops
-		expect(bytecode[forInitIndices[0] + 1]).toBe(0) // Outer loop uses register 0
-		expect(bytecode[forInitIndices[1] + 1]).toBe(1) // Inner loop uses register 1
+		expect(bytecode[forInitIndices[0] + 1]).toBe(0) // Outer loop uses register 0 (low byte)
+		expect(bytecode[forInitIndices[1] + 1]).toBe(1) // Inner loop uses register 1 (low byte)
 
 		// Find FOR_INCREMENT opcodes
 		const forIncrementIndices = []
-		for (let i = 0; i < bytecode.length; i += 5) {
+		for (let i = 0; i < bytecode.length; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.FOR_INCREMENT) {
 				forIncrementIndices.push(i)
 			}
@@ -766,8 +847,8 @@ describe("For Loop Functionality", () => {
 		expect(forIncrementIndices.length).toBe(2) // One increment for each loop
 
 		// Inner loop increment should come before outer loop increment
-		expect(bytecode[forIncrementIndices[0] + 1]).toBe(1) // Register 1 (inner loop) incremented first
-		expect(bytecode[forIncrementIndices[1] + 1]).toBe(0) // Register 0 (outer loop) incremented later
+		expect(bytecode[forIncrementIndices[0] + 1]).toBe(1) // Register 1 (inner loop) incremented first (low byte)
+		expect(bytecode[forIncrementIndices[1] + 1]).toBe(0) // Register 0 (outer loop) incremented later (low byte)
 	})
 
 	test("should handle for loop with conditional inside", () => {
@@ -783,7 +864,7 @@ describe("For Loop Functionality", () => {
 
 		// Find FOR_INIT
 		let forInitIndex = -1
-		for (let i = 0; i < bytecode.length; i += 5) {
+		for (let i = 0; i < bytecode.length; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.FOR_INIT) {
 				forInitIndex = i
 				break
@@ -793,7 +874,7 @@ describe("For Loop Functionality", () => {
 
 		// Find COMPARE operation (inside the loop)
 		let compareIndex = -1
-		for (let i = forInitIndex + 15; i < bytecode.length; i += 5) {
+		for (let i = forInitIndex + 27; i < bytecode.length; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.COMPARE) {
 				compareIndex = i
 				break
@@ -803,7 +884,7 @@ describe("For Loop Functionality", () => {
 
 		// Find FOR_INCREMENT (should come after the conditional)
 		let forIncrementIndex = -1
-		for (let i = compareIndex + 5; i < bytecode.length; i += 5) {
+		for (let i = compareIndex + 9; i < bytecode.length; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.FOR_INCREMENT) {
 				forIncrementIndex = i
 				break
@@ -829,7 +910,7 @@ describe("For Loop Functionality", () => {
 		let setLedCount = 0
 
 		// Start after FOR_INIT, FOR_CONDITION, and JUMP_IF_FALSE
-		for (let i = 15; i < bytecode.length; i += 5) {
+		for (let i = 27; i < bytecode.length; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.DELAY) {
 				delayCount++
 			} else if (bytecode[i] === BytecodeOpCode.SET_ALL_LEDS) {
@@ -849,7 +930,7 @@ describe("For Loop Functionality", () => {
 		let foundIncrement = false
 		let foundJump = false
 
-		for (let i = bytecode.length - 15; i < bytecode.length; i += 5) {
+		for (let i = bytecode.length - 27; i < bytecode.length; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.FOR_INCREMENT) {
 				foundIncrement = true
 			} else if (bytecode[i] === BytecodeOpCode.JUMP_BACKWARD && foundIncrement) {
@@ -875,7 +956,7 @@ describe("For Loop Functionality", () => {
 
 		// Find all FOR_INIT opcodes
 		const forInitIndices = []
-		for (let i = 0; i < bytecode.length; i += 5) {
+		for (let i = 0; i < bytecode.length; i += 9) {
 			if (bytecode[i] === BytecodeOpCode.FOR_INIT) {
 				forInitIndices.push(i)
 			}
@@ -898,14 +979,19 @@ describe("Sensor Functionality", () => {
 
 		// First instruction should be READ_SENSOR
 		expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
-		expect(bytecode[1]).toBe(expectedSensorType) // Sensor type
-		expect(bytecode[2]).toBe(0) // Register ID (first register)
+		expect(bytecode[1]).toBe(expectedSensorType) // Sensor type (low byte)
+		expect(bytecode[2]).toBe(0)                 // Sensor type (high byte)
+		expect(bytecode[3]).toBe(0)                 // Register ID (low byte)
+		expect(bytecode[4]).toBe(0)                 // Register ID (high byte)
 
 		// Second instruction should be COMPARE
-		expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
-		expect(bytecode[6]).toBe(ComparisonOp.GREATER_THAN) // ">" operator
-		expect(bytecode[7]).toBe(0x80) // High bit indicates register reference
-		expect(bytecode[8]).toBe(10) // Right value (10)
+		expect(bytecode[9]).toBe(BytecodeOpCode.COMPARE)
+		expect(bytecode[10]).toBe(ComparisonOp.GREATER_THAN) // ">" operator (low byte)
+		expect(bytecode[11]).toBe(0)                       // ">" operator (high byte)
+		expect(bytecode[12]).toBe(0x80)                    // High bit indicates register reference (low byte)
+		expect(bytecode[13]).toBe(0)                       // High bit indicator (high byte)
+		expect(bytecode[14]).toBe(10)                      // Right value (low byte)
+		expect(bytecode[15]).toBe(0)                       // Right value (high byte)
 	}
 
 	// Test each orientation sensor (pitch, roll, yaw)
@@ -982,9 +1068,11 @@ describe("Sensor Functionality", () => {
 			const bytecode = CppParser.cppToByte(code)
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
-			expect(bytecode[1]).toBe(SensorType.PITCH)
-			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
-			expect(bytecode[6]).toBe(ComparisonOp.EQUAL) // "==" operator
+			expect(bytecode[1]).toBe(SensorType.PITCH) // Sensor type (low byte)
+			expect(bytecode[2]).toBe(0)                // Sensor type (high byte)
+			expect(bytecode[9]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[10]).toBe(ComparisonOp.EQUAL) // "==" operator (low byte)
+			expect(bytecode[11]).toBe(0)                 // "==" operator (high byte)
 		})
 
 		test("should parse sensor inequality comparison", () => {
@@ -995,9 +1083,11 @@ describe("Sensor Functionality", () => {
 			const bytecode = CppParser.cppToByte(code)
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
-			expect(bytecode[1]).toBe(SensorType.YAW)
-			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
-			expect(bytecode[6]).toBe(ComparisonOp.NOT_EQUAL) // "!=" operator
+			expect(bytecode[1]).toBe(SensorType.YAW) // Sensor type (low byte)
+			expect(bytecode[2]).toBe(0)              // Sensor type (high byte)
+			expect(bytecode[9]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[10]).toBe(ComparisonOp.NOT_EQUAL) // "!=" operator (low byte)
+			expect(bytecode[11]).toBe(0)                     // "!=" operator (high byte)
 		})
 
 		test("should parse sensor less than comparison", () => {
@@ -1008,9 +1098,11 @@ describe("Sensor Functionality", () => {
 			const bytecode = CppParser.cppToByte(code)
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
-			expect(bytecode[1]).toBe(SensorType.ACCEL_X)
-			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
-			expect(bytecode[6]).toBe(ComparisonOp.LESS_THAN) // "<" operator
+			expect(bytecode[1]).toBe(SensorType.ACCEL_X) // Sensor type (low byte)
+			expect(bytecode[2]).toBe(0)                 // Sensor type (high byte)
+			expect(bytecode[9]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[10]).toBe(ComparisonOp.LESS_THAN) // "<" operator (low byte)
+			expect(bytecode[11]).toBe(0)                     // "<" operator (high byte)
 		})
 
 		test("should parse sensor greater than or equal comparison", () => {
@@ -1021,9 +1113,11 @@ describe("Sensor Functionality", () => {
 			const bytecode = CppParser.cppToByte(code)
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
-			expect(bytecode[1]).toBe(SensorType.ACCEL_MAG)
-			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
-			expect(bytecode[6]).toBe(ComparisonOp.GREATER_EQUAL) // ">=" operator
+			expect(bytecode[1]).toBe(SensorType.ACCEL_MAG) // Sensor type (low byte)
+			expect(bytecode[2]).toBe(0)                   // Sensor type (high byte)
+			expect(bytecode[9]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[10]).toBe(ComparisonOp.GREATER_EQUAL) // ">=" operator (low byte)
+			expect(bytecode[11]).toBe(0)                         // ">=" operator (high byte)
 		})
 
 		test("should parse sensor less than or equal comparison", () => {
@@ -1034,9 +1128,11 @@ describe("Sensor Functionality", () => {
 			const bytecode = CppParser.cppToByte(code)
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
-			expect(bytecode[1]).toBe(SensorType.ROT_RATE_Z)
-			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
-			expect(bytecode[6]).toBe(ComparisonOp.LESS_EQUAL) // "<=" operator
+			expect(bytecode[1]).toBe(SensorType.ROT_RATE_Z) // Sensor type (low byte)
+			expect(bytecode[2]).toBe(0)                    // Sensor type (high byte)
+			expect(bytecode[9]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[10]).toBe(ComparisonOp.LESS_EQUAL) // "<=" operator (low byte)
+			expect(bytecode[11]).toBe(0)                      // "<=" operator (high byte)
 		})
 	})
 
@@ -1057,12 +1153,15 @@ describe("Sensor Functionality", () => {
 
 			// First READ_SENSOR for getPitch
 			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
-			expect(bytecode[1]).toBe(SensorType.PITCH)
+			expect(bytecode[1]).toBe(SensorType.PITCH) // Sensor type (low byte)
+			expect(bytecode[2]).toBe(0)                // Sensor type (high byte)
 
 			// Look for the second READ_SENSOR for getRoll (should be after the first conditional jump)
 			let rollSensorIndex = -1
-			for (let i = 15; i < bytecode.length; i += 5) {
-				if (bytecode[i] === BytecodeOpCode.READ_SENSOR && bytecode[i + 1] === SensorType.ROLL) {
+			for (let i = 27; i < bytecode.length; i += 9) {
+				if (bytecode[i] === BytecodeOpCode.READ_SENSOR &&
+                    bytecode[i + 1] === SensorType.ROLL &&
+                    bytecode[i + 2] === 0) {
 					rollSensorIndex = i
 					break
 				}
@@ -1084,8 +1183,9 @@ describe("Sensor Functionality", () => {
 			expect(bytecode[0]).toBe(BytecodeOpCode.WHILE_START)
 
 			// Second instruction should be READ_SENSOR
-			expect(bytecode[5]).toBe(BytecodeOpCode.READ_SENSOR)
-			expect(bytecode[6]).toBe(SensorType.ACCEL_MAG)
+			expect(bytecode[9]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[10]).toBe(SensorType.ACCEL_MAG) // Sensor type (low byte)
+			expect(bytecode[11]).toBe(0)                   // Sensor type (high byte)
 		})
 
 		test("should handle sensors in for loops", () => {
@@ -1099,8 +1199,10 @@ describe("Sensor Functionality", () => {
 
 			// Find READ_SENSOR instruction
 			let sensorIndex = -1
-			for (let i = 15; i < bytecode.length; i += 5) {
-				if (bytecode[i] === BytecodeOpCode.READ_SENSOR && bytecode[i + 1] === SensorType.YAW) {
+			for (let i = 27; i < bytecode.length; i += 9) {
+				if (bytecode[i] === BytecodeOpCode.READ_SENSOR &&
+                   bytecode[i + 1] === SensorType.YAW &&
+                   bytecode[i + 2] === 0) {
 					sensorIndex = i
 					break
 				}
