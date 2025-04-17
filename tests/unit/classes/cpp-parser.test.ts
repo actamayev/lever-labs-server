@@ -611,3 +611,273 @@ while(true) {
 		expect(bytecode[lastInstructionIndex]).toBe(BytecodeOpCode.END)
 	})
 })
+
+
+describe("For Loop Functionality", () => {
+	test("should parse basic for loop", () => {
+		const code = `for (int i = 0; i < 5; i++) {
+      rgbLed.set_led_red();
+      delay(100);
+    }`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// First instruction should be FOR_INIT
+		expect(bytecode[0]).toBe(BytecodeOpCode.FOR_INIT)
+		expect(bytecode[1]).toBe(0) // register 0
+		expect(bytecode[2]).toBe(0) // init value = 0 (low byte)
+
+		// Second instruction should be FOR_CONDITION
+		expect(bytecode[5]).toBe(BytecodeOpCode.FOR_CONDITION)
+		expect(bytecode[6]).toBe(0) // same register
+		expect(bytecode[7]).toBe(5) // end value = 5 (low byte)
+
+		// Third instruction should be JUMP_IF_FALSE (to skip loop when done)
+		expect(bytecode[10]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+
+		// Fourth instruction should start the loop body with SET_ALL_LEDS (red)
+		expect(bytecode[15]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[16]).toBe(255) // R
+		expect(bytecode[17]).toBe(0)   // G
+		expect(bytecode[18]).toBe(0)   // B
+
+		// Fifth instruction should be DELAY
+		expect(bytecode[20]).toBe(BytecodeOpCode.DELAY)
+		expect(bytecode[21]).toBe(100) // delay of 100ms
+
+		// Sixth instruction should be FOR_INCREMENT
+		expect(bytecode[25]).toBe(BytecodeOpCode.FOR_INCREMENT)
+		expect(bytecode[26]).toBe(0) // register 0
+
+		// Seventh instruction should be JUMP back to condition
+		expect(bytecode[30]).toBe(BytecodeOpCode.JUMP)
+
+		// Last instruction should be END
+		const lastInstructionIndex = bytecode.length - 5
+		expect(bytecode[lastInstructionIndex]).toBe(BytecodeOpCode.END)
+	})
+
+	test("should handle empty for loop", () => {
+		const code = `for (int i = 0; i < 10; i++) {
+      // Empty loop
+    }`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// Check init, condition, and jump instructions
+		expect(bytecode[0]).toBe(BytecodeOpCode.FOR_INIT)
+		expect(bytecode[5]).toBe(BytecodeOpCode.FOR_CONDITION)
+		expect(bytecode[10]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+
+		// Should have FOR_INCREMENT right after
+		expect(bytecode[15]).toBe(BytecodeOpCode.FOR_INCREMENT)
+
+		// Then JUMP back to condition
+		expect(bytecode[20]).toBe(BytecodeOpCode.JUMP)
+
+		// Then END
+		expect(bytecode[25]).toBe(BytecodeOpCode.END)
+	})
+
+	test("should handle for loop with non-zero start value", () => {
+		const code = `for (int j = 3; j < 8; j++) {
+      rgbLed.set_led_blue();
+    }`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// Check FOR_INIT has correct start value (3)
+		expect(bytecode[0]).toBe(BytecodeOpCode.FOR_INIT)
+		expect(bytecode[2]).toBe(3) // start value = 3
+
+		// Check FOR_CONDITION has correct end value (8)
+		expect(bytecode[5]).toBe(BytecodeOpCode.FOR_CONDITION)
+		expect(bytecode[7]).toBe(8) // end value = 8
+	})
+
+	test("should handle multiple for loops in sequence", () => {
+		const code = `for (int i = 0; i < 3; i++) {
+      rgbLed.set_led_red();
+    }
+    for (int j = 0; j < 2; j++) {
+      rgbLed.set_led_blue();
+    }`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// Find all FOR_INIT opcodes
+		const forInitIndices = []
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.FOR_INIT) {
+				forInitIndices.push(i)
+			}
+		}
+		expect(forInitIndices.length).toBe(2) // Should have two for loops
+
+		// Check that the second loop uses a different register
+		expect(bytecode[forInitIndices[0] + 1]).toBe(0) // first loop uses register 0
+		expect(bytecode[forInitIndices[1] + 1]).toBe(1) // second loop uses register 1
+
+		// Find all jump opcodes to ensure correct loop structure
+		const jumpIndices = []
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.JUMP) {
+				jumpIndices.push(i)
+			}
+		}
+		expect(jumpIndices.length).toBe(2) // Should have two jumps, one for each loop
+	})
+
+	test("should handle nested for loops", () => {
+		const code = `for (int i = 0; i < 3; i++) {
+      rgbLed.set_led_red();
+      for (int j = 0; j < 2; j++) {
+        rgbLed.set_led_blue();
+      }
+    }`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// Find all FOR_INIT opcodes
+		const forInitIndices = []
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.FOR_INIT) {
+				forInitIndices.push(i)
+			}
+		}
+		expect(forInitIndices.length).toBe(2) // Should have two for loops
+
+		// Check registers are different for nested loops
+		expect(bytecode[forInitIndices[0] + 1]).toBe(0) // Outer loop uses register 0
+		expect(bytecode[forInitIndices[1] + 1]).toBe(1) // Inner loop uses register 1
+
+		// Find FOR_INCREMENT opcodes
+		const forIncrementIndices = []
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.FOR_INCREMENT) {
+				forIncrementIndices.push(i)
+			}
+		}
+		expect(forIncrementIndices.length).toBe(2) // One increment for each loop
+
+		// Inner loop increment should come before outer loop increment
+		expect(bytecode[forIncrementIndices[0] + 1]).toBe(1) // Register 1 (inner loop) incremented first
+		expect(bytecode[forIncrementIndices[1] + 1]).toBe(0) // Register 0 (outer loop) incremented later
+	})
+
+	test("should handle for loop with conditional inside", () => {
+		const code = `for (int i = 0; i < 5; i++) {
+      if (2 > 1) {
+        rgbLed.set_led_green();
+      } else {
+        rgbLed.set_led_red();
+      }
+    }`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// Find FOR_INIT
+		let forInitIndex = -1
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.FOR_INIT) {
+				forInitIndex = i
+				break
+			}
+		}
+		expect(forInitIndex).toBeGreaterThanOrEqual(0)
+
+		// Find COMPARE operation (inside the loop)
+		let compareIndex = -1
+		for (let i = forInitIndex + 15; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.COMPARE) {
+				compareIndex = i
+				break
+			}
+		}
+		expect(compareIndex).toBeGreaterThan(forInitIndex)
+
+		// Find FOR_INCREMENT (should come after the conditional)
+		let forIncrementIndex = -1
+		for (let i = compareIndex + 5; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.FOR_INCREMENT) {
+				forIncrementIndex = i
+				break
+			}
+		}
+		expect(forIncrementIndex).toBeGreaterThan(compareIndex)
+	})
+
+	test("should handle complex for loop pattern with multiple operations", () => {
+		const code = `for (int i = 1; i < 4; i++) {
+      rgbLed.set_led_white();
+      delay(100);
+      rgbLed.set_led_blue();
+      delay(100);
+      rgbLed.set_led_red();
+      delay(100);
+    }`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// Count delay operations inside the loop
+		let delayCount = 0
+		let setLedCount = 0
+
+		// Start after FOR_INIT, FOR_CONDITION, and JUMP_IF_FALSE
+		for (let i = 15; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.DELAY) {
+				delayCount++
+			} else if (bytecode[i] === BytecodeOpCode.SET_ALL_LEDS) {
+				setLedCount++
+			}
+
+			// Stop counting when we reach FOR_INCREMENT
+			if (bytecode[i] === BytecodeOpCode.FOR_INCREMENT) {
+				break
+			}
+		}
+
+		expect(delayCount).toBe(3) // Three delay operations
+		expect(setLedCount).toBe(3) // Three LED operations
+
+		// Find FOR_INCREMENT and JUMP at the end of the loop
+		let foundIncrement = false
+		let foundJump = false
+
+		for (let i = bytecode.length - 15; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.FOR_INCREMENT) {
+				foundIncrement = true
+			} else if (bytecode[i] === BytecodeOpCode.JUMP && foundIncrement) {
+				foundJump = true
+				break
+			}
+		}
+
+		expect(foundIncrement).toBe(true)
+		expect(foundJump).toBe(true)
+	})
+
+	test("should handle for loop with variable reuse", () => {
+		// This tests that we can reuse the same variable name in different scopes
+		const code = `for (int i = 0; i < 2; i++) {
+      rgbLed.set_led_red();
+    }
+    for (int i = 0; i < 3; i++) {
+      rgbLed.set_led_blue();
+    }`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// Find all FOR_INIT opcodes
+		const forInitIndices = []
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.FOR_INIT) {
+				forInitIndices.push(i)
+			}
+		}
+
+		// Both loops should use different registers despite same variable name
+		expect(bytecode[forInitIndices[0] + 1]).not.toBe(bytecode[forInitIndices[1] + 1])
+	})
+})
+

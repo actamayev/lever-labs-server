@@ -30,8 +30,10 @@ export default class CppParser {
 		const variables: Map<string, { type: VarType, register: number }> = new Map()
 		let nextRegister = 0
 
-		// Split code into statements
-		const statements = cppCode.split(";").map(s => s.trim()).filter(s => s.length > 0)
+		const protectedStatements = cppCode.split(";").map(s => s.trim()).filter(s => s.length > 0)
+
+		// Now restore the semicolons in each statement
+		const statements = protectedStatements.map(s => s.replace(/###SEMICOLON###/g, ";"))
 
 		const blockStack: BlockStack[] = []
 		const pendingJumps: PendingJumps[] = []
@@ -39,12 +41,63 @@ export default class CppParser {
 		for (const statement of statements) {
 			const command = this.identifyCommand(statement)
 
-			// console.log(command)
 			if (!command) {
 				throw new Error(`Invalid command: "${statement}"`)
 			}
 
 			switch (command.type) {
+			case CommandType.FOR_STATEMENT: {
+				if (command.matches && command.matches.length === 4) {
+					const varName = command.matches[1]
+					const startValue = parseInt(command.matches[2], 10)
+					const endValue = parseInt(command.matches[3], 10)
+
+					// Assign register for loop counter
+					const register = nextRegister++
+					variables.set(varName, {type: VarType.INT, register})
+
+					// FOR_INIT: Initialize counter variable
+					instructions.push({
+						opcode: BytecodeOpCode.FOR_INIT,
+						operand1: register,
+						operand2: startValue & 0xFF,
+						operand3: (startValue >> 8) & 0xFF,
+						operand4: (startValue >> 16) & 0xFF
+					})
+
+					// Remember position for the condition check
+					const forStartIndex = instructions.length
+
+					// FOR_CONDITION: Check if counter < end value
+					instructions.push({
+						opcode: BytecodeOpCode.FOR_CONDITION,
+						operand1: register,
+						operand2: endValue & 0xFF,
+						operand3: (endValue >> 8) & 0xFF,
+						operand4: (endValue >> 16) & 0xFF
+					})
+
+					// Add jump-if-false to skip loop body when done
+					const jumpIfFalseIndex = instructions.length
+					instructions.push({
+						opcode: BytecodeOpCode.JUMP_IF_FALSE,
+						operand1: 0, // Will be filled later
+						operand2: 0,
+						operand3: 0,
+						operand4: 0
+					})
+
+					// Track this for loop for later
+					blockStack.push({
+						type: "for",
+						jumpIndex: jumpIfFalseIndex,
+						varRegister: register,
+						startIndex: forStartIndex
+					})
+				}
+				break
+			}
+
 			case CommandType.WHILE_STATEMENT: {
 				const whileStartIndex = instructions.length
 				instructions.push({
@@ -61,7 +114,7 @@ export default class CppParser {
 			}
 
 			case CommandType.VARIABLE_ASSIGNMENT:
-				  if (command.matches && command.matches.length === 4) {
+				if (command.matches && command.matches.length === 4) {
 					const varType = command.matches[1] // float, int, bool
 					const varName = command.matches[2]
 					const varValue = command.matches[3]
@@ -118,7 +171,7 @@ export default class CppParser {
 							operand3: 0,
 							operand4: 0
 						})
-					// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+						// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 					} else if (typeEnum === VarType.INT) {
 						// Parse integer value
 						const intValue = parseInt(varValue.trim(), 10)
@@ -299,7 +352,33 @@ export default class CppParser {
 				if (blockStack.length > 0) {
 					const block = blockStack.pop() as BlockStack
 
-					if (block.type === "while") {
+					if (block.type === "for") {
+						// Add FOR_INCREMENT instruction
+						instructions.push({
+							opcode: BytecodeOpCode.FOR_INCREMENT,
+							operand1: block.varRegister as number,
+							operand2: 0,
+							operand3: 0,
+							operand4: 0
+						})
+
+						// Jump back to condition check
+						const forEndIndex = instructions.length
+						const offsetToStart = (forEndIndex - (block.startIndex as number)) * 5
+
+						instructions.push({
+							opcode: BytecodeOpCode.JUMP,
+							operand1: offsetToStart & 0xFF,
+							operand2: (offsetToStart >> 8) & 0xFF,
+							operand3: 0,
+							operand4: 0
+						})
+
+						// Fix the jump-if-false at start to point here
+						const offsetToHere = (instructions.length - block.jumpIndex) * 5
+						instructions[block.jumpIndex].operand1 = offsetToHere & 0xFF
+						instructions[block.jumpIndex].operand2 = (offsetToHere >> 8) & 0xFF
+					} else if (block.type === "while") {
 						// Add a WHILE_END instruction that jumps back to the start
 						const whileEndIndex = instructions.length
 
@@ -314,10 +393,10 @@ export default class CppParser {
 							operand4: 0
 						})
 					} else if (block.type === "if") {
-						    // Check if there's an "else" coming next by looking ahead
+ 						// Check if there's an "else" coming next by looking ahead
 						const nextStatementIndex = statements.indexOf(statement) + 1
 						const hasElseNext = nextStatementIndex < statements.length &&
-                        statements[nextStatementIndex].trim() === "else"
+                                                statements[nextStatementIndex].trim() === "else"
 
 						if (hasElseNext) {
 							const offsetToElseBlock = (instructions.length + 1 - block.jumpIndex) * 5
@@ -361,7 +440,7 @@ export default class CppParser {
 				blockStack.push({ type: "else", jumpIndex: instructions.length })
 				break
 
-				// End of switch statement
+                // End of switch statement
 			}
 		}
 
@@ -390,7 +469,7 @@ export default class CppParser {
 	}
 
 	private static generateBytecode(instructions: BytecodeInstruction[]): Uint8Array {
-	// Each instruction is 5 bytes
+		// Each instruction is 5 bytes
 		const bytecode = new Uint8Array(instructions.length * 5)
 
 		instructions.forEach((instruction, index) => {
@@ -406,20 +485,32 @@ export default class CppParser {
 	}
 
 	private static sanitizeUserCode(userCode: string): string {
-		return userCode
+		// STEP 1: Find for loop declarations and protect their semicolons
+		let cleanUserCode = userCode
+
+		const forLoopRegex = /for\s*\(\s*int\s+\w+\s*=\s*\d+\s*;\s*\w+\s*[<>=!][=]?\s*\d+\s*;\s*\w+\s*\+\+\s*\)/g
+		cleanUserCode = cleanUserCode.replace(forLoopRegex, (match) => {
+			return match.replace(/;/g, "###SEMICOLON###")
+		})
+
+		// STEP 2: Normal sanitization
+		return cleanUserCode
 			.trim()
-			// Remove comments
+		// Remove comments
 			.replace(/\/\/.*$/gm, "")
 			.replace(/\/\*[\s\S]*?\*\//g, "")
-			// Add spaces around braces and make them separate tokens
+		// Add spaces around braces and make them separate tokens
 			.replace(/{/g, " ; { ; ")
 			.replace(/}/g, " ; } ; ")
-			// Make sure else is a separate token
+		// Make sure else is a separate token
 			.replace(/}\s*else/g, "} ; else")
-			// Normalize whitespace
+		// Normalize whitespace
 			.replace(/\s+/g, " ")
-			// Escape single quotes
+		// Escape single quotes
 			.replace(/'/g, "'\\''")
+
+		// NOTE: We are NOT restoring semicolons here!
+		// We'll restore them after splitting into statements
 	}
 
 	private static floatToBytes(value: number): Uint8Array {

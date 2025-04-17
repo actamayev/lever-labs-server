@@ -8,8 +8,10 @@ declare global {
 	}
 
 	interface BlockStack {
-		type: "while" | "if" | "else"
+		type: "while" | "if" | "else" | "for"
 		jumpIndex: number
+		varRegister?: number;  // For tracking loop counter register
+		startIndex?: number;   // For loop start position
 	}
 
 	interface PendingJumps {
