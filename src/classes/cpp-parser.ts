@@ -367,7 +367,7 @@ export default class CppParser {
 						const offsetToStart = (forEndIndex - (block.startIndex as number)) * 5
 
 						instructions.push({
-							opcode: BytecodeOpCode.JUMP,
+							opcode: BytecodeOpCode.JUMP_BACKWARD,
 							operand1: offsetToStart & 0xFF,
 							operand2: (offsetToStart >> 8) & 0xFF,
 							operand3: 0,

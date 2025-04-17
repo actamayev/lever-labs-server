@@ -15,6 +15,7 @@ export enum BytecodeOpCode {
 	FOR_INIT = 0x36,     // Initialize loop counter
 	FOR_CONDITION = 0x37, // Check loop condition
 	FOR_INCREMENT = 0x38, // Increment loop counter
+    JUMP_BACKWARD = 0x39,  // Backward jump (for loops)
 
 	DECLARE_VAR = 0x40,
 	SET_VAR = 0x41,
