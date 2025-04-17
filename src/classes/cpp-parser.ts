@@ -309,8 +309,7 @@ export default class CppParser {
 					const rightValue = parseInt(command.matches[3], 10)
 
 					// First check if left side is a sensor expression
-					// eslint-disable-next-line max-len
-					const sensorMatch = leftExpr.match(/Sensors::getInstance\(\)\.(getPitch|getRoll|getYaw|getXAccel|getYAccel|getZAccel|getAccelMagnitude|getXRotationRate|getYRotationRate|getZRotationRate|getMagneticFieldX|getMagneticFieldY|getMagneticFieldZ)\(\)/)
+					const sensorMatch = leftExpr.match(/Sensors::getInstance\(\)\.(\w+)\(\)/)
 
 					if (sensorMatch) {
 						// This is a sensor comparison

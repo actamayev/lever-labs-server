@@ -1,4 +1,4 @@
-/* eslint-disable max-len */
+/* eslint-disable no-useless-escape */
 export enum BytecodeOpCode {
 	NOP = 0x00,
 	END = 0x01,
@@ -112,11 +112,11 @@ export const CommandPatterns: Record<CommandType, RegExp> = {
 
 	[CommandType.VARIABLE_ASSIGNMENT]: /^(float|int|bool)\s+(\w+)\s*=\s*(.+)$/,
 
-	[CommandType.IF_STATEMENT]: /^if\s*\(\s*(Sensors::getInstance\(\)\.\w+\(\)|[\d]+)\s*([<>=!][=]?)\s*(\d+)\s*\)$/,
+	[CommandType.IF_STATEMENT]: /^if\s*\(\s*(Sensors::getInstance\(\)\.\w+\(\)|[-\d\.]+|\w+)\s*([<>=!][=]?)\s*(-?\d+\.?\d*|\w+)\s*\)$/,
 	[CommandType.ELSE_STATEMENT]: /^else$/,
 	[CommandType.BLOCK_START]: /^{$/,
 	[CommandType.BLOCK_END]: /^}$/,
 	[CommandType.WHILE_STATEMENT]: /^while\s*\(\s*true\s*\)$/,
 	[CommandType.FOR_STATEMENT]: /^for\s*\(\s*int\s+(\w+)\s*=\s*(\d+)\s*;\s*\1\s*<\s*(\d+)\s*;\s*\1\s*\+\+\s*\)$/,
-	[CommandType.SENSOR_READ]: /^Sensors::getInstance\(\)\.(getPitch|getRoll|getYaw|getXAccel|getYAccel|getZAccel|getAccelMagnitude|getXRotationRate|getYRotationRate|getZRotationRate|getMagneticFieldX|getMagneticFieldY|getMagneticFieldZ)\(\)$/,
+	[CommandType.SENSOR_READ]: /^Sensors::getInstance\(\)\.(\w+)\(\)$/,
 }
