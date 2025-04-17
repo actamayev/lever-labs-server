@@ -1,9 +1,12 @@
+/* eslint-disable max-len */
 export enum BytecodeOpCode {
 	NOP = 0x00,
 	END = 0x01,
 	DELAY = 0x02,
 	SET_LED = 0x10,
 	SET_ALL_LEDS = 0x11,
+
+    READ_SENSOR = 0x20,  // Read sensor value into register
 
 	COMPARE = 0x30,       // Compare values
 	JUMP = 0x31,          // Unconditional jump
@@ -46,6 +49,22 @@ export enum LedID {
     BACK_RIGHT = 6
 }
 
+export enum SensorType {
+    PITCH = 0,
+    ROLL = 1,
+    YAW = 2,
+    ACCEL_X = 3,
+    ACCEL_Y = 4,
+    ACCEL_Z = 5,
+    ACCEL_MAG = 6,
+    ROT_RATE_X = 7,
+    ROT_RATE_Y = 8,
+    ROT_RATE_Z = 9,
+    MAG_FIELD_X = 10,
+    MAG_FIELD_Y = 11,
+    MAG_FIELD_Z = 12
+}
+
 export enum CommandType {
     TURN_LED_OFF = "TURN_LED_OFF",
     SET_LED_RED = "SET_LED_RED",
@@ -70,6 +89,7 @@ export enum CommandType {
     BLOCK_END = "BLOCK_END",
     WHILE_STATEMENT = "WHILE_STATEMENT",
     FOR_STATEMENT = "FOR_STATEMENT",
+    SENSOR_READ = "SENSOR_READ",
 }
 
 // Command patterns for validation
@@ -92,10 +112,11 @@ export const CommandPatterns: Record<CommandType, RegExp> = {
 
 	[CommandType.VARIABLE_ASSIGNMENT]: /^(float|int|bool)\s+(\w+)\s*=\s*(.+)$/,
 
-	[CommandType.IF_STATEMENT]: /^if\s*\(\s*(\d+)\s*([<>=!][=]?)\s*(\d+)\s*\)$/,
+	[CommandType.IF_STATEMENT]: /^if\s*\(\s*(Sensors::getInstance\(\)\.\w+\(\)|[\d]+)\s*([<>=!][=]?)\s*(\d+)\s*\)$/,
 	[CommandType.ELSE_STATEMENT]: /^else$/,
 	[CommandType.BLOCK_START]: /^{$/,
 	[CommandType.BLOCK_END]: /^}$/,
 	[CommandType.WHILE_STATEMENT]: /^while\s*\(\s*true\s*\)$/,
 	[CommandType.FOR_STATEMENT]: /^for\s*\(\s*int\s+(\w+)\s*=\s*(\d+)\s*;\s*\1\s*<\s*(\d+)\s*;\s*\1\s*\+\+\s*\)$/,
+	[CommandType.SENSOR_READ]: /^Sensors::getInstance\(\)\.(getPitch|getRoll|getYaw|getXAccel|getYAccel|getZAccel|getAccelMagnitude|getXRotationRate|getYRotationRate|getZRotationRate|getMagneticFieldX|getMagneticFieldY|getMagneticFieldZ)\(\)$/,
 }

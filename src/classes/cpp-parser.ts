@@ -1,6 +1,6 @@
 /* eslint-disable max-depth */
 import { MAX_LED_BRIGHTNESS } from "../utils/constants"
-import { BytecodeOpCode, CommandPatterns, CommandType, ComparisonOp, LedID, VarType } from "../types/bytecode-types"
+import { BytecodeOpCode, CommandPatterns, CommandType, ComparisonOp, LedID, SensorType, VarType } from "../types/bytecode-types"
 
 export default class CppParser {
 	public static cppToByte(unsanitizedCpp: string): Uint8Array<ArrayBufferLike> {
@@ -302,34 +302,98 @@ export default class CppParser {
 				}
 				break
 
-			case CommandType.IF_STATEMENT:
+			case CommandType.IF_STATEMENT: {
 				if (command.matches && command.matches.length === 4) {
-					const leftValue = parseInt(command.matches[1], 10)
+					const leftExpr = command.matches[1]
 					const operator = command.matches[2]
 					const rightValue = parseInt(command.matches[3], 10)
 
-					// Map operator to ComparisonOp
-					let compOp: ComparisonOp
-					switch (operator) {
-					case ">": compOp = ComparisonOp.GREATER_THAN; break
-					case "<": compOp = ComparisonOp.LESS_THAN; break
-					case ">=": compOp = ComparisonOp.GREATER_EQUAL; break
-					case "<=": compOp = ComparisonOp.LESS_EQUAL; break
-					case "==": compOp = ComparisonOp.EQUAL; break
-					case "!=": compOp = ComparisonOp.NOT_EQUAL; break
-					default: throw new Error(`Unsupported operator: ${operator}`)
+					// First check if left side is a sensor expression
+					// eslint-disable-next-line max-len
+					const sensorMatch = leftExpr.match(/Sensors::getInstance\(\)\.(getPitch|getRoll|getYaw|getXAccel|getYAccel|getZAccel|getAccelMagnitude|getXRotationRate|getYRotationRate|getZRotationRate|getMagneticFieldX|getMagneticFieldY|getMagneticFieldZ)\(\)/)
+
+					if (sensorMatch) {
+						// This is a sensor comparison
+						const sensorMethod = sensorMatch[1]
+						let sensorType: number
+
+						// Map method name to sensor type
+						switch (sensorMethod) {
+						case "getPitch": sensorType = SensorType.PITCH; break
+						case "getRoll": sensorType = SensorType.ROLL; break
+						case "getYaw": sensorType = SensorType.YAW; break
+						case "getXAccel": sensorType = SensorType.ACCEL_X; break
+						case "getYAccel": sensorType = SensorType.ACCEL_Y; break
+						case "getZAccel": sensorType = SensorType.ACCEL_Z; break
+						case "getAccelMagnitude": sensorType = SensorType.ACCEL_MAG; break
+						case "getXRotationRate": sensorType = SensorType.ROT_RATE_X; break
+						case "getYRotationRate": sensorType = SensorType.ROT_RATE_Y; break
+						case "getZRotationRate": sensorType = SensorType.ROT_RATE_Z; break
+						case "getMagneticFieldX": sensorType = SensorType.MAG_FIELD_X; break
+						case "getMagneticFieldY": sensorType = SensorType.MAG_FIELD_Y; break
+						case "getMagneticFieldZ": sensorType = SensorType.MAG_FIELD_Z; break
+						default: throw new Error(`Unknown sensor method: ${sensorMethod}`)
+						}
+
+						// Allocate a register for the sensor value
+						const register = nextRegister++
+
+						// Add instruction to read sensor into register
+						instructions.push({
+							opcode: BytecodeOpCode.READ_SENSOR,
+							operand1: sensorType,
+							operand2: register,
+							operand3: 0,
+							operand4: 0
+						})
+
+						// Map operator to ComparisonOp
+						let compOp: ComparisonOp
+						switch (operator) {
+						case ">": compOp = ComparisonOp.GREATER_THAN; break
+						case "<": compOp = ComparisonOp.LESS_THAN; break
+						case ">=": compOp = ComparisonOp.GREATER_EQUAL; break
+						case "<=": compOp = ComparisonOp.LESS_EQUAL; break
+						case "==": compOp = ComparisonOp.EQUAL; break
+						case "!=": compOp = ComparisonOp.NOT_EQUAL; break
+						default: throw new Error(`Unsupported operator: ${operator}`)
+						}
+
+						// Add comparison instruction with register as left operand
+						instructions.push({
+							opcode: BytecodeOpCode.COMPARE,
+							operand1: compOp,
+							operand2: 0x80 | register, // High bit indicates register reference
+							operand3: rightValue & 0xFF,
+							operand4: (rightValue >> 8) & 0xFF
+						})
+					} else {
+						// Standard constant comparison (existing code)
+						const leftValue = parseInt(leftExpr, 10)
+
+						// Map operator to ComparisonOp
+						let compOp: ComparisonOp
+						switch (operator) {
+						case ">": compOp = ComparisonOp.GREATER_THAN; break
+						case "<": compOp = ComparisonOp.LESS_THAN; break
+						case ">=": compOp = ComparisonOp.GREATER_EQUAL; break
+						case "<=": compOp = ComparisonOp.LESS_EQUAL; break
+						case "==": compOp = ComparisonOp.EQUAL; break
+						case "!=": compOp = ComparisonOp.NOT_EQUAL; break
+						default: throw new Error(`Unsupported operator: ${operator}`)
+						}
+
+						// Add comparison instruction with constants
+						instructions.push({
+							opcode: BytecodeOpCode.COMPARE,
+							operand1: compOp,
+							operand2: leftValue,
+							operand3: rightValue,
+							operand4: 0
+						})
 					}
 
-					// Add comparison instruction
-					instructions.push({
-						opcode: BytecodeOpCode.COMPARE,
-						operand1: compOp,
-						operand2: leftValue,
-						operand3: rightValue,
-						operand4: 0
-					})
-
-					// Add conditional jump (to be fixed later)
+					// Add conditional jump (to be fixed later) - this remains the same
 					const jumpIndex = instructions.length
 					instructions.push({
 						opcode: BytecodeOpCode.JUMP_IF_FALSE,
@@ -343,7 +407,7 @@ export default class CppParser {
 					blockStack.push({ type: "if", jumpIndex })
 				}
 				break
-
+			}
 			case CommandType.BLOCK_START:
 				// Nothing special for block start
 				break
