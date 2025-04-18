@@ -506,13 +506,13 @@ describe("While Loop Functionality", () => {
 
 	test("should handle loops with conditionals", () => {
 		const code = `while(true) {
-		if (10 > 5) {
-			rgbLed.set_led_green();
-		} else {
-			rgbLed.set_led_red();
-		}
-		delay(1000);
-	}`
+			if (10 > 5) {
+				rgbLed.set_led_green();
+			} else {
+				rgbLed.set_led_red();
+			}
+			delay(1000);
+		}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -523,19 +523,39 @@ describe("While Loop Functionality", () => {
 		// 2. COMPARE
 		expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
 		expect(bytecode[6]).toBe(ComparisonOp.GREATER_THAN)
+		expect(bytecode[7]).toBe(10)
+		expect(bytecode[8]).toBe(5)
 
-		// Find WHILE_END
-		let whileEndIndex = -1
-		for (let i = 0; i < bytecode.length; i += 5) {
-			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
-				whileEndIndex = i
-				break
-			}
-		}
-		// TODO: Deltee all toBeGreaterThan in this file.
-		expect(whileEndIndex).toBeGreaterThan(0)
-		// Check jump back to WHILE_START (7 instructions back: 7 * 20 = 140 bytes)
-		expect(bytecode[whileEndIndex + 1]).toBe(140)
+		// 3. JUMP_IF_FALSE to else branch (3 instructions ahead: 3 * 20 = 60 bytes)
+		expect(bytecode[10]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+		expect(bytecode[11]).toBe(60)
+
+		// 4. SET_ALL_LEDS (green)
+		expect(bytecode[15]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[16]).toBe(0)   // R
+		expect(bytecode[17]).toBe(255) // G
+		expect(bytecode[18]).toBe(0)   // B
+
+		// 5. JUMP to skip else branch (2 instructions ahead: 2 * 20 = 40 bytes)
+		expect(bytecode[20]).toBe(BytecodeOpCode.JUMP)
+		expect(bytecode[21]).toBe(40)
+
+		// 6. SET_ALL_LEDS (red)
+		expect(bytecode[25]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[26]).toBe(255) // R
+		expect(bytecode[27]).toBe(0)   // G
+		expect(bytecode[28]).toBe(0)   // B
+
+		// 7. DELAY
+		expect(bytecode[30]).toBe(BytecodeOpCode.DELAY)
+		expect(bytecode[31]).toBe(1000)
+
+		// 8. WHILE_END (jump back 7 instructions: 7 * 20 = 140 bytes)
+		expect(bytecode[35]).toBe(BytecodeOpCode.WHILE_END)
+		expect(bytecode[36]).toBe(140)
+
+		// 9. END
+		expect(bytecode[40]).toBe(BytecodeOpCode.END)
 	})
 
 	test("should handle multiple loops in sequence", () => {
@@ -594,25 +614,42 @@ describe("While Loop Functionality", () => {
 
 	test("should handle while loop at the end of program", () => {
 		const code = `
-		rgbLed.set_led_green();
-		delay(2000);
-		while(true) {
-			rgbLed.set_led_blue();
-		}`
+			rgbLed.set_led_green();
+			delay(2000);
+			while(true) {
+				rgbLed.set_led_blue();
+			}
+		`
 
 		const bytecode = CppParser.cppToByte(code)
 
-		let whileEndIndex = -1
-		for (let i = 0; i < bytecode.length; i += 5) {
-			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
-				whileEndIndex = i
-				break
-			}
-		}
-		expect(whileEndIndex).toBeGreaterThan(0)
-		const lastIndex = bytecode.length - 5
-		expect(bytecode[lastIndex]).toBe(BytecodeOpCode.END)
-		expect(bytecode[lastIndex + 1]).toBe(0)
+		// 1. SET_ALL_LEDS (green)
+		expect(bytecode[0]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[1]).toBe(0)   // R
+		expect(bytecode[2]).toBe(255) // G
+		expect(bytecode[3]).toBe(0)   // B
+
+		// 2. DELAY
+		expect(bytecode[5]).toBe(BytecodeOpCode.DELAY)
+		expect(bytecode[6]).toBe(2000)
+
+		// 3. WHILE_START
+		expect(bytecode[10]).toBe(BytecodeOpCode.WHILE_START)
+		expect(bytecode[11]).toBe(0)
+
+		// 4. SET_ALL_LEDS (blue)
+		expect(bytecode[15]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[16]).toBe(0)   // R
+		expect(bytecode[17]).toBe(0)   // G
+		expect(bytecode[18]).toBe(255) // B
+
+		// 5. WHILE_END (jump back 2 instructions: 2 * 20 = 40 bytes)
+		expect(bytecode[20]).toBe(BytecodeOpCode.WHILE_END)
+		expect(bytecode[21]).toBe(40)
+
+		// 6. END
+		expect(bytecode[25]).toBe(BytecodeOpCode.END)
+		expect(bytecode[26]).toBe(0)
 	})
 })
 
@@ -754,32 +791,66 @@ describe("For Loop Functionality", () => {
 
 	test("should handle for loop with conditional inside", () => {
 		const code = `for (int i = 0; i < 5; i++) {
-		if (2 > 1) {
-			rgbLed.set_led_green();
-		} else {
-			rgbLed.set_led_red();
-		}
-	}`
+			if (2 > 1) {
+				rgbLed.set_led_green();
+			} else {
+				rgbLed.set_led_red();
+			}
+		}`
 
 		const bytecode = CppParser.cppToByte(code)
 
-		let forInitIndex = -1
-		let compareIndex = -1
-		let forIncrementIndex = -1
+		// 1. FOR_INIT (i = 0)
+		expect(bytecode[0]).toBe(BytecodeOpCode.FOR_INIT)
+		expect(bytecode[1]).toBe(0) // Register
+		expect(bytecode[2]).toBe(0) // Initial value
 
-		for (let i = 0; i < bytecode.length; i += 5) {
-			if (bytecode[i] === BytecodeOpCode.FOR_INIT) {
-				forInitIndex = i
-			} else if (bytecode[i] === BytecodeOpCode.COMPARE) {
-				compareIndex = i
-			} else if (bytecode[i] === BytecodeOpCode.FOR_INCREMENT) {
-				forIncrementIndex = i
-			}
-		}
+		// 2. FOR_CONDITION (i < 5)
+		expect(bytecode[5]).toBe(BytecodeOpCode.FOR_CONDITION)
+		expect(bytecode[6]).toBe(0) // Register
+		expect(bytecode[7]).toBe(5) // End value
 
-		expect(forInitIndex).toBeGreaterThanOrEqual(0)
-		expect(compareIndex).toBeGreaterThan(forInitIndex)
-		expect(forIncrementIndex).toBeGreaterThan(compareIndex)
+		// 3. JUMP_IF_FALSE (exit loop, 8 instructions ahead: 8 * 20 = 160 bytes)
+		expect(bytecode[10]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+		expect(bytecode[11]).toBe(160)
+
+		// 4. COMPARE (2 > 1)
+		expect(bytecode[15]).toBe(BytecodeOpCode.COMPARE)
+		expect(bytecode[16]).toBe(ComparisonOp.GREATER_THAN)
+		expect(bytecode[17]).toBe(2)
+		expect(bytecode[18]).toBe(1)
+
+		// 5. JUMP_IF_FALSE (to else branch, 3 instructions ahead: 3 * 20 = 60 bytes)
+		expect(bytecode[20]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+		expect(bytecode[21]).toBe(60)
+
+		// 6. SET_ALL_LEDS (green)
+		expect(bytecode[25]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[26]).toBe(0)   // R
+		expect(bytecode[27]).toBe(255) // G
+		expect(bytecode[28]).toBe(0)   // B
+
+		// 7. JUMP (skip else branch, 2 instructions ahead: 2 * 20 = 40 bytes)
+		expect(bytecode[30]).toBe(BytecodeOpCode.JUMP)
+		expect(bytecode[31]).toBe(40)
+
+		// 8. SET_ALL_LEDS (red)
+		expect(bytecode[35]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[36]).toBe(255) // R
+		expect(bytecode[37]).toBe(0)   // G
+		expect(bytecode[38]).toBe(0)   // B
+
+		// 9. FOR_INCREMENT
+		expect(bytecode[40]).toBe(BytecodeOpCode.FOR_INCREMENT)
+		expect(bytecode[41]).toBe(0) // Register
+
+		// 10. JUMP_BACKWARD (to FOR_CONDITION, 8 instructions back: 8 * 20 = 160 bytes)
+		expect(bytecode[45]).toBe(BytecodeOpCode.JUMP_BACKWARD)
+		expect(bytecode[46]).toBe(160)
+
+		// 11. END
+		expect(bytecode[50]).toBe(BytecodeOpCode.END)
+		expect(bytecode[51]).toBe(0)
 	})
 
 	test("should handle complex for loop pattern with multiple operations", () => {
@@ -1001,28 +1072,76 @@ describe("Sensor Functionality", () => {
 	describe("Complex Sensor Usage", () => {
 		test("should handle sensors in if-else branches", () => {
 			const code = `if (Sensors::getInstance().getPitch() > 20) {
-			rgbLed.set_led_red();
-		} else {
-			if (Sensors::getInstance().getRoll() < -10) {
-				rgbLed.set_led_blue();
+				rgbLed.set_led_red();
 			} else {
-				rgbLed.set_led_green();
-			}
-		}`
+				if (Sensors::getInstance().getRoll() < -10) {
+					rgbLed.set_led_blue();
+				} else {
+					rgbLed.set_led_green();
+				}
+			}`
 
 			const bytecode = CppParser.cppToByte(code)
 
+			// 1. READ_SENSOR (Pitch)
 			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
 			expect(bytecode[1]).toBe(SensorType.PITCH)
+			expect(bytecode[2]).toBe(0) // Register
 
-			let rollSensorIndex = -1
-			for (let i = 15; i < bytecode.length; i += 5) {
-				if (bytecode[i] === BytecodeOpCode.READ_SENSOR && bytecode[i + 1] === SensorType.ROLL) {
-					rollSensorIndex = i
-					break
-				}
-			}
-			expect(rollSensorIndex).toBeGreaterThan(0)
+			// 2. COMPARE (Pitch > 20)
+			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[6]).toBe(ComparisonOp.GREATER_THAN)
+			expect(bytecode[7]).toBe(32768) // Register reference (0x8000)
+			expect(bytecode[8]).toBe(20)
+
+			// 3. JUMP_IF_FALSE (to outer else, 3 instructions ahead: 3 * 20 = 60 bytes)
+			expect(bytecode[10]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+			expect(bytecode[11]).toBe(60)
+
+			// 4. SET_ALL_LEDS (red)
+			expect(bytecode[15]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+			expect(bytecode[16]).toBe(255) // R
+			expect(bytecode[17]).toBe(0)   // G
+			expect(bytecode[18]).toBe(0)   // B
+
+			// 5. JUMP (skip inner if-else, 7 instructions ahead: 7 * 20 = 140 bytes)
+			expect(bytecode[20]).toBe(BytecodeOpCode.JUMP)
+			expect(bytecode[21]).toBe(140)
+
+			// 6. READ_SENSOR (Roll)
+			expect(bytecode[25]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[26]).toBe(SensorType.ROLL)
+			expect(bytecode[27]).toBe(1) // Register
+
+			// 7. COMPARE (Roll < -10)
+			expect(bytecode[30]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[31]).toBe(ComparisonOp.LESS_THAN)
+			expect(bytecode[32]).toBe(32769) // Register reference (0x8000 | 1)
+			expect(bytecode[33]).toBe(-10)
+
+			// 8. JUMP_IF_FALSE (to inner else, 3 instructions ahead: 3 * 20 = 60 bytes)
+			expect(bytecode[35]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+			expect(bytecode[36]).toBe(60)
+
+			// 9. SET_ALL_LEDS (blue)
+			expect(bytecode[40]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+			expect(bytecode[41]).toBe(0)   // R
+			expect(bytecode[42]).toBe(0)   // G
+			expect(bytecode[43]).toBe(255) // B
+
+			// 10. JUMP (skip inner else, 2 instructions ahead: 2 * 20 = 40 bytes)
+			expect(bytecode[45]).toBe(BytecodeOpCode.JUMP)
+			expect(bytecode[46]).toBe(40)
+
+			// 11. SET_ALL_LEDS (green)
+			expect(bytecode[50]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+			expect(bytecode[51]).toBe(0)   // R
+			expect(bytecode[52]).toBe(255) // G
+			expect(bytecode[53]).toBe(0)   // B
+
+			// 12. END
+			expect(bytecode[55]).toBe(BytecodeOpCode.END)
+			expect(bytecode[56]).toBe(0)
 		})
 
 		test("should handle sensors in loops", () => {
@@ -1050,7 +1169,7 @@ describe("Sensor Functionality", () => {
 
 			const bytecode = CppParser.cppToByte(code)
 
-			console.log(bytecode)
+			console.log("bytecode", bytecode)
 			let sensorIndex = -1
 			for (let i = 15; i < bytecode.length; i += 5) {
 				if (bytecode[i] === BytecodeOpCode.READ_SENSOR && bytecode[i + 1] === SensorType.YAW) {
