@@ -1,3 +1,5 @@
+/* eslint-disable complexity */
+/* eslint-disable max-lines-per-function */
 /* eslint-disable max-depth */
 import { MAX_LED_BRIGHTNESS } from "../utils/constants"
 import { BytecodeOpCode, CommandPatterns, CommandType, ComparisonOp, LedID, SensorType, VarType } from "../types/bytecode-types"
@@ -5,6 +7,10 @@ import { BytecodeOpCode, CommandPatterns, CommandType, ComparisonOp, LedID, Sens
 export default class CppParser {
 	public static cppToByte(unsanitizedCpp: string): Float32Array {
 		const sanitizedCode = this.sanitizeUserCode(unsanitizedCpp)
+		const validationResult = this.validateBalancedSyntax(sanitizedCode)
+		if (validationResult !== true) {
+		  throw new Error(`Syntax error: ${validationResult}`)
+		}
 		const instructions = this.parseCppCode(sanitizedCode)
 		const bytecode = this.generateBytecode(instructions)
 
@@ -24,7 +30,6 @@ export default class CppParser {
 		return null
 	}
 
-	// eslint-disable-next-line max-lines-per-function, complexity
 	private static parseCppCode(cppCode: string): BytecodeInstruction[] {
 		const instructions: BytecodeInstruction[] = []
 		const variables: Map<string, { type: VarType, register: number }> = new Map()
@@ -515,6 +520,10 @@ export default class CppParser {
 			operand4: 0
 		})
 
+		if (blockStack.length > 0) {
+			throw new Error(`Syntax error: Missing ${blockStack.length} closing brace(s)`)
+		}
+
 		return instructions
 	}
 
@@ -573,5 +582,66 @@ export default class CppParser {
 
 		// NOTE: We are NOT restoring semicolons here!
 		// We'll restore them after splitting into statements
+	}
+
+	private static validateBalancedSyntax(code: string): boolean | string {
+		const stack: CharacterStack[] = []
+		const pairs: Record<string, string> = {
+			"{": "}",
+			"(": ")",
+			"[": "]"
+		}
+
+		for (let i = 0; i < code.length; i++) {
+			const char = code[i]
+
+			// Skip characters in strings
+			if (char === "\"" || char === "'") {
+				// Simple string skipping - you might need more sophisticated logic
+				const quote = char
+				i++
+				while (i < code.length && code[i] !== quote) {
+					if (code[i] === "\\") i++ // Skip escaped characters
+					i++
+				}
+				continue
+			}
+
+			// Skip comments
+			if (char === "/" && i + 1 < code.length) {
+				if (code[i + 1] === "/") {
+					// Line comment - skip to end of line
+					while (i < code.length && code[i] !== "\n") i++
+					continue
+				} else if (code[i + 1] === "*") {
+					// Block comment - skip to */
+					i += 2
+					while (i + 1 < code.length && !(code[i] === "*" && code[i + 1] === "/")) i++
+					i++ // Skip the closing /
+					continue
+				}
+			}
+
+			// Handle brackets
+			if ("{([".includes(char)) {
+				stack.push({ char, pos: i })
+			} else if ("})]".includes(char)) {
+				if (stack.length === 0) {
+					return `Unexpected closing '${char}' at position ${i}`
+				}
+
+				const lastOpen = stack.pop() as CharacterStack
+				if (pairs[lastOpen.char] !== char) {
+					return `Expected '${pairs[lastOpen.char]}' but found '${char}' at position ${i}`
+				}
+			}
+		}
+
+		if (stack.length > 0) {
+			const unclosed = stack[stack.length - 1]
+			return `Unclosed '${unclosed.char}' at position ${unclosed.pos}`
+		}
+
+		return true
 	}
 }

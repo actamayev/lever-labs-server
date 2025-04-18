@@ -1,6 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import CppParser from "../../../src/classes/cpp-parser"
 import { BytecodeOpCode, CommandType, ComparisonOp, LedID, SensorType, VarType } from "../../../src/types/bytecode-types"
+import { MAX_LED_BRIGHTNESS } from "../../../src/utils/constants"
 
 describe("CppParser", () => {
 	// 1. Test garbage input
@@ -142,7 +143,7 @@ describe("CppParser", () => {
 			const bytecode = CppParser.cppToByte("set_all_leds_to_color(255, 127, 64);")
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-			expect(bytecode[1]).toBe(255) // R
+			expect(bytecode[1]).toBe(MAX_LED_BRIGHTNESS) // R
 			expect(bytecode[2]).toBe(127) // G
 			expect(bytecode[3]).toBe(64)  // B
 			expect(bytecode[4]).toBe(0)   // Unused
@@ -239,7 +240,7 @@ describe("CppParser", () => {
 
 			// 1st instruction: SET_ALL_LEDS (red)
 			expect(bytecode[0]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-			expect(bytecode[1]).toBe(255) // R
+			expect(bytecode[1]).toBe(MAX_LED_BRIGHTNESS) // R
 			expect(bytecode[2]).toBe(0)   // G
 			expect(bytecode[3]).toBe(0)   // B
 
@@ -277,7 +278,6 @@ describe("Control flow", () => {
 
 		const bytecode = CppParser.cppToByte(code)
 
-		console.log(bytecode)
 		// 1. Compare operation
 		expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
 		expect(bytecode[1]).toBe(ComparisonOp.GREATER_THAN)
@@ -291,9 +291,9 @@ describe("Control flow", () => {
 
 		// 3. Set LEDs white (true branch)
 		expect(bytecode[10]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-		expect(bytecode[11]).toBe(255) // R
-		expect(bytecode[12]).toBe(255) // G
-		expect(bytecode[13]).toBe(255) // B
+		expect(bytecode[11]).toBe(MAX_LED_BRIGHTNESS) // R
+		expect(bytecode[12]).toBe(MAX_LED_BRIGHTNESS) // G
+		expect(bytecode[13]).toBe(MAX_LED_BRIGHTNESS) // B
 
 		// 4. Unconditional jump to skip else block (5 instructions ahead: 5 * 20 = 100 bytes)
 		expect(bytecode[15]).toBe(BytecodeOpCode.JUMP)
@@ -301,7 +301,7 @@ describe("Control flow", () => {
 
 		// 5. Set LEDs red (false branch)
 		expect(bytecode[20]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-		expect(bytecode[21]).toBe(255) // R
+		expect(bytecode[21]).toBe(MAX_LED_BRIGHTNESS) // R
 		expect(bytecode[22]).toBe(0)   // G
 		expect(bytecode[23]).toBe(0)   // B
 
@@ -312,7 +312,7 @@ describe("Control flow", () => {
 		// 7. Set LEDs green
 		expect(bytecode[30]).toBe(BytecodeOpCode.SET_ALL_LEDS)
 		expect(bytecode[31]).toBe(0)   // R
-		expect(bytecode[32]).toBe(255) // G
+		expect(bytecode[32]).toBe(MAX_LED_BRIGHTNESS) // G
 		expect(bytecode[33]).toBe(0)   // B
 
 		// 8. End instruction
@@ -343,13 +343,13 @@ describe("Control flow", () => {
 		expect(bytecode[10]).toBe(BytecodeOpCode.SET_ALL_LEDS)
 		expect(bytecode[11]).toBe(0)   // R
 		expect(bytecode[12]).toBe(0)   // G
-		expect(bytecode[13]).toBe(255) // B
+		expect(bytecode[13]).toBe(MAX_LED_BRIGHTNESS) // B
 
 		// 4. Set LEDs purple
 		expect(bytecode[15]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-		expect(bytecode[16]).toBe(255) // R
+		expect(bytecode[16]).toBe(MAX_LED_BRIGHTNESS) // R
 		expect(bytecode[17]).toBe(0)   // G
-		expect(bytecode[18]).toBe(255) // B
+		expect(bytecode[18]).toBe(MAX_LED_BRIGHTNESS) // B
 
 		// 5. End instruction
 		const endIndex = bytecode.length - 5
@@ -444,7 +444,7 @@ describe("While Loop Functionality", () => {
 
 		// 2. SET_ALL_LEDS (red)
 		expect(bytecode[5]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-		expect(bytecode[6]).toBe(255) // R
+		expect(bytecode[6]).toBe(MAX_LED_BRIGHTNESS) // R
 		expect(bytecode[7]).toBe(0)   // G
 		expect(bytecode[8]).toBe(0)   // B
 
@@ -532,6 +532,7 @@ describe("While Loop Functionality", () => {
 				break
 			}
 		}
+		// TODO: Deltee all toBeGreaterThan in this file.
 		expect(whileEndIndex).toBeGreaterThan(0)
 		// Check jump back to WHILE_START (7 instructions back: 7 * 20 = 140 bytes)
 		expect(bytecode[whileEndIndex + 1]).toBe(140)
@@ -642,7 +643,7 @@ describe("For Loop Functionality", () => {
 
 		// 4. SET_ALL_LEDS (red)
 		expect(bytecode[15]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-		expect(bytecode[16]).toBe(255) // R
+		expect(bytecode[16]).toBe(MAX_LED_BRIGHTNESS) // R
 		expect(bytecode[17]).toBe(0)   // G
 		expect(bytecode[18]).toBe(0)   // B
 
@@ -1039,6 +1040,7 @@ describe("Sensor Functionality", () => {
 			expect(bytecode[6]).toBe(SensorType.ACCEL_MAG)
 		})
 
+		// TODO: Failing this test:
 		test("should handle sensors in for loops", () => {
 			const code = `for (int i = 0; i < 10; i++) {
 				if (Sensors::getInstance().getYaw() > i) {
@@ -1048,6 +1050,7 @@ describe("Sensor Functionality", () => {
 
 			const bytecode = CppParser.cppToByte(code)
 
+			console.log(bytecode)
 			let sensorIndex = -1
 			for (let i = 15; i < bytecode.length; i += 5) {
 				if (bytecode[i] === BytecodeOpCode.READ_SENSOR && bytecode[i + 1] === SensorType.YAW) {
@@ -1073,4 +1076,7 @@ describe("Sensor Functionality", () => {
 			CppParser["parseCppCode"] = originalParseCppCode
 		}
 	})
+	// TODO: Ensure coverage is 100%
+
+	// TODO: Add a test to assign a variable, and then read that variable elsewhere.
 })
