@@ -112,6 +112,7 @@ export const CommandPatterns: Record<CommandType, RegExp> = {
 
 	[CommandType.VARIABLE_ASSIGNMENT]: /^(float|int|bool)\s+(\w+)\s*=\s*(.+)$/,
 
+	// Have the availability to have a sensor reading on the right-hand side.
 	[CommandType.IF_STATEMENT]: /^if\s*\(\s*(Sensors::getInstance\(\)\.\w+\(\)|[-\d\.]+|\w+)\s*([<>=!][=]?)\s*(-?\d+\.?\d*|\w+)\s*\)$/,
 	[CommandType.ELSE_STATEMENT]: /^else$/,
 	[CommandType.BLOCK_START]: /^{$/,

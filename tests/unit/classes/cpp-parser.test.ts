@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import CppParser from "../../../src/classes/cpp-parser"
-import { BytecodeOpCode, CommandType, ComparisonOp, LedID, SensorType, VarType } from "../../../src/types/bytecode-types"
 import { MAX_LED_BRIGHTNESS } from "../../../src/utils/constants"
+import { BytecodeOpCode, CommandType, ComparisonOp, LedID, SensorType, VarType } from "../../../src/types/bytecode-types"
 
 describe("CppParser", () => {
 	// 1. Test garbage input
@@ -230,11 +230,11 @@ describe("CppParser", () => {
 	describe("Combining multiple commands", () => {
 		test("should parse a simple LED blink program", () => {
 			const program = `
-				rgbLed.set_led_red();
-				delay(500);
-				rgbLed.turn_led_off();
-				delay(500);
-			`
+			rgbLed.set_led_red();
+			delay(500);
+			rgbLed.turn_led_off();
+			delay(500);
+		`
 
 			const bytecode = CppParser.cppToByte(program)
 
@@ -269,12 +269,12 @@ describe("CppParser", () => {
 describe("Control flow", () => {
 	test("should parse basic if-else statement", () => {
 		const code = `if (5 > 10) {
-			rgbLed.set_led_white();
-		} else {
-			rgbLed.set_led_red();
-		}
-		delay(1000);
-		rgbLed.set_led_green();`
+		rgbLed.set_led_white();
+	} else {
+		rgbLed.set_led_red();
+	}
+	delay(1000);
+	rgbLed.set_led_green();`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -322,9 +322,9 @@ describe("Control flow", () => {
 
 	test("should parse if without else", () => {
 		const code = `if (3 < 7) {
-			rgbLed.set_led_blue();
-		}
-		rgbLed.set_led_purple();`
+		rgbLed.set_led_blue();
+	}
+	rgbLed.set_led_purple();`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -359,14 +359,14 @@ describe("Control flow", () => {
 
 	test("should parse nested if-else statements", () => {
 		const code = `if (10 == 10) {
-			if (5 != 5) {
-				rgbLed.set_led_green();
-			} else {
-				rgbLed.set_led_blue();
-			}
+		if (5 != 5) {
+			rgbLed.set_led_green();
 		} else {
-			rgbLed.set_led_red();
-		}`
+			rgbLed.set_led_blue();
+		}
+	} else {
+		rgbLed.set_led_red();
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -432,9 +432,9 @@ describe("Control flow", () => {
 describe("While Loop Functionality", () => {
 	test("should parse basic while(true) loop", () => {
 		const code = `while(true) {
-			rgbLed.set_led_red();
-			delay(500);
-		}`
+		rgbLed.set_led_red();
+		delay(500);
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -464,13 +464,13 @@ describe("While Loop Functionality", () => {
 
 	test("should handle nested while loops", () => {
 		const code = `while(true) {
-			rgbLed.set_led_red();
-			while(true) {
-				rgbLed.set_led_blue();
-				delay(100);
-			}
-			delay(500);
-		}`
+		rgbLed.set_led_red();
+		while(true) {
+			rgbLed.set_led_blue();
+			delay(100);
+		}
+		delay(500);
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -506,13 +506,13 @@ describe("While Loop Functionality", () => {
 
 	test("should handle loops with conditionals", () => {
 		const code = `while(true) {
-			if (10 > 5) {
-				rgbLed.set_led_green();
-			} else {
-				rgbLed.set_led_red();
-			}
-			delay(1000);
-		}`
+		if (10 > 5) {
+			rgbLed.set_led_green();
+		} else {
+			rgbLed.set_led_red();
+		}
+		delay(1000);
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -540,14 +540,14 @@ describe("While Loop Functionality", () => {
 
 	test("should handle multiple loops in sequence", () => {
 		const code = `
-			while(true) {
-				rgbLed.set_led_red();
-				delay(100);
-			}
-			while(true) {
-				rgbLed.set_led_blue();
-				delay(200);
-			}`
+		while(true) {
+			rgbLed.set_led_red();
+			delay(100);
+		}
+		while(true) {
+			rgbLed.set_led_blue();
+			delay(200);
+		}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -576,8 +576,8 @@ describe("While Loop Functionality", () => {
 
 	test("should handle empty while loop", () => {
 		const code = `while(true) {
-			// Empty loop
-		}`
+		// Empty loop
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -594,11 +594,11 @@ describe("While Loop Functionality", () => {
 
 	test("should handle while loop at the end of program", () => {
 		const code = `
-			rgbLed.set_led_green();
-			delay(2000);
-			while(true) {
-				rgbLed.set_led_blue();
-			}`
+		rgbLed.set_led_green();
+		delay(2000);
+		while(true) {
+			rgbLed.set_led_blue();
+		}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -619,9 +619,9 @@ describe("While Loop Functionality", () => {
 describe("For Loop Functionality", () => {
 	test("should parse basic for loop", () => {
 		const code = `for (int i = 0; i < 5; i++) {
-			rgbLed.set_led_red();
-			delay(100);
-		}`
+		rgbLed.set_led_red();
+		delay(100);
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -666,8 +666,8 @@ describe("For Loop Functionality", () => {
 
 	test("should handle empty for loop", () => {
 		const code = `for (int i = 0; i < 10; i++) {
-			// Empty loop
-		}`
+		// Empty loop
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -681,8 +681,8 @@ describe("For Loop Functionality", () => {
 
 	test("should handle for loop with non-zero start value", () => {
 		const code = `for (int j = 3; j < 8; j++) {
-			rgbLed.set_led_blue();
-		}`
+		rgbLed.set_led_blue();
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -694,11 +694,11 @@ describe("For Loop Functionality", () => {
 
 	test("should handle multiple for loops in sequence", () => {
 		const code = `for (int i = 0; i < 3; i++) {
-			rgbLed.set_led_red();
-		}
-		for (int j = 0; j < 2; j++) {
-			rgbLed.set_led_blue();
-		}`
+		rgbLed.set_led_red();
+	}
+	for (int j = 0; j < 2; j++) {
+		rgbLed.set_led_blue();
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -723,11 +723,11 @@ describe("For Loop Functionality", () => {
 
 	test("should handle nested for loops", () => {
 		const code = `for (int i = 0; i < 3; i++) {
-			rgbLed.set_led_red();
-			for (int j = 0; j < 2; j++) {
-				rgbLed.set_led_blue();
-			}
-		}`
+		rgbLed.set_led_red();
+		for (int j = 0; j < 2; j++) {
+			rgbLed.set_led_blue();
+		}
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -754,12 +754,12 @@ describe("For Loop Functionality", () => {
 
 	test("should handle for loop with conditional inside", () => {
 		const code = `for (int i = 0; i < 5; i++) {
-			if (2 > 1) {
-				rgbLed.set_led_green();
-			} else {
-				rgbLed.set_led_red();
-			}
-		}`
+		if (2 > 1) {
+			rgbLed.set_led_green();
+		} else {
+			rgbLed.set_led_red();
+		}
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -784,13 +784,13 @@ describe("For Loop Functionality", () => {
 
 	test("should handle complex for loop pattern with multiple operations", () => {
 		const code = `for (int i = 1; i < 4; i++) {
-			rgbLed.set_led_white();
-			delay(100);
-			rgbLed.set_led_blue();
-			delay(100);
-			rgbLed.set_led_red();
-			delay(100);
-		}`
+		rgbLed.set_led_white();
+		delay(100);
+		rgbLed.set_led_blue();
+		delay(100);
+		rgbLed.set_led_red();
+		delay(100);
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -825,11 +825,11 @@ describe("For Loop Functionality", () => {
 
 	test("should handle for loop with variable reuse", () => {
 		const code = `for (int i = 0; i < 2; i++) {
-			rgbLed.set_led_red();
-		}
-		for (int i = 0; i < 3; i++) {
-			rgbLed.set_led_blue();
-		}`
+		rgbLed.set_led_red();
+	}
+	for (int i = 0; i < 3; i++) {
+		rgbLed.set_led_blue();
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -846,8 +846,8 @@ describe("For Loop Functionality", () => {
 describe("Sensor Functionality", () => {
 	function testSensorReading(sensorMethod: string, expectedSensorType: SensorType): void {
 		const code = `if (Sensors::getInstance().${sensorMethod}() > 10) {
-			rgbLed.set_led_red();
-		}`
+		rgbLed.set_led_red();
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -929,8 +929,8 @@ describe("Sensor Functionality", () => {
 	describe("Sensor Comparison Operators", () => {
 		test("should parse sensor equality comparison", () => {
 			const code = `if (Sensors::getInstance().getPitch() == 0) {
-				rgbLed.set_led_red();
-			}`
+			rgbLed.set_led_red();
+		}`
 
 			const bytecode = CppParser.cppToByte(code)
 
@@ -943,8 +943,8 @@ describe("Sensor Functionality", () => {
 
 		test("should parse sensor inequality comparison", () => {
 			const code = `if (Sensors::getInstance().getYaw() != 45) {
-				rgbLed.set_led_green();
-			}`
+			rgbLed.set_led_green();
+		}`
 
 			const bytecode = CppParser.cppToByte(code)
 
@@ -957,8 +957,8 @@ describe("Sensor Functionality", () => {
 
 		test("should parse sensor less than comparison", () => {
 			const code = `if (Sensors::getInstance().getXAccel() < -5) {
-				rgbLed.set_led_blue();
-			}`
+			rgbLed.set_led_blue();
+		}`
 
 			const bytecode = CppParser.cppToByte(code)
 
@@ -971,8 +971,8 @@ describe("Sensor Functionality", () => {
 
 		test("should parse sensor greater than or equal comparison", () => {
 			const code = `if (Sensors::getInstance().getAccelMagnitude() >= 9.8) {
-				rgbLed.set_led_purple();
-			}`
+			rgbLed.set_led_purple();
+		}`
 
 			const bytecode = CppParser.cppToByte(code)
 
@@ -985,8 +985,8 @@ describe("Sensor Functionality", () => {
 
 		test("should parse sensor less than or equal comparison", () => {
 			const code = `if (Sensors::getInstance().getZRotationRate() <= 180) {
-				rgbLed.set_led_white();
-			}`
+			rgbLed.set_led_white();
+		}`
 
 			const bytecode = CppParser.cppToByte(code)
 
@@ -1001,14 +1001,14 @@ describe("Sensor Functionality", () => {
 	describe("Complex Sensor Usage", () => {
 		test("should handle sensors in if-else branches", () => {
 			const code = `if (Sensors::getInstance().getPitch() > 20) {
-				rgbLed.set_led_red();
+			rgbLed.set_led_red();
+		} else {
+			if (Sensors::getInstance().getRoll() < -10) {
+				rgbLed.set_led_blue();
 			} else {
-				if (Sensors::getInstance().getRoll() < -10) {
-					rgbLed.set_led_blue();
-				} else {
-					rgbLed.set_led_green();
-				}
-			}`
+				rgbLed.set_led_green();
+			}
+		}`
 
 			const bytecode = CppParser.cppToByte(code)
 
@@ -1027,11 +1027,11 @@ describe("Sensor Functionality", () => {
 
 		test("should handle sensors in loops", () => {
 			const code = `while (true) {
-				if (Sensors::getInstance().getAccelMagnitude() > 5) {
-					rgbLed.set_led_white();
-				}
-				delay(100);
-			}`
+			if (Sensors::getInstance().getAccelMagnitude() > 5) {
+				rgbLed.set_led_white();
+			}
+			delay(100);
+		}`
 
 			const bytecode = CppParser.cppToByte(code)
 
@@ -1043,10 +1043,10 @@ describe("Sensor Functionality", () => {
 		// TODO: Failing this test:
 		test("should handle sensors in for loops", () => {
 			const code = `for (int i = 0; i < 10; i++) {
-				if (Sensors::getInstance().getYaw() > i) {
-					rgbLed.set_led_red();
-				}
-			}`
+			if (Sensors::getInstance().getYaw() > i) {
+				rgbLed.set_led_red();
+			}
+		}`
 
 			const bytecode = CppParser.cppToByte(code)
 
