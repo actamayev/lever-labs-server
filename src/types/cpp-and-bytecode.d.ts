@@ -30,6 +30,11 @@ declare global {
 		char: string
 		pos: number
 	}
+
+	interface VariableType {
+		type: VarType
+		register: number
+	}
 }
 
 export {}

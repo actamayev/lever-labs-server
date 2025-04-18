@@ -267,7 +267,6 @@ describe("Control flow", () => {
 
 			const bytecode = CppParser.cppToByte(code)
 
-			console.log("bytecode", bytecode)
 			let sensorIndex = -1
 			for (let i = 15; i < bytecode.length; i += 5) {
 				if (bytecode[i] === BytecodeOpCode.READ_SENSOR && bytecode[i + 1] === SensorType.YAW) {

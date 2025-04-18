@@ -32,7 +32,7 @@ export default class CppParser {
 
 	private static parseCppCode(cppCode: string): BytecodeInstruction[] {
 		const instructions: BytecodeInstruction[] = []
-		const variables: Map<string, { type: VarType, register: number }> = new Map()
+		const variables: Map<string, VariableType> = new Map()
 		let nextRegister = 0
 
 		const protectedStatements = cppCode.split(";").map(s => s.trim()).filter(s => s.length > 0)
@@ -146,8 +146,44 @@ export default class CppParser {
 						operand4: 0
 					})
 
-					if (typeEnum === VarType.FLOAT) {
+					// Check if value is a sensor reading
+					const sensorMatch = varValue.match(/Sensors::getInstance\(\)\.(\w+)\(\)/)
+					if (sensorMatch) {
+						// This is a sensor reading assignment
+						const sensorMethod = sensorMatch[1]
+						let sensorType: number
+
+						// Map method name to sensor type
+						switch (sensorMethod) {
+						case "getPitch": sensorType = SensorType.PITCH; break
+						case "getRoll": sensorType = SensorType.ROLL; break
+						case "getYaw": sensorType = SensorType.YAW; break
+						case "getXAccel": sensorType = SensorType.ACCEL_X; break
+						case "getYAccel": sensorType = SensorType.ACCEL_Y; break
+						case "getZAccel": sensorType = SensorType.ACCEL_Z; break
+						case "getAccelMagnitude": sensorType = SensorType.ACCEL_MAG; break
+						case "getXRotationRate": sensorType = SensorType.ROT_RATE_X; break
+						case "getYRotationRate": sensorType = SensorType.ROT_RATE_Y; break
+						case "getZRotationRate": sensorType = SensorType.ROT_RATE_Z; break
+						case "getMagneticFieldX": sensorType = SensorType.MAG_FIELD_X; break
+						case "getMagneticFieldY": sensorType = SensorType.MAG_FIELD_Y; break
+						case "getMagneticFieldZ": sensorType = SensorType.MAG_FIELD_Z; break
+						default: throw new Error(`Unknown sensor method: ${sensorMethod}`)
+						}
+
+						// Add instruction to read sensor into the register
+						instructions.push({
+							opcode: BytecodeOpCode.READ_SENSOR,
+							operand1: sensorType,
+							operand2: register,
+							operand3: 0,
+							operand4: 0
+						})
+					} else if (typeEnum === VarType.FLOAT) {
 						const floatValue = parseFloat(varValue)
+						if (isNaN(floatValue)) {
+							throw new Error(`Invalid float value: ${varValue}`)
+						}
 
 						instructions.push({
 							opcode: BytecodeOpCode.SET_VAR,
@@ -309,13 +345,29 @@ export default class CppParser {
 				if (command.matches && command.matches.length === 4) {
 					const leftExpr = command.matches[1]
 					const operator = command.matches[2]
-					const rightValue = parseFloat(command.matches[3])
+					const rightExpr = command.matches[3]
+
+					// Map operator to ComparisonOp
+					let compOp: ComparisonOp
+					switch (operator) {
+					case ">": compOp = ComparisonOp.GREATER_THAN; break
+					case "<": compOp = ComparisonOp.LESS_THAN; break
+					case ">=": compOp = ComparisonOp.GREATER_EQUAL; break
+					case "<=": compOp = ComparisonOp.LESS_EQUAL; break
+					case "==": compOp = ComparisonOp.EQUAL; break
+					case "!=": compOp = ComparisonOp.NOT_EQUAL; break
+					default: throw new Error(`Unsupported operator: ${operator}`)
+					}
 
 					// First check if left side is a sensor expression
 					const sensorMatch = leftExpr.match(/Sensors::getInstance\(\)\.(\w+)\(\)/)
 
+					let leftOperand: number
+					let rightOperand: number
+
+					// Handle left side of comparison
 					if (sensorMatch) {
-						// This is a sensor comparison
+					// This is a sensor comparison
 						const sensorMethod = sensorMatch[1]
 						let sensorType: number
 
@@ -349,53 +401,44 @@ export default class CppParser {
 							operand4: 0
 						})
 
-						// Map operator to ComparisonOp
-						let compOp: ComparisonOp
-						switch (operator) {
-						case ">": compOp = ComparisonOp.GREATER_THAN; break
-						case "<": compOp = ComparisonOp.LESS_THAN; break
-						case ">=": compOp = ComparisonOp.GREATER_EQUAL; break
-						case "<=": compOp = ComparisonOp.LESS_EQUAL; break
-						case "==": compOp = ComparisonOp.EQUAL; break
-						case "!=": compOp = ComparisonOp.NOT_EQUAL; break
-						default: throw new Error(`Unsupported operator: ${operator}`)
-						}
-
-						// Add comparison instruction with register as left operand
-						instructions.push({
-							opcode: BytecodeOpCode.COMPARE,
-							operand1: compOp,
-							operand2: 0x8000 | register,  // High bit indicates register reference
-							operand3: rightValue,         // Direct float value - no bit manipulation
-							operand4: 0
-						})
+						leftOperand = 0x8000 | register  // High bit indicates register reference
+					} else if (variables.has(leftExpr)) {
+					// This is a variable reference
+						const variable = variables.get(leftExpr) as VariableType
+						leftOperand = 0x8000 | variable.register  // High bit indicates register reference
 					} else {
-						// Standard constant comparison (existing code)
+					// This is a numeric constant
 						const leftValue = parseFloat(leftExpr)
-
-						// Map operator to ComparisonOp
-						let compOp: ComparisonOp
-						switch (operator) {
-						case ">": compOp = ComparisonOp.GREATER_THAN; break
-						case "<": compOp = ComparisonOp.LESS_THAN; break
-						case ">=": compOp = ComparisonOp.GREATER_EQUAL; break
-						case "<=": compOp = ComparisonOp.LESS_EQUAL; break
-						case "==": compOp = ComparisonOp.EQUAL; break
-						case "!=": compOp = ComparisonOp.NOT_EQUAL; break
-						default: throw new Error(`Unsupported operator: ${operator}`)
+						if (isNaN(leftValue)) {
+							throw new Error(`Undefined variable or invalid number: ${leftExpr}`)
 						}
-
-						// Add comparison instruction with constants
-						instructions.push({
-							opcode: BytecodeOpCode.COMPARE,
-							operand1: compOp,
-							operand2: leftValue,
-							operand3: rightValue,
-							operand4: 0
-						})
+						leftOperand = leftValue
 					}
 
-					// Add conditional jump (to be fixed later) - this remains the same
+					// Handle right side of comparison
+					if (variables.has(rightExpr)) {
+					// This is a variable reference
+						const variable = variables.get(rightExpr) as VariableType
+						rightOperand = 0x8000 | variable.register  // High bit indicates register reference
+					} else {
+					// This is a numeric constant
+						const rightValue = parseFloat(rightExpr)
+						if (isNaN(rightValue)) {
+							throw new Error(`Undefined variable or invalid number: ${rightExpr}`)
+						}
+						rightOperand = rightValue
+					}
+
+					// Add comparison instruction
+					instructions.push({
+						opcode: BytecodeOpCode.COMPARE,
+						operand1: compOp,
+						operand2: leftOperand,
+						operand3: rightOperand,
+						operand4: 0
+					})
+
+					// Add conditional jump (to be fixed later)
 					const jumpIndex = instructions.length
 					instructions.push({
 						opcode: BytecodeOpCode.JUMP_IF_FALSE,
@@ -410,6 +453,8 @@ export default class CppParser {
 				}
 				break
 			}
+
+
 			case CommandType.BLOCK_START:
 				// Nothing special for block start
 				break

@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import CppParser from "../../../../src/classes/cpp-parser"
 import { MAX_LED_BRIGHTNESS } from "../../../../src/utils/constants"
-import { BytecodeOpCode, CommandType, LedID, VarType } from "../../../../src/types/bytecode-types"
+import { BytecodeOpCode, CommandType, ComparisonOp, LedID, VarType } from "../../../../src/types/bytecode-types"
 
 describe("Variable assignments", () => {
 	test("should parse integer variable assignment", () => {
@@ -244,5 +244,90 @@ describe("Combining multiple commands", () => {
 		const lastIndex = bytecode.length - 5
 		expect(bytecode[lastIndex]).toBe(BytecodeOpCode.END)
 		expect(bytecode[lastIndex + 1]).toBe(0)
+	})
+})
+
+describe("Variable in comparisons", () => {
+	test("should throw error for undefined variable in if condition", () => {
+		expect(() => {
+			CppParser.cppToByte(`
+        float myFloat = 1.5;
+        if (undefinedVar > 0) {
+          rgbLed.set_led_red();
+        }
+      `)
+		}).toThrow(/Undefined variable or invalid number: undefinedVar/)
+	})
+
+	test("should throw error for undefined variable on right side of comparison", () => {
+		expect(() => {
+			CppParser.cppToByte(`
+        float myFloat = 1.5;
+        if (2 > undefinedVar) {
+          rgbLed.set_led_red();
+        }
+      `)
+		}).toThrow(/Undefined variable or invalid number: undefinedVar/)
+	})
+
+	test("should correctly handle defined variables in comparisons", () => {
+		const bytecode = CppParser.cppToByte(`
+      float myFloat = 1.5;
+      if (myFloat > 0) {
+        rgbLed.set_led_red();
+      } else {
+        rgbLed.set_led_green();
+      }
+    `)
+
+		// Verify the bytecode correctly uses register reference
+		// First instruction: DECLARE_VAR
+		expect(bytecode[0]).toBe(BytecodeOpCode.DECLARE_VAR)
+
+		// COMPARE instruction should use high bit for register reference
+		let compareIndex = -1
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.COMPARE) {
+				compareIndex = i
+				break
+			}
+		}
+
+		expect(compareIndex).toBeGreaterThan(0)
+		expect(bytecode[compareIndex + 1]).toBe(ComparisonOp.GREATER_THAN)
+		expect(bytecode[compareIndex + 2]).toBe(0x8000) // Register 0 with high bit set
+		expect(bytecode[compareIndex + 3]).toBe(0)      // Comparison with 0
+	})
+
+	test("should correctly handle variables from sensor readings in comparisons", () => {
+		const bytecode = CppParser.cppToByte(`
+      while(true) {
+        float myFloat = Sensors::getInstance().getRoll();
+        if (myFloat < -1.1) {
+          rgbLed.set_led_red();
+        } else {
+          rgbLed.set_led_green();
+        }
+      }
+    `)
+		// Verify no NaN values in the bytecode
+		for (let i = 0; i < bytecode.length; i++) {
+			expect(Number.isNaN(bytecode[i])).toBe(false)
+		}
+	})
+
+	test("should throw error for undefined variable with sensor reading", () => {
+		expect(() => {
+			CppParser.cppToByte(`
+        while(true) {
+          float myFloat = Sensors::getInstance().getRoll();
+          if (myVar < -1.1) {  // myVar is undefined
+            rgbLed.set_led_red();
+          } else {
+            rgbLed.set_led_green();
+          }
+        }
+      `)
+		}).toThrow(/Undefined variable or invalid number: myVar/)
 	})
 })
