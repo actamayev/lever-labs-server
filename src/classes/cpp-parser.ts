@@ -151,25 +151,7 @@ export default class CppParser {
 					if (sensorMatch) {
 						// This is a sensor reading assignment
 						const sensorMethod = sensorMatch[1]
-						let sensorType: number
-
-						// Map method name to sensor type
-						switch (sensorMethod) {
-						case "getPitch": sensorType = SensorType.PITCH; break
-						case "getRoll": sensorType = SensorType.ROLL; break
-						case "getYaw": sensorType = SensorType.YAW; break
-						case "getXAccel": sensorType = SensorType.ACCEL_X; break
-						case "getYAccel": sensorType = SensorType.ACCEL_Y; break
-						case "getZAccel": sensorType = SensorType.ACCEL_Z; break
-						case "getAccelMagnitude": sensorType = SensorType.ACCEL_MAG; break
-						case "getXRotationRate": sensorType = SensorType.ROT_RATE_X; break
-						case "getYRotationRate": sensorType = SensorType.ROT_RATE_Y; break
-						case "getZRotationRate": sensorType = SensorType.ROT_RATE_Z; break
-						case "getMagneticFieldX": sensorType = SensorType.MAG_FIELD_X; break
-						case "getMagneticFieldY": sensorType = SensorType.MAG_FIELD_Y; break
-						case "getMagneticFieldZ": sensorType = SensorType.MAG_FIELD_Z; break
-						default: throw new Error(`Unknown sensor method: ${sensorMethod}`)
-						}
+						const sensorType = this.getSensorTypeFromMethod(sensorMethod)
 
 						// Add instruction to read sensor into the register
 						instructions.push({
@@ -359,35 +341,15 @@ export default class CppParser {
 					default: throw new Error(`Unsupported operator: ${operator}`)
 					}
 
-					// First check if left side is a sensor expression
-					const sensorMatch = leftExpr.match(/Sensors::getInstance\(\)\.(\w+)\(\)/)
-
 					let leftOperand: number
 					let rightOperand: number
 
 					// Handle left side of comparison
-					if (sensorMatch) {
-					// This is a sensor comparison
-						const sensorMethod = sensorMatch[1]
-						let sensorType: number
-
-						// Map method name to sensor type
-						switch (sensorMethod) {
-						case "getPitch": sensorType = SensorType.PITCH; break
-						case "getRoll": sensorType = SensorType.ROLL; break
-						case "getYaw": sensorType = SensorType.YAW; break
-						case "getXAccel": sensorType = SensorType.ACCEL_X; break
-						case "getYAccel": sensorType = SensorType.ACCEL_Y; break
-						case "getZAccel": sensorType = SensorType.ACCEL_Z; break
-						case "getAccelMagnitude": sensorType = SensorType.ACCEL_MAG; break
-						case "getXRotationRate": sensorType = SensorType.ROT_RATE_X; break
-						case "getYRotationRate": sensorType = SensorType.ROT_RATE_Y; break
-						case "getZRotationRate": sensorType = SensorType.ROT_RATE_Z; break
-						case "getMagneticFieldX": sensorType = SensorType.MAG_FIELD_X; break
-						case "getMagneticFieldY": sensorType = SensorType.MAG_FIELD_Y; break
-						case "getMagneticFieldZ": sensorType = SensorType.MAG_FIELD_Z; break
-						default: throw new Error(`Unknown sensor method: ${sensorMethod}`)
-						}
+					const leftSensorMatch = leftExpr.match(/Sensors::getInstance\(\)\.(\w+)\(\)/)
+					if (leftSensorMatch) {
+						// This is a sensor comparison
+						const sensorMethod = leftSensorMatch[1]
+						const sensorType = this.getSensorTypeFromMethod(sensorMethod)
 
 						// Allocate a register for the sensor value
 						const register = nextRegister++
@@ -403,11 +365,11 @@ export default class CppParser {
 
 						leftOperand = 0x8000 | register  // High bit indicates register reference
 					} else if (variables.has(leftExpr)) {
-					// This is a variable reference
+						// This is a variable reference
 						const variable = variables.get(leftExpr) as VariableType
 						leftOperand = 0x8000 | variable.register  // High bit indicates register reference
 					} else {
-					// This is a numeric constant
+						// This is a numeric constant
 						const leftValue = parseFloat(leftExpr)
 						if (isNaN(leftValue)) {
 							throw new Error(`Undefined variable or invalid number: ${leftExpr}`)
@@ -416,12 +378,31 @@ export default class CppParser {
 					}
 
 					// Handle right side of comparison
-					if (variables.has(rightExpr)) {
-					// This is a variable reference
+					const rightSensorMatch = rightExpr.match(/Sensors::getInstance\(\)\.(\w+)\(\)/)
+					if (rightSensorMatch) {
+						// This is a sensor comparison on the right side
+						const sensorMethod = rightSensorMatch[1]
+						const sensorType = this.getSensorTypeFromMethod(sensorMethod)
+
+						// Allocate a register for the sensor value
+						const register = nextRegister++
+
+						// Add instruction to read sensor into register
+						instructions.push({
+							opcode: BytecodeOpCode.READ_SENSOR,
+							operand1: sensorType,
+							operand2: register,
+							operand3: 0,
+							operand4: 0
+						})
+
+						rightOperand = 0x8000 | register  // High bit indicates register reference
+					} else if (variables.has(rightExpr)) {
+						// This is a variable reference
 						const variable = variables.get(rightExpr) as VariableType
 						rightOperand = 0x8000 | variable.register  // High bit indicates register reference
 					} else {
-					// This is a numeric constant
+						// This is a numeric constant
 						const rightValue = parseFloat(rightExpr)
 						if (isNaN(rightValue)) {
 							throw new Error(`Undefined variable or invalid number: ${rightExpr}`)
@@ -453,7 +434,6 @@ export default class CppParser {
 				}
 				break
 			}
-
 
 			case CommandType.BLOCK_START:
 				// Nothing special for block start
@@ -504,10 +484,10 @@ export default class CppParser {
 							operand4: 0
 						})
 					} else if (block.type === "if") {
- 						// Check if there's an "else" coming next by looking ahead
+						// Check if there's an "else" coming next by looking ahead
 						const nextStatementIndex = statements.indexOf(statement) + 1
 						const hasElseNext = nextStatementIndex < statements.length &&
-                                                statements[nextStatementIndex].trim() === "else"
+										statements[nextStatementIndex].trim() === "else"
 
 						if (hasElseNext) {
 							const offsetToElseBlock = (instructions.length + 1 - block.jumpIndex) * 20
@@ -532,7 +512,7 @@ export default class CppParser {
 							instructions[block.jumpIndex].operand1 = offsetToEndOfIf & 0xFF
 							instructions[block.jumpIndex].operand2 = (offsetToEndOfIf >> 8) & 0xFF
 						}
-					// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+						// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 					} else if (block.type === "else") {
 						for (let i = pendingJumps.length - 1; i >= 0; i--) {
 							const jump = pendingJumps[i]
@@ -552,7 +532,7 @@ export default class CppParser {
 				blockStack.push({ type: "else", jumpIndex: instructions.length })
 				break
 
-                // End of switch statement
+		// End of switch statement
 			}
 		}
 
@@ -688,5 +668,24 @@ export default class CppParser {
 		}
 
 		return true
+	}
+
+	private static getSensorTypeFromMethod(sensorMethod: string): number {
+		switch (sensorMethod) {
+		case "getPitch": return SensorType.PITCH
+		case "getRoll": return SensorType.ROLL
+		case "getYaw": return SensorType.YAW
+		case "getXAccel": return SensorType.ACCEL_X
+		case "getYAccel": return SensorType.ACCEL_Y
+		case "getZAccel": return SensorType.ACCEL_Z
+		case "getAccelMagnitude": return SensorType.ACCEL_MAG
+		case "getXRotationRate": return SensorType.ROT_RATE_X
+		case "getYRotationRate": return SensorType.ROT_RATE_Y
+		case "getZRotationRate": return SensorType.ROT_RATE_Z
+		case "getMagneticFieldX": return SensorType.MAG_FIELD_X
+		case "getMagneticFieldY": return SensorType.MAG_FIELD_Y
+		case "getMagneticFieldZ": return SensorType.MAG_FIELD_Z
+		default: throw new Error(`Unknown sensor method: ${sensorMethod}`)
+		}
 	}
 }

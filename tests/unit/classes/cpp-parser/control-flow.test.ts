@@ -6,14 +6,14 @@ import { MAX_LED_BRIGHTNESS } from "../../../../src/utils/constants"
 describe("Control flow", () => {
 	test("should parse basic if-else statement", () => {
 		const code = `
-			if (5 > 10) {
-				rgbLed.set_led_white();
-			} else {
-				rgbLed.set_led_red();
-			}
-			delay(1000);
-			rgbLed.set_led_green();
-		`
+		if (5 > 10) {
+			rgbLed.set_led_white();
+		} else {
+			rgbLed.set_led_red();
+		}
+		delay(1000);
+		rgbLed.set_led_green();
+	`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -61,9 +61,9 @@ describe("Control flow", () => {
 
 	test("should parse if without else", () => {
 		const code = `if (3 < 7) {
-		rgbLed.set_led_blue();
-	}
-	rgbLed.set_led_purple();`
+	rgbLed.set_led_blue();
+}
+rgbLed.set_led_purple();`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -98,14 +98,14 @@ describe("Control flow", () => {
 
 	test("should parse nested if-else statements", () => {
 		const code = `if (10 == 10) {
-		if (5 != 5) {
-			rgbLed.set_led_green();
-		} else {
-			rgbLed.set_led_blue();
-		}
+	if (5 != 5) {
+		rgbLed.set_led_green();
 	} else {
-		rgbLed.set_led_red();
-	}`
+		rgbLed.set_led_blue();
+	}
+} else {
+	rgbLed.set_led_red();
+}`
 
 		const bytecode = CppParser.cppToByte(code)
 
@@ -170,14 +170,14 @@ describe("Control flow", () => {
 	describe("Complex Sensor Usage", () => {
 		test("should handle sensors in if-else branches", () => {
 			const code = `if (Sensors::getInstance().getPitch() > 20) {
-				rgbLed.set_led_red();
+			rgbLed.set_led_red();
+		} else {
+			if (Sensors::getInstance().getRoll() < -10) {
+				rgbLed.set_led_blue();
 			} else {
-				if (Sensors::getInstance().getRoll() < -10) {
-					rgbLed.set_led_blue();
-				} else {
-					rgbLed.set_led_green();
-				}
-			}`
+				rgbLed.set_led_green();
+			}
+		}`
 
 			const bytecode = CppParser.cppToByte(code)
 
@@ -244,11 +244,11 @@ describe("Control flow", () => {
 
 		test("should handle sensors in loops", () => {
 			const code = `while (true) {
-			if (Sensors::getInstance().getAccelMagnitude() > 5) {
-				rgbLed.set_led_white();
-			}
-			delay(100);
-		}`
+		if (Sensors::getInstance().getAccelMagnitude() > 5) {
+			rgbLed.set_led_white();
+		}
+		delay(100);
+	}`
 
 			const bytecode = CppParser.cppToByte(code)
 
@@ -260,10 +260,10 @@ describe("Control flow", () => {
 		// TODO: Test isn't running
 		test("should handle sensors in for loops", () => {
 			const code = `for (int i = 0; i < 10; i++) {
-			if (Sensors::getInstance().getYaw() > i) {
-				rgbLed.set_led_red();
-			}
-		}`
+		if (Sensors::getInstance().getYaw() > i) {
+			rgbLed.set_led_red();
+		}
+	}`
 
 			const bytecode = CppParser.cppToByte(code)
 
@@ -276,5 +276,218 @@ describe("Control flow", () => {
 			}
 			expect(sensorIndex).toBeGreaterThan(0)
 		})
+	})
+})
+
+describe("Bidirectional Comparisons", () => {
+	test("should handle variables on left side of comparison", () => {
+		const bytecode = CppParser.cppToByte(`
+	float myFloat = 10.5;
+	if (myFloat > 0) {
+	rgbLed.set_led_red();
+	} else {
+	rgbLed.set_led_green();
+	}
+`)
+
+		// Find COMPARE instruction
+		let compareIndex = -1
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.COMPARE) {
+				compareIndex = i
+				break
+			}
+		}
+
+		expect(compareIndex).toBeGreaterThan(0)
+		expect(bytecode[compareIndex + 1]).toBe(ComparisonOp.GREATER_THAN)
+		expect(bytecode[compareIndex + 2]).toBe(0x8000) // Register reference (high bit set)
+		expect(bytecode[compareIndex + 3]).toBe(0)      // Constant 0
+	})
+
+	test("should handle variables on right side of comparison", () => {
+		const code = `float myFloat = 10.5;
+			if (0 < myFloat) {
+			rgbLed.set_led_red();
+			} else {
+			rgbLed.set_led_green();
+			}`
+		const bytecode = CppParser.cppToByte(code)
+
+		// Find COMPARE instruction
+		let compareIndex = -1
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.COMPARE) {
+				compareIndex = i
+				break
+			}
+		}
+
+		expect(compareIndex).toBeGreaterThan(0)
+		expect(bytecode[compareIndex + 1]).toBe(ComparisonOp.LESS_THAN)
+		expect(bytecode[compareIndex + 2]).toBe(0)      // Constant 0
+		expect(bytecode[compareIndex + 3]).toBe(0x8000) // Register reference (high bit set)
+	})
+
+	test("should handle sensor expressions on right side of comparison", () => {
+		const code = `
+			while(true) {
+				if (0 > Sensors::getInstance().getPitch()) {
+					rgbLed.set_led_red();
+				} else {
+					rgbLed.set_led_green();
+				}
+			}
+		`
+		const bytecode = CppParser.cppToByte(code)
+
+		// Find READ_SENSOR instruction
+		let sensorIndex = -1
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.READ_SENSOR) {
+				sensorIndex = i
+				break
+			}
+		}
+		expect(sensorIndex).toBeGreaterThan(0)
+
+		// Find COMPARE instruction
+		let compareIndex = -1
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.COMPARE) {
+				compareIndex = i
+				break
+			}
+		}
+		expect(compareIndex).toBeGreaterThan(0)
+
+		expect(bytecode[compareIndex + 1]).toBe(ComparisonOp.GREATER_THAN)
+		expect(bytecode[compareIndex + 2]).toBe(0)      // Constant 0
+		expect(bytecode[compareIndex + 3] & 0x8000).toBe(0x8000) // Register reference (high bit set)
+	})
+
+	test("should produce equivalent bytecode for equivalent comparisons", () => {
+		// Method 1: variable on left
+		const bytecode1 = CppParser.cppToByte(`
+	while(true) {
+		float pitch = Sensors::getInstance().getPitch();
+		if (pitch < 0) {
+			rgbLed.set_led_red();
+		} else {
+			rgbLed.set_led_green();
+		}
+	}
+	`)
+
+		// Method 2: variable on right
+		const bytecode2 = CppParser.cppToByte(`
+	while(true) {
+		float pitch = Sensors::getInstance().getPitch();
+		if (0 > pitch) {
+			rgbLed.set_led_red();
+		} else {
+			rgbLed.set_led_green();
+		}
+	}
+	`)
+
+		// Both should have the same pattern of instructions
+		let compareIndex1 = -1
+		let compareIndex2 = -1
+
+		for (let i = 0; i < bytecode1.length; i += 5) {
+			if (bytecode1[i] === BytecodeOpCode.COMPARE) {
+				compareIndex1 = i
+				break
+			}
+		}
+
+		for (let i = 0; i < bytecode2.length; i += 5) {
+			if (bytecode2[i] === BytecodeOpCode.COMPARE) {
+				compareIndex2 = i
+				break
+			}
+		}
+
+		expect(compareIndex1).toBeGreaterThan(0)
+		expect(compareIndex2).toBeGreaterThan(0)
+
+		// Check that the comparison operations are equivalent
+		// Method 1: pitch < 0 (LESS_THAN)
+		// Method 2: 0 > pitch (GREATER_THAN)
+		expect(bytecode1[compareIndex1 + 1]).toBe(ComparisonOp.LESS_THAN)
+		expect(bytecode2[compareIndex2 + 1]).toBe(ComparisonOp.GREATER_THAN)
+
+		// Check operands are swapped appropriately
+		// Method 1: operand2=register, operand3=0
+		// Method 2: operand2=0, operand3=register
+		expect(bytecode1[compareIndex1 + 2] & 0x8000).toBe(0x8000) // Register in left operand
+		expect(bytecode1[compareIndex1 + 3]).toBe(0)               // Constant in right operand
+
+		expect(bytecode2[compareIndex2 + 2]).toBe(0)               // Constant in left operand
+		expect(bytecode2[compareIndex2 + 3] & 0x8000).toBe(0x8000) // Register in right operand
+	})
+
+	test("should handle variables on both sides of comparison", () => {
+		const bytecode = CppParser.cppToByte(`
+	while(true) {
+		float var1 = 5.0;
+		float var2 = 10.0;
+		if (var1 < var2) {
+			rgbLed.set_led_red();
+		}
+	}
+	`)
+
+		// Find COMPARE instruction
+		let compareIndex = -1
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.COMPARE) {
+				compareIndex = i
+				break
+			}
+		}
+
+		expect(compareIndex).toBeGreaterThan(0)
+		expect(bytecode[compareIndex + 1]).toBe(ComparisonOp.LESS_THAN)
+		expect(bytecode[compareIndex + 2] & 0x8000).toBe(0x8000) // Register reference (high bit set)
+		expect(bytecode[compareIndex + 3] & 0x8000).toBe(0x8000) // Register reference (high bit set)
+		// The registers should be different
+		expect(bytecode[compareIndex + 2]).not.toBe(bytecode[compareIndex + 3])
+	})
+
+	test("should handle sensor expressions on both sides of comparison", () => {
+		const bytecode = CppParser.cppToByte(`
+	while(true) {
+		if (Sensors::getInstance().getPitch() > Sensors::getInstance().getRoll()) {
+			rgbLed.set_led_blue();
+		}
+	}
+	`)
+
+		// Should have two READ_SENSOR instructions
+		let sensorCount = 0
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.READ_SENSOR) {
+				sensorCount++
+			}
+		}
+		expect(sensorCount).toBe(2)
+
+		// Find COMPARE instruction
+		let compareIndex = -1
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.COMPARE) {
+				compareIndex = i
+				break
+			}
+		}
+
+		expect(compareIndex).toBeGreaterThan(0)
+		expect(bytecode[compareIndex + 1]).toBe(ComparisonOp.GREATER_THAN)
+		expect(bytecode[compareIndex + 2] & 0x8000).toBe(0x8000) // Register reference (high bit set)
+		expect(bytecode[compareIndex + 3] & 0x8000).toBe(0x8000) // Register reference (high bit set)
+		// The registers should be different
+		expect(bytecode[compareIndex + 2]).not.toBe(bytecode[compareIndex + 3])
 	})
 })
