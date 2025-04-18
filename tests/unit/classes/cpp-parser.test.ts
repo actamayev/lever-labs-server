@@ -1030,7 +1030,7 @@ describe("For Loop Functionality", () => {
 
 describe("Sensor Functionality", () => {
 	// Helper function to check sensor bytecode generation
-	function testSensorReading(sensorMethod: string, expectedSensorType: SensorType) {
+	function testSensorReading(sensorMethod: string, expectedSensorType: SensorType): void {
 		const code = `if (Sensors::getInstance().${sensorMethod}() > 10) {
 			rgbLed.set_led_red();
 		}`
