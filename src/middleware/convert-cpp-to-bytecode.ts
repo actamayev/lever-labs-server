@@ -9,9 +9,9 @@ export default function convertCppToBytecode(req: Request, res: Response, next: 
 			res.status(400).json({ error: "No C++ code provided" })
 			return
 		}
-		const bytecode = CppParser.cppToByte(cppCode)
+		const bytecodeFloat32 = CppParser.cppToByte(cppCode)
 
-		req.body.bytecode = bytecode
+		req.bytecode = bytecodeFloat32
 		next()
 	} catch (error) {
 		console.error("C++ to bytecode conversion error:", error)

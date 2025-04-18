@@ -3,7 +3,7 @@ import { MAX_LED_BRIGHTNESS } from "../utils/constants"
 import { BytecodeOpCode, CommandPatterns, CommandType, ComparisonOp, LedID, SensorType, VarType } from "../types/bytecode-types"
 
 export default class CppParser {
-	public static cppToByte(unsanitizedCpp: string): Uint8Array<ArrayBufferLike> {
+	public static cppToByte(unsanitizedCpp: string): Float32Array {
 		const sanitizedCode = this.sanitizeUserCode(unsanitizedCpp)
 		const instructions = this.parseCppCode(sanitizedCode)
 		const bytecode = this.generateBytecode(instructions)
@@ -143,15 +143,13 @@ export default class CppParser {
 
 					if (typeEnum === VarType.FLOAT) {
 						const floatValue = parseFloat(varValue)
-						// Convert float to bytes (need to handle in special way)
-						const bytes = this.floatToBytes(floatValue)
 
 						instructions.push({
 							opcode: BytecodeOpCode.SET_VAR,
 							operand1: register,
-							operand2: bytes[0],
-							operand3: bytes[1],
-							operand4: bytes[2] // Note: losing 1 byte of precision
+							operand2: floatValue,
+							operand3: 0,
+							operand4: 0
 						})
 					} else if (typeEnum === VarType.BOOL) {
 						// Parse boolean value - handle both "true"/"false" and 1/0
@@ -185,9 +183,9 @@ export default class CppParser {
 						instructions.push({
 							opcode: BytecodeOpCode.SET_VAR,
 							operand1: register,
-							operand2: intValue & 0xFF,         // Low byte
-							operand3: (intValue >> 8) & 0xFF,  // Middle byte
-							operand4: (intValue >> 16) & 0xFF  // High byte (includes sign bit)
+							operand2: intValue,   // Direct assignment of the full value
+							operand3: 0,          // Can use for extended range if needed
+							operand4: 0           // Can use for extended range if needed
 						})
 					}
 				}
@@ -294,8 +292,8 @@ export default class CppParser {
 					const delayMs = parseInt(command.matches[1], 10)
 					instructions.push({
 						opcode: BytecodeOpCode.DELAY,
-						operand1: delayMs & 0xFF, // Low byte
-						operand2: (delayMs >> 8) & 0xFF, // High byte
+						operand1: delayMs,  // Direct assignment - no more bit masking!
+						operand2: 0,
 						operand3: 0,
 						operand4: 0
 					})
@@ -306,7 +304,7 @@ export default class CppParser {
 				if (command.matches && command.matches.length === 4) {
 					const leftExpr = command.matches[1]
 					const operator = command.matches[2]
-					const rightValue = parseInt(command.matches[3], 10)
+					const rightValue = parseFloat(command.matches[3])
 
 					// First check if left side is a sensor expression
 					const sensorMatch = leftExpr.match(/Sensors::getInstance\(\)\.(\w+)\(\)/)
@@ -362,13 +360,13 @@ export default class CppParser {
 						instructions.push({
 							opcode: BytecodeOpCode.COMPARE,
 							operand1: compOp,
-							operand2: 0x80 | register, // High bit indicates register reference
-							operand3: rightValue & 0xFF,
-							operand4: (rightValue >> 8) & 0xFF
+							operand2: 0x8000 | register,  // High bit indicates register reference
+							operand3: rightValue,         // Direct float value - no bit manipulation
+							operand4: 0
 						})
 					} else {
 						// Standard constant comparison (existing code)
-						const leftValue = parseInt(leftExpr, 10)
+						const leftValue = parseFloat(leftExpr)
 
 						// Map operator to ComparisonOp
 						let compOp: ComparisonOp
@@ -427,18 +425,18 @@ export default class CppParser {
 
 						// Jump back to condition check
 						const forEndIndex = instructions.length
-						const offsetToStart = (forEndIndex - (block.startIndex as number)) * 10
+						const offsetToStart = (forEndIndex - (block.startIndex as number)) * 20
 
 						instructions.push({
 							opcode: BytecodeOpCode.JUMP_BACKWARD,
-							operand1: offsetToStart & 0xFF,
-							operand2: (offsetToStart >> 8) & 0xFF,
+							operand1: offsetToStart,  // Direct assignment of the full offset
+							operand2: 0,
 							operand3: 0,
 							operand4: 0
 						})
 
 						// Fix the jump-if-false at start to point here
-						const offsetToHere = (instructions.length - block.jumpIndex) * 10
+						const offsetToHere = (instructions.length - block.jumpIndex) * 20
 						instructions[block.jumpIndex].operand1 = offsetToHere & 0xFF
 						instructions[block.jumpIndex].operand2 = (offsetToHere >> 8) & 0xFF
 					} else if (block.type === "while") {
@@ -446,7 +444,7 @@ export default class CppParser {
 						const whileEndIndex = instructions.length
 
 						// Calculate bytes to jump back (each instruction is 10 bytes)
-						const offsetToStart = (whileEndIndex - block.jumpIndex) * 10
+						const offsetToStart = (whileEndIndex - block.jumpIndex) * 20
 
 						instructions.push({
 							opcode: BytecodeOpCode.WHILE_END,
@@ -462,7 +460,7 @@ export default class CppParser {
                                                 statements[nextStatementIndex].trim() === "else"
 
 						if (hasElseNext) {
-							const offsetToElseBlock = (instructions.length + 1 - block.jumpIndex) * 10
+							const offsetToElseBlock = (instructions.length + 1 - block.jumpIndex) * 20
 							instructions[block.jumpIndex].operand1 = offsetToElseBlock & 0xFF
 							instructions[block.jumpIndex].operand2 = (offsetToElseBlock >> 8) & 0xFF
 
@@ -480,15 +478,16 @@ export default class CppParser {
 							pendingJumps.push({ index: skipElseIndex, targetType: "end_of_else" })
 						} else {
 							// No else block, so jump-if-false should point to the current position
-							const offsetToEndOfIf = (instructions.length - block.jumpIndex) * 10
+							const offsetToEndOfIf = (instructions.length - block.jumpIndex) * 20
 							instructions[block.jumpIndex].operand1 = offsetToEndOfIf & 0xFF
 							instructions[block.jumpIndex].operand2 = (offsetToEndOfIf >> 8) & 0xFF
 						}
+					// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 					} else if (block.type === "else") {
 						for (let i = pendingJumps.length - 1; i >= 0; i--) {
 							const jump = pendingJumps[i]
 							if (jump.targetType === "end_of_else") {
-								const offsetToEnd = (instructions.length - jump.index) * 10
+								const offsetToEnd = (instructions.length - jump.index) * 20
 								instructions[jump.index].operand1 = offsetToEnd & 0xFF
 								instructions[jump.index].operand2 = (offsetToEnd >> 8) & 0xFF
 								pendingJumps.splice(i, 1)
@@ -531,28 +530,17 @@ export default class CppParser {
 		}
 	}
 
-	private static generateBytecode(instructions: BytecodeInstruction[]): Uint8Array {
-		// Each instruction is now 10 bytes (2 for opcode, 8 for operands)
-		const bytecode = new Uint8Array(instructions.length * 10)
+	private static generateBytecode(instructions: BytecodeInstruction[]): Float32Array {
+		// Each instruction now uses 5 Float32 values
+		const bytecode = new Float32Array(instructions.length * 5)
 
 		instructions.forEach((instruction, index) => {
-			const offset = index * 10
-			// Write 16-bit opcode (little-endian)
-			bytecode[offset] = instruction.opcode & 0xFF         // Low byte of opcode
-			bytecode[offset + 1] = (instruction.opcode >> 8) & 0xFF  // High byte of opcode
-
-			// Write 16-bit operands (little-endian)
-			bytecode[offset + 2] = instruction.operand1 & 0xFF
-			bytecode[offset + 3] = (instruction.operand1 >> 8) & 0xFF
-
-			bytecode[offset + 4] = instruction.operand2 & 0xFF
-			bytecode[offset + 5] = (instruction.operand2 >> 8) & 0xFF
-
-			bytecode[offset + 6] = instruction.operand3 & 0xFF
-			bytecode[offset + 7] = (instruction.operand3 >> 8) & 0xFF
-
-			bytecode[offset + 8] = instruction.operand4 & 0xFF
-			bytecode[offset + 9] = (instruction.operand4 >> 8) & 0xFF
+			const offset = index * 5
+			bytecode[offset] = instruction.opcode
+			bytecode[offset + 1] = instruction.operand1
+			bytecode[offset + 2] = instruction.operand2
+			bytecode[offset + 3] = instruction.operand3
+			bytecode[offset + 4] = instruction.operand4
 		})
 
 		return bytecode
@@ -585,12 +573,5 @@ export default class CppParser {
 
 		// NOTE: We are NOT restoring semicolons here!
 		// We'll restore them after splitting into statements
-	}
-
-	private static floatToBytes(value: number): Uint8Array {
-		const buffer = new ArrayBuffer(4)
-		const view = new DataView(buffer)
-		view.setFloat32(0, value, true) // little-endian
-		return new Uint8Array(buffer)
 	}
 }

@@ -2,11 +2,11 @@ import { CommandType } from "./bytecode-types"
 
 declare global {
 	interface BytecodeInstruction {
-		opcode: number
-		operand1: number
-		operand2: number
-		operand3: number
-		operand4: number
+		opcode: number    // int16_t in ESP32
+		operand1: number  // int16_t in ESP32
+		operand2: number  // int16_t in ESP32
+		operand3: number  // int16_t in ESP32
+		operand4: number  // int16_t in ESP32
 	}
 
 	interface BlockStack {
