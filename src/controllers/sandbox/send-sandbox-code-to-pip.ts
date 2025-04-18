@@ -3,7 +3,8 @@ import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 
 export default async function sendSandboxCodeToPip(req: Request, res: Response): Promise<void> {
 	try {
-		const { pipUUID, bytecode } = req.body as { pipUUID: PipUUID, bytecode: Uint8Array }
+		const { pipUUID } = req.body as { pipUUID: PipUUID }
+		const { bytecode } = req
 
 		await Esp32SocketManager.getInstance().emitBytecodeToPip(pipUUID, bytecode)
 

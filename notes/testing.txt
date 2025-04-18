@@ -10,3 +10,6 @@ To visualize test coverage, run:
 	`npm run test:coverage`
 	`open coverage/lcov-report/index.html`
 	Coverage should be 100%
+
+To run a specific test suite:
+	`npm run test -- -t "<test_name>"`

@@ -5,15 +5,22 @@ export enum BytecodeOpCode {
 	SET_LED = 0x10,
 	SET_ALL_LEDS = 0x11,
 
-	COMPARE = 0x30,       // Compare values
-    JUMP = 0x31,          // Unconditional jump
-    JUMP_IF_TRUE = 0x32,  // Jump if comparison was true
-    JUMP_IF_FALSE = 0x33, // Jump if comparison was false
-	WHILE_START = 0x34,
-    WHILE_END = 0x35,
+    READ_SENSOR = 0x20,  // Read sensor value into register
 
-    DECLARE_VAR = 0x40,
-    SET_VAR = 0x41,
+	COMPARE = 0x30,       // Compare values
+	JUMP = 0x31,          // Unconditional jump
+	JUMP_IF_TRUE = 0x32,  // Jump if comparison was true
+	JUMP_IF_FALSE = 0x33, // Jump if comparison was false
+	WHILE_START = 0x34,
+	WHILE_END = 0x35,
+
+	FOR_INIT = 0x36,     // Initialize loop counter
+	FOR_CONDITION = 0x37, // Check loop condition
+	FOR_INCREMENT = 0x38, // Increment loop counter
+    JUMP_BACKWARD = 0x39,  // Backward jump (for loops)
+
+	DECLARE_VAR = 0x40,
+	SET_VAR = 0x41,
 }
 
 export enum ComparisonOp {
@@ -32,38 +39,56 @@ export enum VarType {
 }
 
 export enum LedID {
-	ALL = 0,
-	TOP_LEFT = 1,
-	TOP_RIGHT = 2,
-	MIDDLE_LEFT = 3,
-	MIDDLE_RIGHT = 4,
-	BACK_LEFT = 5,
-	BACK_RIGHT = 6
+    ALL = 0,
+    TOP_LEFT = 1,
+    TOP_RIGHT = 2,
+    MIDDLE_LEFT = 3,
+    MIDDLE_RIGHT = 4,
+    BACK_LEFT = 5,
+    BACK_RIGHT = 6
+}
+
+export enum SensorType {
+    PITCH = 0,
+    ROLL = 1,
+    YAW = 2,
+    ACCEL_X = 3,
+    ACCEL_Y = 4,
+    ACCEL_Z = 5,
+    ACCEL_MAG = 6,
+    ROT_RATE_X = 7,
+    ROT_RATE_Y = 8,
+    ROT_RATE_Z = 9,
+    MAG_FIELD_X = 10,
+    MAG_FIELD_Y = 11,
+    MAG_FIELD_Z = 12
 }
 
 export enum CommandType {
-	TURN_LED_OFF = "TURN_LED_OFF",
-	SET_LED_RED = "SET_LED_RED",
-	SET_LED_GREEN = "SET_LED_GREEN",
-	SET_LED_BLUE = "SET_LED_BLUE",
-	SET_LED_WHITE = "SET_LED_WHITE",
-	SET_LED_PURPLE = "SET_LED_PURPLE",
-	SET_ALL_LEDS = "SET_ALL_LEDS",
-	SET_TOP_LEFT_LED = "SET_TOP_LEFT_LED",
-	SET_TOP_RIGHT_LED = "SET_TOP_RIGHT_LED",
-	SET_MIDDLE_LEFT_LED = "SET_MIDDLE_LEFT_LED",
-	SET_MIDDLE_RIGHT_LED = "SET_MIDDLE_RIGHT_LED",
-	SET_BACK_LEFT_LED = "SET_BACK_LEFT_LED",
-	SET_BACK_RIGHT_LED = "SET_BACK_RIGHT_LED",
-	DELAY = "DELAY",
+    TURN_LED_OFF = "TURN_LED_OFF",
+    SET_LED_RED = "SET_LED_RED",
+    SET_LED_GREEN = "SET_LED_GREEN",
+    SET_LED_BLUE = "SET_LED_BLUE",
+    SET_LED_WHITE = "SET_LED_WHITE",
+    SET_LED_PURPLE = "SET_LED_PURPLE",
+    SET_ALL_LEDS = "SET_ALL_LEDS",
+    SET_TOP_LEFT_LED = "SET_TOP_LEFT_LED",
+    SET_TOP_RIGHT_LED = "SET_TOP_RIGHT_LED",
+    SET_MIDDLE_LEFT_LED = "SET_MIDDLE_LEFT_LED",
+    SET_MIDDLE_RIGHT_LED = "SET_MIDDLE_RIGHT_LED",
+    SET_BACK_LEFT_LED = "SET_BACK_LEFT_LED",
+    SET_BACK_RIGHT_LED = "SET_BACK_RIGHT_LED",
+    DELAY = "DELAY",
 
     VARIABLE_ASSIGNMENT = "VARIABLE_ASSIGNMENT",
 
-	IF_STATEMENT = "IF_STATEMENT",
+    IF_STATEMENT = "IF_STATEMENT",
     ELSE_STATEMENT = "ELSE_STATEMENT",
     BLOCK_START = "BLOCK_START",
     BLOCK_END = "BLOCK_END",
-	WHILE_STATEMENT = "WHILE_STATEMENT",
+    WHILE_STATEMENT = "WHILE_STATEMENT",
+    FOR_STATEMENT = "FOR_STATEMENT",
+    SENSOR_READ = "SENSOR_READ",
 }
 
 // Command patterns for validation
@@ -86,9 +111,12 @@ export const CommandPatterns: Record<CommandType, RegExp> = {
 
 	[CommandType.VARIABLE_ASSIGNMENT]: /^(float|int|bool)\s+(\w+)\s*=\s*(.+)$/,
 
-	[CommandType.IF_STATEMENT]: /^if\s*\(\s*(\d+)\s*([<>=!][=]?)\s*(\d+)\s*\)$/,
+	// TODO: Have the availability to have a sensor reading on the right-hand side.
+	[CommandType.IF_STATEMENT]: /^if\s*\(\s*(Sensors::getInstance\(\)\.\w+\(\)|[-\d.]+|\w+)\s*([<>=!][=]?)\s*(-?\d+\.?\d*|\w+)\s*\)$/,
 	[CommandType.ELSE_STATEMENT]: /^else$/,
 	[CommandType.BLOCK_START]: /^{$/,
 	[CommandType.BLOCK_END]: /^}$/,
 	[CommandType.WHILE_STATEMENT]: /^while\s*\(\s*true\s*\)$/,
+	[CommandType.FOR_STATEMENT]: /^for\s*\(\s*int\s+(\w+)\s*=\s*(\d+)\s*;\s*\1\s*<\s*(\d+)\s*;\s*\1\s*\+\+\s*\)$/,
+	[CommandType.SENSOR_READ]: /^Sensors::getInstance\(\)\.(\w+)\(\)$/,
 }

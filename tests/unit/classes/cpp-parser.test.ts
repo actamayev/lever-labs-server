@@ -1,7 +1,7 @@
-/* eslint-disable complexity */
 /* eslint-disable max-lines-per-function */
 import CppParser from "../../../src/classes/cpp-parser"
-import { BytecodeOpCode, CommandType, ComparisonOp, LedID } from "../../../src/types/bytecode-types"
+import { MAX_LED_BRIGHTNESS } from "../../../src/utils/constants"
+import { BytecodeOpCode, CommandType, ComparisonOp, LedID, SensorType, VarType } from "../../../src/types/bytecode-types"
 
 describe("CppParser", () => {
 	// 1. Test garbage input
@@ -26,81 +26,104 @@ describe("CppParser", () => {
 
 			// Check if bytecode starts with DECLARE_VAR opcode
 			expect(bytecode[0]).toBe(BytecodeOpCode.DECLARE_VAR)
+			expect(bytecode[1]).toBe(0) // Register 0
 
 			// Check if SET_VAR follows the declaration
 			expect(bytecode[5]).toBe(BytecodeOpCode.SET_VAR)
-			expect(bytecode[7]).toBe(42) // Low byte of value
+			expect(bytecode[6]).toBe(0) // Register 0
+			expect(bytecode[7]).toBe(42) // Value
+			expect(bytecode[8]).toBe(0)  // Unused
 		})
 
 		test("should parse boolean variable assignment", () => {
 			const bytecode = CppParser.cppToByte("bool myFlag = true;")
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.DECLARE_VAR)
+			expect(bytecode[1]).toBe(0)
 			expect(bytecode[5]).toBe(BytecodeOpCode.SET_VAR)
+			expect(bytecode[6]).toBe(0)
 			expect(bytecode[7]).toBe(1) // 1 for true
+			expect(bytecode[8]).toBe(0)
 		})
 
 		test("should parse float variable assignment", () => {
 			const bytecode = CppParser.cppToByte("float myFloat = 3.14;")
 
-			expect(bytecode[0]).toBe(BytecodeOpCode.DECLARE_VAR)
-			expect(bytecode[5]).toBe(BytecodeOpCode.SET_VAR)
-			// Float parsing is more complex, so we just verify it's a valid bytecode
-			expect(bytecode.length).toBeGreaterThan(10)
+			// First instruction: DECLARE_VAR
+			expect(bytecode[0]).toBe(BytecodeOpCode.DECLARE_VAR) // opcode
+			expect(bytecode[1]).toBe(0)                        // register 0
+			expect(bytecode[2]).toBe(VarType.FLOAT)            // float type
+			expect(bytecode[3]).toBe(0)                        // unused
+			expect(bytecode[4]).toBe(0)                        // unused
+
+			// Second instruction: SET_VAR
+			expect(bytecode[5]).toBe(BytecodeOpCode.SET_VAR)   // opcode
+			expect(bytecode[6]).toBe(0)                        // register 0
+			expect(bytecode[7]).toBeCloseTo(3.14, 5)           // float value 3.14
+			expect(bytecode[8]).toBe(0)                        // unused
+			expect(bytecode[9]).toBe(0)                        // unused
+
+			// Third instruction: END
+			expect(bytecode[10]).toBe(BytecodeOpCode.END)
+			expect(bytecode.length).toBe(15) // 3 instructions * 5
 		})
+
 		describe("Variable assignments error handling", () => {
 			test("should reject unsupported variable type", () => {
-			  expect(() => {
-					CppParser.cppToByte("char myVar = 'A';") // 'char' is not supported
+				expect(() => {
+					CppParser.cppToByte("char myVar = 'A';")
 				}).toThrow(/Invalid command/)
 			})
 
 			test("should reject invalid boolean value", () => {
-			  expect(() => {
-					CppParser.cppToByte("bool myFlag = maybe;") // 'maybe' is not a valid boolean
+				expect(() => {
+					CppParser.cppToByte("bool myFlag = maybe;")
 				}).toThrow(/Invalid boolean value/)
 			})
 
 			test("should reject invalid integer value", () => {
-			  expect(() => {
-					CppParser.cppToByte("int myNum = notAnInt;") // 'notAnInt' is not a valid integer
+				expect(() => {
+					CppParser.cppToByte("int myNum = notAnInt;")
 				}).toThrow(/Invalid integer value/)
 			})
+
 			test("should parse boolean variable assigned to 'false'", () => {
 				const bytecode = CppParser.cppToByte("bool myFlag = false;")
 
 				expect(bytecode[0]).toBe(BytecodeOpCode.DECLARE_VAR)
+				expect(bytecode[1]).toBe(0)
 				expect(bytecode[5]).toBe(BytecodeOpCode.SET_VAR)
+				expect(bytecode[6]).toBe(0)
 				expect(bytecode[7]).toBe(0) // 0 for false
-			  })
+				expect(bytecode[8]).toBe(0)
+			})
 
-			  test("should parse boolean variable assigned to '0'", () => {
+			test("should parse boolean variable assigned to '0'", () => {
 				const bytecode = CppParser.cppToByte("bool myFlag = 0;")
 
 				expect(bytecode[0]).toBe(BytecodeOpCode.DECLARE_VAR)
+				expect(bytecode[1]).toBe(0)
 				expect(bytecode[5]).toBe(BytecodeOpCode.SET_VAR)
+				expect(bytecode[6]).toBe(0)
 				expect(bytecode[7]).toBe(0) // 0 for false
-			  })
+				expect(bytecode[8]).toBe(0)
+			})
 
-			  test("should throw for unsupported variable type", () => {
-				// This test requires a special approach since the regex validation happens before the type check
-
-				// Create a spy on the identifyCommand method to bypass the regex validation
+			test("should throw for unsupported variable type", () => {
 				const originalIdentifyCommand = CppParser["identifyCommand"]
 				CppParser["identifyCommand"] = jest.fn().mockReturnValue({
-				  type: CommandType.VARIABLE_ASSIGNMENT,
-				  matches: ["full match", "double", "testVar", "3.14"] // Using "double" as unsupported type
+					type: CommandType.VARIABLE_ASSIGNMENT,
+					matches: ["full match", "double", "testVar", "3.14"]
 				})
 
 				try {
-				  expect(() => {
+					expect(() => {
 						CppParser.cppToByte("double testVar = 3.14;")
-				  }).toThrow(/Unsupported type: double/)
+					}).toThrow(/Unsupported type: double/)
 				} finally {
-				  // Restore the original method
-				  CppParser["identifyCommand"] = originalIdentifyCommand
+					CppParser["identifyCommand"] = originalIdentifyCommand
 				}
-			  })
+			})
 		})
 	})
 
@@ -113,79 +136,80 @@ describe("CppParser", () => {
 			expect(bytecode[1]).toBe(0) // R
 			expect(bytecode[2]).toBe(0) // G
 			expect(bytecode[3]).toBe(0) // B
+			expect(bytecode[4]).toBe(0) // Unused
 		})
 
 		test("should parse set_all_leds_to_color command", () => {
 			const bytecode = CppParser.cppToByte("set_all_leds_to_color(255, 127, 64);")
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-			expect(bytecode[1]).toBe(255) // R
+			expect(bytecode[1]).toBe(MAX_LED_BRIGHTNESS) // R
 			expect(bytecode[2]).toBe(127) // G
 			expect(bytecode[3]).toBe(64)  // B
+			expect(bytecode[4]).toBe(0)   // Unused
 		})
 
 		test("should parse individual LED setting", () => {
 			const bytecode = CppParser.cppToByte("rgbLed.set_top_left_led(10, 20, 30);")
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
-			expect(bytecode[1]).toBe(LedID.TOP_LEFT)
-			expect(bytecode[2]).toBe(10) // R
-			expect(bytecode[3]).toBe(20) // G
-			expect(bytecode[4]).toBe(30) // B
+			expect(bytecode[1]).toBe(LedID.TOP_LEFT) // LED ID
+			expect(bytecode[2]).toBe(10)             // R
+			expect(bytecode[3]).toBe(20)             // G
+			expect(bytecode[4]).toBe(30)             // B
 		})
 
 		describe("Individual LED operations", () => {
 			test("should parse set_top_right_led command", () => {
-			  const bytecode = CppParser.cppToByte("rgbLed.set_top_right_led(10, 20, 30);")
+				const bytecode = CppParser.cppToByte("rgbLed.set_top_right_led(10, 20, 30);")
 
-			  expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
-			  expect(bytecode[1]).toBe(LedID.TOP_RIGHT)
-			  expect(bytecode[2]).toBe(10) // R
-			  expect(bytecode[3]).toBe(20) // G
-			  expect(bytecode[4]).toBe(30) // B
+				expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
+				expect(bytecode[1]).toBe(LedID.TOP_RIGHT)
+				expect(bytecode[2]).toBe(10)
+				expect(bytecode[3]).toBe(20)
+				expect(bytecode[4]).toBe(30)
 			})
 
 			test("should parse set_middle_left_led command", () => {
-			  const bytecode = CppParser.cppToByte("rgbLed.set_middle_left_led(40, 50, 60);")
+				const bytecode = CppParser.cppToByte("rgbLed.set_middle_left_led(40, 50, 60);")
 
-			  expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
-			  expect(bytecode[1]).toBe(LedID.MIDDLE_LEFT)
-			  expect(bytecode[2]).toBe(40) // R
-			  expect(bytecode[3]).toBe(50) // G
-			  expect(bytecode[4]).toBe(60) // B
+				expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
+				expect(bytecode[1]).toBe(LedID.MIDDLE_LEFT)
+				expect(bytecode[2]).toBe(40)
+				expect(bytecode[3]).toBe(50)
+				expect(bytecode[4]).toBe(60)
 			})
 
 			test("should parse set_middle_right_led command", () => {
-			  const bytecode = CppParser.cppToByte("rgbLed.set_middle_right_led(70, 80, 90);")
+				const bytecode = CppParser.cppToByte("rgbLed.set_middle_right_led(70, 80, 90);")
 
-			  expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
-			  expect(bytecode[1]).toBe(LedID.MIDDLE_RIGHT)
-			  expect(bytecode[2]).toBe(70) // R
-			  expect(bytecode[3]).toBe(80) // G
-			  expect(bytecode[4]).toBe(90) // B
+				expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
+				expect(bytecode[1]).toBe(LedID.MIDDLE_RIGHT)
+				expect(bytecode[2]).toBe(70)
+				expect(bytecode[3]).toBe(80)
+				expect(bytecode[4]).toBe(90)
 			})
 
 			test("should parse set_back_left_led command", () => {
-			  const bytecode = CppParser.cppToByte("rgbLed.set_back_left_led(100, 110, 120);")
+				const bytecode = CppParser.cppToByte("rgbLed.set_back_left_led(100, 110, 120);")
 
-			  expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
-			  expect(bytecode[1]).toBe(LedID.BACK_LEFT)
-			  expect(bytecode[2]).toBe(100) // R
-			  expect(bytecode[3]).toBe(110) // G
-			  expect(bytecode[4]).toBe(120) // B
+				expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
+				expect(bytecode[1]).toBe(LedID.BACK_LEFT)
+				expect(bytecode[2]).toBe(100)
+				expect(bytecode[3]).toBe(110)
+				expect(bytecode[4]).toBe(120)
 			})
 
 			test("should parse set_back_right_led command", () => {
-			  const bytecode = CppParser.cppToByte("rgbLed.set_back_right_led(130, 140, 150);")
+				const bytecode = CppParser.cppToByte("rgbLed.set_back_right_led(130, 140, 150);")
 
-			  expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
-			  expect(bytecode[1]).toBe(LedID.BACK_RIGHT)
-			  expect(bytecode[2]).toBe(130) // R
-			  expect(bytecode[3]).toBe(140) // G
-			  expect(bytecode[4]).toBe(150) // B
+				expect(bytecode[0]).toBe(BytecodeOpCode.SET_LED)
+				expect(bytecode[1]).toBe(LedID.BACK_RIGHT)
+				expect(bytecode[2]).toBe(130)
+				expect(bytecode[3]).toBe(140)
+				expect(bytecode[4]).toBe(150)
 			})
-		  })
-
+		})
 	})
 
 	// 2.3 Test delay commands
@@ -194,211 +218,215 @@ describe("CppParser", () => {
 			const bytecode = CppParser.cppToByte("delay(500);")
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.DELAY)
-			expect(bytecode[1]).toBe(500 & 0xFF) // Low byte
-			expect(bytecode[2]).toBe((500 >> 8) & 0xFF) // High byte
+			expect(bytecode[1]).toBe(500) // Delay value
+			expect(bytecode[2]).toBe(0)   // Unused
+			expect(bytecode[3]).toBe(0)   // Unused
+			expect(bytecode[4]).toBe(0)   // Unused
+			expect(bytecode[5]).toBe(BytecodeOpCode.END)
 		})
 	})
 
-	// 3. Test complex programs (will need to be added once implemented)
+	// 3. Test complex programs
 	describe("Combining multiple commands", () => {
 		test("should parse a simple LED blink program", () => {
 			const program = `
-        rgbLed.set_led_red();
-        delay(500);
-        rgbLed.turn_led_off();
-        delay(500);
-      `
+			rgbLed.set_led_red();
+			delay(500);
+			rgbLed.turn_led_off();
+			delay(500);
+		`
 
 			const bytecode = CppParser.cppToByte(program)
 
-			// Verify the program has the correct sequence
 			// 1st instruction: SET_ALL_LEDS (red)
 			expect(bytecode[0]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+			expect(bytecode[1]).toBe(MAX_LED_BRIGHTNESS) // R
+			expect(bytecode[2]).toBe(0)   // G
+			expect(bytecode[3]).toBe(0)   // B
 
 			// 2nd instruction: DELAY
 			expect(bytecode[5]).toBe(BytecodeOpCode.DELAY)
+			expect(bytecode[6]).toBe(500)
 
 			// 3rd instruction: SET_ALL_LEDS (off)
 			expect(bytecode[10]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+			expect(bytecode[11]).toBe(0) // R
+			expect(bytecode[12]).toBe(0) // G
+			expect(bytecode[13]).toBe(0) // B
 
 			// 4th instruction: DELAY
 			expect(bytecode[15]).toBe(BytecodeOpCode.DELAY)
+			expect(bytecode[16]).toBe(500)
 
-			// Last instruction should be END
+			// Last instruction: END
 			const lastIndex = bytecode.length - 5
 			expect(bytecode[lastIndex]).toBe(BytecodeOpCode.END)
+			expect(bytecode[lastIndex + 1]).toBe(0)
 		})
 	})
-	// TODO: Add some conditional tests
 })
 
 describe("Control flow", () => {
 	test("should parse basic if-else statement", () => {
-	  const code = `if (5 > 10) {
+		const code = `if (5 > 10) {
 		rgbLed.set_led_white();
-	  } else {
+	} else {
 		rgbLed.set_led_red();
-	  }
-	  delay(1000);
-	  rgbLed.set_led_green();`
+	}
+	delay(1000);
+	rgbLed.set_led_green();`
 
-	  const bytecode = CppParser.cppToByte(code)
+		const bytecode = CppParser.cppToByte(code)
 
-	  // Verify bytecode structure:
-	  // 1. Compare operation
-	  expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
-	  expect(bytecode[1]).toBe(ComparisonOp.GREATER_THAN)
-	  expect(bytecode[2]).toBe(5)  // Left value
-	  expect(bytecode[3]).toBe(10) // Right value
+		// 1. Compare operation
+		expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
+		expect(bytecode[1]).toBe(ComparisonOp.GREATER_THAN)
+		expect(bytecode[2]).toBe(5)  // Left value
+		expect(bytecode[3]).toBe(10) // Right value
+		expect(bytecode[4]).toBe(0)  // Unused
 
-	  // 2. Jump if false to else block
-	  expect(bytecode[5]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+		// 2. Jump if false to else block (3 instructions ahead: 3 * 20 = 60 bytes)
+		expect(bytecode[5]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+		expect(bytecode[6]).toBe(60)
 
-	  // 3. Set LEDs white (true branch)
-	  expect(bytecode[10]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-	  expect(bytecode[11]).toBe(255) // R
-	  expect(bytecode[12]).toBe(255) // G
-	  expect(bytecode[13]).toBe(255) // B
+		// 3. Set LEDs white (true branch)
+		expect(bytecode[10]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[11]).toBe(MAX_LED_BRIGHTNESS) // R
+		expect(bytecode[12]).toBe(MAX_LED_BRIGHTNESS) // G
+		expect(bytecode[13]).toBe(MAX_LED_BRIGHTNESS) // B
 
-	  // 4. Unconditional jump to skip else block
-	  expect(bytecode[15]).toBe(BytecodeOpCode.JUMP)
+		// 4. Unconditional jump to skip else block (5 instructions ahead: 5 * 20 = 100 bytes)
+		expect(bytecode[15]).toBe(BytecodeOpCode.JUMP)
+		expect(bytecode[16]).toBe(40)
 
-	  // 5. Set LEDs red (false branch)
-	  expect(bytecode[20]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-	  expect(bytecode[21]).toBe(255) // R
-	  expect(bytecode[22]).toBe(0)   // G
-	  expect(bytecode[23]).toBe(0)   // B
+		// 5. Set LEDs red (false branch)
+		expect(bytecode[20]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[21]).toBe(MAX_LED_BRIGHTNESS) // R
+		expect(bytecode[22]).toBe(0)   // G
+		expect(bytecode[23]).toBe(0)   // B
 
-	  // 6. Delay instruction
-	  expect(bytecode[25]).toBe(BytecodeOpCode.DELAY)
-	  // Verify 1000ms delay (232 + 3*256 = 1000)
-	  expect(bytecode[26]).toBe(232)
-	  expect(bytecode[27]).toBe(3)
+		// 6. Delay instruction
+		expect(bytecode[25]).toBe(BytecodeOpCode.DELAY)
+		expect(bytecode[26]).toBe(1000) // 1000ms
 
-	  // 7. Set LEDs green (after if-else)
-	  expect(bytecode[30]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-	  expect(bytecode[31]).toBe(0)   // R
-	  expect(bytecode[32]).toBe(255) // G
-	  expect(bytecode[33]).toBe(0)   // B
+		// 7. Set LEDs green
+		expect(bytecode[30]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[31]).toBe(0)   // R
+		expect(bytecode[32]).toBe(MAX_LED_BRIGHTNESS) // G
+		expect(bytecode[33]).toBe(0)   // B
 
-	  // 8. End instruction
-	  expect(bytecode[35]).toBe(BytecodeOpCode.END)
+		// 8. End instruction
+		expect(bytecode[35]).toBe(BytecodeOpCode.END)
+		expect(bytecode[36]).toBe(0)
 	})
 
 	test("should parse if without else", () => {
 		const code = `if (3 < 7) {
-		  rgbLed.set_led_blue();
-		}
-		rgbLed.set_led_purple();`
+		rgbLed.set_led_blue();
+	}
+	rgbLed.set_led_purple();`
 
 		const bytecode = CppParser.cppToByte(code)
 
 		// 1. Compare operation
 		expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
 		expect(bytecode[1]).toBe(ComparisonOp.LESS_THAN)
-		expect(bytecode[2]).toBe(3)  // Left value
-		expect(bytecode[3]).toBe(7)  // Right value
+		expect(bytecode[2]).toBe(3)
+		expect(bytecode[3]).toBe(7)
+		expect(bytecode[4]).toBe(0)
 
-		// 2. Jump if false to skip if block
+		// 2. Jump if false to skip if block (2 instructions ahead: 2 * 20 = 40 bytes)
 		expect(bytecode[5]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+		expect(bytecode[6]).toBe(40)
 
-		// Find the blue LED instruction (should be in the if block)
-		let blueInstIndex = -1
-		for (let i = 10; i < bytecode.length; i += 5) {
-		  if (bytecode[i] === BytecodeOpCode.SET_ALL_LEDS &&
-			  bytecode[i + 1] === 0 &&
-			  bytecode[i + 2] === 0 &&
-			  bytecode[i + 3] === 255) {
-				blueInstIndex = i
-				break
-		  }
-		}
-		expect(blueInstIndex).toBeGreaterThan(0) // Should find blue instruction
+		// 3. Set LEDs blue
+		expect(bytecode[10]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[11]).toBe(0)   // R
+		expect(bytecode[12]).toBe(0)   // G
+		expect(bytecode[13]).toBe(MAX_LED_BRIGHTNESS) // B
 
-		// Find the purple LED instruction (should be after if block)
-		let purpleInstIndex = -1
-		for (let i = blueInstIndex + 5; i < bytecode.length; i += 5) {
-		  if (bytecode[i] === BytecodeOpCode.SET_ALL_LEDS &&
-			  bytecode[i + 1] === 255 &&
-			  bytecode[i + 2] === 0 &&
-			  bytecode[i + 3] === 255) {
-				purpleInstIndex = i
-				break
-		  }
-		}
-		expect(purpleInstIndex).toBeGreaterThan(0) // Should find purple instruction
+		// 4. Set LEDs purple
+		expect(bytecode[15]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[16]).toBe(MAX_LED_BRIGHTNESS) // R
+		expect(bytecode[17]).toBe(0)   // G
+		expect(bytecode[18]).toBe(MAX_LED_BRIGHTNESS) // B
 
-		// Verify END instruction
+		// 5. End instruction
 		const endIndex = bytecode.length - 5
 		expect(bytecode[endIndex]).toBe(BytecodeOpCode.END)
-	  })
+		expect(bytecode[endIndex + 1]).toBe(0)
+	})
 
 	test("should parse nested if-else statements", () => {
-	  const code = `if (10 == 10) {
+		const code = `if (10 == 10) {
 		if (5 != 5) {
-		  rgbLed.set_led_green();
+			rgbLed.set_led_green();
 		} else {
-		  rgbLed.set_led_blue();
+			rgbLed.set_led_blue();
 		}
-	  } else {
+	} else {
 		rgbLed.set_led_red();
-	  }`
+	}`
 
-	  const bytecode = CppParser.cppToByte(code)
+		const bytecode = CppParser.cppToByte(code)
 
-	  // 1. First compare operation (outer if)
-	  expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
-	  expect(bytecode[1]).toBe(ComparisonOp.EQUAL)
-	  expect(bytecode[2]).toBe(10)  // Left value
-	  expect(bytecode[3]).toBe(10)  // Right value
+		// 1. First compare operation (outer if)
+		expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
+		expect(bytecode[1]).toBe(ComparisonOp.EQUAL)
+		expect(bytecode[2]).toBe(10)
+		expect(bytecode[3]).toBe(10)
+		expect(bytecode[4]).toBe(0)
 
-	  // 2. Jump if false to outer else
-	  expect(bytecode[5]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+		// 2. Jump if false to outer else (7 instructions ahead: 7 * 20 = 140 bytes)
+		expect(bytecode[5]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+		expect(bytecode[6]).toBe(140)
 
-	  // 3. Second compare operation (inner if)
-	  expect(bytecode[10]).toBe(BytecodeOpCode.COMPARE)
-	  expect(bytecode[11]).toBe(ComparisonOp.NOT_EQUAL)
-	  expect(bytecode[12]).toBe(5)  // Left value
-	  expect(bytecode[13]).toBe(5)  // Right value
+		// 3. Second compare operation (inner if)
+		expect(bytecode[10]).toBe(BytecodeOpCode.COMPARE)
+		expect(bytecode[11]).toBe(ComparisonOp.NOT_EQUAL)
+		expect(bytecode[12]).toBe(5)
+		expect(bytecode[13]).toBe(5)
+		expect(bytecode[14]).toBe(0)
 
-	  // Verify the end has the END opcode
-	  expect(bytecode[bytecode.length - 5]).toBe(BytecodeOpCode.END)
+		// Verify end instruction
+		expect(bytecode[bytecode.length - 5]).toBe(BytecodeOpCode.END)
+		expect(bytecode[bytecode.length - 4]).toBe(0)
 	})
 
 	test("should parse equality and inequality operators", () => {
-	  const tests = [
+		const tests = [
 			{ code: "if (5 == 5) { rgbLed.set_led_red(); }", op: ComparisonOp.EQUAL },
 			{ code: "if (5 != 5) { rgbLed.set_led_red(); }", op: ComparisonOp.NOT_EQUAL },
 			{ code: "if (5 > 5) { rgbLed.set_led_red(); }", op: ComparisonOp.GREATER_THAN },
 			{ code: "if (5 < 5) { rgbLed.set_led_red(); }", op: ComparisonOp.LESS_THAN },
 			{ code: "if (5 >= 5) { rgbLed.set_led_red(); }", op: ComparisonOp.GREATER_EQUAL },
 			{ code: "if (5 <= 5) { rgbLed.set_led_red(); }", op: ComparisonOp.LESS_EQUAL }
-	  ]
+		]
 
-	  for (const test of tests) {
+		for (const test of tests) {
 			const bytecode = CppParser.cppToByte(test.code)
 
-			// Verify comparison operator
 			expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
 			expect(bytecode[1]).toBe(test.op)
-	  }
+			expect(bytecode[2]).toBe(5)
+			expect(bytecode[3]).toBe(5)
+			expect(bytecode[4]).toBe(0)
+		}
 	})
 
 	describe("Control flow error handling", () => {
-		// Testing a valid operator pattern that isn't supported in the switch statement
 		test("should reject unsupported comparison operator", () => {
-		  // The "=" operator should match the regex [<>=!][=]? but isn't handled in the switch
-		  expect(() => {
+			expect(() => {
 				CppParser.cppToByte("if (5 = 10) { rgbLed.set_led_red(); }")
-		  }).toThrow(/Unsupported operator/)
+			}).toThrow(/Unsupported operator/)
 		})
 
 		test("should reject invalid command for malformed if statement", () => {
-		  expect(() => {
-				CppParser.cppToByte("if (5 <> 10) { rgbLed.set_led_red(); }") // '<>' doesn't match pattern
-		  }).toThrow(/Invalid command/)
+			expect(() => {
+				CppParser.cppToByte("if (5 <> 10) { rgbLed.set_led_red(); }")
+			}).toThrow(/Invalid command/)
 		})
-	  })
+	})
 })
 
 describe("While Loop Functionality", () => {
@@ -410,107 +438,93 @@ describe("While Loop Functionality", () => {
 
 		const bytecode = CppParser.cppToByte(code)
 
-		// The first instruction should be WHILE_START
+		// 1. WHILE_START
 		expect(bytecode[0]).toBe(BytecodeOpCode.WHILE_START)
+		expect(bytecode[1]).toBe(0)
 
-		// Then set_led_red (SET_ALL_LEDS with red)
+		// 2. SET_ALL_LEDS (red)
 		expect(bytecode[5]).toBe(BytecodeOpCode.SET_ALL_LEDS)
-		expect(bytecode[6]).toBe(255) // R
+		expect(bytecode[6]).toBe(MAX_LED_BRIGHTNESS) // R
 		expect(bytecode[7]).toBe(0)   // G
 		expect(bytecode[8]).toBe(0)   // B
 
-		// Then delay
+		// 3. DELAY
 		expect(bytecode[10]).toBe(BytecodeOpCode.DELAY)
-		expect(bytecode[11]).toBe(500 & 0xFF) // Low byte of 500
-		expect(bytecode[12]).toBe((500 >> 8) & 0xFF) // High byte of 500
+		expect(bytecode[11]).toBe(500)
 
-		// Find the WHILE_END instruction (should be before END)
-		let whileEndIndex = -1
-		for (let i = 0; i < bytecode.length - 5; i += 5) {
-			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
-				whileEndIndex = i
-				break
-			}
-		}
-		expect(whileEndIndex).toBeGreaterThan(0) // Should find WHILE_END
+		// 4. WHILE_END (jump back 3 instructions: 3 * 20 = 60 bytes)
+		expect(bytecode[15]).toBe(BytecodeOpCode.WHILE_END)
+		expect(bytecode[16]).toBe(60)
 
-		// Check if jump offset is correct
-		const jumpOffset = bytecode[whileEndIndex + 1] |
-						(bytecode[whileEndIndex + 2] << 8)
-		expect(jumpOffset).toBe(15) // 3 instructions * 5 bytes
-
-		// The very last instruction should be END
-		const lastInstructionIndex = bytecode.length - 5
-		expect(bytecode[lastInstructionIndex]).toBe(BytecodeOpCode.END)
+		// Last instruction: END
+		const lastIndex = bytecode.length - 5
+		expect(bytecode[lastIndex]).toBe(BytecodeOpCode.END)
+		expect(bytecode[lastIndex + 1]).toBe(0)
 	})
 
 	test("should handle nested while loops", () => {
 		const code = `while(true) {
-	rgbLed.set_led_red();
-	while(true) {
-	rgbLed.set_led_blue();
-	delay(100);
-	}
-	delay(500);
-}`
+		rgbLed.set_led_red();
+		while(true) {
+			rgbLed.set_led_blue();
+			delay(100);
+		}
+		delay(500);
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
-		// Find all WHILE_START opcodes
+		// Find WHILE_START indices
 		const whileStartIndices = []
 		for (let i = 0; i < bytecode.length; i += 5) {
 			if (bytecode[i] === BytecodeOpCode.WHILE_START) {
 				whileStartIndices.push(i)
 			}
 		}
-		expect(whileStartIndices.length).toBe(2) // Should have two while loops
+		expect(whileStartIndices.length).toBe(2)
 
-		// Find all WHILE_END opcodes
+		// Find WHILE_END indices
 		const whileEndIndices = []
 		for (let i = 0; i < bytecode.length; i += 5) {
 			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
 				whileEndIndices.push(i)
 			}
 		}
-		expect(whileEndIndices.length).toBe(2) // Should have two loop ends
-
-		// Inner loop should end before outer loop
+		expect(whileEndIndices.length).toBe(2)
 		expect(whileEndIndices[0]).toBeLessThan(whileEndIndices[1])
 
-		// Check if inner loop's WHILE_END jumps to correct WHILE_START
-		const innerJumpOffset = bytecode[whileEndIndices[0] + 1] |
-						(bytecode[whileEndIndices[0] + 2] << 8)
-		// Inner loop should jump back to inner WHILE_START
-		const expectedInnerOffset = whileEndIndices[0] - whileStartIndices[1]
+		// Check inner loop jump (3 instructions back: 3 * 20 = 60 bytes)
+		const innerJumpOffset = bytecode[whileEndIndices[0] + 1]
+		const expectedInnerOffset = (whileEndIndices[0] - whileStartIndices[1]) / 5 * 20
 		expect(innerJumpOffset).toBe(expectedInnerOffset)
 
-		// Check if outer loop's WHILE_END jumps to correct WHILE_START
-		const outerJumpOffset = bytecode[whileEndIndices[1] + 1] |
-						(bytecode[whileEndIndices[1] + 2] << 8)
-		// Outer loop should jump back to outer WHILE_START
-		const expectedOuterOffset = whileEndIndices[1] - whileStartIndices[0]
+		// Check outer loop jump
+		const outerJumpOffset = bytecode[whileEndIndices[1] + 1]
+		const expectedOuterOffset = (whileEndIndices[1] - whileStartIndices[0]) / 5 * 20
 		expect(outerJumpOffset).toBe(expectedOuterOffset)
 	})
 
 	test("should handle loops with conditionals", () => {
 		const code = `while(true) {
-	if (10 > 5) {
-	rgbLed.set_led_green();
-	} else {
-	rgbLed.set_led_red();
-	}
-	delay(1000);
-}`
+		if (10 > 5) {
+			rgbLed.set_led_green();
+		} else {
+			rgbLed.set_led_red();
+		}
+		delay(1000);
+	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
-		// First instruction is WHILE_START
+		// 1. WHILE_START
 		expect(bytecode[0]).toBe(BytecodeOpCode.WHILE_START)
+		expect(bytecode[1]).toBe(0)
 
-		// Then should be COMPARE opcode
+		// 2. COMPARE
 		expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+		expect(bytecode[6]).toBe(ComparisonOp.GREATER_THAN)
 
-		// Find WHILE_END opcode
+		// Find WHILE_END
 		let whileEndIndex = -1
 		for (let i = 0; i < bytecode.length; i += 5) {
 			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
@@ -518,96 +532,551 @@ describe("While Loop Functionality", () => {
 				break
 			}
 		}
-		expect(whileEndIndex).toBeGreaterThan(0) // Should find WHILE_END
-
-		// Verify WHILE_END jumps back to WHILE_START
-		const jumpOffset = bytecode[whileEndIndex + 1] | (bytecode[whileEndIndex + 2] << 8)
-		expect(jumpOffset).toBe(whileEndIndex) // Should jump back to start
+		// TODO: Deltee all toBeGreaterThan in this file.
+		expect(whileEndIndex).toBeGreaterThan(0)
+		// Check jump back to WHILE_START (7 instructions back: 7 * 20 = 140 bytes)
+		expect(bytecode[whileEndIndex + 1]).toBe(140)
 	})
 
 	test("should handle multiple loops in sequence", () => {
 		const code = `
-while(true) {
-	rgbLed.set_led_red();
-	delay(100);
-}
-// This code should never execute because of the infinite loop above
-while(true) {
-	rgbLed.set_led_blue();
-	delay(200);
-}`
+		while(true) {
+			rgbLed.set_led_red();
+			delay(100);
+		}
+		while(true) {
+			rgbLed.set_led_blue();
+			delay(200);
+		}`
 
 		const bytecode = CppParser.cppToByte(code)
 
-		// Find all WHILE_START opcodes
 		const whileStartIndices = []
+		const whileEndIndices = []
 		for (let i = 0; i < bytecode.length; i += 5) {
 			if (bytecode[i] === BytecodeOpCode.WHILE_START) {
 				whileStartIndices.push(i)
-			}
-		}
-		expect(whileStartIndices.length).toBe(2) // Should have two loop starts
-
-		// Find all WHILE_END opcodes
-		const whileEndIndices = []
-		for (let i = 0; i < bytecode.length; i += 5) {
-			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
+			} else if (bytecode[i] === BytecodeOpCode.WHILE_END) {
 				whileEndIndices.push(i)
 			}
 		}
-		expect(whileEndIndices.length).toBe(2) // Should have two loop ends
+		expect(whileStartIndices.length).toBe(2)
+		expect(whileEndIndices.length).toBe(2)
 
-		// First loop's WHILE_END should jump to first WHILE_START
-		const firstJumpOffset = bytecode[whileEndIndices[0] + 1] |
-						(bytecode[whileEndIndices[0] + 2] << 8)
-		const expectedFirstOffset = whileEndIndices[0] - whileStartIndices[0]
+		// Check first loop jump (3 instructions back: 3 * 20 = 60 bytes)
+		const firstJumpOffset = bytecode[whileEndIndices[0] + 1]
+		const expectedFirstOffset = (whileEndIndices[0] - whileStartIndices[0]) / 5 * 20
 		expect(firstJumpOffset).toBe(expectedFirstOffset)
 
-		// Second loop's WHILE_END should jump to second WHILE_START
-		const secondJumpOffset = bytecode[whileEndIndices[1] + 1] |
-						(bytecode[whileEndIndices[1] + 2] << 8)
-		const expectedSecondOffset = whileEndIndices[1] - whileStartIndices[1]
+		// Check second loop jump
+		const secondJumpOffset = bytecode[whileEndIndices[1] + 1]
+		const expectedSecondOffset = (whileEndIndices[1] - whileStartIndices[1]) / 5 * 20
 		expect(secondJumpOffset).toBe(expectedSecondOffset)
 	})
 
 	test("should handle empty while loop", () => {
 		const code = `while(true) {
-	// Empty loop
-}`
-
-		const bytecode = CppParser.cppToByte(code)
-
-		// Should have WHILE_START and WHILE_END with nothing in between
-		expect(bytecode[0]).toBe(BytecodeOpCode.WHILE_START)
-		expect(bytecode[5]).toBe(BytecodeOpCode.WHILE_END)
-
-		// Jump offset should be 5 bytes (just one instruction)
-		expect(bytecode[6]).toBe(5)
-		expect(bytecode[7]).toBe(0)
-	})
-
-	test("should handle while loop at the end of program", () => {
-		const code = `
-	rgbLed.set_led_green();
-	delay(2000);
-	while(true) {
-		rgbLed.set_led_blue();
+		// Empty loop
 	}`
 
 		const bytecode = CppParser.cppToByte(code)
 
-		// Find the WHILE_END instruction
+		expect(bytecode[0]).toBe(BytecodeOpCode.WHILE_START)
+		expect(bytecode[1]).toBe(0)
+		expect(bytecode[5]).toBe(BytecodeOpCode.WHILE_END)
+		expect(bytecode[6]).toBe(20) // Jump back 1 instruction (20 bytes)
+		expect(bytecode[7]).toBe(0)
+		expect(bytecode[8]).toBe(0)
+		expect(bytecode[9]).toBe(0)
+		expect(bytecode[10]).toBe(BytecodeOpCode.END)
+		expect(bytecode.length).toBe(15)
+	})
+
+	test("should handle while loop at the end of program", () => {
+		const code = `
+		rgbLed.set_led_green();
+		delay(2000);
+		while(true) {
+			rgbLed.set_led_blue();
+		}`
+
+		const bytecode = CppParser.cppToByte(code)
+
 		let whileEndIndex = -1
-		for (let i = 0; i < bytecode.length - 5; i += 5) {
+		for (let i = 0; i < bytecode.length; i += 5) {
 			if (bytecode[i] === BytecodeOpCode.WHILE_END) {
 				whileEndIndex = i
 				break
 			}
 		}
-		expect(whileEndIndex).toBeGreaterThan(0) // Should find WHILE_END
-
-		// The very last instruction should be END
-		const lastInstructionIndex = bytecode.length - 5
-		expect(bytecode[lastInstructionIndex]).toBe(BytecodeOpCode.END)
+		expect(whileEndIndex).toBeGreaterThan(0)
+		const lastIndex = bytecode.length - 5
+		expect(bytecode[lastIndex]).toBe(BytecodeOpCode.END)
+		expect(bytecode[lastIndex + 1]).toBe(0)
 	})
+})
+
+describe("For Loop Functionality", () => {
+	test("should parse basic for loop", () => {
+		const code = `for (int i = 0; i < 5; i++) {
+		rgbLed.set_led_red();
+		delay(100);
+	}`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// 1. FOR_INIT
+		expect(bytecode[0]).toBe(BytecodeOpCode.FOR_INIT)
+		expect(bytecode[1]).toBe(0) // Register
+		expect(bytecode[2]).toBe(0) // Init value
+		expect(bytecode[3]).toBe(0) // Unused
+
+		// 2. FOR_CONDITION
+		expect(bytecode[5]).toBe(BytecodeOpCode.FOR_CONDITION)
+		expect(bytecode[6]).toBe(0) // Register
+		expect(bytecode[7]).toBe(5) // End value
+		expect(bytecode[8]).toBe(0) // Unused
+
+		// 3. JUMP_IF_FALSE (5 instructions ahead: 5 * 20 = 100 bytes)
+		expect(bytecode[10]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+		expect(bytecode[11]).toBe(100)
+
+		// 4. SET_ALL_LEDS (red)
+		expect(bytecode[15]).toBe(BytecodeOpCode.SET_ALL_LEDS)
+		expect(bytecode[16]).toBe(MAX_LED_BRIGHTNESS) // R
+		expect(bytecode[17]).toBe(0)   // G
+		expect(bytecode[18]).toBe(0)   // B
+
+		// 5. DELAY
+		expect(bytecode[20]).toBe(BytecodeOpCode.DELAY)
+		expect(bytecode[21]).toBe(100)
+
+		// 6. FOR_INCREMENT
+		expect(bytecode[25]).toBe(BytecodeOpCode.FOR_INCREMENT)
+		expect(bytecode[26]).toBe(0) // Register
+
+		// 7. JUMP_BACKWARD (5 instructions back: 5 * 20 = 100 bytes)
+		expect(bytecode[30]).toBe(BytecodeOpCode.JUMP_BACKWARD)
+		expect(bytecode[31]).toBe(100)
+
+		// Last: END
+		const lastIndex = bytecode.length - 5
+		expect(bytecode[lastIndex]).toBe(BytecodeOpCode.END)
+	})
+
+	test("should handle empty for loop", () => {
+		const code = `for (int i = 0; i < 10; i++) {
+		// Empty loop
+	}`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		expect(bytecode[0]).toBe(BytecodeOpCode.FOR_INIT)
+		expect(bytecode[5]).toBe(BytecodeOpCode.FOR_CONDITION)
+		expect(bytecode[10]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+		expect(bytecode[15]).toBe(BytecodeOpCode.FOR_INCREMENT)
+		expect(bytecode[20]).toBe(BytecodeOpCode.JUMP_BACKWARD)
+		expect(bytecode[25]).toBe(BytecodeOpCode.END)
+	})
+
+	test("should handle for loop with non-zero start value", () => {
+		const code = `for (int j = 3; j < 8; j++) {
+		rgbLed.set_led_blue();
+	}`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		expect(bytecode[0]).toBe(BytecodeOpCode.FOR_INIT)
+		expect(bytecode[2]).toBe(3) // Start value
+		expect(bytecode[5]).toBe(BytecodeOpCode.FOR_CONDITION)
+		expect(bytecode[7]).toBe(8) // End value
+	})
+
+	test("should handle multiple for loops in sequence", () => {
+		const code = `for (int i = 0; i < 3; i++) {
+		rgbLed.set_led_red();
+	}
+	for (int j = 0; j < 2; j++) {
+		rgbLed.set_led_blue();
+	}`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		const forInitIndices = []
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.FOR_INIT) {
+				forInitIndices.push(i)
+			}
+		}
+		expect(forInitIndices.length).toBe(2)
+		expect(bytecode[forInitIndices[0] + 1]).toBe(0) // Register 0
+		expect(bytecode[forInitIndices[1] + 1]).toBe(1) // Register 1
+
+		const jumpBackwardIndices = []
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.JUMP_BACKWARD) {
+				jumpBackwardIndices.push(i)
+			}
+		}
+		expect(jumpBackwardIndices.length).toBe(2)
+	})
+
+	test("should handle nested for loops", () => {
+		const code = `for (int i = 0; i < 3; i++) {
+		rgbLed.set_led_red();
+		for (int j = 0; j < 2; j++) {
+			rgbLed.set_led_blue();
+		}
+	}`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		const forInitIndices = []
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.FOR_INIT) {
+				forInitIndices.push(i)
+			}
+		}
+		expect(forInitIndices.length).toBe(2)
+		expect(bytecode[forInitIndices[0] + 1]).toBe(0)
+		expect(bytecode[forInitIndices[1] + 1]).toBe(1)
+
+		const forIncrementIndices = []
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.FOR_INCREMENT) {
+				forIncrementIndices.push(i)
+			}
+		}
+		expect(forIncrementIndices.length).toBe(2)
+		expect(bytecode[forIncrementIndices[0] + 1]).toBe(1)
+		expect(bytecode[forIncrementIndices[1] + 1]).toBe(0)
+	})
+
+	test("should handle for loop with conditional inside", () => {
+		const code = `for (int i = 0; i < 5; i++) {
+		if (2 > 1) {
+			rgbLed.set_led_green();
+		} else {
+			rgbLed.set_led_red();
+		}
+	}`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		let forInitIndex = -1
+		let compareIndex = -1
+		let forIncrementIndex = -1
+
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.FOR_INIT) {
+				forInitIndex = i
+			} else if (bytecode[i] === BytecodeOpCode.COMPARE) {
+				compareIndex = i
+			} else if (bytecode[i] === BytecodeOpCode.FOR_INCREMENT) {
+				forIncrementIndex = i
+			}
+		}
+
+		expect(forInitIndex).toBeGreaterThanOrEqual(0)
+		expect(compareIndex).toBeGreaterThan(forInitIndex)
+		expect(forIncrementIndex).toBeGreaterThan(compareIndex)
+	})
+
+	test("should handle complex for loop pattern with multiple operations", () => {
+		const code = `for (int i = 1; i < 4; i++) {
+		rgbLed.set_led_white();
+		delay(100);
+		rgbLed.set_led_blue();
+		delay(100);
+		rgbLed.set_led_red();
+		delay(100);
+	}`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		let delayCount = 0
+		let setLedCount = 0
+		for (let i = 15; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.DELAY) {
+				delayCount++
+			} else if (bytecode[i] === BytecodeOpCode.SET_ALL_LEDS) {
+				setLedCount++
+			}
+			if (bytecode[i] === BytecodeOpCode.FOR_INCREMENT) {
+				break
+			}
+		}
+		expect(delayCount).toBe(3)
+		expect(setLedCount).toBe(3)
+
+		let foundIncrement = false
+		let foundJump = false
+		for (let i = bytecode.length - 15; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.FOR_INCREMENT) {
+				foundIncrement = true
+			} else if (bytecode[i] === BytecodeOpCode.JUMP_BACKWARD && foundIncrement) {
+				foundJump = true
+				break
+			}
+		}
+		expect(foundIncrement).toBe(true)
+		expect(foundJump).toBe(true)
+	})
+
+	test("should handle for loop with variable reuse", () => {
+		const code = `for (int i = 0; i < 2; i++) {
+		rgbLed.set_led_red();
+	}
+	for (int i = 0; i < 3; i++) {
+		rgbLed.set_led_blue();
+	}`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		const forInitIndices = []
+		for (let i = 0; i < bytecode.length; i += 5) {
+			if (bytecode[i] === BytecodeOpCode.FOR_INIT) {
+				forInitIndices.push(i)
+			}
+		}
+		expect(bytecode[forInitIndices[0] + 1]).not.toBe(bytecode[forInitIndices[1] + 1])
+	})
+})
+
+describe("Sensor Functionality", () => {
+	function testSensorReading(sensorMethod: string, expectedSensorType: SensorType): void {
+		const code = `if (Sensors::getInstance().${sensorMethod}() > 10) {
+		rgbLed.set_led_red();
+	}`
+
+		const bytecode = CppParser.cppToByte(code)
+
+		// 1. READ_SENSOR
+		expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
+		expect(bytecode[1]).toBe(expectedSensorType)
+		expect(bytecode[2]).toBe(0) // Register ID
+		expect(bytecode[3]).toBe(0) // Unused
+		expect(bytecode[4]).toBe(0) // Unused
+
+		// 2. COMPARE
+		expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+		expect(bytecode[6]).toBe(ComparisonOp.GREATER_THAN)
+		expect(bytecode[7]).toBe(0x8000) // Register reference (32768)
+		expect(bytecode[8]).toBe(10)     // Right value
+		expect(bytecode[9]).toBe(0)      // Unused
+	}
+
+	describe("Orientation Sensors", () => {
+		test("should parse Pitch sensor reading", () => {
+			testSensorReading("getPitch", SensorType.PITCH)
+		})
+
+		test("should parse Roll sensor reading", () => {
+			testSensorReading("getRoll", SensorType.ROLL)
+		})
+
+		test("should parse Yaw sensor reading", () => {
+			testSensorReading("getYaw", SensorType.YAW)
+		})
+	})
+
+	describe("Accelerometer Sensors", () => {
+		test("should parse X-axis acceleration reading", () => {
+			testSensorReading("getXAccel", SensorType.ACCEL_X)
+		})
+
+		test("should parse Y-axis acceleration reading", () => {
+			testSensorReading("getYAccel", SensorType.ACCEL_Y)
+		})
+
+		test("should parse Z-axis acceleration reading", () => {
+			testSensorReading("getZAccel", SensorType.ACCEL_Z)
+		})
+
+		test("should parse acceleration magnitude reading", () => {
+			testSensorReading("getAccelMagnitude", SensorType.ACCEL_MAG)
+		})
+	})
+
+	describe("Gyroscope Sensors", () => {
+		test("should parse X-axis rotation rate", () => {
+			testSensorReading("getXRotationRate", SensorType.ROT_RATE_X)
+		})
+
+		test("should parse Y-axis rotation rate", () => {
+			testSensorReading("getYRotationRate", SensorType.ROT_RATE_Y)
+		})
+
+		test("should parse Z-axis rotation rate", () => {
+			testSensorReading("getZRotationRate", SensorType.ROT_RATE_Z)
+		})
+	})
+
+	describe("Magnetometer Sensors", () => {
+		test("should parse X-axis magnetic field", () => {
+			testSensorReading("getMagneticFieldX", SensorType.MAG_FIELD_X)
+		})
+
+		test("should parse Y-axis magnetic field", () => {
+			testSensorReading("getMagneticFieldY", SensorType.MAG_FIELD_Y)
+		})
+
+		test("should parse Z-axis magnetic field", () => {
+			testSensorReading("getMagneticFieldZ", SensorType.MAG_FIELD_Z)
+		})
+	})
+
+	describe("Sensor Comparison Operators", () => {
+		test("should parse sensor equality comparison", () => {
+			const code = `if (Sensors::getInstance().getPitch() == 0) {
+			rgbLed.set_led_red();
+		}`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[1]).toBe(SensorType.PITCH)
+			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[6]).toBe(ComparisonOp.EQUAL)
+			expect(bytecode[7]).toBe(0x8000) // Register reference
+		})
+
+		test("should parse sensor inequality comparison", () => {
+			const code = `if (Sensors::getInstance().getYaw() != 45) {
+			rgbLed.set_led_green();
+		}`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[1]).toBe(SensorType.YAW)
+			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[6]).toBe(ComparisonOp.NOT_EQUAL)
+			expect(bytecode[7]).toBe(0x8000) // Register reference
+		})
+
+		test("should parse sensor less than comparison", () => {
+			const code = `if (Sensors::getInstance().getXAccel() < -5) {
+			rgbLed.set_led_blue();
+		}`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[1]).toBe(SensorType.ACCEL_X)
+			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[6]).toBe(ComparisonOp.LESS_THAN)
+			expect(bytecode[7]).toBe(0x8000) // Register reference
+		})
+
+		test("should parse sensor greater than or equal comparison", () => {
+			const code = `if (Sensors::getInstance().getAccelMagnitude() >= 9.8) {
+			rgbLed.set_led_purple();
+		}`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[1]).toBe(SensorType.ACCEL_MAG)
+			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[6]).toBe(ComparisonOp.GREATER_EQUAL)
+			expect(bytecode[7]).toBe(0x8000) // Register reference
+		})
+
+		test("should parse sensor less than or equal comparison", () => {
+			const code = `if (Sensors::getInstance().getZRotationRate() <= 180) {
+			rgbLed.set_led_white();
+		}`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[1]).toBe(SensorType.ROT_RATE_Z)
+			expect(bytecode[5]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[6]).toBe(ComparisonOp.LESS_EQUAL)
+			expect(bytecode[7]).toBe(0x8000) // Register reference
+		})
+	})
+
+	describe("Complex Sensor Usage", () => {
+		test("should handle sensors in if-else branches", () => {
+			const code = `if (Sensors::getInstance().getPitch() > 20) {
+			rgbLed.set_led_red();
+		} else {
+			if (Sensors::getInstance().getRoll() < -10) {
+				rgbLed.set_led_blue();
+			} else {
+				rgbLed.set_led_green();
+			}
+		}`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			expect(bytecode[0]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[1]).toBe(SensorType.PITCH)
+
+			let rollSensorIndex = -1
+			for (let i = 15; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.READ_SENSOR && bytecode[i + 1] === SensorType.ROLL) {
+					rollSensorIndex = i
+					break
+				}
+			}
+			expect(rollSensorIndex).toBeGreaterThan(0)
+		})
+
+		test("should handle sensors in loops", () => {
+			const code = `while (true) {
+			if (Sensors::getInstance().getAccelMagnitude() > 5) {
+				rgbLed.set_led_white();
+			}
+			delay(100);
+		}`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			expect(bytecode[0]).toBe(BytecodeOpCode.WHILE_START)
+			expect(bytecode[5]).toBe(BytecodeOpCode.READ_SENSOR)
+			expect(bytecode[6]).toBe(SensorType.ACCEL_MAG)
+		})
+
+		// TODO: Failing this test:
+		test("should handle sensors in for loops", () => {
+			const code = `for (int i = 0; i < 10; i++) {
+			if (Sensors::getInstance().getYaw() > i) {
+				rgbLed.set_led_red();
+			}
+		}`
+
+			const bytecode = CppParser.cppToByte(code)
+
+			console.log(bytecode)
+			let sensorIndex = -1
+			for (let i = 15; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.READ_SENSOR && bytecode[i + 1] === SensorType.YAW) {
+					sensorIndex = i
+					break
+				}
+			}
+			expect(sensorIndex).toBeGreaterThan(0)
+		})
+	})
+
+	test("should throw error for unknown sensor method", () => {
+		const originalParseCppCode = CppParser["parseCppCode"]
+		CppParser["parseCppCode"] = function(): BytecodeInstruction[] {
+			return originalParseCppCode.call(this, "if (Sensors::getInstance().getNonExistent() > 10)")
+		}
+
+		try {
+			expect(() => {
+				CppParser.cppToByte("// This content doesn't matter due to the mock")
+			}).toThrow(/Unknown sensor method/)
+		} finally {
+			CppParser["parseCppCode"] = originalParseCppCode
+		}
+	})
+	// TODO: Ensure coverage is 100%
+
+	// TODO: Add a test to assign a variable, and then read that variable elsewhere.
 })
