@@ -7,6 +7,7 @@ declare global {
 			activityId: number
 			readingBlockId: number
 			sandboxProjectId: number
+			bytecode: Float32Array
 		}
 	}
 }

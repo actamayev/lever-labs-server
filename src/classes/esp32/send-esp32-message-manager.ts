@@ -121,10 +121,10 @@ export default class SendEsp32MessageManager extends Singleton {
 
 	public sendBytecodeToPip(
 		socket: ExtendedWebSocket,
-		bytecode: Uint8Array
+		bytecodeFloat32: Float32Array
 	): Promise<void> {
 		try {
-			const buffer = MessageBuilder.createBytecodeMessage(bytecode)
+			const buffer = MessageBuilder.createBytecodeMessage(bytecodeFloat32)
 
 			return this.sendBinaryMessage(socket, buffer)
 		} catch (error: unknown) {

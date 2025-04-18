@@ -1,10 +1,16 @@
+/* eslint-disable complexity */
+/* eslint-disable max-lines-per-function */
 /* eslint-disable max-depth */
 import { MAX_LED_BRIGHTNESS } from "../utils/constants"
-import { BytecodeOpCode, CommandPatterns, CommandType, ComparisonOp, LedID, VarType } from "../types/bytecode-types"
+import { BytecodeOpCode, CommandPatterns, CommandType, ComparisonOp, LedID, SensorType, VarType } from "../types/bytecode-types"
 
 export default class CppParser {
-	public static cppToByte(unsanitizedCpp: string): Uint8Array<ArrayBufferLike> {
+	public static cppToByte(unsanitizedCpp: string): Float32Array {
 		const sanitizedCode = this.sanitizeUserCode(unsanitizedCpp)
+		const validationResult = this.validateBalancedSyntax(sanitizedCode)
+		if (validationResult !== true) {
+		  throw new Error(`Syntax error: ${validationResult}`)
+		}
 		const instructions = this.parseCppCode(sanitizedCode)
 		const bytecode = this.generateBytecode(instructions)
 
@@ -24,14 +30,15 @@ export default class CppParser {
 		return null
 	}
 
-	// eslint-disable-next-line max-lines-per-function, complexity
 	private static parseCppCode(cppCode: string): BytecodeInstruction[] {
 		const instructions: BytecodeInstruction[] = []
 		const variables: Map<string, { type: VarType, register: number }> = new Map()
 		let nextRegister = 0
 
-		// Split code into statements
-		const statements = cppCode.split(";").map(s => s.trim()).filter(s => s.length > 0)
+		const protectedStatements = cppCode.split(";").map(s => s.trim()).filter(s => s.length > 0)
+
+		// Now restore the semicolons in each statement
+		const statements = protectedStatements.map(s => s.replace(/###SEMICOLON###/g, ";"))
 
 		const blockStack: BlockStack[] = []
 		const pendingJumps: PendingJumps[] = []
@@ -39,12 +46,63 @@ export default class CppParser {
 		for (const statement of statements) {
 			const command = this.identifyCommand(statement)
 
-			// console.log(command)
 			if (!command) {
 				throw new Error(`Invalid command: "${statement}"`)
 			}
 
 			switch (command.type) {
+			case CommandType.FOR_STATEMENT: {
+				if (command.matches && command.matches.length === 4) {
+					const varName = command.matches[1]
+					const startValue = parseInt(command.matches[2], 10)
+					const endValue = parseInt(command.matches[3], 10)
+
+					// Assign register for loop counter
+					const register = nextRegister++
+					variables.set(varName, {type: VarType.INT, register})
+
+					// FOR_INIT: Initialize counter variable
+					instructions.push({
+						opcode: BytecodeOpCode.FOR_INIT,
+						operand1: register,
+						operand2: startValue & 0xFF,
+						operand3: (startValue >> 8) & 0xFF,
+						operand4: (startValue >> 16) & 0xFF
+					})
+
+					// Remember position for the condition check
+					const forStartIndex = instructions.length
+
+					// FOR_CONDITION: Check if counter < end value
+					instructions.push({
+						opcode: BytecodeOpCode.FOR_CONDITION,
+						operand1: register,
+						operand2: endValue & 0xFF,
+						operand3: (endValue >> 8) & 0xFF,
+						operand4: (endValue >> 16) & 0xFF
+					})
+
+					// Add jump-if-false to skip loop body when done
+					const jumpIfFalseIndex = instructions.length
+					instructions.push({
+						opcode: BytecodeOpCode.JUMP_IF_FALSE,
+						operand1: 0, // Will be filled later
+						operand2: 0,
+						operand3: 0,
+						operand4: 0
+					})
+
+					// Track this for loop for later
+					blockStack.push({
+						type: "for",
+						jumpIndex: jumpIfFalseIndex,
+						varRegister: register,
+						startIndex: forStartIndex
+					})
+				}
+				break
+			}
+
 			case CommandType.WHILE_STATEMENT: {
 				const whileStartIndex = instructions.length
 				instructions.push({
@@ -61,7 +119,7 @@ export default class CppParser {
 			}
 
 			case CommandType.VARIABLE_ASSIGNMENT:
-				  if (command.matches && command.matches.length === 4) {
+				if (command.matches && command.matches.length === 4) {
 					const varType = command.matches[1] // float, int, bool
 					const varName = command.matches[2]
 					const varValue = command.matches[3]
@@ -90,15 +148,13 @@ export default class CppParser {
 
 					if (typeEnum === VarType.FLOAT) {
 						const floatValue = parseFloat(varValue)
-						// Convert float to bytes (need to handle in special way)
-						const bytes = this.floatToBytes(floatValue)
 
 						instructions.push({
 							opcode: BytecodeOpCode.SET_VAR,
 							operand1: register,
-							operand2: bytes[0],
-							operand3: bytes[1],
-							operand4: bytes[2] // Note: losing 1 byte of precision
+							operand2: floatValue,
+							operand3: 0,
+							operand4: 0
 						})
 					} else if (typeEnum === VarType.BOOL) {
 						// Parse boolean value - handle both "true"/"false" and 1/0
@@ -118,7 +174,7 @@ export default class CppParser {
 							operand3: 0,
 							operand4: 0
 						})
-					// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+						// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 					} else if (typeEnum === VarType.INT) {
 						// Parse integer value
 						const intValue = parseInt(varValue.trim(), 10)
@@ -132,9 +188,9 @@ export default class CppParser {
 						instructions.push({
 							opcode: BytecodeOpCode.SET_VAR,
 							operand1: register,
-							operand2: intValue & 0xFF,         // Low byte
-							operand3: (intValue >> 8) & 0xFF,  // Middle byte
-							operand4: (intValue >> 16) & 0xFF  // High byte (includes sign bit)
+							operand2: intValue,   // Direct assignment of the full value
+							operand3: 0,          // Can use for extended range if needed
+							operand4: 0           // Can use for extended range if needed
 						})
 					}
 				}
@@ -241,42 +297,105 @@ export default class CppParser {
 					const delayMs = parseInt(command.matches[1], 10)
 					instructions.push({
 						opcode: BytecodeOpCode.DELAY,
-						operand1: delayMs & 0xFF, // Low byte
-						operand2: (delayMs >> 8) & 0xFF, // High byte
+						operand1: delayMs,  // Direct assignment - no more bit masking!
+						operand2: 0,
 						operand3: 0,
 						operand4: 0
 					})
 				}
 				break
 
-			case CommandType.IF_STATEMENT:
+			case CommandType.IF_STATEMENT: {
 				if (command.matches && command.matches.length === 4) {
-					const leftValue = parseInt(command.matches[1], 10)
+					const leftExpr = command.matches[1]
 					const operator = command.matches[2]
-					const rightValue = parseInt(command.matches[3], 10)
+					const rightValue = parseFloat(command.matches[3])
 
-					// Map operator to ComparisonOp
-					let compOp: ComparisonOp
-					switch (operator) {
-					case ">": compOp = ComparisonOp.GREATER_THAN; break
-					case "<": compOp = ComparisonOp.LESS_THAN; break
-					case ">=": compOp = ComparisonOp.GREATER_EQUAL; break
-					case "<=": compOp = ComparisonOp.LESS_EQUAL; break
-					case "==": compOp = ComparisonOp.EQUAL; break
-					case "!=": compOp = ComparisonOp.NOT_EQUAL; break
-					default: throw new Error(`Unsupported operator: ${operator}`)
+					// First check if left side is a sensor expression
+					const sensorMatch = leftExpr.match(/Sensors::getInstance\(\)\.(\w+)\(\)/)
+
+					if (sensorMatch) {
+						// This is a sensor comparison
+						const sensorMethod = sensorMatch[1]
+						let sensorType: number
+
+						// Map method name to sensor type
+						switch (sensorMethod) {
+						case "getPitch": sensorType = SensorType.PITCH; break
+						case "getRoll": sensorType = SensorType.ROLL; break
+						case "getYaw": sensorType = SensorType.YAW; break
+						case "getXAccel": sensorType = SensorType.ACCEL_X; break
+						case "getYAccel": sensorType = SensorType.ACCEL_Y; break
+						case "getZAccel": sensorType = SensorType.ACCEL_Z; break
+						case "getAccelMagnitude": sensorType = SensorType.ACCEL_MAG; break
+						case "getXRotationRate": sensorType = SensorType.ROT_RATE_X; break
+						case "getYRotationRate": sensorType = SensorType.ROT_RATE_Y; break
+						case "getZRotationRate": sensorType = SensorType.ROT_RATE_Z; break
+						case "getMagneticFieldX": sensorType = SensorType.MAG_FIELD_X; break
+						case "getMagneticFieldY": sensorType = SensorType.MAG_FIELD_Y; break
+						case "getMagneticFieldZ": sensorType = SensorType.MAG_FIELD_Z; break
+						default: throw new Error(`Unknown sensor method: ${sensorMethod}`)
+						}
+
+						// Allocate a register for the sensor value
+						const register = nextRegister++
+
+						// Add instruction to read sensor into register
+						instructions.push({
+							opcode: BytecodeOpCode.READ_SENSOR,
+							operand1: sensorType,
+							operand2: register,
+							operand3: 0,
+							operand4: 0
+						})
+
+						// Map operator to ComparisonOp
+						let compOp: ComparisonOp
+						switch (operator) {
+						case ">": compOp = ComparisonOp.GREATER_THAN; break
+						case "<": compOp = ComparisonOp.LESS_THAN; break
+						case ">=": compOp = ComparisonOp.GREATER_EQUAL; break
+						case "<=": compOp = ComparisonOp.LESS_EQUAL; break
+						case "==": compOp = ComparisonOp.EQUAL; break
+						case "!=": compOp = ComparisonOp.NOT_EQUAL; break
+						default: throw new Error(`Unsupported operator: ${operator}`)
+						}
+
+						// Add comparison instruction with register as left operand
+						instructions.push({
+							opcode: BytecodeOpCode.COMPARE,
+							operand1: compOp,
+							operand2: 0x8000 | register,  // High bit indicates register reference
+							operand3: rightValue,         // Direct float value - no bit manipulation
+							operand4: 0
+						})
+					} else {
+						// Standard constant comparison (existing code)
+						const leftValue = parseFloat(leftExpr)
+
+						// Map operator to ComparisonOp
+						let compOp: ComparisonOp
+						switch (operator) {
+						case ">": compOp = ComparisonOp.GREATER_THAN; break
+						case "<": compOp = ComparisonOp.LESS_THAN; break
+						case ">=": compOp = ComparisonOp.GREATER_EQUAL; break
+						case "<=": compOp = ComparisonOp.LESS_EQUAL; break
+						case "==": compOp = ComparisonOp.EQUAL; break
+						case "!=": compOp = ComparisonOp.NOT_EQUAL; break
+						default: throw new Error(`Unsupported operator: ${operator}`)
+						}
+
+						// Add comparison instruction with constants
+						instructions.push({
+							opcode: BytecodeOpCode.COMPARE,
+							operand1: compOp,
+							operand2: leftValue,
+							operand3: rightValue,
+							operand4: 0
+						})
 					}
 
-					// Add comparison instruction
-					instructions.push({
-						opcode: BytecodeOpCode.COMPARE,
-						operand1: compOp,
-						operand2: leftValue,
-						operand3: rightValue,
-						operand4: 0
-					})
-
-					// Add conditional jump (to be fixed later)
+					// Add conditional jump (to be fixed later) - this remains the same
 					const jumpIndex = instructions.length
 					instructions.push({
 						opcode: BytecodeOpCode.JUMP_IF_FALSE,
@@ -290,7 +409,7 @@ export default class CppParser {
 					blockStack.push({ type: "if", jumpIndex })
 				}
 				break
-
+			}
 			case CommandType.BLOCK_START:
 				// Nothing special for block start
 				break
@@ -299,12 +418,38 @@ export default class CppParser {
 				if (blockStack.length > 0) {
 					const block = blockStack.pop() as BlockStack
 
-					if (block.type === "while") {
+					if (block.type === "for") {
+						// Add FOR_INCREMENT instruction
+						instructions.push({
+							opcode: BytecodeOpCode.FOR_INCREMENT,
+							operand1: block.varRegister as number,
+							operand2: 0,
+							operand3: 0,
+							operand4: 0
+						})
+
+						// Jump back to condition check
+						const forEndIndex = instructions.length
+						const offsetToStart = (forEndIndex - (block.startIndex as number)) * 20
+
+						instructions.push({
+							opcode: BytecodeOpCode.JUMP_BACKWARD,
+							operand1: offsetToStart,  // Direct assignment of the full offset
+							operand2: 0,
+							operand3: 0,
+							operand4: 0
+						})
+
+						// Fix the jump-if-false at start to point here
+						const offsetToHere = (instructions.length - block.jumpIndex) * 20
+						instructions[block.jumpIndex].operand1 = offsetToHere & 0xFF
+						instructions[block.jumpIndex].operand2 = (offsetToHere >> 8) & 0xFF
+					} else if (block.type === "while") {
 						// Add a WHILE_END instruction that jumps back to the start
 						const whileEndIndex = instructions.length
 
-						// Calculate bytes to jump back (each instruction is 5 bytes)
-						const offsetToStart = (whileEndIndex - block.jumpIndex) * 5
+						// Calculate bytes to jump back (each instruction is 10 bytes)
+						const offsetToStart = (whileEndIndex - block.jumpIndex) * 20
 
 						instructions.push({
 							opcode: BytecodeOpCode.WHILE_END,
@@ -314,13 +459,13 @@ export default class CppParser {
 							operand4: 0
 						})
 					} else if (block.type === "if") {
-						    // Check if there's an "else" coming next by looking ahead
+ 						// Check if there's an "else" coming next by looking ahead
 						const nextStatementIndex = statements.indexOf(statement) + 1
 						const hasElseNext = nextStatementIndex < statements.length &&
-                        statements[nextStatementIndex].trim() === "else"
+                                                statements[nextStatementIndex].trim() === "else"
 
 						if (hasElseNext) {
-							const offsetToElseBlock = (instructions.length + 1 - block.jumpIndex) * 5
+							const offsetToElseBlock = (instructions.length + 1 - block.jumpIndex) * 20
 							instructions[block.jumpIndex].operand1 = offsetToElseBlock & 0xFF
 							instructions[block.jumpIndex].operand2 = (offsetToElseBlock >> 8) & 0xFF
 
@@ -338,15 +483,16 @@ export default class CppParser {
 							pendingJumps.push({ index: skipElseIndex, targetType: "end_of_else" })
 						} else {
 							// No else block, so jump-if-false should point to the current position
-							const offsetToEndOfIf = (instructions.length - block.jumpIndex) * 5
+							const offsetToEndOfIf = (instructions.length - block.jumpIndex) * 20
 							instructions[block.jumpIndex].operand1 = offsetToEndOfIf & 0xFF
 							instructions[block.jumpIndex].operand2 = (offsetToEndOfIf >> 8) & 0xFF
 						}
+					// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 					} else if (block.type === "else") {
 						for (let i = pendingJumps.length - 1; i >= 0; i--) {
 							const jump = pendingJumps[i]
 							if (jump.targetType === "end_of_else") {
-								const offsetToEnd = (instructions.length - jump.index) * 5
+								const offsetToEnd = (instructions.length - jump.index) * 20
 								instructions[jump.index].operand1 = offsetToEnd & 0xFF
 								instructions[jump.index].operand2 = (offsetToEnd >> 8) & 0xFF
 								pendingJumps.splice(i, 1)
@@ -361,7 +507,7 @@ export default class CppParser {
 				blockStack.push({ type: "else", jumpIndex: instructions.length })
 				break
 
-				// End of switch statement
+                // End of switch statement
 			}
 		}
 
@@ -373,6 +519,10 @@ export default class CppParser {
 			operand3: 0,
 			operand4: 0
 		})
+
+		if (blockStack.length > 0) {
+			throw new Error(`Syntax error: Missing ${blockStack.length} closing brace(s)`)
+		}
 
 		return instructions
 	}
@@ -389,9 +539,9 @@ export default class CppParser {
 		}
 	}
 
-	private static generateBytecode(instructions: BytecodeInstruction[]): Uint8Array {
-	// Each instruction is 5 bytes
-		const bytecode = new Uint8Array(instructions.length * 5)
+	private static generateBytecode(instructions: BytecodeInstruction[]): Float32Array {
+		// Each instruction now uses 5 Float32 values
+		const bytecode = new Float32Array(instructions.length * 5)
 
 		instructions.forEach((instruction, index) => {
 			const offset = index * 5
@@ -406,26 +556,92 @@ export default class CppParser {
 	}
 
 	private static sanitizeUserCode(userCode: string): string {
-		return userCode
+		// STEP 1: Find for loop declarations and protect their semicolons
+		let cleanUserCode = userCode
+
+		const forLoopRegex = /for\s*\(\s*int\s+\w+\s*=\s*\d+\s*;\s*\w+\s*[<>=!][=]?\s*\d+\s*;\s*\w+\s*\+\+\s*\)/g
+		cleanUserCode = cleanUserCode.replace(forLoopRegex, (match) => {
+			return match.replace(/;/g, "###SEMICOLON###")
+		})
+
+		// STEP 2: Normal sanitization
+		return cleanUserCode
 			.trim()
-			// Remove comments
+		// Remove comments
 			.replace(/\/\/.*$/gm, "")
 			.replace(/\/\*[\s\S]*?\*\//g, "")
-			// Add spaces around braces and make them separate tokens
+		// Add spaces around braces and make them separate tokens
 			.replace(/{/g, " ; { ; ")
 			.replace(/}/g, " ; } ; ")
-			// Make sure else is a separate token
+		// Make sure else is a separate token
 			.replace(/}\s*else/g, "} ; else")
-			// Normalize whitespace
+		// Normalize whitespace
 			.replace(/\s+/g, " ")
-			// Escape single quotes
+		// Escape single quotes
 			.replace(/'/g, "'\\''")
+
+		// NOTE: We are NOT restoring semicolons here!
+		// We'll restore them after splitting into statements
 	}
 
-	private static floatToBytes(value: number): Uint8Array {
-		const buffer = new ArrayBuffer(4)
-		const view = new DataView(buffer)
-		view.setFloat32(0, value, true) // little-endian
-		return new Uint8Array(buffer)
+	private static validateBalancedSyntax(code: string): boolean | string {
+		const stack: CharacterStack[] = []
+		const pairs: Record<string, string> = {
+			"{": "}",
+			"(": ")",
+			"[": "]"
+		}
+
+		for (let i = 0; i < code.length; i++) {
+			const char = code[i]
+
+			// Skip characters in strings
+			if (char === "\"" || char === "'") {
+				// Simple string skipping - you might need more sophisticated logic
+				const quote = char
+				i++
+				while (i < code.length && code[i] !== quote) {
+					if (code[i] === "\\") i++ // Skip escaped characters
+					i++
+				}
+				continue
+			}
+
+			// Skip comments
+			if (char === "/" && i + 1 < code.length) {
+				if (code[i + 1] === "/") {
+					// Line comment - skip to end of line
+					while (i < code.length && code[i] !== "\n") i++
+					continue
+				} else if (code[i + 1] === "*") {
+					// Block comment - skip to */
+					i += 2
+					while (i + 1 < code.length && !(code[i] === "*" && code[i + 1] === "/")) i++
+					i++ // Skip the closing /
+					continue
+				}
+			}
+
+			// Handle brackets
+			if ("{([".includes(char)) {
+				stack.push({ char, pos: i })
+			} else if ("})]".includes(char)) {
+				if (stack.length === 0) {
+					return `Unexpected closing '${char}' at position ${i}`
+				}
+
+				const lastOpen = stack.pop() as CharacterStack
+				if (pairs[lastOpen.char] !== char) {
+					return `Expected '${pairs[lastOpen.char]}' but found '${char}' at position ${i}`
+				}
+			}
+		}
+
+		if (stack.length > 0) {
+			const unclosed = stack[stack.length - 1]
+			return `Unclosed '${unclosed.char}' at position ${unclosed.pos}`
+		}
+
+		return true
 	}
 }

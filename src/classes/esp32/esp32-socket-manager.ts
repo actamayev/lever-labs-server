@@ -273,8 +273,8 @@ export default class Esp32SocketManager extends Singleton {
 		)
 	}
 
-	public async emitBytecodeToPip(pipUUID: PipUUID, byteCode: Uint8Array): Promise<void> {
-		return await this.emitSocketCommand<Uint8Array>(
+	public async emitBytecodeToPip(pipUUID: PipUUID, byteCode: Float32Array): Promise<void> {
+		return await this.emitSocketCommand<Float32Array>(
 			pipUUID,
 			this.sendEsp32MessageManager.sendBytecodeToPip.bind(this.sendEsp32MessageManager),
 			byteCode,
