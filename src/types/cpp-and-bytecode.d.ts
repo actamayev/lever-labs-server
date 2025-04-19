@@ -14,6 +14,7 @@ declare global {
 		jumpIndex: number
 		varRegister?: number  // For tracking loop counter register
 		startIndex?: number   // For loop start position
+		additionalJumps?: number[];  // For tracking multiple jumps in compound conditions
 	}
 
 	interface PendingJumps {
@@ -29,6 +30,11 @@ declare global {
 	interface CharacterStack {
 		char: string
 		pos: number
+	}
+
+	interface VariableType {
+		type: VarType
+		register: number
 	}
 }
 

@@ -1,3 +1,5 @@
+/* eslint-disable security/detect-unsafe-regex */
+/* eslint-disable max-len */
 export enum BytecodeOpCode {
 	NOP = 0x00,
 	END = 0x01,
@@ -83,6 +85,8 @@ export enum CommandType {
     VARIABLE_ASSIGNMENT = "VARIABLE_ASSIGNMENT",
 
     IF_STATEMENT = "IF_STATEMENT",
+    COMPOUND_AND_IF_STATEMENT = "COMPOUND_AND_IF_STATEMENT",
+    COMPOUND_OR_IF_STATEMENT = "COMPOUND_OR_IF_STATEMENT",
     ELSE_STATEMENT = "ELSE_STATEMENT",
     BLOCK_START = "BLOCK_START",
     BLOCK_END = "BLOCK_END",
@@ -111,8 +115,9 @@ export const CommandPatterns: Record<CommandType, RegExp> = {
 
 	[CommandType.VARIABLE_ASSIGNMENT]: /^(float|int|bool)\s+(\w+)\s*=\s*(.+)$/,
 
-	// TODO: Have the availability to have a sensor reading on the right-hand side.
-	[CommandType.IF_STATEMENT]: /^if\s*\(\s*(Sensors::getInstance\(\)\.\w+\(\)|[-\d.]+|\w+)\s*([<>=!][=]?)\s*(-?\d+\.?\d*|\w+)\s*\)$/,
+	[CommandType.IF_STATEMENT]: /^if\s*\(\s*(Sensors::getInstance\(\)\.\w+\(\)|[-\d.]+|\w+)\s*([<>=!][=]?)\s*(Sensors::getInstance\(\)\.\w+\(\)|[-\d.]+|\w+)\s*\)$/,
+	[CommandType.COMPOUND_AND_IF_STATEMENT]: /^if\s*\(\s*\(\s*(Sensors::getInstance\(\)\.\w+\(\)|[-\d.]+|\w+)\s*([<>=!][=]?)\s*(Sensors::getInstance\(\)\.\w+\(\)|[-\d.]+|\w+)\s*\)\s*&&\s*\(\s*(Sensors::getInstance\(\)\.\w+\(\)|[-\d.]+|\w+)\s*([<>=!][=]?)\s*(Sensors::getInstance\(\)\.\w+\(\)|[-\d.]+|\w+)\s*\)\s*\)$/,
+	[CommandType.COMPOUND_OR_IF_STATEMENT]: /^if\s*\(\s*\(\s*(Sensors::getInstance\(\)\.\w+\(\)|[-\d.]+|\w+)\s*([<>=!][=]?)\s*(Sensors::getInstance\(\)\.\w+\(\)|[-\d.]+|\w+)\s*\)\s*\|\|\s*\(\s*(Sensors::getInstance\(\)\.\w+\(\)|[-\d.]+|\w+)\s*([<>=!][=]?)\s*(Sensors::getInstance\(\)\.\w+\(\)|[-\d.]+|\w+)\s*\)\s*\)$/,
 	[CommandType.ELSE_STATEMENT]: /^else$/,
 	[CommandType.BLOCK_START]: /^{$/,
 	[CommandType.BLOCK_END]: /^}$/,
