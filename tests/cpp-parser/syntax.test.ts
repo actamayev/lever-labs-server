@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-lines-per-function */
-import CppParser from "../../../../src/classes/cpp-parser"
-import { BytecodeOpCode, CommandType } from "../../../../src/types/bytecode-types"
+import CppParser from "../../src/classes/cpp-parser"
+import { BytecodeOpCode, CommandType } from "../../src/types/bytecode-types"
 
 describe("Invalid inputs", () => {
 	test("should reject garbage input", () => {

@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function */
-import CppParser from "../../../../src/classes/cpp-parser"
-import { BytecodeOpCode, ComparisonOp, SensorType } from "../../../../src/types/bytecode-types"
-import { MAX_LED_BRIGHTNESS } from "../../../../src/utils/constants"
+import CppParser from "../../src/classes/cpp-parser"
+import { BytecodeOpCode, ComparisonOp, SensorType } from "../../src/types/bytecode-types"
+import { MAX_LED_BRIGHTNESS } from "../../src/utils/constants"
 
 describe("Control flow", () => {
 	test("should parse basic if-else statement", () => {

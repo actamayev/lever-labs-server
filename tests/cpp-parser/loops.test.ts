@@ -1,7 +1,7 @@
 /* eslint-disable max-lines-per-function */
-import CppParser from "../../../../src/classes/cpp-parser"
-import { MAX_LED_BRIGHTNESS } from "../../../../src/utils/constants"
-import { BytecodeOpCode, ComparisonOp } from "../../../../src/types/bytecode-types"
+import CppParser from "../../src/classes/cpp-parser"
+import { MAX_LED_BRIGHTNESS } from "../../src/utils/constants"
+import { BytecodeOpCode, ComparisonOp } from "../../src/types/bytecode-types"
 
 describe("While Loop Functionality", () => {
 	test("should parse basic while(true) loop", () => {

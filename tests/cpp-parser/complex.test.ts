@@ -1,9 +1,9 @@
 /* eslint-disable max-depth */
 /* eslint-disable complexity */
 /* eslint-disable max-lines-per-function */
-import CppParser from "../../../../src/classes/cpp-parser"
-import { BytecodeOpCode } from "../../../../src/types/bytecode-types"
-import { MAX_LED_BRIGHTNESS } from "../../../../src/utils/constants"
+import CppParser from "../../src/classes/cpp-parser"
+import { BytecodeOpCode } from "../../src/types/bytecode-types"
+import { MAX_LED_BRIGHTNESS } from "../../src/utils/constants"
 
 describe("Complex Nested Structures", () => {
 	test("should parse a deeply nested structure with 4+ levels", () => {

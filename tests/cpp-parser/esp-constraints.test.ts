@@ -1,4 +1,4 @@
-import CppParser from "../../../../src/classes/cpp-parser"
+import CppParser from "../../src/classes/cpp-parser"
 
 // eslint-disable-next-line max-lines-per-function
 describe("ESP32 Hardware Constraints", () => {

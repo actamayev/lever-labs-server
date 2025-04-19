@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
-import CppParser from "../../../../src/classes/cpp-parser"
-import { BytecodeOpCode, ComparisonOp, SensorType } from "../../../../src/types/bytecode-types"
+import CppParser from "../../src/classes/cpp-parser"
+import { BytecodeOpCode, ComparisonOp, SensorType } from "../../src/types/bytecode-types"
 
 describe("Sensor Functionality", () => {
 	function testSensorReading(sensorMethod: string, expectedSensorType: SensorType): void {

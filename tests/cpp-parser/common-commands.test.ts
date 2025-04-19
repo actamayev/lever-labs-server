@@ -1,8 +1,8 @@
 /* eslint-disable complexity */
 /* eslint-disable max-lines-per-function */
-import CppParser from "../../../../src/classes/cpp-parser"
-import { MAX_LED_BRIGHTNESS } from "../../../../src/utils/constants"
-import { BytecodeOpCode, CommandType, ComparisonOp, LedID, SensorType, VarType } from "../../../../src/types/bytecode-types"
+import CppParser from "../../src/classes/cpp-parser"
+import { MAX_LED_BRIGHTNESS } from "../../src/utils/constants"
+import { BytecodeOpCode, CommandType, ComparisonOp, LedID, SensorType, VarType } from "../../src/types/bytecode-types"
 
 describe("Variable assignments", () => {
 	test("should parse integer variable assignment", () => {
