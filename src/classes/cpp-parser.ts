@@ -1,7 +1,8 @@
+/* eslint-disable max-len */
 /* eslint-disable complexity */
 /* eslint-disable max-lines-per-function */
 /* eslint-disable max-depth */
-import { MAX_LED_BRIGHTNESS } from "../utils/constants"
+import { INSTRUCTION_SIZE, MAX_JUMP_DISTANCE, MAX_LED_BRIGHTNESS, MAX_PROGRAM_SIZE, MAX_REGISTERS } from "../utils/constants"
 import { BytecodeOpCode, CommandPatterns, CommandType, ComparisonOp, LedID, SensorType, VarType } from "../types/bytecode-types"
 
 export default class CppParser {
@@ -12,8 +13,12 @@ export default class CppParser {
 		  throw new Error(`Syntax error: ${validationResult}`)
 		}
 		const instructions = this.parseCppCode(sanitizedCode)
-		const bytecode = this.generateBytecode(instructions)
 
+		if (instructions.length > MAX_PROGRAM_SIZE) {
+		  throw new Error(`Program exceeds maximum size (${instructions.length} instructions, maximum is ${MAX_PROGRAM_SIZE})`)
+		}
+
+		const bytecode = this.generateBytecode(instructions)
 		return bytecode
 	}
 
@@ -58,6 +63,9 @@ export default class CppParser {
 					const endValue = parseInt(command.matches[3], 10)
 
 					// Assign register for loop counter
+					if (nextRegister >= MAX_REGISTERS) {
+						throw new Error(`Program exceeds maximum register count (${MAX_REGISTERS})`)
+					}
 					const register = nextRegister++
 					variables.set(varName, {type: VarType.INT, register})
 
@@ -134,6 +142,9 @@ export default class CppParser {
 					}
 
 					// Assign register and store for future reference
+					if (nextRegister >= MAX_REGISTERS) {
+						throw new Error(`Program exceeds maximum register count (${MAX_REGISTERS})`)
+					}
 					const register = nextRegister++
 					variables.set(varName, {type: typeEnum, register})
 
@@ -352,6 +363,9 @@ export default class CppParser {
 						const sensorType = this.getSensorTypeFromMethod(sensorMethod)
 
 						// Allocate a register for the sensor value
+						if (nextRegister >= MAX_REGISTERS) {
+							throw new Error(`Program exceeds maximum register count (${MAX_REGISTERS})`)
+						}
 						const register = nextRegister++
 
 						// Add instruction to read sensor into register
@@ -385,6 +399,9 @@ export default class CppParser {
 						const sensorType = this.getSensorTypeFromMethod(sensorMethod)
 
 						// Allocate a register for the sensor value
+						if (nextRegister >= MAX_REGISTERS) {
+							throw new Error(`Program exceeds maximum register count (${MAX_REGISTERS})`)
+						}
 						const register = nextRegister++
 
 						// Add instruction to read sensor into register
@@ -455,7 +472,11 @@ export default class CppParser {
 
 						// Jump back to condition check
 						const forEndIndex = instructions.length
-						const offsetToStart = (forEndIndex - (block.startIndex as number)) * 20
+						const offsetToStart = (forEndIndex - (block.startIndex as number)) * INSTRUCTION_SIZE
+
+						if (offsetToStart > MAX_JUMP_DISTANCE) {
+							throw new Error(`Jump distance in for loop too large (${offsetToStart} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+						}
 
 						instructions.push({
 							opcode: BytecodeOpCode.JUMP_BACKWARD,
@@ -466,7 +487,10 @@ export default class CppParser {
 						})
 
 						// Fix the jump-if-false at start to point here
-						const offsetToHere = (instructions.length - block.jumpIndex) * 20
+						const offsetToHere = (instructions.length - block.jumpIndex) * INSTRUCTION_SIZE
+						if (offsetToHere > MAX_JUMP_DISTANCE) {
+							throw new Error(`Jump distance too large (${offsetToHere} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+						}
 						instructions[block.jumpIndex].operand1 = offsetToHere & 0xFF
 						instructions[block.jumpIndex].operand2 = (offsetToHere >> 8) & 0xFF
 					} else if (block.type === "while") {
@@ -474,8 +498,11 @@ export default class CppParser {
 						const whileEndIndex = instructions.length
 
 						// Calculate bytes to jump back (each instruction is 10 bytes)
-						const offsetToStart = (whileEndIndex - block.jumpIndex) * 20
+						const offsetToStart = (whileEndIndex - block.jumpIndex) * INSTRUCTION_SIZE
 
+						if (offsetToStart > MAX_JUMP_DISTANCE) {
+							throw new Error(`Jump distance in while loop too large (${offsetToStart} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+						}
 						instructions.push({
 							opcode: BytecodeOpCode.WHILE_END,
 							operand1: offsetToStart & 0xFF, // Low byte
@@ -491,8 +518,11 @@ export default class CppParser {
 
 						if (hasElseNext) {
 							// Calculate offset to the else block
-							const offsetToElseBlock = (instructions.length + 1 - block.jumpIndex) * 20
+							const offsetToElseBlock = (instructions.length + 1 - block.jumpIndex) * INSTRUCTION_SIZE
 
+							if (offsetToElseBlock > MAX_JUMP_DISTANCE) {
+								throw new Error(`Jump distance too large (${offsetToElseBlock} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+							}
 							// Update main jump index
 							instructions[block.jumpIndex].operand1 = offsetToElseBlock & 0xFF
 							instructions[block.jumpIndex].operand2 = (offsetToElseBlock >> 8) & 0xFF
@@ -501,7 +531,10 @@ export default class CppParser {
 							if (block.additionalJumps) {
 								for (const jumpIdx of block.additionalJumps) {
 									// Calculate offset specifically for this jump
-									const additionalJumpOffset = (instructions.length + 1 - jumpIdx) * 20
+									const additionalJumpOffset = (instructions.length + 1 - jumpIdx) * INSTRUCTION_SIZE
+									if (additionalJumpOffset > MAX_JUMP_DISTANCE) {
+										throw new Error(`Jump distance too large (${additionalJumpOffset} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+									}
 									instructions[jumpIdx].operand1 = additionalJumpOffset & 0xFF
 									instructions[jumpIdx].operand2 = (additionalJumpOffset >> 8) & 0xFF
 								}
@@ -521,7 +554,10 @@ export default class CppParser {
 							pendingJumps.push({ index: skipElseIndex, targetType: "end_of_else" })
 						} else {
 							// No else block, so jump-if-false should point to the current position
-							const offsetToEndOfIf = (instructions.length - block.jumpIndex) * 20
+							const offsetToEndOfIf = (instructions.length - block.jumpIndex) * INSTRUCTION_SIZE
+							if (offsetToEndOfIf > MAX_JUMP_DISTANCE) {
+								throw new Error(`Jump distance too large (${offsetToEndOfIf} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+							}
 
 							// Update main jump index
 							instructions[block.jumpIndex].operand1 = offsetToEndOfIf & 0xFF
@@ -535,11 +571,15 @@ export default class CppParser {
 								}
 							}
 						}
+					// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 					} else if (block.type === "else") {
 						for (let i = pendingJumps.length - 1; i >= 0; i--) {
 							const jump = pendingJumps[i]
 							if (jump.targetType === "end_of_else") {
-								const offsetToEnd = (instructions.length - jump.index) * 20
+								const offsetToEnd = (instructions.length - jump.index) * INSTRUCTION_SIZE
+								if (offsetToEnd > MAX_JUMP_DISTANCE) {
+									throw new Error(`Jump distance too large (${offsetToEnd} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+								}
 								instructions[jump.index].operand1 = offsetToEnd & 0xFF
 								instructions[jump.index].operand2 = (offsetToEnd >> 8) & 0xFF
 								pendingJumps.splice(i, 1)
@@ -708,7 +748,10 @@ export default class CppParser {
 
 					// Now we're at the if-body. We need to fix the jumpToIfBodyIndex
 					// to point here
-					const ifBodyOffset = (instructions.length - jumpToIfBodyIndex) * 20
+					const ifBodyOffset = (instructions.length - jumpToIfBodyIndex) * INSTRUCTION_SIZE
+					if (ifBodyOffset > MAX_JUMP_DISTANCE) {
+						throw new Error(`Jump distance too large (${ifBodyOffset} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+					}
 					instructions[jumpToIfBodyIndex].operand1 = ifBodyOffset & 0xFF
 					instructions[jumpToIfBodyIndex].operand2 = (ifBodyOffset >> 8) & 0xFF
 
@@ -896,7 +939,7 @@ export default class CppParser {
 		}
 	}
 
-	// eslint-disable-next-line max-len
+
 	private static processOperand(expr: string, variables: Map<string, VariableType>, nextRegister: number, instructions: BytecodeInstruction[]): {
 		operand: number,
 		updatedNextRegister: number
@@ -909,6 +952,9 @@ export default class CppParser {
 			const sensorType = this.getSensorTypeFromMethod(sensorMethod)
 
 			// Allocate a register for the sensor value
+			if (nextRegister >= MAX_REGISTERS) {
+				throw new Error(`Program exceeds maximum register count (${MAX_REGISTERS})`)
+			}
 			const register = nextRegister++
 
 			// Add instruction to read sensor into register

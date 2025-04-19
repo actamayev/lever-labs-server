@@ -171,5 +171,4 @@ describe("Sensor Functionality", () => {
 			CppParser["parseCppCode"] = originalParseCppCode
 		}
 	})
-	// TODO: Add a test to assign a variable, and then read that variable elsewhere.
 })

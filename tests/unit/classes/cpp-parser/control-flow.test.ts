@@ -257,7 +257,6 @@ rgbLed.set_led_purple();`
 			expect(bytecode[6]).toBe(SensorType.ACCEL_MAG)
 		})
 
-		// TODO: Test isn't running
 		test("should handle sensors in for loops", () => {
 			const code = `for (int i = 0; i < 10; i++) {
 		if (Sensors::getInstance().getYaw() > i) {
