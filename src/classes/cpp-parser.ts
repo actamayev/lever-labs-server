@@ -1,7 +1,8 @@
+/* eslint-disable max-len */
 /* eslint-disable complexity */
 /* eslint-disable max-lines-per-function */
 /* eslint-disable max-depth */
-import { MAX_LED_BRIGHTNESS } from "../utils/constants"
+import { INSTRUCTION_SIZE, MAX_JUMP_DISTANCE, MAX_LED_BRIGHTNESS, MAX_PROGRAM_SIZE, MAX_REGISTERS } from "../utils/constants"
 import { BytecodeOpCode, CommandPatterns, CommandType, ComparisonOp, LedID, SensorType, VarType } from "../types/bytecode-types"
 
 export default class CppParser {
@@ -12,8 +13,12 @@ export default class CppParser {
 		  throw new Error(`Syntax error: ${validationResult}`)
 		}
 		const instructions = this.parseCppCode(sanitizedCode)
-		const bytecode = this.generateBytecode(instructions)
 
+		if (instructions.length > MAX_PROGRAM_SIZE) {
+		  throw new Error(`Program exceeds maximum size (${instructions.length} instructions, maximum is ${MAX_PROGRAM_SIZE})`)
+		}
+
+		const bytecode = this.generateBytecode(instructions)
 		return bytecode
 	}
 
@@ -32,7 +37,7 @@ export default class CppParser {
 
 	private static parseCppCode(cppCode: string): BytecodeInstruction[] {
 		const instructions: BytecodeInstruction[] = []
-		const variables: Map<string, { type: VarType, register: number }> = new Map()
+		const variables: Map<string, VariableType> = new Map()
 		let nextRegister = 0
 
 		const protectedStatements = cppCode.split(";").map(s => s.trim()).filter(s => s.length > 0)
@@ -58,6 +63,9 @@ export default class CppParser {
 					const endValue = parseInt(command.matches[3], 10)
 
 					// Assign register for loop counter
+					if (nextRegister >= MAX_REGISTERS) {
+						throw new Error(`Program exceeds maximum register count (${MAX_REGISTERS})`)
+					}
 					const register = nextRegister++
 					variables.set(varName, {type: VarType.INT, register})
 
@@ -134,6 +142,9 @@ export default class CppParser {
 					}
 
 					// Assign register and store for future reference
+					if (nextRegister >= MAX_REGISTERS) {
+						throw new Error(`Program exceeds maximum register count (${MAX_REGISTERS})`)
+					}
 					const register = nextRegister++
 					variables.set(varName, {type: typeEnum, register})
 
@@ -146,8 +157,26 @@ export default class CppParser {
 						operand4: 0
 					})
 
-					if (typeEnum === VarType.FLOAT) {
+					// Check if value is a sensor reading
+					const sensorMatch = varValue.match(/Sensors::getInstance\(\)\.(\w+)\(\)/)
+					if (sensorMatch) {
+						// This is a sensor reading assignment
+						const sensorMethod = sensorMatch[1]
+						const sensorType = this.getSensorTypeFromMethod(sensorMethod)
+
+						// Add instruction to read sensor into the register
+						instructions.push({
+							opcode: BytecodeOpCode.READ_SENSOR,
+							operand1: sensorType,
+							operand2: register,
+							operand3: 0,
+							operand4: 0
+						})
+					} else if (typeEnum === VarType.FLOAT) {
 						const floatValue = parseFloat(varValue)
+						if (isNaN(floatValue)) {
+							throw new Error(`Invalid float value: ${varValue}`)
+						}
 
 						instructions.push({
 							opcode: BytecodeOpCode.SET_VAR,
@@ -309,35 +338,34 @@ export default class CppParser {
 				if (command.matches && command.matches.length === 4) {
 					const leftExpr = command.matches[1]
 					const operator = command.matches[2]
-					const rightValue = parseFloat(command.matches[3])
+					const rightExpr = command.matches[3]
 
-					// First check if left side is a sensor expression
-					const sensorMatch = leftExpr.match(/Sensors::getInstance\(\)\.(\w+)\(\)/)
+					// Map operator to ComparisonOp
+					let compOp: ComparisonOp
+					switch (operator) {
+					case ">": compOp = ComparisonOp.GREATER_THAN; break
+					case "<": compOp = ComparisonOp.LESS_THAN; break
+					case ">=": compOp = ComparisonOp.GREATER_EQUAL; break
+					case "<=": compOp = ComparisonOp.LESS_EQUAL; break
+					case "==": compOp = ComparisonOp.EQUAL; break
+					case "!=": compOp = ComparisonOp.NOT_EQUAL; break
+					default: throw new Error(`Unsupported operator: ${operator}`)
+					}
 
-					if (sensorMatch) {
+					let leftOperand: number
+					let rightOperand: number
+
+					// Handle left side of comparison
+					const leftSensorMatch = leftExpr.match(/Sensors::getInstance\(\)\.(\w+)\(\)/)
+					if (leftSensorMatch) {
 						// This is a sensor comparison
-						const sensorMethod = sensorMatch[1]
-						let sensorType: number
-
-						// Map method name to sensor type
-						switch (sensorMethod) {
-						case "getPitch": sensorType = SensorType.PITCH; break
-						case "getRoll": sensorType = SensorType.ROLL; break
-						case "getYaw": sensorType = SensorType.YAW; break
-						case "getXAccel": sensorType = SensorType.ACCEL_X; break
-						case "getYAccel": sensorType = SensorType.ACCEL_Y; break
-						case "getZAccel": sensorType = SensorType.ACCEL_Z; break
-						case "getAccelMagnitude": sensorType = SensorType.ACCEL_MAG; break
-						case "getXRotationRate": sensorType = SensorType.ROT_RATE_X; break
-						case "getYRotationRate": sensorType = SensorType.ROT_RATE_Y; break
-						case "getZRotationRate": sensorType = SensorType.ROT_RATE_Z; break
-						case "getMagneticFieldX": sensorType = SensorType.MAG_FIELD_X; break
-						case "getMagneticFieldY": sensorType = SensorType.MAG_FIELD_Y; break
-						case "getMagneticFieldZ": sensorType = SensorType.MAG_FIELD_Z; break
-						default: throw new Error(`Unknown sensor method: ${sensorMethod}`)
-						}
+						const sensorMethod = leftSensorMatch[1]
+						const sensorType = this.getSensorTypeFromMethod(sensorMethod)
 
 						// Allocate a register for the sensor value
+						if (nextRegister >= MAX_REGISTERS) {
+							throw new Error(`Program exceeds maximum register count (${MAX_REGISTERS})`)
+						}
 						const register = nextRegister++
 
 						// Add instruction to read sensor into register
@@ -349,53 +377,66 @@ export default class CppParser {
 							operand4: 0
 						})
 
-						// Map operator to ComparisonOp
-						let compOp: ComparisonOp
-						switch (operator) {
-						case ">": compOp = ComparisonOp.GREATER_THAN; break
-						case "<": compOp = ComparisonOp.LESS_THAN; break
-						case ">=": compOp = ComparisonOp.GREATER_EQUAL; break
-						case "<=": compOp = ComparisonOp.LESS_EQUAL; break
-						case "==": compOp = ComparisonOp.EQUAL; break
-						case "!=": compOp = ComparisonOp.NOT_EQUAL; break
-						default: throw new Error(`Unsupported operator: ${operator}`)
-						}
-
-						// Add comparison instruction with register as left operand
-						instructions.push({
-							opcode: BytecodeOpCode.COMPARE,
-							operand1: compOp,
-							operand2: 0x8000 | register,  // High bit indicates register reference
-							operand3: rightValue,         // Direct float value - no bit manipulation
-							operand4: 0
-						})
+						leftOperand = 0x8000 | register  // High bit indicates register reference
+					} else if (variables.has(leftExpr)) {
+						// This is a variable reference
+						const variable = variables.get(leftExpr) as VariableType
+						leftOperand = 0x8000 | variable.register  // High bit indicates register reference
 					} else {
-						// Standard constant comparison (existing code)
+						// This is a numeric constant
 						const leftValue = parseFloat(leftExpr)
-
-						// Map operator to ComparisonOp
-						let compOp: ComparisonOp
-						switch (operator) {
-						case ">": compOp = ComparisonOp.GREATER_THAN; break
-						case "<": compOp = ComparisonOp.LESS_THAN; break
-						case ">=": compOp = ComparisonOp.GREATER_EQUAL; break
-						case "<=": compOp = ComparisonOp.LESS_EQUAL; break
-						case "==": compOp = ComparisonOp.EQUAL; break
-						case "!=": compOp = ComparisonOp.NOT_EQUAL; break
-						default: throw new Error(`Unsupported operator: ${operator}`)
+						if (isNaN(leftValue)) {
+							throw new Error(`Undefined variable or invalid number: ${leftExpr}`)
 						}
-
-						// Add comparison instruction with constants
-						instructions.push({
-							opcode: BytecodeOpCode.COMPARE,
-							operand1: compOp,
-							operand2: leftValue,
-							operand3: rightValue,
-							operand4: 0
-						})
+						leftOperand = leftValue
 					}
 
-					// Add conditional jump (to be fixed later) - this remains the same
+					// Handle right side of comparison
+					const rightSensorMatch = rightExpr.match(/Sensors::getInstance\(\)\.(\w+)\(\)/)
+					if (rightSensorMatch) {
+						// This is a sensor comparison on the right side
+						const sensorMethod = rightSensorMatch[1]
+						const sensorType = this.getSensorTypeFromMethod(sensorMethod)
+
+						// Allocate a register for the sensor value
+						if (nextRegister >= MAX_REGISTERS) {
+							throw new Error(`Program exceeds maximum register count (${MAX_REGISTERS})`)
+						}
+						const register = nextRegister++
+
+						// Add instruction to read sensor into register
+						instructions.push({
+							opcode: BytecodeOpCode.READ_SENSOR,
+							operand1: sensorType,
+							operand2: register,
+							operand3: 0,
+							operand4: 0
+						})
+
+						rightOperand = 0x8000 | register  // High bit indicates register reference
+					} else if (variables.has(rightExpr)) {
+						// This is a variable reference
+						const variable = variables.get(rightExpr) as VariableType
+						rightOperand = 0x8000 | variable.register  // High bit indicates register reference
+					} else {
+						// This is a numeric constant
+						const rightValue = parseFloat(rightExpr)
+						if (isNaN(rightValue)) {
+							throw new Error(`Undefined variable or invalid number: ${rightExpr}`)
+						}
+						rightOperand = rightValue
+					}
+
+					// Add comparison instruction
+					instructions.push({
+						opcode: BytecodeOpCode.COMPARE,
+						operand1: compOp,
+						operand2: leftOperand,
+						operand3: rightOperand,
+						operand4: 0
+					})
+
+					// Add conditional jump (to be fixed later)
 					const jumpIndex = instructions.length
 					instructions.push({
 						opcode: BytecodeOpCode.JUMP_IF_FALSE,
@@ -410,6 +451,7 @@ export default class CppParser {
 				}
 				break
 			}
+
 			case CommandType.BLOCK_START:
 				// Nothing special for block start
 				break
@@ -430,7 +472,11 @@ export default class CppParser {
 
 						// Jump back to condition check
 						const forEndIndex = instructions.length
-						const offsetToStart = (forEndIndex - (block.startIndex as number)) * 20
+						const offsetToStart = (forEndIndex - (block.startIndex as number)) * INSTRUCTION_SIZE
+
+						if (offsetToStart > MAX_JUMP_DISTANCE) {
+							throw new Error(`Jump distance in for loop too large (${offsetToStart} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+						}
 
 						instructions.push({
 							opcode: BytecodeOpCode.JUMP_BACKWARD,
@@ -441,7 +487,10 @@ export default class CppParser {
 						})
 
 						// Fix the jump-if-false at start to point here
-						const offsetToHere = (instructions.length - block.jumpIndex) * 20
+						const offsetToHere = (instructions.length - block.jumpIndex) * INSTRUCTION_SIZE
+						if (offsetToHere > MAX_JUMP_DISTANCE) {
+							throw new Error(`Jump distance too large (${offsetToHere} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+						}
 						instructions[block.jumpIndex].operand1 = offsetToHere & 0xFF
 						instructions[block.jumpIndex].operand2 = (offsetToHere >> 8) & 0xFF
 					} else if (block.type === "while") {
@@ -449,8 +498,11 @@ export default class CppParser {
 						const whileEndIndex = instructions.length
 
 						// Calculate bytes to jump back (each instruction is 10 bytes)
-						const offsetToStart = (whileEndIndex - block.jumpIndex) * 20
+						const offsetToStart = (whileEndIndex - block.jumpIndex) * INSTRUCTION_SIZE
 
+						if (offsetToStart > MAX_JUMP_DISTANCE) {
+							throw new Error(`Jump distance in while loop too large (${offsetToStart} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+						}
 						instructions.push({
 							opcode: BytecodeOpCode.WHILE_END,
 							operand1: offsetToStart & 0xFF, // Low byte
@@ -459,15 +511,34 @@ export default class CppParser {
 							operand4: 0
 						})
 					} else if (block.type === "if") {
- 						// Check if there's an "else" coming next by looking ahead
+						// Check if there's an "else" coming next
 						const nextStatementIndex = statements.indexOf(statement) + 1
 						const hasElseNext = nextStatementIndex < statements.length &&
-                                                statements[nextStatementIndex].trim() === "else"
+											statements[nextStatementIndex].trim() === "else"
 
 						if (hasElseNext) {
-							const offsetToElseBlock = (instructions.length + 1 - block.jumpIndex) * 20
+							// Calculate offset to the else block
+							const offsetToElseBlock = (instructions.length + 1 - block.jumpIndex) * INSTRUCTION_SIZE
+
+							if (offsetToElseBlock > MAX_JUMP_DISTANCE) {
+								throw new Error(`Jump distance too large (${offsetToElseBlock} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+							}
+							// Update main jump index
 							instructions[block.jumpIndex].operand1 = offsetToElseBlock & 0xFF
 							instructions[block.jumpIndex].operand2 = (offsetToElseBlock >> 8) & 0xFF
+
+							// Fix additional jumps if present (for compound conditions)
+							if (block.additionalJumps) {
+								for (const jumpIdx of block.additionalJumps) {
+									// Calculate offset specifically for this jump
+									const additionalJumpOffset = (instructions.length + 1 - jumpIdx) * INSTRUCTION_SIZE
+									if (additionalJumpOffset > MAX_JUMP_DISTANCE) {
+										throw new Error(`Jump distance too large (${additionalJumpOffset} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+									}
+									instructions[jumpIdx].operand1 = additionalJumpOffset & 0xFF
+									instructions[jumpIdx].operand2 = (additionalJumpOffset >> 8) & 0xFF
+								}
+							}
 
 							// Add jump to skip else block
 							const skipElseIndex = instructions.length
@@ -483,16 +554,32 @@ export default class CppParser {
 							pendingJumps.push({ index: skipElseIndex, targetType: "end_of_else" })
 						} else {
 							// No else block, so jump-if-false should point to the current position
-							const offsetToEndOfIf = (instructions.length - block.jumpIndex) * 20
+							const offsetToEndOfIf = (instructions.length - block.jumpIndex) * INSTRUCTION_SIZE
+							if (offsetToEndOfIf > MAX_JUMP_DISTANCE) {
+								throw new Error(`Jump distance too large (${offsetToEndOfIf} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+							}
+
+							// Update main jump index
 							instructions[block.jumpIndex].operand1 = offsetToEndOfIf & 0xFF
 							instructions[block.jumpIndex].operand2 = (offsetToEndOfIf >> 8) & 0xFF
+
+							// Fix additional jumps if present
+							if (block.additionalJumps) {
+								for (const jumpIdx of block.additionalJumps) {
+									instructions[jumpIdx].operand1 = offsetToEndOfIf & 0xFF
+									instructions[jumpIdx].operand2 = (offsetToEndOfIf >> 8) & 0xFF
+								}
+							}
 						}
 					// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 					} else if (block.type === "else") {
 						for (let i = pendingJumps.length - 1; i >= 0; i--) {
 							const jump = pendingJumps[i]
 							if (jump.targetType === "end_of_else") {
-								const offsetToEnd = (instructions.length - jump.index) * 20
+								const offsetToEnd = (instructions.length - jump.index) * INSTRUCTION_SIZE
+								if (offsetToEnd > MAX_JUMP_DISTANCE) {
+									throw new Error(`Jump distance too large (${offsetToEnd} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+								}
 								instructions[jump.index].operand1 = offsetToEnd & 0xFF
 								instructions[jump.index].operand2 = (offsetToEnd >> 8) & 0xFF
 								pendingJumps.splice(i, 1)
@@ -501,13 +588,189 @@ export default class CppParser {
 					}
 				}
 				break
+			case CommandType.COMPOUND_AND_IF_STATEMENT: {
+				if (command.matches && command.matches.length === 7) {
+					const leftExpr1 = command.matches[1]
+					const operator1 = command.matches[2]
+					const rightExpr1 = command.matches[3]
+					const leftExpr2 = command.matches[4]
+					const operator2 = command.matches[5]
+					const rightExpr2 = command.matches[6]
+
+					// Parse first comparison operator
+					const compOp1 = this.parseComparisonOperator(operator1)
+
+					// Handle left operand of first condition
+					const leftOperandResult1 = this.processOperand(leftExpr1, variables, nextRegister, instructions)
+					nextRegister = leftOperandResult1.updatedNextRegister
+					const leftOperand1 = leftOperandResult1.operand
+
+					// Handle right operand of first condition
+					const rightOperandResult1 = this.processOperand(rightExpr1, variables, nextRegister, instructions)
+					nextRegister = rightOperandResult1.updatedNextRegister
+					const rightOperand1 = rightOperandResult1.operand
+
+					// Add first comparison instruction
+					instructions.push({
+						opcode: BytecodeOpCode.COMPARE,
+						operand1: compOp1,
+						operand2: leftOperand1,
+						operand3: rightOperand1,
+						operand4: 0
+					})
+
+					// For AND, short-circuit if first condition is false
+					// Store jumpIndex to be filled later
+					const firstJumpIndex = instructions.length
+					instructions.push({
+						opcode: BytecodeOpCode.JUMP_IF_FALSE,
+						operand1: 0, // Will be filled later
+						operand2: 0,
+						operand3: 0,
+						operand4: 0
+					})
+
+					// Parse second comparison operator
+					const compOp2 = this.parseComparisonOperator(operator2)
+
+					// Handle left operand of second condition
+					const leftOperandResult2 = this.processOperand(leftExpr2, variables, nextRegister, instructions)
+					nextRegister = leftOperandResult2.updatedNextRegister
+					const leftOperand2 = leftOperandResult2.operand
+
+					// Handle right operand of second condition
+					const rightOperandResult2 = this.processOperand(rightExpr2, variables, nextRegister, instructions)
+					nextRegister = rightOperandResult2.updatedNextRegister
+					const rightOperand2 = rightOperandResult2.operand
+
+					// Add second comparison instruction
+					instructions.push({
+						opcode: BytecodeOpCode.COMPARE,
+						operand1: compOp2,
+						operand2: leftOperand2,
+						operand3: rightOperand2,
+						operand4: 0
+					})
+
+					// Jump to else block if second condition is false
+					const secondJumpIndex = instructions.length
+					instructions.push({
+						opcode: BytecodeOpCode.JUMP_IF_FALSE,
+						operand1: 0, // Will be filled later
+						operand2: 0,
+						operand3: 0,
+						operand4: 0
+					})
+
+					// Track this block for later
+					blockStack.push({
+						type: "if",
+						jumpIndex: secondJumpIndex,
+						additionalJumps: [firstJumpIndex]  // Store additional jump points
+					})
+				}
+				break
+			}
+
+			case CommandType.COMPOUND_OR_IF_STATEMENT: {
+				if (command.matches && command.matches.length === 7) {
+					const leftExpr1 = command.matches[1]
+					const operator1 = command.matches[2]
+					const rightExpr1 = command.matches[3]
+					const leftExpr2 = command.matches[4]
+					const operator2 = command.matches[5]
+					const rightExpr2 = command.matches[6]
+
+					// Parse first comparison operator
+					const compOp1 = this.parseComparisonOperator(operator1)
+
+					// Handle left operand of first condition
+					const leftOperandResult1 = this.processOperand(leftExpr1, variables, nextRegister, instructions)
+					nextRegister = leftOperandResult1.updatedNextRegister
+					const leftOperand1 = leftOperandResult1.operand
+
+					// Handle right operand of first condition
+					const rightOperandResult1 = this.processOperand(rightExpr1, variables, nextRegister, instructions)
+					nextRegister = rightOperandResult1.updatedNextRegister
+					const rightOperand1 = rightOperandResult1.operand
+
+					// Add first comparison instruction
+					instructions.push({
+						opcode: BytecodeOpCode.COMPARE,
+						operand1: compOp1,
+						operand2: leftOperand1,
+						operand3: rightOperand1,
+						operand4: 0
+					})
+
+					// For OR, we'll add a JUMP_IF_TRUE instruction to skip to the if-body
+					// if the first condition is true (short-circuit)
+					const jumpToIfBodyIndex = instructions.length
+					instructions.push({
+						opcode: BytecodeOpCode.JUMP_IF_TRUE,
+						operand1: 0, // Will be filled later to point to if-body
+						operand2: 0,
+						operand3: 0,
+						operand4: 0
+					})
+
+					// Parse second comparison operator
+					const compOp2 = this.parseComparisonOperator(operator2)
+
+					// Handle left operand of second condition
+					const leftOperandResult2 = this.processOperand(leftExpr2, variables, nextRegister, instructions)
+					nextRegister = leftOperandResult2.updatedNextRegister
+					const leftOperand2 = leftOperandResult2.operand
+
+					// Handle right operand of second condition
+					const rightOperandResult2 = this.processOperand(rightExpr2, variables, nextRegister, instructions)
+					nextRegister = rightOperandResult2.updatedNextRegister
+					const rightOperand2 = rightOperandResult2.operand
+
+					// Add second comparison instruction
+					instructions.push({
+						opcode: BytecodeOpCode.COMPARE,
+						operand1: compOp2,
+						operand2: leftOperand2,
+						operand3: rightOperand2,
+						operand4: 0
+					})
+
+					// Jump to else block if second condition is also false
+					const jumpToElseIndex = instructions.length
+					instructions.push({
+						opcode: BytecodeOpCode.JUMP_IF_FALSE,
+						operand1: 0, // Will be filled later
+						operand2: 0,
+						operand3: 0,
+						operand4: 0
+					})
+
+					// Now we're at the if-body. We need to fix the jumpToIfBodyIndex
+					// to point here
+					const ifBodyOffset = (instructions.length - jumpToIfBodyIndex) * INSTRUCTION_SIZE
+					if (ifBodyOffset > MAX_JUMP_DISTANCE) {
+						throw new Error(`Jump distance too large (${ifBodyOffset} bytes, maximum is ${MAX_JUMP_DISTANCE} bytes)`)
+					}
+					instructions[jumpToIfBodyIndex].operand1 = ifBodyOffset & 0xFF
+					instructions[jumpToIfBodyIndex].operand2 = (ifBodyOffset >> 8) & 0xFF
+
+					// Track this block for later (we only need to fix the jumpToElseIndex
+					// for the end of the if block)
+					blockStack.push({
+						type: "if",
+						jumpIndex: jumpToElseIndex
+					})
+				}
+				break
+			}
 
 			case CommandType.ELSE_STATEMENT:
 				// Mark start of else block
 				blockStack.push({ type: "else", jumpIndex: instructions.length })
 				break
 
-                // End of switch statement
+		// End of switch statement
 			}
 		}
 
@@ -643,5 +906,78 @@ export default class CppParser {
 		}
 
 		return true
+	}
+
+	private static getSensorTypeFromMethod(sensorMethod: string): number {
+		switch (sensorMethod) {
+		case "getPitch": return SensorType.PITCH
+		case "getRoll": return SensorType.ROLL
+		case "getYaw": return SensorType.YAW
+		case "getXAccel": return SensorType.ACCEL_X
+		case "getYAccel": return SensorType.ACCEL_Y
+		case "getZAccel": return SensorType.ACCEL_Z
+		case "getAccelMagnitude": return SensorType.ACCEL_MAG
+		case "getXRotationRate": return SensorType.ROT_RATE_X
+		case "getYRotationRate": return SensorType.ROT_RATE_Y
+		case "getZRotationRate": return SensorType.ROT_RATE_Z
+		case "getMagneticFieldX": return SensorType.MAG_FIELD_X
+		case "getMagneticFieldY": return SensorType.MAG_FIELD_Y
+		case "getMagneticFieldZ": return SensorType.MAG_FIELD_Z
+		default: throw new Error(`Unknown sensor method: ${sensorMethod}`)
+		}
+	}
+
+	private static parseComparisonOperator(operator: string): ComparisonOp {
+		switch (operator) {
+		case ">": return ComparisonOp.GREATER_THAN
+		case "<": return ComparisonOp.LESS_THAN
+		case ">=": return ComparisonOp.GREATER_EQUAL
+		case "<=": return ComparisonOp.LESS_EQUAL
+		case "==": return ComparisonOp.EQUAL
+		case "!=": return ComparisonOp.NOT_EQUAL
+		default: throw new Error(`Unsupported operator: ${operator}`)
+		}
+	}
+
+
+	private static processOperand(expr: string, variables: Map<string, VariableType>, nextRegister: number, instructions: BytecodeInstruction[]): {
+		operand: number,
+		updatedNextRegister: number
+	} {
+		// Check if this is a sensor reading
+		const sensorMatch = expr.match(/Sensors::getInstance\(\)\.(\w+)\(\)/)
+		if (sensorMatch) {
+			// This is a sensor comparison
+			const sensorMethod = sensorMatch[1]
+			const sensorType = this.getSensorTypeFromMethod(sensorMethod)
+
+			// Allocate a register for the sensor value
+			if (nextRegister >= MAX_REGISTERS) {
+				throw new Error(`Program exceeds maximum register count (${MAX_REGISTERS})`)
+			}
+			const register = nextRegister++
+
+			// Add instruction to read sensor into register
+			instructions.push({
+				opcode: BytecodeOpCode.READ_SENSOR,
+				operand1: sensorType,
+				operand2: register,
+				operand3: 0,
+				operand4: 0
+			})
+
+			return { operand: 0x8000 | register, updatedNextRegister: nextRegister }
+		} else if (variables.has(expr)) {
+			// This is a variable reference
+			const variable = variables.get(expr) as VariableType
+			return { operand: 0x8000 | variable.register, updatedNextRegister: nextRegister }
+		} else {
+			// This is a numeric constant
+			const value = parseFloat(expr)
+			if (isNaN(value)) {
+				throw new Error(`Undefined variable or invalid number: ${expr}`)
+			}
+			return { operand: value, updatedNextRegister: nextRegister }
+		}
 	}
 }
