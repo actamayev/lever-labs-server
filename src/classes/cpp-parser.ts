@@ -484,15 +484,28 @@ export default class CppParser {
 							operand4: 0
 						})
 					} else if (block.type === "if") {
-						// Check if there's an "else" coming next by looking ahead
+						// Check if there's an "else" coming next
 						const nextStatementIndex = statements.indexOf(statement) + 1
 						const hasElseNext = nextStatementIndex < statements.length &&
-										statements[nextStatementIndex].trim() === "else"
+											statements[nextStatementIndex].trim() === "else"
 
 						if (hasElseNext) {
+							// Calculate offset to the else block
 							const offsetToElseBlock = (instructions.length + 1 - block.jumpIndex) * 20
+
+							// Update main jump index
 							instructions[block.jumpIndex].operand1 = offsetToElseBlock & 0xFF
 							instructions[block.jumpIndex].operand2 = (offsetToElseBlock >> 8) & 0xFF
+
+							// Fix additional jumps if present (for compound conditions)
+							if (block.additionalJumps) {
+								for (const jumpIdx of block.additionalJumps) {
+									// Calculate offset specifically for this jump
+									const additionalJumpOffset = (instructions.length + 1 - jumpIdx) * 20
+									instructions[jumpIdx].operand1 = additionalJumpOffset & 0xFF
+									instructions[jumpIdx].operand2 = (additionalJumpOffset >> 8) & 0xFF
+								}
+							}
 
 							// Add jump to skip else block
 							const skipElseIndex = instructions.length
@@ -509,10 +522,19 @@ export default class CppParser {
 						} else {
 							// No else block, so jump-if-false should point to the current position
 							const offsetToEndOfIf = (instructions.length - block.jumpIndex) * 20
+
+							// Update main jump index
 							instructions[block.jumpIndex].operand1 = offsetToEndOfIf & 0xFF
 							instructions[block.jumpIndex].operand2 = (offsetToEndOfIf >> 8) & 0xFF
+
+							// Fix additional jumps if present
+							if (block.additionalJumps) {
+								for (const jumpIdx of block.additionalJumps) {
+									instructions[jumpIdx].operand1 = offsetToEndOfIf & 0xFF
+									instructions[jumpIdx].operand2 = (offsetToEndOfIf >> 8) & 0xFF
+								}
+							}
 						}
-						// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 					} else if (block.type === "else") {
 						for (let i = pendingJumps.length - 1; i >= 0; i--) {
 							const jump = pendingJumps[i]
@@ -526,6 +548,179 @@ export default class CppParser {
 					}
 				}
 				break
+			case CommandType.COMPOUND_AND_IF_STATEMENT: {
+				if (command.matches && command.matches.length === 7) {
+					const leftExpr1 = command.matches[1]
+					const operator1 = command.matches[2]
+					const rightExpr1 = command.matches[3]
+					const leftExpr2 = command.matches[4]
+					const operator2 = command.matches[5]
+					const rightExpr2 = command.matches[6]
+
+					// Parse first comparison operator
+					const compOp1 = this.parseComparisonOperator(operator1)
+
+					// Handle left operand of first condition
+					const leftOperandResult1 = this.processOperand(leftExpr1, variables, nextRegister, instructions)
+					nextRegister = leftOperandResult1.updatedNextRegister
+					const leftOperand1 = leftOperandResult1.operand
+
+					// Handle right operand of first condition
+					const rightOperandResult1 = this.processOperand(rightExpr1, variables, nextRegister, instructions)
+					nextRegister = rightOperandResult1.updatedNextRegister
+					const rightOperand1 = rightOperandResult1.operand
+
+					// Add first comparison instruction
+					instructions.push({
+						opcode: BytecodeOpCode.COMPARE,
+						operand1: compOp1,
+						operand2: leftOperand1,
+						operand3: rightOperand1,
+						operand4: 0
+					})
+
+					// For AND, short-circuit if first condition is false
+					// Store jumpIndex to be filled later
+					const firstJumpIndex = instructions.length
+					instructions.push({
+						opcode: BytecodeOpCode.JUMP_IF_FALSE,
+						operand1: 0, // Will be filled later
+						operand2: 0,
+						operand3: 0,
+						operand4: 0
+					})
+
+					// Parse second comparison operator
+					const compOp2 = this.parseComparisonOperator(operator2)
+
+					// Handle left operand of second condition
+					const leftOperandResult2 = this.processOperand(leftExpr2, variables, nextRegister, instructions)
+					nextRegister = leftOperandResult2.updatedNextRegister
+					const leftOperand2 = leftOperandResult2.operand
+
+					// Handle right operand of second condition
+					const rightOperandResult2 = this.processOperand(rightExpr2, variables, nextRegister, instructions)
+					nextRegister = rightOperandResult2.updatedNextRegister
+					const rightOperand2 = rightOperandResult2.operand
+
+					// Add second comparison instruction
+					instructions.push({
+						opcode: BytecodeOpCode.COMPARE,
+						operand1: compOp2,
+						operand2: leftOperand2,
+						operand3: rightOperand2,
+						operand4: 0
+					})
+
+					// Jump to else block if second condition is false
+					const secondJumpIndex = instructions.length
+					instructions.push({
+						opcode: BytecodeOpCode.JUMP_IF_FALSE,
+						operand1: 0, // Will be filled later
+						operand2: 0,
+						operand3: 0,
+						operand4: 0
+					})
+
+					// Track this block for later
+					blockStack.push({
+						type: "if",
+						jumpIndex: secondJumpIndex,
+						additionalJumps: [firstJumpIndex]  // Store additional jump points
+					})
+				}
+				break
+			}
+
+			case CommandType.COMPOUND_OR_IF_STATEMENT: {
+				if (command.matches && command.matches.length === 7) {
+					const leftExpr1 = command.matches[1]
+					const operator1 = command.matches[2]
+					const rightExpr1 = command.matches[3]
+					const leftExpr2 = command.matches[4]
+					const operator2 = command.matches[5]
+					const rightExpr2 = command.matches[6]
+
+					// Parse first comparison operator
+					const compOp1 = this.parseComparisonOperator(operator1)
+
+					// Handle left operand of first condition
+					const leftOperandResult1 = this.processOperand(leftExpr1, variables, nextRegister, instructions)
+					nextRegister = leftOperandResult1.updatedNextRegister
+					const leftOperand1 = leftOperandResult1.operand
+
+					// Handle right operand of first condition
+					const rightOperandResult1 = this.processOperand(rightExpr1, variables, nextRegister, instructions)
+					nextRegister = rightOperandResult1.updatedNextRegister
+					const rightOperand1 = rightOperandResult1.operand
+
+					// Add first comparison instruction
+					instructions.push({
+						opcode: BytecodeOpCode.COMPARE,
+						operand1: compOp1,
+						operand2: leftOperand1,
+						operand3: rightOperand1,
+						operand4: 0
+					})
+
+					// For OR, we'll add a JUMP_IF_TRUE instruction to skip to the if-body
+					// if the first condition is true (short-circuit)
+					const jumpToIfBodyIndex = instructions.length
+					instructions.push({
+						opcode: BytecodeOpCode.JUMP_IF_TRUE,
+						operand1: 0, // Will be filled later to point to if-body
+						operand2: 0,
+						operand3: 0,
+						operand4: 0
+					})
+
+					// Parse second comparison operator
+					const compOp2 = this.parseComparisonOperator(operator2)
+
+					// Handle left operand of second condition
+					const leftOperandResult2 = this.processOperand(leftExpr2, variables, nextRegister, instructions)
+					nextRegister = leftOperandResult2.updatedNextRegister
+					const leftOperand2 = leftOperandResult2.operand
+
+					// Handle right operand of second condition
+					const rightOperandResult2 = this.processOperand(rightExpr2, variables, nextRegister, instructions)
+					nextRegister = rightOperandResult2.updatedNextRegister
+					const rightOperand2 = rightOperandResult2.operand
+
+					// Add second comparison instruction
+					instructions.push({
+						opcode: BytecodeOpCode.COMPARE,
+						operand1: compOp2,
+						operand2: leftOperand2,
+						operand3: rightOperand2,
+						operand4: 0
+					})
+
+					// Jump to else block if second condition is also false
+					const jumpToElseIndex = instructions.length
+					instructions.push({
+						opcode: BytecodeOpCode.JUMP_IF_FALSE,
+						operand1: 0, // Will be filled later
+						operand2: 0,
+						operand3: 0,
+						operand4: 0
+					})
+
+					// Now we're at the if-body. We need to fix the jumpToIfBodyIndex
+					// to point here
+					const ifBodyOffset = (instructions.length - jumpToIfBodyIndex) * 20
+					instructions[jumpToIfBodyIndex].operand1 = ifBodyOffset & 0xFF
+					instructions[jumpToIfBodyIndex].operand2 = (ifBodyOffset >> 8) & 0xFF
+
+					// Track this block for later (we only need to fix the jumpToElseIndex
+					// for the end of the if block)
+					blockStack.push({
+						type: "if",
+						jumpIndex: jumpToElseIndex
+					})
+				}
+				break
+			}
 
 			case CommandType.ELSE_STATEMENT:
 				// Mark start of else block
@@ -686,6 +881,57 @@ export default class CppParser {
 		case "getMagneticFieldY": return SensorType.MAG_FIELD_Y
 		case "getMagneticFieldZ": return SensorType.MAG_FIELD_Z
 		default: throw new Error(`Unknown sensor method: ${sensorMethod}`)
+		}
+	}
+
+	private static parseComparisonOperator(operator: string): ComparisonOp {
+		switch (operator) {
+		case ">": return ComparisonOp.GREATER_THAN
+		case "<": return ComparisonOp.LESS_THAN
+		case ">=": return ComparisonOp.GREATER_EQUAL
+		case "<=": return ComparisonOp.LESS_EQUAL
+		case "==": return ComparisonOp.EQUAL
+		case "!=": return ComparisonOp.NOT_EQUAL
+		default: throw new Error(`Unsupported operator: ${operator}`)
+		}
+	}
+
+	// eslint-disable-next-line max-len
+	private static processOperand(expr: string, variables: Map<string, VariableType>, nextRegister: number, instructions: BytecodeInstruction[]): {
+		operand: number,
+		updatedNextRegister: number
+	} {
+		// Check if this is a sensor reading
+		const sensorMatch = expr.match(/Sensors::getInstance\(\)\.(\w+)\(\)/)
+		if (sensorMatch) {
+			// This is a sensor comparison
+			const sensorMethod = sensorMatch[1]
+			const sensorType = this.getSensorTypeFromMethod(sensorMethod)
+
+			// Allocate a register for the sensor value
+			const register = nextRegister++
+
+			// Add instruction to read sensor into register
+			instructions.push({
+				opcode: BytecodeOpCode.READ_SENSOR,
+				operand1: sensorType,
+				operand2: register,
+				operand3: 0,
+				operand4: 0
+			})
+
+			return { operand: 0x8000 | register, updatedNextRegister: nextRegister }
+		} else if (variables.has(expr)) {
+			// This is a variable reference
+			const variable = variables.get(expr) as VariableType
+			return { operand: 0x8000 | variable.register, updatedNextRegister: nextRegister }
+		} else {
+			// This is a numeric constant
+			const value = parseFloat(expr)
+			if (isNaN(value)) {
+				throw new Error(`Undefined variable or invalid number: ${expr}`)
+			}
+			return { operand: value, updatedNextRegister: nextRegister }
 		}
 	}
 }

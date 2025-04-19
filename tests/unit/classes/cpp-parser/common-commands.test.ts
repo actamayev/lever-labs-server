@@ -1,7 +1,8 @@
+/* eslint-disable complexity */
 /* eslint-disable max-lines-per-function */
 import CppParser from "../../../../src/classes/cpp-parser"
 import { MAX_LED_BRIGHTNESS } from "../../../../src/utils/constants"
-import { BytecodeOpCode, CommandType, ComparisonOp, LedID, VarType } from "../../../../src/types/bytecode-types"
+import { BytecodeOpCode, CommandType, ComparisonOp, LedID, SensorType, VarType } from "../../../../src/types/bytecode-types"
 
 describe("Variable assignments", () => {
 	test("should parse integer variable assignment", () => {
@@ -329,5 +330,455 @@ describe("Variable in comparisons", () => {
         }
       `)
 		}).toThrow(/Undefined variable or invalid number: myVar/)
+	})
+})
+
+describe("Compound Conditional Statements", () => {
+	describe("AND Operator (&&)", () => {
+
+		test("should parse basic AND condition with simple comparisons", () => {
+			const code = `
+        if ((10 > 5) && (20 > 15)) {
+          rgbLed.set_led_red();
+        } else {
+          rgbLed.set_led_green();
+        }
+      `
+
+			const bytecode = CppParser.cppToByte(code)
+
+			// Verify first comparison
+			expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[1]).toBe(ComparisonOp.GREATER_THAN)
+			expect(bytecode[2]).toBe(10)
+			expect(bytecode[3]).toBe(5)
+
+			// Check for JUMP_IF_FALSE after first comparison (short-circuit)
+			expect(bytecode[5]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+
+			// Second comparison should exist
+			let foundSecondCompare = false
+			for (let i = 10; i < 20; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.COMPARE &&
+            bytecode[i + 1] === ComparisonOp.GREATER_THAN &&
+            bytecode[i + 2] === 20 &&
+            bytecode[i + 3] === 15) {
+					foundSecondCompare = true
+					break
+				}
+			}
+			expect(foundSecondCompare).toBe(true)
+
+			// Verify we have the right LED settings
+			let redLEDIndex = -1
+			let greenLEDIndex = -1
+
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.SET_ALL_LEDS) {
+					if (bytecode[i + 1] === MAX_LED_BRIGHTNESS && bytecode[i + 2] === 0 && bytecode[i + 3] === 0) {
+						redLEDIndex = i
+					} else if (bytecode[i + 1] === 0 && bytecode[i + 2] === MAX_LED_BRIGHTNESS && bytecode[i + 3] === 0) {
+						greenLEDIndex = i
+					}
+				}
+			}
+
+			// Verify both LED settings were found and that red comes before green
+			expect(redLEDIndex).toBeGreaterThan(0)
+			expect(greenLEDIndex).toBeGreaterThan(0)
+			expect(redLEDIndex).toBeLessThan(greenLEDIndex)
+		})
+
+		test("should handle compound AND with variables and sensor readings", () => {
+			const code = `
+        while(true) {
+          float pitch = Sensors::getInstance().getPitch();
+          float roll = Sensors::getInstance().getRoll();
+          if ((pitch > 10) && (roll < -5)) {
+            rgbLed.set_led_red();
+          } else {
+            rgbLed.set_led_blue();
+          }
+        }
+      `
+
+			const bytecode = CppParser.cppToByte(code)
+
+			// Count READ_SENSOR instructions
+			let sensorReadCount = 0
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.READ_SENSOR) {
+					sensorReadCount++
+				}
+			}
+
+			// Should have at least 2 sensor reads
+			expect(sensorReadCount).toBeGreaterThanOrEqual(2)
+
+			// Verify we have COMPARE operations
+			let compareCount = 0
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.COMPARE) {
+					compareCount++
+				}
+			}
+
+			// Should have at least 2 compares for the compound condition
+			expect(compareCount).toBeGreaterThanOrEqual(2)
+
+			// Verify we have a JUMP_IF_FALSE for short-circuit evaluation
+			let jumpIfFalseCount = 0
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.JUMP_IF_FALSE) {
+					jumpIfFalseCount++
+				}
+			}
+
+			// Should have at least one JUMP_IF_FALSE
+			expect(jumpIfFalseCount).toBeGreaterThanOrEqual(1)
+		})
+
+		test("should handle complex AND condition that evaluates to false", () => {
+			const code = `
+        if ((5 > 10) && (20 > 15)) {
+          rgbLed.set_led_red();
+        } else {
+          rgbLed.set_led_green();
+        }
+      `
+
+			const bytecode = CppParser.cppToByte(code)
+
+			// Verify first comparison will be false
+			expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[1]).toBe(ComparisonOp.GREATER_THAN)
+			expect(bytecode[2]).toBe(5)
+			expect(bytecode[3]).toBe(10)
+
+			// Check for JUMP_IF_FALSE after first comparison (short-circuit)
+			expect(bytecode[5]).toBe(BytecodeOpCode.JUMP_IF_FALSE)
+
+			// Find green LED instruction
+			let greenLEDIndex = -1
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.SET_ALL_LEDS &&
+            bytecode[i + 1] === 0 &&
+            bytecode[i + 2] === MAX_LED_BRIGHTNESS &&
+            bytecode[i + 3] === 0) {
+					greenLEDIndex = i
+					break
+				}
+			}
+
+			expect(greenLEDIndex).toBeGreaterThan(0)
+		})
+	})
+
+	describe("OR Operator (||)", () => {
+		test("should parse basic OR condition with simple comparisons", () => {
+			const code = `
+        if ((10 > 5) || (20 < 15)) {
+          rgbLed.set_led_red();
+        } else {
+          rgbLed.set_led_green();
+        }
+      `
+
+			const bytecode = CppParser.cppToByte(code)
+
+			// Verify first comparison
+			expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[1]).toBe(ComparisonOp.GREATER_THAN)
+			expect(bytecode[2]).toBe(10)
+			expect(bytecode[3]).toBe(5)
+
+			// Check for JUMP_IF_TRUE after first comparison (short-circuit)
+			expect(bytecode[5]).toBe(BytecodeOpCode.JUMP_IF_TRUE)
+
+			// Second comparison should exist
+			let foundSecondCompare = false
+			for (let i = 10; i < 20; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.COMPARE &&
+            bytecode[i + 1] === ComparisonOp.LESS_THAN &&
+            bytecode[i + 2] === 20 &&
+            bytecode[i + 3] === 15) {
+					foundSecondCompare = true
+					break
+				}
+			}
+			expect(foundSecondCompare).toBe(true)
+
+			// Verify we find red LED instruction (condition evaluates to true)
+			let redLEDFound = false
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.SET_ALL_LEDS &&
+            bytecode[i + 1] === MAX_LED_BRIGHTNESS &&
+            bytecode[i + 2] === 0 &&
+            bytecode[i + 3] === 0) {
+					redLEDFound = true
+					break
+				}
+			}
+
+			expect(redLEDFound).toBe(true)
+		})
+
+		test("should handle compound OR with variables and sensor readings", () => {
+			const code = `
+        while(true) {
+          float pitch = Sensors::getInstance().getPitch();
+          float roll = Sensors::getInstance().getRoll();
+          if ((pitch > 30) || (roll < -45)) {
+            rgbLed.set_led_purple();
+          } else {
+            rgbLed.set_led_white();
+          }
+        }
+      `
+
+			const bytecode = CppParser.cppToByte(code)
+
+			// Count READ_SENSOR instructions
+			let sensorReadCount = 0
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.READ_SENSOR) {
+					sensorReadCount++
+				}
+			}
+
+			// Should have at least 2 sensor reads
+			expect(sensorReadCount).toBeGreaterThanOrEqual(2)
+
+			// Verify we have COMPARE operations
+			let compareCount = 0
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.COMPARE) {
+					compareCount++
+				}
+			}
+
+			// Should have at least 2 compares for the compound condition
+			expect(compareCount).toBeGreaterThanOrEqual(2)
+
+			// Verify we have a JUMP_IF_TRUE for short-circuit evaluation
+			let jumpIfTrueCount = 0
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.JUMP_IF_TRUE) {
+					jumpIfTrueCount++
+				}
+			}
+
+			// Should have at least one JUMP_IF_TRUE
+			expect(jumpIfTrueCount).toBeGreaterThanOrEqual(1)
+
+			// Check for purple LED setting (true branch)
+			let purpleLEDFound = false
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.SET_ALL_LEDS &&
+            bytecode[i + 1] === MAX_LED_BRIGHTNESS &&
+            bytecode[i + 2] === 0 &&
+            bytecode[i + 3] === MAX_LED_BRIGHTNESS) {
+					purpleLEDFound = true
+					break
+				}
+			}
+
+			expect(purpleLEDFound).toBe(true)
+		})
+
+		test("should handle complex OR condition where both sides evaluate to false", () => {
+			const code = `
+        if ((5 > 10) || (15 > 20)) {
+          rgbLed.set_led_red();
+        } else {
+          rgbLed.set_led_green();
+        }
+      `
+
+			const bytecode = CppParser.cppToByte(code)
+
+			// Verify first comparison will be false
+			expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
+			expect(bytecode[1]).toBe(ComparisonOp.GREATER_THAN)
+			expect(bytecode[2]).toBe(5)
+			expect(bytecode[3]).toBe(10)
+
+			// Check for JUMP_IF_TRUE after first comparison (short-circuit)
+			expect(bytecode[5]).toBe(BytecodeOpCode.JUMP_IF_TRUE)
+
+			// Verify second comparison will also be false
+			let secondCompareIndex = -1
+			for (let i = 10; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.COMPARE &&
+            bytecode[i + 1] === ComparisonOp.GREATER_THAN &&
+            bytecode[i + 2] === 15 &&
+            bytecode[i + 3] === 20) {
+					secondCompareIndex = i
+					break
+				}
+			}
+			expect(secondCompareIndex).toBeGreaterThan(0)
+
+			// Find green LED instruction (false branch)
+			let greenLEDIndex = -1
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.SET_ALL_LEDS &&
+            bytecode[i + 1] === 0 &&
+            bytecode[i + 2] === MAX_LED_BRIGHTNESS &&
+            bytecode[i + 3] === 0) {
+					greenLEDIndex = i
+					break
+				}
+			}
+
+			expect(greenLEDIndex).toBeGreaterThan(0)
+		})
+	})
+
+	describe("Complex Combinations", () => {
+		test("should handle nested compound conditions in loops", () => {
+			const code = `
+        for (int i = 0; i < 5; i++) {
+          if ((i > 2) && (i < 4)) {
+            rgbLed.set_led_blue();
+          } else {
+            rgbLed.set_led_red();
+          }
+        }
+      `
+
+			const bytecode = CppParser.cppToByte(code)
+
+			// Check for FOR_INIT, FOR_CONDITION, FOR_INCREMENT
+			const forOpcodes = [BytecodeOpCode.FOR_INIT, BytecodeOpCode.FOR_CONDITION, BytecodeOpCode.FOR_INCREMENT]
+			for (const opcode of forOpcodes) {
+				let found = false
+				for (let i = 0; i < bytecode.length; i += 5) {
+					if (bytecode[i] === opcode) {
+						found = true
+						break
+					}
+				}
+				expect(found).toBe(true)
+			}
+
+			// Find the COMPARE instructions for the compound AND condition
+			const compareIndices = []
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.COMPARE) {
+					compareIndices.push(i)
+				}
+			}
+
+			// Should have at least 2 COMPARE operations (one for each condition in the AND)
+			expect(compareIndices.length).toBeGreaterThanOrEqual(2)
+
+			// Check for JUMP_IF_FALSE after first comparison (short-circuit)
+			let foundJumpIfFalseAfterCompare = false
+			for (let i = 0; i < compareIndices.length - 1; i++) {
+				if (bytecode[compareIndices[i] + 5] === BytecodeOpCode.JUMP_IF_FALSE) {
+					foundJumpIfFalseAfterCompare = true
+					break
+				}
+			}
+			expect(foundJumpIfFalseAfterCompare).toBe(true)
+
+			// Verify both LED colors are present
+			let blueLEDFound = false
+			let redLEDFound = false
+
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.SET_ALL_LEDS) {
+					if (bytecode[i + 1] === 0 && bytecode[i + 2] === 0 && bytecode[i + 3] === MAX_LED_BRIGHTNESS) {
+						blueLEDFound = true
+					} else if (bytecode[i + 1] === MAX_LED_BRIGHTNESS && bytecode[i + 2] === 0 && bytecode[i + 3] === 0) {
+						redLEDFound = true
+					}
+				}
+			}
+
+			expect(blueLEDFound).toBe(true)
+			expect(redLEDFound).toBe(true)
+		})
+
+		test("should handle the example use case with roll and pitch sensor readings", () => {
+			const code = `
+        while(true) {
+          float roll = Sensors::getInstance().getRoll();
+          float pitch = Sensors::getInstance().getPitch();
+          if ((roll > 0) && (pitch > 0)) {
+            rgbLed.set_led_white();
+          } else {
+            rgbLed.set_led_green();
+          }
+        }
+      `
+
+			const bytecode = CppParser.cppToByte(code)
+
+			// Verify we have READ_SENSOR instructions for roll and pitch
+			let rollSensorFound = false
+			let pitchSensorFound = false
+
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.READ_SENSOR) {
+					if (bytecode[i + 1] === SensorType.ROLL) {
+						rollSensorFound = true
+					} else if (bytecode[i + 1] === SensorType.PITCH) {
+						pitchSensorFound = true
+					}
+				}
+			}
+
+			expect(rollSensorFound).toBe(true)
+			expect(pitchSensorFound).toBe(true)
+
+			// Look for the two COMPARE instructions (one for roll, one for pitch)
+			const compareIndices = []
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.COMPARE && bytecode[i + 1] === ComparisonOp.GREATER_THAN) {
+					compareIndices.push(i)
+				}
+			}
+
+			// Should have at least 2 COMPARE operations (one for each condition in the AND)
+			expect(compareIndices.length).toBeGreaterThanOrEqual(2)
+
+			// Check for correct LED settings
+			let whiteLEDFound = false
+			let greenLEDFound = false
+
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.SET_ALL_LEDS) {
+					if (bytecode[i + 1] === MAX_LED_BRIGHTNESS &&
+              bytecode[i + 2] === MAX_LED_BRIGHTNESS &&
+              bytecode[i + 3] === MAX_LED_BRIGHTNESS) {
+						whiteLEDFound = true
+					} else if (bytecode[i + 1] === 0 &&
+                     bytecode[i + 2] === MAX_LED_BRIGHTNESS &&
+                     bytecode[i + 3] === 0) {
+						greenLEDFound = true
+					}
+				}
+			}
+
+			expect(whiteLEDFound).toBe(true)
+			expect(greenLEDFound).toBe(true)
+
+			// Should find a WHILE_START and WHILE_END
+			let whileStartFound = false
+			let whileEndFound = false
+
+			for (let i = 0; i < bytecode.length; i += 5) {
+				if (bytecode[i] === BytecodeOpCode.WHILE_START) {
+					whileStartFound = true
+				} else if (bytecode[i] === BytecodeOpCode.WHILE_END) {
+					whileEndFound = true
+				}
+			}
+
+			expect(whileStartFound).toBe(true)
+			expect(whileEndFound).toBe(true)
+		})
 	})
 })
