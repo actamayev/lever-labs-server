@@ -194,7 +194,6 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	public async emitFirmwareUpdateAvailableToPip(pipUUIDPayload: PipUUIDPayload): Promise<void> {
-		// TODO: Don't do this if the environment is local
 		if (process.env.NODE_ENV !== "staging" && process.env.NODE_ENV !== "production") return
 		const latestFirmwareVersion = EspLatestFirmwareManager.getInstance().latestFirmwareVersion
 		if (pipUUIDPayload.firmwareVersion >= latestFirmwareVersion) return
