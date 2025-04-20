@@ -6,11 +6,9 @@ import BrowserSocketManager from "../browser-socket-manager"
 import SingleESP32Connection from "./single-esp32-connection"
 import SendEsp32MessageManager from "./send-esp32-message-manager"
 import EspLatestFirmwareManager from "../esp-latest-firmware-manager"
-import ESP32FirmwareUpdateManager from "./esp32-firmware-update-manager"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
-	private readonly esp32FirmwareUpdateManager: ESP32FirmwareUpdateManager
 	private readonly sendEsp32MessageManager: SendEsp32MessageManager
 
 	// This map is redundant, but it's faster to search this map for a uuid directly than finding from the connections map
@@ -19,7 +17,6 @@ export default class Esp32SocketManager extends Singleton {
 	private constructor(private readonly wss: WSServer) {
 		super()
 		this.initializeWSServer()
-		this.esp32FirmwareUpdateManager = ESP32FirmwareUpdateManager.getInstance()
 		this.sendEsp32MessageManager = SendEsp32MessageManager.getInstance()
 	}
 
@@ -208,21 +205,6 @@ export default class Esp32SocketManager extends Singleton {
 			latestFirmwareVersion,
 			"Failed to firmware update available"
 		)
-	}
-
-	// TODO: Delete this and the esp32FirmwareUpdateManager, transferBinaryData when doing moving over to alternate updater
-	public async emitBinaryCodeToPip(pipUUID: PipUUID, binary: Buffer): Promise<void> {
-		const connection = this.getConnection(pipUUID)
-		if (!connection) {
-			throw new Error(`No active connection for PIP ${pipUUID}`)
-		}
-
-		try {
-			await this.esp32FirmwareUpdateManager.transferBinaryData(connection, binary)
-		} catch (error) {
-			console.error(`Failed to transfer code to PIP ${pipUUID}:`, error)
-			throw error
-		}
 	}
 
 	// Refactor the rest of the methods
