@@ -194,7 +194,7 @@ export default class Esp32SocketManager extends Singleton {
 		}
 	}
 
-	// Keep the original binary transfer method
+	// TODO: Delete this and the esp32FirmwareUpdateManager, transferBinaryData when doing moving over to alternate updater
 	public async emitBinaryCodeToPip(pipUUID: PipUUID, binary: Buffer): Promise<void> {
 		const connection = this.getConnection(pipUUID)
 		if (!connection) {

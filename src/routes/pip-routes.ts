@@ -4,9 +4,7 @@ import attachPipUUIDData from "../middleware/attach/attach-pip-uuid-data"
 import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
 import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
 import validatePipUUID from "../middleware/request-validation/pip/validate-pip-uuid"
-import validateCppCode from "../middleware/request-validation/pip/validate-cpp-code"
 import checkIfUserConnectedToPip from "../middleware/check/check-if-user-connect-to-pip"
-import confirmUserConnectedToPip from "../middleware/confirm/confirm-user-connected-to-pip"
 import validateClientConnectOrDisconnectToPipRequest
 	from "../middleware/request-validation/pip/validate-client-connect-or-disconnect-to-pip-request"
 import confirmUserPreviouslyAddedUUID from "../middleware/confirm/confirm-user-previously-added-uuid"
@@ -16,10 +14,10 @@ import confirmOtherUserIsntConnectedToPip from "../middleware/confirm/confirm-ot
 
 import addPipToAccount from "../controllers/pip/add-pip-to-account"
 import retrievePipUUIDStatus from "../controllers/pip/retrieve-pip-uuid-status"
-import compileAndSendCppToPip from "../controllers/pip/compile-and-send-cpp-to-pip"
 import clientConnectToPipRequest from "../controllers/pip/client-connect-to-pip-request"
 import retrievePreviouslyAddedPips from "../controllers/pip/retrieve-previously-added-pips"
 import clientDisconnectFromPipRequest from "../controllers/pip/client-disconnect-from-pip-request"
+import streamFirmwareUpdate from "../controllers/pip/stream-firmware-update"
 
 const pipRoutes = express.Router()
 
@@ -61,14 +59,11 @@ pipRoutes.get(
 	retrievePipUUIDStatus
 )
 
-pipRoutes.post(
-	"/compile-and-send-cpp-to-pip",
-	validateCppCode,
-	confirmPipIsActive,
-	jwtVerifyAttachUserId,
-	confirmUserPreviouslyAddedUUID,
-	confirmUserConnectedToPip,
-	compileAndSendCppToPip
+pipRoutes.get(
+	"/firmware-update",
+	// Pip should send an encoded string (JWT?) with it's PipID
+	// Middleware should validate it's Pip ID.
+	streamFirmwareUpdate
 )
 
 export default pipRoutes

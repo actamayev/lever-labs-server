@@ -1,5 +1,5 @@
 import dotenv from "dotenv"
-import _ from "lodash"
+import { isEmpty, isNull, isUndefined } from "lodash"
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager"
 import Singleton from "../singleton"
 
@@ -24,7 +24,7 @@ export default class SecretsManager extends Singleton {
 	}
 
 	public static getInstance(): SecretsManager {
-		if (_.isNull(SecretsManager.instance)) {
+		if (isNull(SecretsManager.instance)) {
 			SecretsManager.instance = new SecretsManager()
 		}
 		return SecretsManager.instance
@@ -42,7 +42,7 @@ export default class SecretsManager extends Singleton {
 			else {
 				secret = await this.fetchSecretFromAWS(key)
 			}
-			if (_.isUndefined(secret)) throw Error("Unable to retrieve secret")
+			if (isUndefined(secret)) throw Error("Unable to retrieve secret")
 			return secret
 		} catch (error) {
 			console.error(error)
@@ -61,11 +61,11 @@ export default class SecretsManager extends Singleton {
 				}
 			} else {
 				const missingKeys = keys.filter(key => !this.secrets.has(key))
-				if (!_.isEmpty(missingKeys)) await this.fetchAllSecretsFromAWS()
+				if (!isEmpty(missingKeys)) await this.fetchAllSecretsFromAWS()
 				for (const key of keys) {
 					const secret = this.secrets.get(key)
 					// eslint-disable-next-line max-depth
-					if (_.isUndefined(secret)) {
+					if (isUndefined(secret)) {
 						throw new Error(`Unable to retrieve secret for key: ${key}`)
 					}
 					secrets[key] = secret
@@ -82,7 +82,7 @@ export default class SecretsManager extends Singleton {
 		try {
 			await this.fetchAllSecretsFromAWS()
 			const secretValue = this.secrets.get(key)
-			if (_.isUndefined(secretValue)) {
+			if (isUndefined(secretValue)) {
 				throw new Error(`Secret value for key ${key} is undefined!`)
 			}
 			return secretValue
@@ -98,12 +98,12 @@ export default class SecretsManager extends Singleton {
 				SecretId: this.getSecretName()
 			})
 
-			if (_.isUndefined(this.secretsManager)) {
+			if (isUndefined(this.secretsManager)) {
 				throw new Error("Secrets Manager client is not initialized!")
 			}
 			const response = await this.secretsManager.send(command)
 
-			if (_.isUndefined(response.SecretString)) {
+			if (isUndefined(response.SecretString)) {
 				throw new Error("SecretString is undefined!")
 			}
 
@@ -120,7 +120,7 @@ export default class SecretsManager extends Singleton {
 			Object.keys(secrets).forEach(key => {
 				const secretKey = key as SecretKeys
 				const value = secrets[key]
-				if (!_.isUndefined(value)) {
+				if (!isUndefined(value)) {
 					this.secrets.set(secretKey, value)
 				} else {
 					console.error(`Value for key ${key} is undefined.`)
