@@ -1,4 +1,4 @@
-import { isNull } from "lodash"
+import { isNull, isUndefined } from "lodash"
 import Singleton from "./singleton"
 import AwsS3 from "./aws/s3-manager"
 
@@ -20,7 +20,7 @@ export default class EspLatestFirmwareManager extends Singleton {
 
 	public async retrieveLatestFirmwareInfo(): Promise<void> {
 		try {
-			if (process.env.NODE_ENV !== "staging" && process.env.NODE_ENV !== "production") return
+			if (isUndefined(process.env.NODE_ENV)) return // Means the env is local
 			const firmwareData = await AwsS3.getInstance().retrieveLatestFirmwareWithMetadata()
 			this.latestFirmwareVersion = Number(firmwareData.firmwareVersion)
 			this.latestBinary = firmwareData.firmwareBuffer

@@ -74,7 +74,6 @@ export default class AwsS3 extends Singleton {
 					return {
 						key: key,
 						version: isNaN(version) ? 0 : version,
-						lastModified: item.LastModified
 					}
 				})
 				.sort((a, b) => b.version - a.version) // Sort descending (newest first)

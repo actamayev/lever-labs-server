@@ -1,3 +1,4 @@
+import { isUndefined } from "lodash"
 import { IncomingMessage } from "http"
 import { Server as WSServer } from "ws"
 import Singleton from "../singleton"
@@ -194,7 +195,7 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	public async emitFirmwareUpdateAvailableToPip(pipUUIDPayload: PipUUIDPayload): Promise<void> {
-		if (process.env.NODE_ENV !== "staging" && process.env.NODE_ENV !== "production") return
+		if (isUndefined(process.env.NODE_ENV)) return
 		const latestFirmwareVersion = EspLatestFirmwareManager.getInstance().latestFirmwareVersion
 		if (pipUUIDPayload.firmwareVersion >= latestFirmwareVersion) return
 
@@ -206,7 +207,6 @@ export default class Esp32SocketManager extends Singleton {
 		)
 	}
 
-	// Refactor the rest of the methods
 	public async emitMotorControlToPip(pipUUID: PipUUID, motorControlData: Omit<IncomingMotorControlData, "pipUUID">): Promise<void> {
 		return await this.emitSocketCommand<Omit<IncomingMotorControlData, "pipUUID">>(
 			pipUUID,

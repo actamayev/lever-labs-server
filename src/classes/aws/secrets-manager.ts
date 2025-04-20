@@ -9,7 +9,7 @@ export default class SecretsManager extends Singleton {
 
 	private constructor() {
 		super()
-		if (process.env.NODE_ENV !== "staging" && process.env.NODE_ENV !== "production") {
+		if (isUndefined(process.env.NODE_ENV)) {
 			dotenv.config({ path: ".env.local" })
 			return
 		}
@@ -36,7 +36,7 @@ export default class SecretsManager extends Singleton {
 			if (this.secrets.has(key)) {
 				secret = this.secrets.get(key)
 			}
-			else if (process.env.NODE_ENV !== "staging" && process.env.NODE_ENV !== "production") {
+			else if (isUndefined(process.env.NODE_ENV)) {
 				secret = process.env[key]
 			}
 			else {
@@ -54,7 +54,7 @@ export default class SecretsManager extends Singleton {
 		try {
 			const secrets: Partial<SecretsObject> = {}
 
-			if (process.env.NODE_ENV !== "staging" && process.env.NODE_ENV !== "production") {
+			if (isUndefined(process.env.NODE_ENV)) {
 				for (const key of keys) {
 					const secret = process.env[key]
 					secrets[key] = secret
