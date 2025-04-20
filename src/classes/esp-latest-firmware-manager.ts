@@ -20,6 +20,7 @@ export default class EspLatestFirmwareManager extends Singleton {
 
 	public async retrieveLatestFirmwareInfo(): Promise<void> {
 		try {
+			if (process.env.NODE_ENV !== "staging" && process.env.NODE_ENV !== "production") return
 			const firmwareData = await AwsS3.getInstance().retrieveLatestFirmwareWithMetadata()
 			this.latestFirmwareVersion = Number(firmwareData.firmwareVersion)
 			this.latestBinary = firmwareData.firmwareBuffer

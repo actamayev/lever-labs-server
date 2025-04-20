@@ -7,7 +7,8 @@ export enum MessageType {
     UPDATE_BALANCE_PIDS = 5,
     UPDATE_LIGHT_ANIMATION = 6,
     UPDATE_LED_COLORS = 7,
-    BYTECODE_PROGRAM = 8
+    BYTECODE_PROGRAM = 8,
+    UPDATE_AVAILABLE = 9
 }
 
 export enum SoundType {

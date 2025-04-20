@@ -1,7 +1,16 @@
 import { BalanceStatus, LightAnimationType, MessageType, SoundType, SpeakerStatus } from "../../utils/protocol"
 
 export class MessageBuilder {
-	// Create motor control message
+	static createUpdateAvailableMessage(newFirmwareVersion: number): ArrayBuffer {
+		const buffer = new ArrayBuffer(3)
+		const view = new DataView(buffer)
+
+		view.setUint8(0, MessageType.UPDATE_AVAILABLE)
+		view.setUint16(1, newFirmwareVersion, true) // true for little-endian
+
+		return buffer
+	  }
+
 	static createMotorControlMessage(leftMotor: number, rightMotor: number): ArrayBuffer {
 		const buffer = new ArrayBuffer(5)
 		const view = new DataView(buffer)

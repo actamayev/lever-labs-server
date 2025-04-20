@@ -15,6 +15,20 @@ export default class SendEsp32MessageManager extends Singleton {
 		return SendEsp32MessageManager.instance
 	}
 
+	public transferUpdateAvailableMessage(
+		socket: ExtendedWebSocket,
+		newFirmwareVersion: number
+	): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createUpdateAvailableMessage(newFirmwareVersion)
+
+			return this.sendBinaryMessage(socket, buffer)
+		} catch (error: unknown) {
+			console.error("Transfer failed:", error)
+			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
+		}
+	}
+
 	public transferMotorControlData(
 		socket: ExtendedWebSocket,
 		data: Omit<IncomingMotorControlData, "pipUUID">

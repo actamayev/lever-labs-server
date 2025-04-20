@@ -5,6 +5,7 @@ import isPipUUID from "../../utils/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"
 import SingleESP32Connection from "./single-esp32-connection"
 import SendEsp32MessageManager from "./send-esp32-message-manager"
+import EspLatestFirmwareManager from "../esp-latest-firmware-manager"
 import ESP32FirmwareUpdateManager from "./esp32-firmware-update-manager"
 
 export default class Esp32SocketManager extends Singleton {
@@ -69,6 +70,7 @@ export default class Esp32SocketManager extends Singleton {
 					return
 				}
 				this.registerConnection(socketId, (payload as PipUUIDPayload).pipUUID, connection)
+				void this.emitFirmwareUpdateAvailableToPip(payload as PipUUIDPayload)
 			} else {
 				console.warn(`Expected registration message, got: ${route}`)
 				connection.dispose()
@@ -192,6 +194,20 @@ export default class Esp32SocketManager extends Singleton {
 			console.error(`${errorMessage} ${pipUUID}:`, error)
 			throw error
 		}
+	}
+
+	public async emitFirmwareUpdateAvailableToPip(pipUUIDPayload: PipUUIDPayload): Promise<void> {
+		// TODO: Don't do this if the environment is local
+		if (process.env.NODE_ENV !== "staging" && process.env.NODE_ENV !== "production") return
+		const latestFirmwareVersion = EspLatestFirmwareManager.getInstance().latestFirmwareVersion
+		if (pipUUIDPayload.firmwareVersion >= latestFirmwareVersion) return
+
+		return await this.emitSocketCommand<number>(
+			pipUUIDPayload.pipUUID,
+			this.sendEsp32MessageManager.transferUpdateAvailableMessage.bind(this.sendEsp32MessageManager),
+			latestFirmwareVersion,
+			"Failed to firmware update available"
+		)
 	}
 
 	// TODO: Delete this and the esp32FirmwareUpdateManager, transferBinaryData when doing moving over to alternate updater

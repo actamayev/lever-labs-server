@@ -59,11 +59,6 @@ pipRoutes.get(
 	retrievePipUUIDStatus
 )
 
-pipRoutes.get(
-	"/firmware-update",
-	// Pip should send an encoded string (JWT?) with it's PipID
-	// Middleware should validate it's Pip ID.
-	streamFirmwareUpdate
-)
+pipRoutes.get("/firmware-update", streamFirmwareUpdate)
 
 export default pipRoutes
