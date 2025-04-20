@@ -1,6 +1,6 @@
 import { isNull, isUndefined } from "lodash"
-import Singleton from "./singleton"
-import AwsS3 from "./aws/s3-manager"
+import Singleton from "../singleton"
+import AwsS3 from "../aws/s3-manager"
 
 export default class EspLatestFirmwareManager extends Singleton {
 	public latestFirmwareVersion: number = 0

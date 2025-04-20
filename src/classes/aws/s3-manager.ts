@@ -6,11 +6,9 @@ import SecretsManager from "./secrets-manager"
 
 export default class AwsS3 extends Singleton {
 	private s3: S3Client
-	private secretsManagerInstance: SecretsManager
 
 	private constructor() {
 		super()
-		this.secretsManagerInstance = SecretsManager.getInstance()
 		this.s3 = new S3Client({
 			credentials: {
 				accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -29,7 +27,7 @@ export default class AwsS3 extends Singleton {
 
 	public async uploadImage(fileBuffer: Buffer, imageUUID: string): Promise<string> {
 		try {
-			const s3BucketName = await this.secretsManagerInstance.getSecret("BDR_S3_BUCKET")
+			const s3BucketName = await SecretsManager.getInstance().getSecret("BDR_S3_BUCKET")
 
 			const key = `profile-pictures/${imageUUID}`
 			const command = new PutObjectCommand({
@@ -48,7 +46,7 @@ export default class AwsS3 extends Singleton {
 
 	private async getLatestFirmwareVersion(): Promise<{version: number, key: string}> {
 		try {
-			const firmwareBucket = await this.secretsManagerInstance.getSecret("FIRMWARE_S3_BUCKET")
+			const firmwareBucket = await SecretsManager.getInstance().getSecret("FIRMWARE_S3_BUCKET")
 
 			const listCommand = new ListObjectsV2Command({
 				Bucket: firmwareBucket
@@ -98,7 +96,7 @@ export default class AwsS3 extends Singleton {
 
 	private async getFirmwareBinary(key: string): Promise<Buffer> {
 		try {
-			const firmwareBucket = await this.secretsManagerInstance.getSecret("FIRMWARE_S3_BUCKET")
+			const firmwareBucket = await SecretsManager.getInstance().getSecret("FIRMWARE_S3_BUCKET")
 
 			const getCommand = new GetObjectCommand({
 				Bucket: firmwareBucket,

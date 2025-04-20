@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import EspLatestFirmwareManager from "../../classes/esp-latest-firmware-manager"
+import EspLatestFirmwareManager from "../../classes/esp32/esp-latest-firmware-manager"
 
 // This endpoint is hit by the Github action when it publishes a new build to the S3 bucket (staging & prod)
 // This forces the server to fetch the latest firmware info

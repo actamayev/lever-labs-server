@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import EspLatestFirmwareManager from "../../classes/esp-latest-firmware-manager"
+import EspLatestFirmwareManager from "../../classes/esp32/esp-latest-firmware-manager"
 
 export default async function streamFirmwareUpdate(_req: Request, res: Response): Promise<void> {
 	try {

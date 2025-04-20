@@ -2,16 +2,13 @@ import { createCipheriv, createDecipheriv } from "crypto"
 import SecretsManager from "./aws/secrets-manager"
 
 export default class Encryptor {
-	private secretsManagerInstance: SecretsManager
-
 	constructor() {
-		this.secretsManagerInstance = SecretsManager.getInstance()
 	}
 
 	public async deterministicEncrypt(data: string, encryptionKeyName: DeterministicEncryptionKeys): Promise<DeterministicEncryptedString> {
 		try {
 			const iv = Buffer.alloc(16, 0) // Fixed IV (not recommended for production)
-			const encryptionKey = await this.secretsManagerInstance.getSecret(encryptionKeyName)
+			const encryptionKey = await SecretsManager.getInstance().getSecret(encryptionKeyName)
 
 			const cipher = createCipheriv("aes-256-cbc", Buffer.from(encryptionKey, "base64"), iv)
 			let encrypted = cipher.update(data, "utf8", "base64")
@@ -29,7 +26,7 @@ export default class Encryptor {
 	): Promise<string> {
 		try {
 			const iv = Buffer.alloc(16, 0) // Fixed IV (not recommended for production)
-			const encryptionKey = await this.secretsManagerInstance.getSecret(encryptionKeyName)
+			const encryptionKey = await SecretsManager.getInstance().getSecret(encryptionKeyName)
 
 			const decipher = createDecipheriv("aes-256-cbc", Buffer.from(encryptionKey, "base64"), iv)
 			let decrypted = decipher.update(encrypted, "base64", "utf8")
