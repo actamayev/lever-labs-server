@@ -1,5 +1,4 @@
 export enum MessageType {
-    FIRMWARE_CHUNK = 0,
     MOTOR_CONTROL = 1,
     SOUND_COMMAND = 2,
     SPEAKER_MUTE = 3,
