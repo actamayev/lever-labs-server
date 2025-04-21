@@ -39,7 +39,7 @@ export default class SendEsp32MessageManager extends Singleton {
 			if (pipUUIDPayload.firmwareVersion >= latestFirmwareVersion) return Promise.resolve()
 
 			const socket = this.getPipConnectionSocket(pipUUIDPayload.pipUUID)
-			const buffer = MessageBuilder.createUpdateAvailableMessage(pipUUIDPayload.firmwareVersion)
+			const buffer = MessageBuilder.createUpdateAvailableMessage(latestFirmwareVersion)
 
 			return this.sendBinaryMessage(socket, buffer)
 		} catch (error: unknown) {

@@ -9,7 +9,7 @@ export class MessageBuilder {
 		view.setUint16(1, newFirmwareVersion, true) // true for little-endian
 
 		return buffer
-	  }
+	}
 
 	static createMotorControlMessage(leftMotor: number, rightMotor: number): ArrayBuffer {
 		const buffer = new ArrayBuffer(5)
