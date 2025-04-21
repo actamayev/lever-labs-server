@@ -1,4 +1,5 @@
 export enum MessageType {
+    UPDATE_AVAILABLE = 0,
     MOTOR_CONTROL = 1,
     SOUND_COMMAND = 2,
     SPEAKER_MUTE = 3,
@@ -6,8 +7,7 @@ export enum MessageType {
     UPDATE_BALANCE_PIDS = 5,
     UPDATE_LIGHT_ANIMATION = 6,
     UPDATE_LED_COLORS = 7,
-    BYTECODE_PROGRAM = 8,
-    UPDATE_AVAILABLE = 9
+    BYTECODE_PROGRAM = 8
 }
 
 export enum SoundType {
