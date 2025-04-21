@@ -21,6 +21,6 @@ internalRoutes.post("/display-led-colors", displayLedColorsDirectly)
 
 internalRoutes.post("/firmware-update", forceFirmwareRefetch)
 
-internalRoutes.post("/get-latest-firmware-data", getLatestFirmwareData)
+internalRoutes.get("/get-latest-firmware-data", getLatestFirmwareData)
 
 export default internalRoutes
