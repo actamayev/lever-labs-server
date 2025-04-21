@@ -24,6 +24,7 @@ export default class EspLatestFirmwareManager extends Singleton {
 			const firmwareData = await AwsS3.getInstance().retrieveLatestFirmwareWithMetadata()
 			this.latestFirmwareVersion = Number(firmwareData.firmwareVersion)
 			this.latestBinary = firmwareData.firmwareBuffer
+			console.info(`Retrieved latest binary version: ${this.latestFirmwareVersion}`)
 		} catch (error) {
 			console.error(error)
 		}
