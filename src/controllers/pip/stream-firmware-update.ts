@@ -6,6 +6,9 @@ export default async function streamFirmwareUpdate(_req: Request, res: Response)
 	try {
 		const binaryData = await EspLatestFirmwareManager.getInstance().getLatestFirmwareInfo()
 
+		res.setHeader("Content-Type", "application/octet-stream")
+		res.setHeader("Content-Length", binaryData.length)
+
 		res.send(binaryData)
 	} catch (error) {
 		console.error(error)
