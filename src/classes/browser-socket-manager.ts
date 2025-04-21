@@ -2,6 +2,7 @@ import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
+import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
 
 export default class BrowserSocketManager extends Singleton {
@@ -46,7 +47,7 @@ export default class BrowserSocketManager extends Singleton {
 	private setupMotorControlListener(socket: Socket): void {
 		socket.on("motor-control", async (motorControlData: IncomingMotorControlData) => {
 			try {
-				await Esp32SocketManager.getInstance().emitMotorControlToPip(motorControlData.pipUUID, motorControlData)
+				await SendEsp32MessageManager.getInstance().transferMotorControlData(motorControlData)
 			} catch (error) {
 				console.error("Motor control error:", error)
 			}
@@ -56,7 +57,7 @@ export default class BrowserSocketManager extends Singleton {
 	private setupNewLedColorListener(socket: Socket): void {
 		socket.on("new-led-colors", async (ledControlData: IncomingNewLedControlData) => {
 			try {
-				await Esp32SocketManager.getInstance().emitNewLedColorsToPip(ledControlData.pipUUID, ledControlData)
+				await SendEsp32MessageManager.getInstance().transferLedControlData(ledControlData)
 			} catch (error) {
 				console.error("New LED Colors Error:", error)
 			}

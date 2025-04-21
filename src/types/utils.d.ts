@@ -27,8 +27,6 @@ declare global {
 	type SecretsObject = { [K in SecretKeys]: string }
 
 	type PipUUID = string & { readonly __brand: unique symbol }
-
-	type CompilerEnvironment = "staging" | "production" | undefined
 }
 
 export {}

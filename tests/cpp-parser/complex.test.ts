@@ -99,7 +99,6 @@ describe("Complex Nested Structures", () => {
 	// `
 
 	// 	const bytecode = CppParser.cppToByte(code)
-	// 	console.log(bytecode)
 
 	// 	// Count variable declarations and for loop initialization
 	// 	let declareVarCount = 0
