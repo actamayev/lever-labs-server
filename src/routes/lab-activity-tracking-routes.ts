@@ -12,8 +12,8 @@ import retrieveQuizAttempts from "../controllers/lab-activity-tracking/retrieve-
 import markActivityComplete from "../controllers/lab-activity-tracking/mark-activity-complete"
 import markReadingBlockComplete from "../controllers/lab-activity-tracking/mark-reading-block-complete"
 import retrieveUserActivityProgress from "../controllers/lab-activity-tracking/retrieve-user-activity-progress"
-import validateReadingUUIDInParams from "../middleware/request-validation/lab-lesson-tracking/validate-reading-uuid-in-params"
 import retrieveCompletedReadingBlocks from "../controllers/lab-activity-tracking/retrieve-completed-reading-blocks"
+import validateReadingUUIDInParams from "../middleware/request-validation/lab-lesson-tracking/validate-reading-uuid-in-params"
 
 const labActivityTrackingRoutes = express.Router()
 

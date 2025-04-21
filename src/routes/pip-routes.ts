@@ -13,11 +13,11 @@ import confirmUserHasntAlreadyAddedUUID from "../middleware/confirm/confirm-user
 import confirmOtherUserIsntConnectedToPip from "../middleware/confirm/confirm-other-user-isnt-connected-to-pip"
 
 import addPipToAccount from "../controllers/pip/add-pip-to-account"
+import streamFirmwareUpdate from "../controllers/pip/stream-firmware-update"
 import retrievePipUUIDStatus from "../controllers/pip/retrieve-pip-uuid-status"
 import clientConnectToPipRequest from "../controllers/pip/client-connect-to-pip-request"
 import retrievePreviouslyAddedPips from "../controllers/pip/retrieve-previously-added-pips"
 import clientDisconnectFromPipRequest from "../controllers/pip/client-disconnect-from-pip-request"
-import streamFirmwareUpdate from "../controllers/pip/stream-firmware-update"
 
 const pipRoutes = express.Router()
 

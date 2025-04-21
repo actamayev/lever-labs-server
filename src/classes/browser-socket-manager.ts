@@ -75,9 +75,7 @@ export default class BrowserSocketManager extends Singleton {
 		if (!isUndefined(previouslyConnectedPipUUIDs)) {
 			previouslyConnectedPipUUIDs.forEach((previousConnection) => {
 				if (previousConnection.status === "connected") {
-					// Esp32SocketManager.getInstance().handleClientLogoff(previousConnection.pipUUID)
 					this.emitPipStatusUpdate(previousConnection.pipUUID, "online")
-					// previousConnection.status = "online"
 				}
 			})
 		}
