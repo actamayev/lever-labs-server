@@ -3,7 +3,7 @@ import express from "express"
 import validateDecodeEmailSubscriber from "../middleware/request-validation/internal/validate-decode-email-subscriber"
 
 import generateUUID from "../controllers/internal/generate-uuid"
-import firmwareUpdate from "../controllers/internal/firmware-update"
+import forceFirmwareRefetch from "../controllers/internal/force-firmware-refetch"
 import addNewPipUUID from "../controllers/internal/add-new-pip-uuid"
 import decodeEmailSubscriber from "../controllers/internal/decode-email-subscriber"
 import displayLedColorsDirectly from "../controllers/internal/display-led-colors-directly"
@@ -18,6 +18,6 @@ internalRoutes.get("/generate-uuid", generateUUID)
 
 internalRoutes.post("/display-led-colors", displayLedColorsDirectly)
 
-internalRoutes.post("/firmware-update", firmwareUpdate)
+internalRoutes.post("/firmware-update", forceFirmwareRefetch)
 
 export default internalRoutes

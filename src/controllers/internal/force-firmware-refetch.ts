@@ -3,7 +3,7 @@ import EspLatestFirmwareManager from "../../classes/esp32/esp-latest-firmware-ma
 
 // This endpoint is hit by the Github action when it publishes a new build to the S3 bucket (staging & prod)
 // This forces the server to fetch the latest firmware info
-export default function firmwareUpdate(_req: Request, res: Response): void {
+export default function forceFirmwareRefetch(_req: Request, res: Response): void {
 	try {
 		void EspLatestFirmwareManager.getInstance().retrieveLatestFirmwareInfo()
 
