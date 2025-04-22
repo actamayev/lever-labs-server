@@ -1,11 +1,11 @@
 import { Response, Request } from "express"
-import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
+import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 
 export default async function lightAnimationEndpoint(req: Request, res: Response): Promise<void> {
 	try {
-		const { lightAnimation, pipUUID } = req.body as { lightAnimation: LightAnimation, pipUUID: PipUUID }
+		const { pipUUID, lightAnimation } = req.body as { pipUUID: PipUUID, lightAnimation: LightAnimation }
 
-		await Esp32SocketManager.getInstance().emitLightAnimation(pipUUID, lightAnimation)
+		await SendEsp32MessageManager.getInstance().displayLights(pipUUID, lightAnimation)
 
 		res.status(200).json({ success: "" })
 		return

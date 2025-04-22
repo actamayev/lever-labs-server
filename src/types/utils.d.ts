@@ -20,23 +20,13 @@ declare global {
 		| "JWT_KEY"
 		| "GOOGLE_CLIENT_ID"
 		| "GOOGLE_CLIENT_SECRET"
-		| "COMPILER_ENDPOINT"
 		| "PIP_HARDWARE_VERSION"
 		| "BDR_S3_BUCKET"
+		| "FIRMWARE_S3_BUCKET"
 
 	type SecretsObject = { [K in SecretKeys]: string }
 
 	type PipUUID = string & { readonly __brand: unique symbol }
-
-	interface ECSConfig {
-		cluster: string
-		taskDefinition: string
-		subnet: string
-		securityGroup: string
-		compiledBinaryOutputBucket: string
-	}
-
-	type CompilerEnvironment = "staging" | "production" | undefined
 }
 
 export {}

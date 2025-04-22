@@ -1,11 +1,11 @@
 import { Response, Request } from "express"
-import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
+import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 
 export default async function playTune (req: Request, res: Response): Promise<void> {
 	try {
-		const { tuneToPlay, pipUUID } = req.body as { tuneToPlay: TuneToPlay, pipUUID: PipUUID }
+		const { pipUUID, tuneToPlay } = req.body as { pipUUID: PipUUID, tuneToPlay: TuneToPlay }
 
-		await Esp32SocketManager.getInstance().emitTuneToPlay(pipUUID, tuneToPlay)
+		await SendEsp32MessageManager.getInstance().playSound(pipUUID, tuneToPlay)
 
 		res.status(200).json({ success: "" })
 		return

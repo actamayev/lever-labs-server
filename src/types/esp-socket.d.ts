@@ -67,6 +67,7 @@ declare global {
 
 	interface PipUUIDPayload {
 		pipUUID: PipUUID
+		firmwareVersion: number
 	}
 
 	interface BytecodeMessage {

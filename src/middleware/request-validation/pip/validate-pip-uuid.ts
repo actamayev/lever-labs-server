@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express"
 import pipUUIdValidator from "../../joi/pip-uuid-validator"
 
 const pipUUIDSchema = Joi.object({
-	pipUUID: pipUUIdValidator.required(),
+	pipUUID: pipUUIdValidator.required()
 }).required()
 
 export default function validatePipUUID (req: Request, res: Response, next: NextFunction): void {

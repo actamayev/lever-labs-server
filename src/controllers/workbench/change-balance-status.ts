@@ -1,11 +1,11 @@
 import { Response, Request } from "express"
-import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
+import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 
 export default async function changeBalanceStatus(req: Request, res: Response): Promise<void> {
 	try {
 		const { pipUUID, balanceStatus } = req.body as { pipUUID: PipUUID, balanceStatus: boolean }
 
-		await Esp32SocketManager.getInstance().emitChangeBalanceStatus(pipUUID, balanceStatus)
+		await SendEsp32MessageManager.getInstance().changeBalanceStatus(pipUUID, balanceStatus)
 
 		res.status(200).json({ success: "" })
 		return
