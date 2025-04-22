@@ -11,6 +11,7 @@ declare namespace NodeJS {
 		EMAIL_ENCRYPTION_KEY: DeterministicEncryptionKeys
 
 		BDR_S3_BUCKET: string
+		FIRMWARE_S3_BUCKET: string
 
 		// Production only:
 		DATABASE_URL: string
@@ -20,12 +21,5 @@ declare namespace NodeJS {
 		NODE_ENV: "staging" | "production" | undefined
 
 		PIP_HARDWARE_VERSION: string
-
-		// These aren't actualy used in local testing (process.env). They're only used in staging/prod
-		// They're here in case I want to simulate my environment as staging or prod
-		ECS_CLUSTER: string
-		ECS_TASK_DEFINITION: string
-		ECS_SUBNET: string
-		ECS_SECURITY_GROUP: string
 	}
 }

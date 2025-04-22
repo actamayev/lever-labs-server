@@ -1,7 +1,10 @@
+import { isUndefined } from "lodash"
 import Singleton from "../singleton"
 import { MessageBuilder } from "./message-builder"
-import { lightToLEDType, tuneToSoundType } from "../../utils/protocol"
+import Esp32SocketManager from "./esp32-socket-manager"
+import EspLatestFirmwareManager from "./esp-latest-firmware-manager"
 import calculateMotorSpeeds from "../../utils/calculate-motor-speeds"
+import { lightToLEDType, tuneToSoundType } from "../../utils/protocol"
 
 export default class SendEsp32MessageManager extends Singleton {
 	private constructor() {
@@ -15,12 +18,40 @@ export default class SendEsp32MessageManager extends Singleton {
 		return SendEsp32MessageManager.instance
 	}
 
-	public transferMotorControlData(
-		socket: ExtendedWebSocket,
-		data: Omit<IncomingMotorControlData, "pipUUID">
-	): Promise<void> {
+	private getPipConnectionSocket(pipUUID: PipUUID): ExtendedWebSocket {
 		try {
-			const speeds = calculateMotorSpeeds(data)
+			const connection = Esp32SocketManager.getInstance().getConnection(pipUUID)
+			if (!connection) {
+				throw new Error(`No active connection for Pip ${pipUUID}`)
+			}
+
+			return connection.socket
+		} catch (error) {
+			console.error(error)
+			throw error
+		}
+	}
+
+	public transferUpdateAvailableMessage(pipUUIDPayload: PipUUIDPayload): Promise<void> {
+		try {
+			if (isUndefined(process.env.NODE_ENV)) return Promise.resolve()
+			const latestFirmwareVersion = EspLatestFirmwareManager.getInstance().latestFirmwareVersion
+			if (pipUUIDPayload.firmwareVersion >= latestFirmwareVersion) return Promise.resolve()
+
+			const socket = this.getPipConnectionSocket(pipUUIDPayload.pipUUID)
+			const buffer = MessageBuilder.createUpdateAvailableMessage(latestFirmwareVersion)
+
+			return this.sendBinaryMessage(socket, buffer)
+		} catch (error: unknown) {
+			console.error("Transfer failed:", error)
+			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
+		}
+	}
+
+	public transferMotorControlData(motorControlData: IncomingMotorControlData): Promise<void> {
+		try {
+			const socket = this.getPipConnectionSocket(motorControlData.pipUUID)
+			const speeds = calculateMotorSpeeds(motorControlData)
 			const buffer = MessageBuilder.createMotorControlMessage(
 				speeds.leftMotor,
 				speeds.rightMotor
@@ -33,11 +64,9 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public transferLedControlData(
-		socket: ExtendedWebSocket,
-		data: Omit<IncomingNewLedControlData, "pipUUID">
-	): Promise<void> {
+	public transferLedControlData(data: IncomingNewLedControlData): Promise<void> {
 		try {
+			const socket = this.getPipConnectionSocket(data.pipUUID)
 			const buffer = MessageBuilder.createLedMessage(data)
 
 			return this.sendBinaryMessage(socket, buffer)
@@ -48,11 +77,12 @@ export default class SendEsp32MessageManager extends Singleton {
 	}
 
 	public playSound(
-		socket: ExtendedWebSocket,
-		tune: TuneToPlay
+		pipUUID: PipUUID,
+		tuneToPlay: TuneToPlay
 	): Promise<void> {
 		try {
-			const soundType = tuneToSoundType[tune]
+			const socket = this.getPipConnectionSocket(pipUUID)
+			const soundType = tuneToSoundType[tuneToPlay]
 			const buffer = MessageBuilder.createSoundMessage(soundType)
 
 			return this.sendBinaryMessage(socket, buffer)
@@ -63,10 +93,11 @@ export default class SendEsp32MessageManager extends Singleton {
 	}
 
 	public displayLights(
-		socket: ExtendedWebSocket,
+		pipUUID: PipUUID,
 		lightAnimation: LightAnimation
 	): Promise<void> {
 		try {
+			const socket = this.getPipConnectionSocket(pipUUID)
 			const lightType = lightToLEDType[lightAnimation]
 			const buffer = MessageBuilder.createLightAnimationMessage(lightType)
 
@@ -78,10 +109,11 @@ export default class SendEsp32MessageManager extends Singleton {
 	}
 
 	public changeAudibleStatus(
-		socket: ExtendedWebSocket,
+		pipUUID: PipUUID,
 		audibleStatus: boolean
 	): Promise<void> {
 		try {
+			const socket = this.getPipConnectionSocket(pipUUID)
 			const buffer = MessageBuilder.createSpeakerMuteMessage(audibleStatus)
 
 			return this.sendBinaryMessage(socket, buffer)
@@ -92,10 +124,11 @@ export default class SendEsp32MessageManager extends Singleton {
 	}
 
 	public changeBalanceStatus(
-		socket: ExtendedWebSocket,
+		pipUUID: PipUUID,
 		balanceStatus: boolean
 	): Promise<void> {
 		try {
+			const socket = this.getPipConnectionSocket(pipUUID)
 			const buffer = MessageBuilder.createBalanceMessage(balanceStatus)
 
 			return this.sendBinaryMessage(socket, buffer)
@@ -105,12 +138,10 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public changeBalancePids(
-		socket: ExtendedWebSocket,
-		balancePids: Omit<BalancePidsProps, "pipUUID">
-	): Promise<void> {
+	public changeBalancePids(data: BalancePidsProps): Promise<void> {
 		try {
-			const buffer = MessageBuilder.createUpdateBalancePidsMessage(balancePids)
+			const socket = this.getPipConnectionSocket(data.pipUUID)
+			const buffer = MessageBuilder.createUpdateBalancePidsMessage(data)
 
 			return this.sendBinaryMessage(socket, buffer)
 		} catch (error: unknown) {
@@ -120,10 +151,11 @@ export default class SendEsp32MessageManager extends Singleton {
 	}
 
 	public sendBytecodeToPip(
-		socket: ExtendedWebSocket,
+		pipUUID: PipUUID,
 		bytecodeFloat32: Float32Array
 	): Promise<void> {
 		try {
+			const socket = this.getPipConnectionSocket(pipUUID)
 			const buffer = MessageBuilder.createBytecodeMessage(bytecodeFloat32)
 
 			return this.sendBinaryMessage(socket, buffer)

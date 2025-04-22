@@ -12,7 +12,7 @@ import setupRoutes from "./setup-routes"
 
 import BrowserSocketManager from "./classes/browser-socket-manager"
 import Esp32SocketManager from "./classes/esp32/esp32-socket-manager"
-import CompilerContainerManager from "./classes/compiler-container-manager"
+import EspLatestFirmwareManager from "./classes/esp32/esp-latest-firmware-manager"
 
 dotenv.config({ path: getEnvPath() })
 
@@ -32,7 +32,7 @@ BrowserSocketManager.getInstance(io) // Directly use getInstance with io
 const esp32WSServer = new WSServer({ noServer: true })
 Esp32SocketManager.getInstance(esp32WSServer) // Directly use getInstance with wss
 
-CompilerContainerManager.getInstance() // Starts up/warms up the container
+void EspLatestFirmwareManager.getInstance()
 
 // Handle WebSocket upgrade for ESP32 connections
 httpServer.on("upgrade", (request, socket, head) => {

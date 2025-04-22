@@ -44,18 +44,6 @@ export default class SingleESP32Connection {
 		}, this.PING_INTERVAL)
 	}
 
-	public pausePing(): void {
-		if (!this.pingInterval) return
-		clearInterval(this.pingInterval)
-		this.pingInterval = undefined
-	}
-
-	public resumePing(): void {
-		if (!this.pingInterval && !this.isCleaningUp) {
-			this.startPingInterval()
-		}
-	}
-
 	private handlePong(): void {
 		this._isAlive = true
 	}

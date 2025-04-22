@@ -1,4 +1,4 @@
-import _ from "lodash"
+import { isUndefined } from "lodash"
 import { Request, Response } from "express"
 import AwsS3 from "../../classes/aws/s3-manager"
 import upsertProfilePictureRecordAndUpdateUser from "../../db-operations/write/simultaneous-writes/upsert-profile-picture-and-update-user"
@@ -6,7 +6,7 @@ import upsertProfilePictureRecordAndUpdateUser from "../../db-operations/write/s
 export default async function uploadProfilePicture (req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
-		if (_.isUndefined(req.file)) {
+		if (isUndefined(req.file)) {
 			res.status(400).json({ message: "No image uploaded" })
 			return
 		}

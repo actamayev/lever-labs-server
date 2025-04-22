@@ -1,12 +1,12 @@
 import { Response, Request } from "express"
-import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
+import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 
 export default async function sendSandboxCodeToPip(req: Request, res: Response): Promise<void> {
 	try {
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 		const { bytecode } = req
 
-		await Esp32SocketManager.getInstance().emitBytecodeToPip(pipUUID, bytecode)
+		await SendEsp32MessageManager.getInstance().sendBytecodeToPip(pipUUID, bytecode)
 
 		res.status(200).json({ success: "Sent bytecode to Pip" })
 		return

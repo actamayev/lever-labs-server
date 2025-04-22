@@ -5,12 +5,9 @@ import isPipUUID from "../../utils/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"
 import SingleESP32Connection from "./single-esp32-connection"
 import SendEsp32MessageManager from "./send-esp32-message-manager"
-import ESP32FirmwareUpdateManager from "./esp32-firmware-update-manager"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
-	private readonly esp32FirmwareUpdateManager: ESP32FirmwareUpdateManager
-	private readonly sendEsp32MessageManager: SendEsp32MessageManager
 
 	// This map is redundant, but it's faster to search this map for a uuid directly than finding from the connections map
 	private socketToPip = new Map<string, PipUUID>() // socketId--> PipUUID
@@ -18,8 +15,6 @@ export default class Esp32SocketManager extends Singleton {
 	private constructor(private readonly wss: WSServer) {
 		super()
 		this.initializeWSServer()
-		this.esp32FirmwareUpdateManager = ESP32FirmwareUpdateManager.getInstance()
-		this.sendEsp32MessageManager = SendEsp32MessageManager.getInstance()
 	}
 
 	public static getInstance(wss?: WSServer): Esp32SocketManager {
@@ -69,6 +64,7 @@ export default class Esp32SocketManager extends Singleton {
 					return
 				}
 				this.registerConnection(socketId, (payload as PipUUIDPayload).pipUUID, connection)
+				void SendEsp32MessageManager.getInstance().transferUpdateAvailableMessage(payload as PipUUIDPayload)
 			} else {
 				console.warn(`Expected registration message, got: ${route}`)
 				connection.dispose()
@@ -165,120 +161,12 @@ export default class Esp32SocketManager extends Singleton {
 		return this.connections.get(pipUUID)?.status || "offline"
 	}
 
-	private getConnection(pipUUID: PipUUID): SingleESP32Connection | undefined {
+	public getConnection(pipUUID: PipUUID): SingleESP32Connection | undefined {
 		return this.connections.get(pipUUID)?.connection
 	}
 
 	public isPipUUIDConnected(pipUUID: PipUUID): boolean {
 		const connectionInfo = this.connections.get(pipUUID)
 		return connectionInfo?.status === "connected" || false
-	}
-
-	private async emitSocketCommand<T>(
-		pipUUID: PipUUID,
-		commandFn: (socket: ExtendedWebSocket, data: T) => Promise<void>,
-		data: T,
-		errorMessage: string
-	): Promise<void> {
-	// Get connection
-		const connection = this.getConnection(pipUUID)
-		if (!connection) {
-			throw new Error(`No active connection for Pip ${pipUUID}`)
-		}
-
-		try {
-			return await commandFn(connection.socket, data)
-		} catch (error) {
-			console.error(`${errorMessage} ${pipUUID}:`, error)
-			throw error
-		}
-	}
-
-	// Keep the original binary transfer method
-	public async emitBinaryCodeToPip(pipUUID: PipUUID, binary: Buffer): Promise<void> {
-		const connection = this.getConnection(pipUUID)
-		if (!connection) {
-			throw new Error(`No active connection for PIP ${pipUUID}`)
-		}
-
-		try {
-			await this.esp32FirmwareUpdateManager.transferBinaryData(connection, binary)
-		} catch (error) {
-			console.error(`Failed to transfer code to PIP ${pipUUID}:`, error)
-			throw error
-		}
-	}
-
-	// Refactor the rest of the methods
-	public async emitMotorControlToPip(pipUUID: PipUUID, motorControlData: Omit<IncomingMotorControlData, "pipUUID">): Promise<void> {
-		return await this.emitSocketCommand<Omit<IncomingMotorControlData, "pipUUID">>(
-			pipUUID,
-			this.sendEsp32MessageManager.transferMotorControlData.bind(this.sendEsp32MessageManager),
-			motorControlData,
-			"Failed to send motor control command"
-		)
-	}
-
-	public async emitNewLedColorsToPip(pipUUID: PipUUID, ledControlData: Omit<IncomingNewLedControlData, "pipUUID">): Promise<void> {
-		return await this.emitSocketCommand<Omit<IncomingNewLedControlData, "pipUUID">>(
-			pipUUID,
-			this.sendEsp32MessageManager.transferLedControlData.bind(this.sendEsp32MessageManager),
-			ledControlData,
-			"Failed to led control command"
-		)
-	}
-
-	public async emitTuneToPlay(pipUUID: PipUUID, tuneToPlay: TuneToPlay): Promise<void> {
-		return await this.emitSocketCommand<TuneToPlay>(
-			pipUUID,
-			this.sendEsp32MessageManager.playSound.bind(this.sendEsp32MessageManager),
-			tuneToPlay,
-			"Failed to send tune to play"
-		)
-	}
-
-	public async emitLightAnimation(pipUUID: PipUUID, lightAnimation: LightAnimation): Promise<void> {
-		return await this.emitSocketCommand<LightAnimation>(
-			pipUUID,
-			this.sendEsp32MessageManager.displayLights.bind(this.sendEsp32MessageManager),
-			lightAnimation,
-			"Failed to send light status"
-		)
-	}
-
-	public async emitChangeAudibleStatus(pipUUID: PipUUID, audibleStatus: boolean): Promise<void> {
-		return await this.emitSocketCommand<boolean>(
-			pipUUID,
-			this.sendEsp32MessageManager.changeAudibleStatus.bind(this.sendEsp32MessageManager),
-			audibleStatus,
-			"Failed to audible status"
-		)
-	}
-
-	public async emitChangeBalanceStatus(pipUUID: PipUUID, balanceStatus: boolean): Promise<void> {
-		return await this.emitSocketCommand<boolean>(
-			pipUUID,
-			this.sendEsp32MessageManager.changeBalanceStatus.bind(this.sendEsp32MessageManager),
-			balanceStatus,
-			"Failed to change balance status"
-		)
-	}
-
-	public async emitChangeBalancePids(pipUUID: PipUUID, pidsData: Omit<BalancePidsProps, "pipUUID">): Promise<void> {
-		return await this.emitSocketCommand<Omit<BalancePidsProps, "pipUUID">>(
-			pipUUID,
-			this.sendEsp32MessageManager.changeBalancePids.bind(this.sendEsp32MessageManager),
-			pidsData,
-			"Failed to change balance PIDs"
-		)
-	}
-
-	public async emitBytecodeToPip(pipUUID: PipUUID, byteCode: Float32Array): Promise<void> {
-		return await this.emitSocketCommand<Float32Array>(
-			pipUUID,
-			this.sendEsp32MessageManager.sendBytecodeToPip.bind(this.sendEsp32MessageManager),
-			byteCode,
-			"Failed to send motor control command"
-		)
 	}
 }
