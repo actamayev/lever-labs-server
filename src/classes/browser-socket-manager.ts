@@ -77,6 +77,7 @@ export default class BrowserSocketManager extends Singleton {
 				if (previousConnection.status === "connected") {
 					this.emitPipStatusUpdate(previousConnection.pipUUID, "online")
 				}
+				void SendEsp32MessageManager.getInstance().stopCurrentlyRunningSandboxCode(previousConnection.pipUUID)
 			})
 		}
 		this.connections.delete(userId)

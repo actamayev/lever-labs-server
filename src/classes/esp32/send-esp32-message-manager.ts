@@ -165,7 +165,20 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
+	public stopCurrentlyRunningSandboxCode(pipUUID: PipUUID): Promise<void> {
+		try {
+			const socket = this.getPipConnectionSocket(pipUUID)
+			const buffer = MessageBuilder.createStopSandboxCodeMessage()
+
+			return this.sendBinaryMessage(socket, buffer)
+		} catch (error: unknown) {
+			console.error("Stop command failed:", error)
+			throw new Error(`Stop command failed: ${error || "Unknown reason"}`)
+		}
+	}
+
 	private sendBinaryMessage(socket: ExtendedWebSocket, buffer: ArrayBuffer): Promise<void> {
+		// TODO: Change this method to take in the pipUUID and buffer
 		return new Promise((resolve, reject) => {
 			socket.send(buffer, { binary: true }, (error) => {
 				if (error) {
