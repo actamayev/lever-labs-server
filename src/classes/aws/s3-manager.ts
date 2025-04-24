@@ -82,7 +82,7 @@ export default class AwsS3 extends Singleton {
 
 			// Get the latest firmware file
 			const latestFirmware = firmwareFiles[0]
-			console.log(`Found latest firmware: version ${latestFirmware.version}, key: ${latestFirmware.key}`)
+			console.info(`Found latest firmware: version ${latestFirmware.version}, key: ${latestFirmware.key}`)
 
 			return {
 				version: latestFirmware.version,

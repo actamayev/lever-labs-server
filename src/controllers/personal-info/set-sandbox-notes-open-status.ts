@@ -4,7 +4,7 @@ import updateSandboxNotesOpenStatus from "../../db-operations/write/credentials/
 export default async function setSandboxNotesOpenStatus(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
-		const isOpen = Boolean(req.params.isOpen as string)
+		const isOpen = req.params.isOpen === "true"
 		await updateSandboxNotesOpenStatus(userId, isOpen)
 
 		res.status(200).json({ success: "" })
