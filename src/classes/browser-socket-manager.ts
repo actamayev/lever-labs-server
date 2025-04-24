@@ -69,18 +69,22 @@ export default class BrowserSocketManager extends Singleton {
 	}
 
 	private handleDisconnection(userId: number | undefined): void {
-		if (isUndefined(userId) || !this.connections.has(userId)) return
-		const previouslyConnectedPipUUIDs = this.connections.get(userId)?.previouslyConnectedPipUUIDs
+		try {
+			if (isUndefined(userId) || !this.connections.has(userId)) return
+			const previouslyConnectedPipUUIDs = this.connections.get(userId)?.previouslyConnectedPipUUIDs
 
-		if (!isUndefined(previouslyConnectedPipUUIDs)) {
-			previouslyConnectedPipUUIDs.forEach((previousConnection) => {
-				if (previousConnection.status === "connected") {
-					this.emitPipStatusUpdate(previousConnection.pipUUID, "online")
-				}
-				void SendEsp32MessageManager.getInstance().stopCurrentlyRunningSandboxCode(previousConnection.pipUUID)
-			})
+			if (!isUndefined(previouslyConnectedPipUUIDs)) {
+				previouslyConnectedPipUUIDs.forEach((previousConnection) => {
+					if (previousConnection.status === "connected") {
+						this.emitPipStatusUpdate(previousConnection.pipUUID, "online")
+					}
+					void SendEsp32MessageManager.getInstance().stopCurrentlyRunningSandboxCode(previousConnection.pipUUID)
+				})
+			}
+			this.connections.delete(userId)
+		} catch (error) {
+			console.error("Error during disconnection:", error)
 		}
-		this.connections.delete(userId)
 	}
 
 	public emitPipStatusUpdate(pipUUID: PipUUID, newConnectionStatus: PipBrowserConnectionStatus): void {
