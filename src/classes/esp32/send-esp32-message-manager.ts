@@ -38,10 +38,9 @@ export default class SendEsp32MessageManager extends Singleton {
 			const latestFirmwareVersion = EspLatestFirmwareManager.getInstance().latestFirmwareVersion
 			if (pipUUIDPayload.firmwareVersion >= latestFirmwareVersion) return Promise.resolve()
 
-			const socket = this.getPipConnectionSocket(pipUUIDPayload.pipUUID)
 			const buffer = MessageBuilder.createUpdateAvailableMessage(latestFirmwareVersion)
 
-			return this.sendBinaryMessage(socket, buffer)
+			return this.sendBinaryMessage(pipUUIDPayload.pipUUID, buffer)
 		} catch (error: unknown) {
 			console.error("Transfer failed:", error)
 			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
@@ -50,14 +49,13 @@ export default class SendEsp32MessageManager extends Singleton {
 
 	public transferMotorControlData(motorControlData: IncomingMotorControlData): Promise<void> {
 		try {
-			const socket = this.getPipConnectionSocket(motorControlData.pipUUID)
 			const speeds = calculateMotorSpeeds(motorControlData)
 			const buffer = MessageBuilder.createMotorControlMessage(
 				speeds.leftMotor,
 				speeds.rightMotor
 			)
 
-			return this.sendBinaryMessage(socket, buffer)
+			return this.sendBinaryMessage(motorControlData.pipUUID, buffer)
 		} catch (error: unknown) {
 			console.error("Transfer failed:", error)
 			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
@@ -66,10 +64,9 @@ export default class SendEsp32MessageManager extends Singleton {
 
 	public transferLedControlData(data: IncomingNewLedControlData): Promise<void> {
 		try {
-			const socket = this.getPipConnectionSocket(data.pipUUID)
 			const buffer = MessageBuilder.createLedMessage(data)
 
-			return this.sendBinaryMessage(socket, buffer)
+			return this.sendBinaryMessage(data.pipUUID, buffer)
 		} catch (error: unknown) {
 			console.error("Transfer failed:", error)
 			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
@@ -81,11 +78,10 @@ export default class SendEsp32MessageManager extends Singleton {
 		tuneToPlay: TuneToPlay
 	): Promise<void> {
 		try {
-			const socket = this.getPipConnectionSocket(pipUUID)
 			const soundType = tuneToSoundType[tuneToPlay]
 			const buffer = MessageBuilder.createSoundMessage(soundType)
 
-			return this.sendBinaryMessage(socket, buffer)
+			return this.sendBinaryMessage(pipUUID, buffer)
 		} catch (error: unknown) {
 			console.error("Sound transfer failed:", error)
 			throw new Error(`Sound transfer failed: ${error || "Unknown reason"}`)
@@ -97,11 +93,10 @@ export default class SendEsp32MessageManager extends Singleton {
 		lightAnimation: LightAnimation
 	): Promise<void> {
 		try {
-			const socket = this.getPipConnectionSocket(pipUUID)
 			const lightType = lightToLEDType[lightAnimation]
 			const buffer = MessageBuilder.createLightAnimationMessage(lightType)
 
-			return this.sendBinaryMessage(socket, buffer)
+			return this.sendBinaryMessage(pipUUID, buffer)
 		} catch (error: unknown) {
 			console.error("Light transfer failed:", error)
 			throw new Error(`Light transfer failed: ${error || "Unknown reason"}`)
@@ -113,10 +108,9 @@ export default class SendEsp32MessageManager extends Singleton {
 		audibleStatus: boolean
 	): Promise<void> {
 		try {
-			const socket = this.getPipConnectionSocket(pipUUID)
 			const buffer = MessageBuilder.createSpeakerMuteMessage(audibleStatus)
 
-			return this.sendBinaryMessage(socket, buffer)
+			return this.sendBinaryMessage(pipUUID, buffer)
 		} catch (error: unknown) {
 			console.error("Mute command failed:", error)
 			throw new Error(`Mute command failed: ${error || "Unknown reason"}`)
@@ -128,10 +122,9 @@ export default class SendEsp32MessageManager extends Singleton {
 		balanceStatus: boolean
 	): Promise<void> {
 		try {
-			const socket = this.getPipConnectionSocket(pipUUID)
 			const buffer = MessageBuilder.createBalanceMessage(balanceStatus)
 
-			return this.sendBinaryMessage(socket, buffer)
+			return this.sendBinaryMessage(pipUUID, buffer)
 		} catch (error: unknown) {
 			console.error("Balance command failed:", error)
 			throw new Error(`Balance command failed: ${error || "Unknown reason"}`)
@@ -140,10 +133,9 @@ export default class SendEsp32MessageManager extends Singleton {
 
 	public changeBalancePids(data: BalancePidsProps): Promise<void> {
 		try {
-			const socket = this.getPipConnectionSocket(data.pipUUID)
 			const buffer = MessageBuilder.createUpdateBalancePidsMessage(data)
 
-			return this.sendBinaryMessage(socket, buffer)
+			return this.sendBinaryMessage(data.pipUUID, buffer)
 		} catch (error: unknown) {
 			console.error("Balance command failed:", error)
 			throw new Error(`Balance command failed: ${error || "Unknown reason"}`)
@@ -155,25 +147,40 @@ export default class SendEsp32MessageManager extends Singleton {
 		bytecodeFloat32: Float32Array
 	): Promise<void> {
 		try {
-			const socket = this.getPipConnectionSocket(pipUUID)
 			const buffer = MessageBuilder.createBytecodeMessage(bytecodeFloat32)
-
-			return this.sendBinaryMessage(socket, buffer)
+			return this.sendBinaryMessage(pipUUID, buffer)
 		} catch (error: unknown) {
 			console.error("Bytecode upload failed:", error)
 			throw new Error(`Bytecode upload failed: ${error || "Unknown reason"}`)
 		}
 	}
 
-	private sendBinaryMessage(socket: ExtendedWebSocket, buffer: ArrayBuffer): Promise<void> {
-		return new Promise((resolve, reject) => {
-			socket.send(buffer, { binary: true }, (error) => {
-				if (error) {
-					reject(new Error(`Failed to send data: ${error.message}`))
-				} else {
-					resolve()
-				}
+	public stopCurrentlyRunningSandboxCode(pipUUID: PipUUID): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createStopSandboxCodeMessage()
+			return this.sendBinaryMessage(pipUUID, buffer)
+		} catch (error: unknown) {
+			console.error("Stop command failed:", error)
+			throw new Error(`Stop command failed: ${error || "Unknown reason"}`)
+		}
+	}
+
+	private sendBinaryMessage(pipUUID: PipUUID, buffer: ArrayBuffer): Promise<void> {
+		try {
+			const socket = this.getPipConnectionSocket(pipUUID)
+
+			return new Promise((resolve, reject) => {
+				socket.send(buffer, { binary: true }, (error) => {
+					if (error) {
+						reject(new Error(`Failed to send data: ${error.message}`))
+					} else {
+						resolve()
+					}
+				})
 			})
-		})
+		} catch (error: unknown) {
+			console.error(`Failed to send binary message to Pip ${pipUUID}:`, error)
+			throw error
+		}
 	}
 }

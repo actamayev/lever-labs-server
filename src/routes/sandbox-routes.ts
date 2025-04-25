@@ -9,12 +9,14 @@ import getAllSandboxProjects from "../controllers/sandbox/get-all-sandbox-projec
 import editSandboxProjectName from "../controllers/sandbox/edit-sandbox-project-name"
 import editSandboxProjectNotes from "../controllers/sandbox/edit-sandbox-project-notes"
 import getSingleSandboxProject from "../controllers/sandbox/get-single-sandbox-project"
+import stopCurrentlyRunningSandboxCode from "../controllers/sandbox/stop-currently-running-sandbox-code"
 
 import convertCppToBytecode from "../middleware/convert-cpp-to-bytecode"
 import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
 import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
 import validateCppCode from "../middleware/request-validation/sandbox/validate-cpp-code"
 import confirmUserConnectedToPip from "../middleware/confirm/confirm-user-connected-to-pip"
+import validatePipUUIDInBody from "../middleware/request-validation/pip/validate-pip-uuid-in-body"
 import confirmUserPreviouslyAddedUUID from "../middleware/confirm/confirm-user-previously-added-uuid"
 import attachSandboxProjectIdFromUUID from "../middleware/attach/attach-sandbox-project-id-from-uuid"
 import validateEditSandboxProject from "../middleware/request-validation/sandbox/validate-edit-sandbox-project"
@@ -23,6 +25,7 @@ import validateProjectUUIDInParams from "../middleware/request-validation/sandbo
 import validateEditSandboxProjectName from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-name"
 import validateEditSandboxProjectNotes from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-notes"
 import confirmSandboxProjectExistsAndValidUserId from "../middleware/confirm/confirm-sandbox-project-exists-and-valid-user-id"
+import checkIfUserConnectedToPip from "../middleware/check/check-if-user-connect-to-pip"
 
 const sandboxRoutes = express.Router()
 
@@ -97,6 +100,14 @@ sandboxRoutes.post(
 	confirmUserPreviouslyAddedUUID,
 	confirmUserConnectedToPip,
 	sendSandboxCodeToPip
+)
+
+sandboxRoutes.post(
+	"/stop-currently-running-code",
+	validatePipUUIDInBody,
+	jwtVerifyAttachUserId,
+	confirmUserPreviouslyAddedUUID,
+	stopCurrentlyRunningSandboxCode
 )
 
 export default sandboxRoutes
