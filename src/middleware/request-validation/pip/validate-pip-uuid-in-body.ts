@@ -7,7 +7,7 @@ const clientConnectToPipRequestSchema = Joi.object({
 	pipUUID: pipUUIdValidator.required()
 }).required()
 
-export default function validateClientConnectOrDisconnectToPipRequest(req: Request, res: Response, next: NextFunction): void {
+export default function validatePipUUIDInBody(req: Request, res: Response, next: NextFunction): void {
 	try {
 		const { error } = clientConnectToPipRequestSchema.validate(req.body)
 

@@ -141,4 +141,13 @@ export class MessageBuilder {
 
 		return buffer
 	}
+
+	static createStopSandboxCodeMessage(): ArrayBuffer {
+		const buffer = new ArrayBuffer(1)
+		const view = new DataView(buffer)
+
+		view.setUint8(0, MessageType.STOP_SANDBOX_CODE)
+
+		return buffer
+	}
 }

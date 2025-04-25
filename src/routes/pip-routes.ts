@@ -5,8 +5,8 @@ import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
 import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
 import validatePipUUID from "../middleware/request-validation/pip/validate-pip-uuid"
 import checkIfUserConnectedToPip from "../middleware/check/check-if-user-connect-to-pip"
-import validateClientConnectOrDisconnectToPipRequest
-	from "../middleware/request-validation/pip/validate-client-connect-or-disconnect-to-pip-request"
+import validatePipUUIDInBody
+	from "../middleware/request-validation/pip/validate-pip-uuid-in-body"
 import confirmUserPreviouslyAddedUUID from "../middleware/confirm/confirm-user-previously-added-uuid"
 import validateAddPipToAccount from "../middleware/request-validation/pip/validate-add-pip-to-account"
 import confirmUserHasntAlreadyAddedUUID from "../middleware/confirm/confirm-user-hasnt-already-added-uuid"
@@ -32,7 +32,7 @@ pipRoutes.post(
 
 pipRoutes.post(
 	"/client-connect-to-pip-request",
-	validateClientConnectOrDisconnectToPipRequest,
+	validatePipUUIDInBody,
 	confirmPipIsActive,
 	jwtVerifyAttachUserId,
 	confirmOtherUserIsntConnectedToPip,
@@ -42,7 +42,7 @@ pipRoutes.post(
 
 pipRoutes.post(
 	"/disconnect-from-pip",
-	validateClientConnectOrDisconnectToPipRequest,
+	validatePipUUIDInBody,
 	confirmPipIsActive,
 	jwtVerifyAttachUserId,
 	checkIfUserConnectedToPip,
