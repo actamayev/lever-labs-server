@@ -770,7 +770,71 @@ export default class CppParser {
 				blockStack.push({ type: "else", jumpIndex: instructions.length })
 				break
 
-		// End of switch statement
+			case CommandType.MOTOR_FORWARD:
+				if (command.matches && command.matches.length === 2) {
+					const throttlePercent = parseInt(command.matches[1], 10)
+					// Validate throttle percentage
+					if (throttlePercent < 0 || throttlePercent > 100) {
+						throw new Error(`Invalid throttle percentage: ${throttlePercent}. Must be between 0 and 100.`)
+					}
+
+					instructions.push({
+						opcode: BytecodeOpCode.MOTOR_FORWARD,
+						operand1: throttlePercent,
+						operand2: 0,
+						operand3: 0,
+						operand4: 0
+					})
+				}
+				break
+
+			case CommandType.MOTOR_BACKWARD:
+				if (command.matches && command.matches.length === 2) {
+					const throttlePercent = parseInt(command.matches[1], 10)
+					// Validate throttle percentage
+					if (throttlePercent < 0 || throttlePercent > 100) {
+						throw new Error(`Invalid throttle percentage: ${throttlePercent}. Must be between 0 and 100.`)
+					}
+
+					instructions.push({
+						opcode: BytecodeOpCode.MOTOR_BACKWARD,
+						operand1: throttlePercent,
+						operand2: 0,
+						operand3: 0,
+						operand4: 0
+					})
+				}
+				break
+
+			case CommandType.MOTOR_STOP:
+				instructions.push({
+					opcode: BytecodeOpCode.MOTOR_STOP,
+					operand1: 0,
+					operand2: 0,
+					operand3: 0,
+					operand4: 0
+				})
+				break
+
+			case CommandType.MOTOR_TURN:
+				if (command.matches && command.matches.length === 3) {
+					const direction = command.matches[1] // "clockwise" or "counterclockwise"
+					const degrees = parseInt(command.matches[2], 10)
+
+					// Validate degrees
+					if (degrees <= 0 || degrees > 360) {
+						throw new Error(`Invalid degrees: ${degrees}. Must be between 1 and 360.`)
+					}
+
+					instructions.push({
+						opcode: BytecodeOpCode.MOTOR_TURN,
+						operand1: direction === "CLOCKWISE" ? 1 : 0,
+						operand2: degrees,
+						operand3: 0,
+						operand4: 0
+					})
+				}
+				break
 			}
 		}
 

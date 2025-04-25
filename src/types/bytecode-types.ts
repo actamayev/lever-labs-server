@@ -1,28 +1,33 @@
 /* eslint-disable security/detect-unsafe-regex */
 /* eslint-disable max-len */
 export enum BytecodeOpCode {
-	NOP = 0x00,
-	END = 0x01,
-	DELAY = 0x02,
-	SET_LED = 0x10,
-	SET_ALL_LEDS = 0x11,
+    NOP = 0x00,
+    END = 0x01,
+    DELAY = 0x02,
+    SET_LED = 0x10,
+    SET_ALL_LEDS = 0x11,
 
     READ_SENSOR = 0x20,  // Read sensor value into register
 
-	COMPARE = 0x30,       // Compare values
-	JUMP = 0x31,          // Unconditional jump
-	JUMP_IF_TRUE = 0x32,  // Jump if comparison was true
-	JUMP_IF_FALSE = 0x33, // Jump if comparison was false
-	WHILE_START = 0x34,
-	WHILE_END = 0x35,
+    COMPARE = 0x30,       // Compare values
+    JUMP = 0x31,          // Unconditional jump
+    JUMP_IF_TRUE = 0x32,  // Jump if comparison was true
+    JUMP_IF_FALSE = 0x33, // Jump if comparison was false
+    WHILE_START = 0x34,
+    WHILE_END = 0x35,
 
-	FOR_INIT = 0x36,     // Initialize loop counter
-	FOR_CONDITION = 0x37, // Check loop condition
-	FOR_INCREMENT = 0x38, // Increment loop counter
+    FOR_INIT = 0x36,     // Initialize loop counter
+    FOR_CONDITION = 0x37, // Check loop condition
+    FOR_INCREMENT = 0x38, // Increment loop counter
     JUMP_BACKWARD = 0x39,  // Backward jump (for loops)
 
-	DECLARE_VAR = 0x40,
-	SET_VAR = 0x41,
+    DECLARE_VAR = 0x40,
+    SET_VAR = 0x41,
+
+    MOTOR_FORWARD = 0x50,   // Forward movement at specified throttle
+    MOTOR_BACKWARD = 0x51,  // Backward movement at specified throttle
+    MOTOR_STOP = 0x52,      // Stop all motors
+    MOTOR_TURN = 0x53,      // Turn by specified degrees
 }
 
 export enum ComparisonOp {
@@ -93,6 +98,11 @@ export enum CommandType {
     WHILE_STATEMENT = "WHILE_STATEMENT",
     FOR_STATEMENT = "FOR_STATEMENT",
     SENSOR_READ = "SENSOR_READ",
+
+    MOTOR_FORWARD = "MOTOR_FORWARD",
+    MOTOR_BACKWARD = "MOTOR_BACKWARD",
+    MOTOR_STOP = "MOTOR_STOP",
+    MOTOR_TURN = "MOTOR_TURN",
 }
 
 // Command patterns for validation
@@ -124,4 +134,9 @@ export const CommandPatterns: Record<CommandType, RegExp> = {
 	[CommandType.WHILE_STATEMENT]: /^while\s*\(\s*true\s*\)$/,
 	[CommandType.FOR_STATEMENT]: /^for\s*\(\s*int\s+(\w+)\s*=\s*(\d+)\s*;\s*\1\s*<\s*(\d+)\s*;\s*\1\s*\+\+\s*\)$/,
 	[CommandType.SENSOR_READ]: /^Sensors::getInstance\(\)\.(\w+)\(\)$/,
+
+	[CommandType.MOTOR_FORWARD]: /^goForward\(\s*(\d+)\s*\)$/,
+	[CommandType.MOTOR_BACKWARD]: /^goBackward\(\s*(\d+)\s*\)$/,
+	[CommandType.MOTOR_STOP]: /^stopMotors\(\)$/,
+	[CommandType.MOTOR_TURN]: /^turn\(\s*(CLOCKWISE|COUNTERCLOCKWISE)\s*,\s*(\d+)\s*\)$/,
 }
