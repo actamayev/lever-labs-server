@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import CppParser from "../../src/classes/cpp-parser"
-import { BytecodeOpCode, ComparisonOp, SensorType } from "../../src/types/bytecode-types"
+import { BytecodeOpCode, CommandType, ComparisonOp, SensorType } from "../../src/types/bytecode-types"
 import { MAX_LED_BRIGHTNESS } from "../../src/utils/constants"
 
 describe("Control flow", () => {
@@ -488,5 +488,93 @@ describe("Bidirectional Comparisons", () => {
 		expect(bytecode[compareIndex + 3] & 0x8000).toBe(0x8000) // Register reference (high bit set)
 		// The registers should be different
 		expect(bytecode[compareIndex + 2]).not.toBe(bytecode[compareIndex + 3])
+	})
+
+	// Add this test to control-flow.test.ts inside the "Control flow" describe block
+
+	describe("Comparison Operators", () => {
+		test("should handle all comparison operators correctly", () => {
+			// Test all comparison operators
+			const operatorTests = [
+				{ code: "if (5 > 3) { rgbLed.set_led_red(); }", op: ComparisonOp.GREATER_THAN },
+				{ code: "if (3 < 5) { rgbLed.set_led_red(); }", op: ComparisonOp.LESS_THAN },
+				{ code: "if (5 >= 5) { rgbLed.set_led_red(); }", op: ComparisonOp.GREATER_EQUAL },
+				{ code: "if (5 <= 5) { rgbLed.set_led_red(); }", op: ComparisonOp.LESS_EQUAL },
+				{ code: "if (5 == 5) { rgbLed.set_led_red(); }", op: ComparisonOp.EQUAL },
+				{ code: "if (5 != 6) { rgbLed.set_led_red(); }", op: ComparisonOp.NOT_EQUAL }
+			]
+
+			for (const test of operatorTests) {
+				const bytecode = CppParser.cppToByte(test.code)
+				// Verify correct operator enum is used
+				expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
+				expect(bytecode[1]).toBe(test.op)
+			}
+		})
+
+		test("should throw error for unsupported comparison operator", () => {
+			// We need to mock identifyCommand to return a valid IF_STATEMENT with an invalid operator
+			const originalIdentifyCommand = CppParser["identifyCommand"]
+
+			try {
+			// Mock identifyCommand to return an IF_STATEMENT with unsupported operator
+				CppParser["identifyCommand"] = jest.fn().mockReturnValue({
+					type: CommandType.IF_STATEMENT,
+					matches: ["if (10 <=> 5)", "10", "<=>", "5"] // <=> is not a supported operator
+				})
+
+				// This should throw an "Unsupported operator" error
+				expect(() => {
+					CppParser.cppToByte("if (10 <=> 5) { rgbLed.set_led_red(); }")
+				}).toThrow(/Unsupported operator: <=>/)
+			} finally {
+			// Restore original function
+				CppParser["identifyCommand"] = originalIdentifyCommand
+			}
+		})
+
+		test("should call parseComparisonOperator for all operators in compound conditions", () => {
+			// Testing compound AND condition
+			const andCode = "if ((5 >= 3) && (10 <= 15)) { rgbLed.set_led_red(); }"
+			const andBytecode = CppParser.cppToByte(andCode)
+
+			// Find COMPARE instructions
+			let foundGreaterEqual = false
+			let foundLessEqual = false
+
+			for (let i = 0; i < andBytecode.length; i += 5) {
+				if (andBytecode[i] === BytecodeOpCode.COMPARE) {
+					if (andBytecode[i + 1] === ComparisonOp.GREATER_EQUAL) {
+						foundGreaterEqual = true
+					} else if (andBytecode[i + 1] === ComparisonOp.LESS_EQUAL) {
+						foundLessEqual = true
+					}
+				}
+			}
+
+			expect(foundGreaterEqual).toBe(true)
+			expect(foundLessEqual).toBe(true)
+
+			// Testing compound OR condition
+			const orCode = "if ((5 == 5) || (10 != 15)) { rgbLed.set_led_red(); }"
+			const orBytecode = CppParser.cppToByte(orCode)
+
+			// Find COMPARE instructions
+			let foundEqual = false
+			let foundNotEqual = false
+
+			for (let i = 0; i < orBytecode.length; i += 5) {
+				if (orBytecode[i] === BytecodeOpCode.COMPARE) {
+					if (orBytecode[i + 1] === ComparisonOp.EQUAL) {
+						foundEqual = true
+					} else if (orBytecode[i + 1] === ComparisonOp.NOT_EQUAL) {
+						foundNotEqual = true
+					}
+				}
+			}
+
+			expect(foundEqual).toBe(true)
+			expect(foundNotEqual).toBe(true)
+		})
 	})
 })
