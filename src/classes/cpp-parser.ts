@@ -883,6 +883,55 @@ export default class CppParser {
 					})
 				}
 				break
+
+				// Inside parseCppCode method's switch statement
+			case CommandType.MOTOR_FORWARD_DISTANCE:
+				if (command.matches && command.matches.length === 3) {
+					const centimeters = parseFloat(command.matches[1])
+					const throttlePercent = parseInt(command.matches[2], 10)
+
+					// Validate parameters
+					if (centimeters <= 0) {
+						throw new Error(`Invalid distance value: ${centimeters}. Must be greater than 0.`)
+					}
+
+					if (throttlePercent < 0 || throttlePercent > 100) {
+						throw new Error(`Invalid throttle percentage: ${throttlePercent}. Must be between 0 and 100.`)
+					}
+
+					instructions.push({
+						opcode: BytecodeOpCode.MOTOR_FORWARD_DISTANCE,
+						operand1: centimeters,  // Store distance in cm
+						operand2: throttlePercent,
+						operand3: 0,
+						operand4: 0
+					})
+				}
+				break
+
+			case CommandType.MOTOR_BACKWARD_DISTANCE:
+				if (command.matches && command.matches.length === 3) {
+					const centimeters = parseFloat(command.matches[1])
+					const throttlePercent = parseInt(command.matches[2], 10)
+
+					// Validate parameters
+					if (centimeters <= 0) {
+						throw new Error(`Invalid distance value: ${centimeters}. Must be greater than 0.`)
+					}
+
+					if (throttlePercent < 0 || throttlePercent > 100) {
+						throw new Error(`Invalid throttle percentage: ${throttlePercent}. Must be between 0 and 100.`)
+					}
+
+					instructions.push({
+						opcode: BytecodeOpCode.MOTOR_BACKWARD_DISTANCE,
+						operand1: centimeters,  // Store distance in cm
+						operand2: throttlePercent,
+						operand3: 0,
+						operand4: 0
+					})
+				}
+				break
 			}
 		}
 

@@ -31,6 +31,9 @@ export enum BytecodeOpCode {
 
     MOTOR_FORWARD_TIME = 0x54,
     MOTOR_BACKWARD_TIME = 0x55,
+
+    MOTOR_FORWARD_DISTANCE = 0x56,
+    MOTOR_BACKWARD_DISTANCE = 0x57,
 }
 
 export enum ComparisonOp {
@@ -109,6 +112,9 @@ export enum CommandType {
 
     MOTOR_FORWARD_TIME = "MOTOR_FORWARD_TIME",
     MOTOR_BACKWARD_TIME = "MOTOR_BACKWARD_TIME",
+
+    MOTOR_FORWARD_DISTANCE = "MOTOR_FORWARD_DISTANCE",
+    MOTOR_BACKWARD_DISTANCE = "MOTOR_BACKWARD_DISTANCE",
 }
 
 // Command patterns for validation
@@ -148,4 +154,7 @@ export const CommandPatterns: Record<CommandType, RegExp> = {
 
 	[CommandType.MOTOR_FORWARD_TIME]: /^goForwardTime\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+)\s*\)$/,
 	[CommandType.MOTOR_BACKWARD_TIME]: /^goBackwardTime\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+)\s*\)$/,
+
+	[CommandType.MOTOR_FORWARD_DISTANCE]: /^goForwardDistance\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+)\s*\)$/,
+	[CommandType.MOTOR_BACKWARD_DISTANCE]: /^goBackwardDistance\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+)\s*\)$/,
 }
