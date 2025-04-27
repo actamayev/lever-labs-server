@@ -28,6 +28,9 @@ export enum BytecodeOpCode {
     MOTOR_BACKWARD = 0x51,  // Backward movement at specified throttle
     MOTOR_STOP = 0x52,      // Stop all motors
     MOTOR_TURN = 0x53,      // Turn by specified degrees
+
+    MOTOR_FORWARD_TIME = 0x54,
+    MOTOR_BACKWARD_TIME = 0x55,
 }
 
 export enum ComparisonOp {
@@ -103,6 +106,9 @@ export enum CommandType {
     MOTOR_BACKWARD = "MOTOR_BACKWARD",
     MOTOR_STOP = "MOTOR_STOP",
     MOTOR_TURN = "MOTOR_TURN",
+
+    MOTOR_FORWARD_TIME = "MOTOR_FORWARD_TIME",
+    MOTOR_BACKWARD_TIME = "MOTOR_BACKWARD_TIME",
 }
 
 // Command patterns for validation
@@ -139,4 +145,7 @@ export const CommandPatterns: Record<CommandType, RegExp> = {
 	[CommandType.MOTOR_BACKWARD]: /^goBackward\(\s*(\d+)\s*\)$/,
 	[CommandType.MOTOR_STOP]: /^stopMotors\(\)$/,
 	[CommandType.MOTOR_TURN]: /^turn\(\s*(CLOCKWISE|COUNTERCLOCKWISE)\s*,\s*(\d+)\s*\)$/,
+
+	[CommandType.MOTOR_FORWARD_TIME]: /^goForwardTime\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+)\s*\)$/,
+	[CommandType.MOTOR_BACKWARD_TIME]: /^goBackwardTime\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+)\s*\)$/,
 }

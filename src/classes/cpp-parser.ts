@@ -835,6 +835,54 @@ export default class CppParser {
 					})
 				}
 				break
+
+			case CommandType.MOTOR_FORWARD_TIME:
+				if (command.matches && command.matches.length === 3) {
+					const seconds = parseFloat(command.matches[1])
+					const throttlePercent = parseInt(command.matches[2], 10)
+
+					// Validate parameters
+					if (seconds <= 0) {
+						throw new Error(`Invalid time value: ${seconds}. Must be greater than 0.`)
+					}
+
+					if (throttlePercent < 0 || throttlePercent > 100) {
+						throw new Error(`Invalid throttle percentage: ${throttlePercent}. Must be between 0 and 100.`)
+					}
+
+					instructions.push({
+						opcode: BytecodeOpCode.MOTOR_FORWARD_TIME,
+						operand1: seconds,
+						operand2: throttlePercent,
+						operand3: 0,
+						operand4: 0
+					})
+				}
+				break
+
+			case CommandType.MOTOR_BACKWARD_TIME:
+				if (command.matches && command.matches.length === 3) {
+					const seconds = parseFloat(command.matches[1])
+					const throttlePercent = parseInt(command.matches[2], 10)
+
+					// Validate parameters
+					if (seconds <= 0) {
+						throw new Error(`Invalid time value: ${seconds}. Must be greater than 0.`)
+					}
+
+					if (throttlePercent < 0 || throttlePercent > 100) {
+						throw new Error(`Invalid throttle percentage: ${throttlePercent}. Must be between 0 and 100.`)
+					}
+
+					instructions.push({
+						opcode: BytecodeOpCode.MOTOR_BACKWARD_TIME,
+						operand1: seconds,
+						operand2: throttlePercent,
+						operand3: 0,
+						operand4: 0
+					})
+				}
+				break
 			}
 		}
 
