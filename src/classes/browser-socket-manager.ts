@@ -4,6 +4,7 @@ import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
+import { LedControlData, MotorControlData, PipConnectionStatus, PipUUID, SensorPayload } from "@bluedotrobots/common-ts"
 
 export default class BrowserSocketManager extends Singleton {
 	private connections = new Map<number, BrowserSocketConnectionInfo>() // Maps UserID to BrowserSocketConnectionInfo
@@ -45,7 +46,7 @@ export default class BrowserSocketManager extends Singleton {
 	}
 
 	private setupMotorControlListener(socket: Socket): void {
-		socket.on("motor-control", async (motorControlData: IncomingMotorControlData) => {
+		socket.on("motor-control", async (motorControlData: MotorControlData) => {
 			try {
 				await SendEsp32MessageManager.getInstance().transferMotorControlData(motorControlData)
 			} catch (error) {
@@ -55,7 +56,7 @@ export default class BrowserSocketManager extends Singleton {
 	}
 
 	private setupNewLedColorListener(socket: Socket): void {
-		socket.on("new-led-colors", async (ledControlData: IncomingNewLedControlData) => {
+		socket.on("new-led-colors", async (ledControlData: LedControlData) => {
 			try {
 				await SendEsp32MessageManager.getInstance().transferLedControlData(ledControlData)
 			} catch (error) {
@@ -89,7 +90,7 @@ export default class BrowserSocketManager extends Singleton {
 		}
 	}
 
-	public emitPipStatusUpdate(pipUUID: PipUUID, newConnectionStatus: PipBrowserConnectionStatus): void {
+	public emitPipStatusUpdate(pipUUID: PipUUID, newConnectionStatus: PipConnectionStatus): void {
 		this.connections.forEach((connectionInfo) => {
 			// Check if the specified pipUUID exists in this connection's previouslyConnectedPipUUIDs
 			const pipToUpdate = connectionInfo.previouslyConnectedPipUUIDs.find(
@@ -107,7 +108,7 @@ export default class BrowserSocketManager extends Singleton {
 	public addPipStatusToAccount(
 		userId: number,
 		pipUUID: PipUUID,
-		status: PipBrowserConnectionStatus
+		status: PipConnectionStatus
 	): void {
 		try {
 			const connectionInfo = this.connections.get(userId)
@@ -133,7 +134,7 @@ export default class BrowserSocketManager extends Singleton {
 	private getOrAddPipEntry(
 		previouslyConnectedPipUUIDs: PreviouslyConnectedPipUUIDs[],
 		pipUUID: PipUUID,
-		status: PipBrowserConnectionStatus
+		status: PipConnectionStatus
 	): PreviouslyConnectedPipUUIDs {
 		let pipEntry = previouslyConnectedPipUUIDs.find(
 			(previousPip) => previousPip.pipUUID === pipUUID
@@ -155,7 +156,7 @@ export default class BrowserSocketManager extends Singleton {
 	private emitPipStatusForUser(
 		pipUUID: PipUUID,
 		userId: number,
-		status: PipBrowserConnectionStatus
+		status: PipConnectionStatus
 	): void {
 		const connectionInfo = this.connections.get(userId)
 		if (isUndefined(connectionInfo)) return
@@ -169,7 +170,7 @@ export default class BrowserSocketManager extends Singleton {
 	private emitConnectionToPipToOtherUsers(
 		pipUUID: PipUUID,
 		userId: number,
-		newStatus: PipBrowserConnectionStatus
+		newStatus: PipConnectionStatus
 	): void {
 		for (const [otherUserId, otherConnectionInfo] of this.connections.entries()) {
 			if (otherUserId === userId) continue
@@ -217,7 +218,7 @@ export default class BrowserSocketManager extends Singleton {
 		}))
 	}
 
-	public getLivePipStatus(userId: number, pipUUID: PipUUID): PipBrowserConnectionStatus {
+	public getLivePipStatus(userId: number, pipUUID: PipUUID): PipConnectionStatus {
 		const espStatus = Esp32SocketManager.getInstance().getESPStatus(pipUUID)
 
 		// Check if the ESP32 is offline or updating firmware

@@ -2,6 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
+import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
 const validateTuneToPlaySchema = Joi.object({
 	tuneToPlay: Joi.string().valid("Alert", "Beep", "Chime").required(),
@@ -13,14 +14,14 @@ export default function validateTuneToPlay(req: Request, res: Response, next: Ne
 		const { error } = validateTuneToPlaySchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message })
+			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
 			return
 		}
 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate tune to play" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate tune to play" } as ErrorResponse)
 		return
 	}
 }

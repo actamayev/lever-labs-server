@@ -1,4 +1,6 @@
+import { ActivityUUID, QuestionUUID } from "@bluedotrobots/common-ts"
 import { ActivityTypes, LessonNames } from "@prisma/client"
+
 declare global {
 	interface SeededActivityData {
 		activity_id: number

@@ -1,12 +1,13 @@
+import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts"
 import { Request, Response } from "express"
 
 export default function logout (_req: Request, res: Response): void {
 	try {
-		res.status(200).json({ success: "Logout successful" })
+		res.status(200).json({ success: "Logout successful" } as SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Logout" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Logout" } as ErrorResponse)
 		return
 	}
 }

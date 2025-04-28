@@ -1,7 +1,8 @@
+import { MotorControlData } from "@bluedotrobots/common-ts"
 import { clamp } from "lodash"
 
 // eslint-disable-next-line max-lines-per-function, complexity
-export default function calculateMotorSpeeds(data: Omit<IncomingMotorControlData, "pipUUID">): MotorSpeeds {
+export default function calculateMotorSpeeds(data: Omit<MotorControlData, "pipUUID">): MotorSpeeds {
 	const speeds = { leftMotor: 0, rightMotor: 0 }
 	const { vertical, horizontal } = data.motorControl
 	const { motorThrottlePercent } = data

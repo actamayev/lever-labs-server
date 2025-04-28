@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
+import { PipUUID, ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
 
 export default function checkIfUserConnectedToPip(
 	req: Request,
@@ -13,14 +14,14 @@ export default function checkIfUserConnectedToPip(
 		const connectedUserId = BrowserSocketManager.getInstance().whichUserConnectedToPipUUID(pipUUID)
 
 		if (connectedUserId !== userId) {
-			res.status(400).json({ message: "Another user is connected to this Pip"})
+			res.status(400).json({ message: "Another user is connected to this Pip" } as MessageResponse)
 			return
 		}
 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to check if user is connected to this Pip" })
+		res.status(500).json({ error: "Internal Server Error: Unable to check if user is connected to this Pip" } as ErrorResponse)
 		return
 	}
 }

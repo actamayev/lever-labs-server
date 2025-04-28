@@ -5,6 +5,7 @@ import Esp32SocketManager from "./esp32-socket-manager"
 import EspLatestFirmwareManager from "./esp-latest-firmware-manager"
 import calculateMotorSpeeds from "../../utils/calculate-motor-speeds"
 import { lightToLEDType, tuneToSoundType } from "../../utils/protocol"
+import { LedControlData, LightAnimation, MotorControlData, PipUUID, TuneToPlay } from "@bluedotrobots/common-ts"
 
 export default class SendEsp32MessageManager extends Singleton {
 	private constructor() {
@@ -47,7 +48,7 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public transferMotorControlData(motorControlData: IncomingMotorControlData): Promise<void> {
+	public transferMotorControlData(motorControlData: MotorControlData): Promise<void> {
 		try {
 			const speeds = calculateMotorSpeeds(motorControlData)
 			const buffer = MessageBuilder.createMotorControlMessage(
@@ -62,7 +63,7 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public transferLedControlData(data: IncomingNewLedControlData): Promise<void> {
+	public transferLedControlData(data: LedControlData): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createLedMessage(data)
 

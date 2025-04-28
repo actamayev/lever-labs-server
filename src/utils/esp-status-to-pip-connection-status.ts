@@ -1,12 +1,13 @@
 import isUndefined from "lodash/isUndefined"
 import BrowserSocketManager from "../classes/browser-socket-manager"
+import { ESPConnectionStatus, PipConnectionStatus, PipUUID } from "@bluedotrobots/common-ts"
 
 export default function espStatusToPipConnectionStatus(
 	espStatus: ESPConnectionStatus,
 	pipUUID: PipUUID,
 	userId: number,
 	shouldAutoConnect: boolean
-): PipBrowserConnectionStatus {
+): PipConnectionStatus {
 	try {
 		if (espStatus === "updating firmware" || espStatus === "offline") {
 			return espStatus

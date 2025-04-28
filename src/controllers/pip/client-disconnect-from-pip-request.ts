@@ -1,5 +1,6 @@
 import { Response, Request } from "express"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
+import { PipUUID, ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
 
 export default function clientDisconnectFromPipRequest (req: Request, res: Response): void {
 	try {
@@ -8,11 +9,11 @@ export default function clientDisconnectFromPipRequest (req: Request, res: Respo
 
 		BrowserSocketManager.getInstance().addPipStatusToAccount(userId, pipUUID, "online")
 
-		res.status(200).json({ success: "" })
+		res.status(200).json({ success: "" } as SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to disconnect from Pip" })
+		res.status(500).json({ error: "Internal Server Error: Unable to disconnect from Pip" } as ErrorResponse)
 		return
 	}
 }

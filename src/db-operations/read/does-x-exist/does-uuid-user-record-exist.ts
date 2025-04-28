@@ -1,3 +1,4 @@
+import { PipUUID } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function doesUUIDUserRecordExist(userId: number, pipUUID: PipUUID): Promise<boolean> {

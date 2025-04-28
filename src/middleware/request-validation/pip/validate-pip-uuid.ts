@@ -2,6 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import pipUUIdValidator from "../../joi/pip-uuid-validator"
+import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
 const pipUUIDSchema = Joi.object({
 	pipUUID: pipUUIdValidator.required()
@@ -12,14 +13,14 @@ export default function validatePipUUID (req: Request, res: Response, next: Next
 		const { error } = pipUUIDSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message })
+			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
 			return
 		}
 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm Pip UUID is valid" })
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm Pip UUID is valid" } as ErrorResponse)
 		return
 	}
 }

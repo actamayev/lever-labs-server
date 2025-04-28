@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import Encryptor from "../../classes/encryptor"
+import { ErrorResponse, PersonalInfoResponse } from "@bluedotrobots/common-ts"
 
 export default async function getPersonalInfo(req: Request, res: Response): Promise<void> {
 	try {
@@ -15,11 +16,11 @@ export default async function getPersonalInfo(req: Request, res: Response): Prom
 			profilePictureUrl: user.profile_picture?.image_url || null,
 			sandboxNotesOpen: user.sandbox_notes_open,
 			name: user.name
-		})
+		} as PersonalInfoResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve personal info" })
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve personal info" } as ErrorResponse)
 		return
 	}
 }

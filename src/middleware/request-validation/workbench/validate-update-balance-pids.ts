@@ -2,8 +2,9 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
+import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
-const updateBalancePipdsSchema = Joi.object({
+const updateBalancePidsSchema = Joi.object({
 	pipUUID: pipUUIDValidator.required(),
 	pValue: Joi.number().required(),
 	iValue: Joi.number().required(),
@@ -19,17 +20,17 @@ const updateBalancePipdsSchema = Joi.object({
 
 export default function validateUpdateBalancePids(req: Request, res: Response, next: NextFunction): void {
 	try {
-		const { error } = updateBalancePipdsSchema.validate(req.body)
+		const { error } = updateBalancePidsSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message })
+			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
 			return
 		}
 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate update balance pids" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate update balance pids" } as ErrorResponse)
 		return
 	}
 }

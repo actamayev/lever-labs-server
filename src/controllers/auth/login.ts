@@ -1,6 +1,7 @@
 import isNull from "lodash/isNull"
 import { Response, Request } from "express"
 import Hash from "../../classes/hash"
+import { ErrorResponse, LoginRequest, LoginSuccess, MessageResponse } from "@bluedotrobots/common-ts"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import determineLoginContactType from "../../utils/auth-helpers/determine-contact-type"
 import retrieveUserFromContact from "../../utils/auth-helpers/login/retrieve-user-from-contact"
@@ -9,22 +10,24 @@ import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-
 
 export default async function login (req: Request, res: Response): Promise<void> {
 	try {
-		const { contact, password } = req.body.loginInformation as LoginInformation
+		const { contact, password } = req.body.loginInformation as LoginRequest
 		const loginContactType = determineLoginContactType(contact)
 
 		const credentialsResult = await retrieveUserFromContact(contact, loginContactType)
 		if (isNull(credentialsResult)) {
-			res.status(400).json({ message: `There is no Blue Dot Robots account associated with ${contact}. Please try again.` })
+			res.status(400).json(
+				{ message: `There is no Blue Dot Robots account associated with ${contact}. Please try again.` } as MessageResponse
+			)
 			return
 		}
 		if (credentialsResult.auth_method === "google") {
-			res.status(400).json({ message: "Please log in with Google" })
+			res.status(400).json({ message: "Please log in with Google" } as MessageResponse)
 			return
 		}
 
 		const doPasswordsMatch = await Hash.checkPassword(password, credentialsResult.password as HashedString)
 		if (doPasswordsMatch === false) {
-			res.status(400).json({ message: "Wrong password. Please try again." })
+			res.status(400).json({ message: "Wrong password. Please try again." } as MessageResponse)
 			return
 		}
 
@@ -34,11 +37,11 @@ export default async function login (req: Request, res: Response): Promise<void>
 
 		const userPipData = await retrieveUserPipUUIDsDetails(credentialsResult.user_id)
 
-		res.status(200).json({ accessToken, userPipData })
+		res.status(200).json({ accessToken, userPipData } as LoginSuccess)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Login" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Login" } as ErrorResponse)
 		return
 	}
 }

@@ -1,6 +1,7 @@
 import { Response, Request } from "express"
 import generatePipUUID from "../../utils/generate-pip-uuid"
 import addPipUUIDRecord from "../../db-operations/write/pip-uuid/add-pip-uuid-record"
+import { PipUUID, ErrorResponse } from "@bluedotrobots/common-ts"
 
 export default async function addNewPipUUID (_req: Request, res: Response): Promise<void> {
 	try {
@@ -17,7 +18,7 @@ export default async function addNewPipUUID (_req: Request, res: Response): Prom
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to add new Pip UUID" })
+		res.status(500).json({ error: "Internal Server Error: Unable to add new Pip UUID" } as ErrorResponse)
 		return
 	}
 }

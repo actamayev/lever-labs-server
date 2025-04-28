@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import Hash from "../../classes/hash"
 import updatePassword from "../../db-operations/write/credentials/update-password"
+import { ErrorResponse, SuccessResponse, MessageResponse} from "@bluedotrobots/common-ts"
 
 export default async function setNewPassword(req: Request, res: Response): Promise<void> {
 	try {
@@ -8,13 +9,13 @@ export default async function setNewPassword(req: Request, res: Response): Promi
 		const { oldPassword, newPassword } = req.body
 
 		if (user.auth_method === "google") {
-			res.status(400).json({ message: "Please log in with Google" })
+			res.status(400).json({ message: "Please log in with Google" } as MessageResponse)
 			return
 		}
 
 		const doPasswordsMatch = await Hash.checkPassword(oldPassword, user.password as HashedString)
 		if (doPasswordsMatch === false) {
-			res.status(400).json({ message: "Wrong password. Please try again." })
+			res.status(400).json({ message: "Wrong password. Please try again." } as MessageResponse)
 			return
 		}
 
@@ -22,11 +23,11 @@ export default async function setNewPassword(req: Request, res: Response): Promi
 
 		await updatePassword(user.user_id, newHashedPassword)
 
-		res.status(200).json({ success: "" })
+		res.status(200).json({ success: "" } as SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to set new password" })
+		res.status(500).json({ error: "Internal Server Error: Unable to set new password" } as ErrorResponse)
 		return
 	}
 }

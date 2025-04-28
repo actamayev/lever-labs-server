@@ -2,6 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import getDecodedId from "../../utils/auth-helpers/get-decoded-id"
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 
 const authorizationSchema = Joi.object({
 	authorization: Joi.string().required()
@@ -25,7 +26,7 @@ export default async function jwtVerifyAttachUserId(req: Request, res: Response,
 	}
 
 	function handleUnauthorized(): void {
-		res.status(401).json({ error: "Unauthorized User" })
+		res.status(401).json({ error: "Unauthorized User" } as ErrorResponse)
 		return
 	}
 }

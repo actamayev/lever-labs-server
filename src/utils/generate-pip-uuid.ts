@@ -1,3 +1,5 @@
+import { PipUUID } from "@bluedotrobots/common-ts"
+
 export default function generatePipUUID(): PipUUID {
 	try {
 		const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
