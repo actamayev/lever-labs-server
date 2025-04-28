@@ -1,3 +1,4 @@
+import { ActivityUUID, UserActivityProgress } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function retrieveUserActivityProgressDB(userId: number): Promise<UserActivityProgress[]> {

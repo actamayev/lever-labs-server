@@ -1,3 +1,4 @@
+import { PipUUID } from "@bluedotrobots/common-ts"
 import pipUUIdValidator from "../middleware/joi/pip-uuid-validator"
 
 export default function isPipUUID(value: unknown): value is PipUUID {

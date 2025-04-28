@@ -25,8 +25,6 @@ declare global {
 		| "FIRMWARE_S3_BUCKET"
 
 	type SecretsObject = { [K in SecretKeys]: string }
-
-	type PipUUID = string & { readonly __brand: unique symbol }
 }
 
 export {}

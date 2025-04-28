@@ -1,3 +1,5 @@
+import { LightAnimation, TuneToPlay } from "@bluedotrobots/common-ts"
+
 export enum MessageType {
     UPDATE_AVAILABLE = 0,
     MOTOR_CONTROL = 1,

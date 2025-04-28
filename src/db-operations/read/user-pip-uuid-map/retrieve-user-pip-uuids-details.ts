@@ -1,5 +1,6 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 import BrowserSocketManager from "../../../classes/browser-socket-manager"
+import { PipData, PipUUID } from "@bluedotrobots/common-ts"
 
 export default async function retrieveUserPipUUIDsDetails(userId: number): Promise<PipData[]> {
 	try {
