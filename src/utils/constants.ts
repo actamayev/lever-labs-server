@@ -1,3 +1,4 @@
+// DELETE
 /* eslint-disable @typescript-eslint/naming-convention */
 export const MAX_LED_BRIGHTNESS = 255
 export const MAX_PROGRAM_SIZE = 8192 // Maximum number of instructions

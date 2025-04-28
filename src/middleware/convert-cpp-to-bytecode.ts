@@ -1,5 +1,5 @@
+import { CppParser } from "@bluedotrobots/common-ts"
 import { Request, Response, NextFunction } from "express"
-import CppParser from "../classes/cpp-parser"
 
 export default function convertCppToBytecode(req: Request, res: Response, next: NextFunction): void {
 	try {
