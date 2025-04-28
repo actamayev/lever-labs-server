@@ -5,6 +5,7 @@ import BrowserSocketManager from "../../classes/browser-socket-manager"
 import espStatusToPipConnectionStatus from "../../utils/esp-status-to-pip-connection-status"
 import addUserPipUUIDMapRecord from "../../db-operations/write/user-pip-uuid-map/add-user-pip-uuid-map-record"
 import { AddNewPipResponse, ErrorResponse } from "@bluedotrobots/common-ts"
+
 export default async function addPipToAccount(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId, pipUUIDData } = req

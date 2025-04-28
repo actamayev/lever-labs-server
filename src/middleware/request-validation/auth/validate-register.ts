@@ -5,6 +5,7 @@ import emailValidator from "../../joi/email-validator"
 import usernameValidator from "../../joi/username-validator"
 import passwordValidatorSchema from "../../joi/password-validator"
 import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
+
 const registerInformationSchema = Joi.object({
 	registerInformation: Joi.object({
 		email: emailValidator.required(),

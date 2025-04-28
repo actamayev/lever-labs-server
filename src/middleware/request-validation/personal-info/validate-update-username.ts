@@ -2,6 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
+
 const updateNameSchema = Joi.object({
 	username: Joi.string().required().trim().min(3).max(50)
 }).required()

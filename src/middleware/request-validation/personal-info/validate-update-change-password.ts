@@ -3,6 +3,7 @@ import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import passwordValidatorSchema from "../../joi/password-validator"
 import { ErrorResponse , MessageResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
+
 const updateNameSchema = Joi.object({
 	oldPassword: passwordValidatorSchema.required(),
 	newPassword: passwordValidatorSchema.required(),

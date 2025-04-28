@@ -3,6 +3,7 @@ import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import emailValidator from "../../joi/email-validator"
 import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
+
 const subscribeForEmailUpdatesSchema = Joi.object({
 	email: emailValidator.required()
 }).required()

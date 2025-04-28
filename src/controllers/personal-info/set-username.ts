@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import updateUsername from "../../db-operations/write/credentials/update-username"
 import { ErrorResponse , SuccessResponse} from "@bluedotrobots/common-ts"
+
 export default async function setUsername(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req

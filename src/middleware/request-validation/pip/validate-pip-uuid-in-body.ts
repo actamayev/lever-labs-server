@@ -3,6 +3,7 @@ import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import pipUUIdValidator from "../../joi/pip-uuid-validator"
 import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
+
 const clientConnectToPipRequestSchema = Joi.object({
 	pipUUID: pipUUIdValidator.required()
 }).required()

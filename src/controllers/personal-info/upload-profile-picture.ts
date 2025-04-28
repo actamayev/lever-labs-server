@@ -3,6 +3,7 @@ import { Request, Response } from "express"
 import AwsS3 from "../../classes/aws/s3-manager"
 import upsertProfilePictureRecordAndUpdateUser from "../../db-operations/write/simultaneous-writes/upsert-profile-picture-and-update-user"
 import { ErrorResponse , MessageResponse, ProfilePictureUrl} from "@bluedotrobots/common-ts"
+
 export default async function uploadProfilePicture (req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req

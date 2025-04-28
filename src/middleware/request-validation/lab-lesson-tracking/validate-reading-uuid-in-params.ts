@@ -2,6 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
+
 const readingUUIDInParamsSchema = Joi.object({
 	readingUUID: Joi.string().uuid({ version: "uuidv4" }).required()
 }).required()

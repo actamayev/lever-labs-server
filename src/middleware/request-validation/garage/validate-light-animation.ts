@@ -3,6 +3,7 @@ import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
 import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
+
 const validateLightAnimationSchema = Joi.object({
 	lightAnimation: Joi.string().valid(
 		"No animation", "Breathing", "Rainbow", "Strobe", "Turn off", "Fade out",// "Pause breathing", "Snake"

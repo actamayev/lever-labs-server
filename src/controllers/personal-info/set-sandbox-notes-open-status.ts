@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import updateSandboxNotesOpenStatus from "../../db-operations/write/credentials/update-sandbox-notes-open-status"
 import { ErrorResponse , SuccessResponse} from "@bluedotrobots/common-ts"
+
 export default async function setSandboxNotesOpenStatus(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
