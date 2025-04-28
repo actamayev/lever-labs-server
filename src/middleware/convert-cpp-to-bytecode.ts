@@ -1,4 +1,4 @@
-import { CppParser , ErrorResponse} from "@bluedotrobots/common-ts"
+import { CppParser, ErrorResponse} from "@bluedotrobots/common-ts"
 import { Request, Response, NextFunction } from "express"
 
 export default function convertCppToBytecode(req: Request, res: Response, next: NextFunction): void {

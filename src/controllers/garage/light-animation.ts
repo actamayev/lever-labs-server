@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
-import { LightAnimation, PipUUID , ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
+import { LightAnimation, PipUUID, ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
 
 export default async function lightAnimationEndpoint(req: Request, res: Response): Promise<void> {
 	try {

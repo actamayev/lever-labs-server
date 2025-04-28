@@ -1,7 +1,7 @@
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
-import { PipUUID , ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
+import { PipUUID, ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
 
 export default function confirmUserConnectedToPip(
 	req: Request,

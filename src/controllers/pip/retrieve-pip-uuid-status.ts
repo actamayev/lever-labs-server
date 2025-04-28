@@ -2,7 +2,7 @@ import isNull from "lodash/isNull"
 import { Response, Request } from "express"
 import findPipUUID from "../../db-operations/read/find/find-pip-uuid"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
-import { PipUUID , ErrorResponse, RetrieveIsPipUUIDValidResponse, MessageResponse} from "@bluedotrobots/common-ts"
+import { PipUUID, ErrorResponse, RetrieveIsPipUUIDValidResponse, MessageResponse} from "@bluedotrobots/common-ts"
 
 export default async function retrievePipUUIDStatus(req: Request, res: Response): Promise<void> {
 	try {

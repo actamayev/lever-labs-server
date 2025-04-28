@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
-import { PipUUID , ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
+import { PipUUID, ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
 
 export default function confirmPipIsActive(
 	req: Request,

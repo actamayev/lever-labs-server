@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
-import { PipUUID, TuneToPlay , ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
+import { PipUUID, TuneToPlay, ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
 
 export default async function playTune (req: Request, res: Response): Promise<void> {
 	try {
