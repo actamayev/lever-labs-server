@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const updateNameSchema = Joi.object({
 	name: Joi.string().max(50).trim().allow("")
 }).required()
@@ -21,7 +21,7 @@ export default function validateUpdateName(req: Request, res: Response, next: Ne
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate name" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate name" } as ErrorResponse)
 		return
 	}
 }

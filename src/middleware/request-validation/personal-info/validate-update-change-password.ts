@@ -2,7 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import passwordValidatorSchema from "../../joi/password-validator"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const updateNameSchema = Joi.object({
 	oldPassword: passwordValidatorSchema.required(),
 	newPassword: passwordValidatorSchema.required(),
@@ -25,7 +25,7 @@ export default function validateUpdateChangePassword(req: Request, res: Response
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate password" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate password" } as ErrorResponse)
 		return
 	}
 }

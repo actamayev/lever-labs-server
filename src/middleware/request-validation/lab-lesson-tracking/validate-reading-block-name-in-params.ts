@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const readingBlockNameInParamsSchema = Joi.object({
 	readingBlockName: Joi.string().required()
 }).required()
@@ -18,7 +18,7 @@ export default function validateReadingBlockNameInParams(req: Request, res: Resp
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate reading block in params" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate reading block in params" } as ErrorResponse)
 		return
 	}
 }

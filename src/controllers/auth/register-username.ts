@@ -2,7 +2,7 @@ import isNull from "lodash/isNull"
 import { Response, Request } from "express"
 import setUsername from "../../db-operations/write/credentials/set-username"
 import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"
-import { MessageResponse, SuccessResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse, MessageResponse, SuccessResponse } from "@bluedotrobots/common-ts"
 
 export default async function registerUsername (req: Request, res: Response): Promise<void> {
 	try {
@@ -24,7 +24,7 @@ export default async function registerUsername (req: Request, res: Response): Pr
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to register username" })
+		res.status(500).json({ error: "Internal Server Error: Unable to register username" } as ErrorResponse)
 		return
 	}
 }

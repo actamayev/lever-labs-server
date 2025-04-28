@@ -2,7 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import pipUUIdValidator from "../../joi/pip-uuid-validator"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const addPipToAccountSchema = Joi.object({
 	addPipToAccountData: Joi.object({
 		pipUUID: pipUUIdValidator.required(),
@@ -23,7 +23,7 @@ export default function validateAddPipToAccount (req: Request, res: Response, ne
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Add Pip to account" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Add Pip to account" } as ErrorResponse)
 		return
 	}
 }

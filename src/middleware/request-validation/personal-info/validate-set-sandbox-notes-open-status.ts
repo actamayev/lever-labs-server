@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const setSandboxNotesOpenStatusSchema = Joi.object({
 	isOpen: Joi.bool().required()
 }).required()
@@ -18,7 +18,7 @@ export default function validateSetSandboxNotesOpenStatus (req: Request, res: Re
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate open status" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate open status" } as ErrorResponse)
 		return
 	}
 }

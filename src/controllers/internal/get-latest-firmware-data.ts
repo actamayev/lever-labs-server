@@ -1,7 +1,7 @@
 import { isNull } from "lodash"
 import { Response, Request } from "express"
 import EspLatestFirmwareManager from "../../classes/esp32/esp-latest-firmware-manager"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 export default function getLatestFirmwareData(_req: Request, res: Response): void {
 	try {
 		const currentFirmwareVersion = EspLatestFirmwareManager.getInstance().latestFirmwareVersion
@@ -14,7 +14,7 @@ export default function getLatestFirmwareData(_req: Request, res: Response): voi
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve current firmware version" })
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve current firmware version" } as ErrorResponse)
 		return
 	}
 }

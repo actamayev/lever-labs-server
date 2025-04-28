@@ -2,7 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import passwordValidatorSchema from "../../joi/password-validator"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const loginInformationSchema = Joi.object({
 	loginInformation: Joi.object({
 		contact: Joi.string().required().min(3).max(100),
@@ -25,7 +25,7 @@ export default function validateLogin (req: Request, res: Response, next: NextFu
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate Login" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate Login" } as ErrorResponse)
 		return
 	}
 }

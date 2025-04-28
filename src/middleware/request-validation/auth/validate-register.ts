@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express"
 import emailValidator from "../../joi/email-validator"
 import usernameValidator from "../../joi/username-validator"
 import passwordValidatorSchema from "../../joi/password-validator"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const registerInformationSchema = Joi.object({
 	registerInformation: Joi.object({
 		email: emailValidator.required(),
@@ -28,7 +28,7 @@ export default function validateRegister (req: Request, res: Response, next: Nex
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate Registration" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate Registration" } as ErrorResponse)
 		return
 	}
 }

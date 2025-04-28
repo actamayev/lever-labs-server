@@ -9,7 +9,7 @@ import createGoogleAuthClient from "../../utils/google/create-google-auth-client
 import retrieveUserIdByEmail from "../../db-operations/read/credentials/retrieve-user-id-by-email"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
-import { GoogleAuthSuccess, PipData } from "@bluedotrobots/common-ts"
+import { ErrorResponse, GoogleAuthSuccess, PipData } from "@bluedotrobots/common-ts"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function googleLoginAuthCallback (req: Request, res: Response): Promise<void> {
@@ -23,11 +23,11 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 		})
 		const payload = ticket.getPayload()
 		if (isUndefined(payload)) {
-			res.status(500).json({ error: "Unable to get payload" })
+			res.status(500).json({ error: "Unable to get payload" } as ErrorResponse)
 			return
 		}
 		if (isUndefined(payload.email)) {
-			res.status(500).json({ error: "Unable to find user email from payload" })
+			res.status(500).json({ error: "Unable to find user email from payload" } as ErrorResponse)
 			return
 		}
 
@@ -39,7 +39,7 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 		let userPipData: PipData[] = []
 
 		if (isUndefined(userId)) {
-			res.status(500).json({ error: "Unable to login with this email. Account offline." })
+			res.status(500).json({ error: "Unable to login with this email. Account offline." } as ErrorResponse)
 			return
 		} else if (!isNull(userId)) {
 			accessToken = await signJWT({ userId, newUser: false })
@@ -56,7 +56,7 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Login with Google" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Login with Google" } as ErrorResponse)
 		return
 	}
 }

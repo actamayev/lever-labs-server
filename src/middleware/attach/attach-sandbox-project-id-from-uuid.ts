@@ -1,7 +1,7 @@
 import { isUndefined } from "lodash"
 import { Request, Response, NextFunction } from "express"
 import findSandboxProjectIdFromUUID from "../../db-operations/read/find/find-sandbox-project-id-from-uuid"
-import { ProjectUUID } from "@bluedotrobots/common-ts"
+import { ProjectUUID , ErrorResponse} from "@bluedotrobots/common-ts"
 
 export default async function attachSandboxProjectIdFromUUID(req: Request, res: Response, next: NextFunction): Promise<void> {
 	try {
@@ -19,7 +19,7 @@ export default async function attachSandboxProjectIdFromUUID(req: Request, res: 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to attach sandbox project Id from UUID" })
+		res.status(500).json({ error: "Internal Server Error: Unable to attach sandbox project Id from UUID" } as ErrorResponse)
 		return
 	}
 }

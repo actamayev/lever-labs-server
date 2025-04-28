@@ -1,4 +1,4 @@
-import { CppParser } from "@bluedotrobots/common-ts"
+import { CppParser , ErrorResponse} from "@bluedotrobots/common-ts"
 import { Request, Response, NextFunction } from "express"
 
 export default function convertCppToBytecode(req: Request, res: Response, next: NextFunction): void {
@@ -15,7 +15,7 @@ export default function convertCppToBytecode(req: Request, res: Response, next: 
 		next()
 	} catch (error) {
 		console.error("C++ to bytecode conversion error:", error)
-		res.status(500).json({ error: "Internal Server Error: Unable to convert C++ to bytecode" })
+		res.status(500).json({ error: "Internal Server Error: Unable to convert C++ to bytecode" } as ErrorResponse)
 		return
 	}
 }

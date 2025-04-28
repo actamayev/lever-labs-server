@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import Encryptor from "../../classes/encryptor"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 export default async function decodeEmailSubscriber (req: Request, res: Response): Promise<void> {
 	try {
 		const { email } = req.body
@@ -12,7 +12,7 @@ export default async function decodeEmailSubscriber (req: Request, res: Response
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to decrypt email" })
+		res.status(500).json({ error: "Internal Server Error: Unable to decrypt email" } as ErrorResponse)
 		return
 	}
 }

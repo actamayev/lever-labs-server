@@ -2,7 +2,7 @@ import isNull from "lodash/isNull"
 import { Response, Request } from "express"
 import findPipUUID from "../../db-operations/read/find/find-pip-uuid"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
-import { PipUUID } from "@bluedotrobots/common-ts"
+import { PipUUID , ErrorResponse} from "@bluedotrobots/common-ts"
 
 export default async function retrievePipUUIDStatus(req: Request, res: Response): Promise<void> {
 	try {
@@ -21,7 +21,7 @@ export default async function retrievePipUUIDStatus(req: Request, res: Response)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve PipUUID status" })
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve PipUUID status" } as ErrorResponse)
 		return
 	}
 }

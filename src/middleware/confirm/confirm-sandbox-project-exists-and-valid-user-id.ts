@@ -1,7 +1,7 @@
 import { isUndefined } from "lodash"
 import { Request, Response, NextFunction } from "express"
 import retrieveUserIdFromSandboxProjectUUID from "../../db-operations/read/sandbox_project/retrieve-user-id-from-sandbox-project-id"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 export default async function confirmSandboxProjectExistsAndValidUserId(
 	req: Request,
 	res: Response,
@@ -24,7 +24,7 @@ export default async function confirmSandboxProjectExistsAndValidUserId(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm sandbox project exists and valid userId" })
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm sandbox project exists and valid userId" } as ErrorResponse)
 		return
 	}
 }

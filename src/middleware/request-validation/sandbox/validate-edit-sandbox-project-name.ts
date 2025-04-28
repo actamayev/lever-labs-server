@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const editSandboxProjectNameSchema = Joi.object({
 	projectName: Joi.string().max(50).required()
 }).required()
@@ -18,7 +18,7 @@ export default function validateEditSandboxProjectName(req: Request, res: Respon
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate edit sandbox project name" })
+		res.status(500).json({ error: "Internal Server Error: Unable to validate edit sandbox project name" } as ErrorResponse)
 		return
 	}
 }

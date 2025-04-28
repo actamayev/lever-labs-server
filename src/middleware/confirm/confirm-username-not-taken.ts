@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express"
 import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 export default async function confirmUsernameNotTaken(
 	req: Request,
 	res: Response,
@@ -18,7 +18,7 @@ export default async function confirmUsernameNotTaken(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm if this username is already taken" })
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm if this username is already taken" } as ErrorResponse)
 		return
 	}
 }

@@ -2,7 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import pipUUIdValidator from "../../joi/pip-uuid-validator"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const clientConnectToPipRequestSchema = Joi.object({
 	pipUUID: pipUUIdValidator.required()
 }).required()
@@ -19,7 +19,7 @@ export default function validatePipUUIDInBody(req: Request, res: Response, next:
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate client connect to Pip request" })
+		res.status(500).json({ error: "Internal Server Error: Unable to validate client connect to Pip request" } as ErrorResponse)
 		return
 	}
 }

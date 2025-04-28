@@ -2,7 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import Encryptor from "../../../classes/encryptor"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const subscribeForEmailUpdatesSchema = Joi.object({
 	email: Joi.string().required()
 }).required()
@@ -24,7 +24,7 @@ export default function validateDecodeEmailSubscriber(req: Request, res: Respons
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate encrypted email" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate encrypted email" } as ErrorResponse)
 		return
 	}
 }

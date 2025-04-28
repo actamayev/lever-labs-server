@@ -2,7 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const validateLightAnimationSchema = Joi.object({
 	lightAnimation: Joi.string().valid(
 		"No animation", "Breathing", "Rainbow", "Strobe", "Turn off", "Fade out",// "Pause breathing", "Snake"
@@ -22,7 +22,7 @@ export default function validateLightAnimation(req: Request, res: Response, next
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate display lights" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate display lights" } as ErrorResponse)
 		return
 	}
 }

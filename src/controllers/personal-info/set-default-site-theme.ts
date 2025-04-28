@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { SiteThemes } from "@prisma/client"
 import updateDefaultSiteTheme from "../../db-operations/write/credentials/update-default-site-theme"
-
+import { ErrorResponse , SuccessResponse} from "@bluedotrobots/common-ts"
 export default async function setDefaultSiteTheme(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
@@ -12,7 +12,7 @@ export default async function setDefaultSiteTheme(req: Request, res: Response): 
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to set new default site theme" })
+		res.status(500).json({ error: "Internal Server Error: Unable to set new default site theme" } as ErrorResponse)
 		return
 	}
 }

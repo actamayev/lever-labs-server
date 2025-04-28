@@ -2,7 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import pipUUIdValidator from "../../joi/pip-uuid-validator"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const cppCodeSchema = Joi.object({
 	pipUUID: pipUUIdValidator.required(),
 	cppCode: Joi.string().required()
@@ -20,7 +20,7 @@ export default function validateCppCode(req: Request, res: Response, next: NextF
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate C++ code" })
+		res.status(500).json({ error: "Internal Server Error: Unable to validate C++ code" } as ErrorResponse)
 		return
 	}
 }

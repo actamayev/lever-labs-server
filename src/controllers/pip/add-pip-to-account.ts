@@ -4,7 +4,7 @@ import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import espStatusToPipConnectionStatus from "../../utils/esp-status-to-pip-connection-status"
 import addUserPipUUIDMapRecord from "../../db-operations/write/user-pip-uuid-map/add-user-pip-uuid-map-record"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 export default async function addPipToAccount(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId, pipUUIDData } = req
@@ -28,7 +28,7 @@ export default async function addPipToAccount(req: Request, res: Response): Prom
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to add Pip to account" })
+		res.status(500).json({ error: "Internal Server Error: Unable to add Pip to account" } as ErrorResponse)
 		return
 	}
 }

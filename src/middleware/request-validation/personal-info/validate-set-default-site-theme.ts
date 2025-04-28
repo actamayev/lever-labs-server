@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const setDefaultSiteThemeSchema = Joi.object({
 	defaultSiteTheme: Joi.string().required().trim().valid("light", "dark")
 }).required()
@@ -18,7 +18,7 @@ export default function validateSetDefaultSiteTheme (req: Request, res: Response
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate Default Site Theme" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate Default Site Theme" } as ErrorResponse)
 		return
 	}
 }

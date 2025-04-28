@@ -1,5 +1,6 @@
 import { Response, Request } from "express"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 
 export default async function retrievePreviouslyAddedPips (req: Request, res: Response): Promise<void> {
 	try {
@@ -10,7 +11,7 @@ export default async function retrievePreviouslyAddedPips (req: Request, res: Re
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retreive previously added Pips" })
+		res.status(500).json({ error: "Internal Server Error: Unable to retreive previously added Pips" } as ErrorResponse)
 		return
 	}
 }

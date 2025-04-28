@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
-import { PipUUID } from "@bluedotrobots/common-ts"
+import { PipUUID , ErrorResponse} from "@bluedotrobots/common-ts"
 
 export default function confirmPipIsActive(
 	req: Request,
@@ -19,7 +19,7 @@ export default function confirmPipIsActive(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm Pip is connected to the internet" })
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm Pip is connected to the internet" } as ErrorResponse)
 		return
 	}
 }

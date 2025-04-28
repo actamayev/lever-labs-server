@@ -1,7 +1,7 @@
 import isNull from "lodash/isNull"
 import { Request, Response, NextFunction } from "express"
 import findReadingBlockIdFromReadingName from "../../db-operations/read/find/find-reading-block-id-from-reading-name"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 export default async function attachReadingBlockIdFromReadingName(req: Request, res: Response, next: NextFunction): Promise<void> {
 	try {
 		const { readingBlockName } = req.params as { readingBlockName: string }
@@ -18,7 +18,7 @@ export default async function attachReadingBlockIdFromReadingName(req: Request, 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to attach reading block ID from reading name" })
+		res.status(500).json({ error: "Internal Server Error: Unable to attach reading block ID from reading name" } as ErrorResponse)
 		return
 	}
 }

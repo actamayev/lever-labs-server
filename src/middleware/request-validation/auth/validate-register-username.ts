@@ -2,7 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import usernameValidator from "../../joi/username-validator"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const registerUsernameSchema = Joi.object({
 	username: usernameValidator.required().trim().min(3).max(100)
 }).required()
@@ -19,7 +19,7 @@ export default function validateRegisterUsername (req: Request, res: Response, n
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate Registration" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate Registration" } as ErrorResponse)
 		return
 	}
 }

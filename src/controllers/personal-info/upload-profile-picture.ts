@@ -2,7 +2,7 @@ import { isUndefined } from "lodash"
 import { Request, Response } from "express"
 import AwsS3 from "../../classes/aws/s3-manager"
 import upsertProfilePictureRecordAndUpdateUser from "../../db-operations/write/simultaneous-writes/upsert-profile-picture-and-update-user"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 export default async function uploadProfilePicture (req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
@@ -23,7 +23,7 @@ export default async function uploadProfilePicture (req: Request, res: Response)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Upload Profile Picture" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Upload Profile Picture" } as ErrorResponse)
 		return
 	}
 }

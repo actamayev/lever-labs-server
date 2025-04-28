@@ -1,7 +1,7 @@
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
-import { PipUUID } from "@bluedotrobots/common-ts"
+import { PipUUID , ErrorResponse} from "@bluedotrobots/common-ts"
 
 export default function confirmUserConnectedToPip(
 	req: Request,
@@ -28,7 +28,7 @@ export default function confirmUserConnectedToPip(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm user is connected to this Pip" })
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm user is connected to this Pip" } as ErrorResponse)
 		return
 	}
 }

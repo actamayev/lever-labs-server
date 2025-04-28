@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const submitQuizAnswerSchema = Joi.object({
 	readingQuestionAnswerChoiceId: Joi.number().integer().required()
 }).required()
@@ -18,7 +18,7 @@ export default function validateSubmitQuizAnswer(req: Request, res: Response, ne
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate quiz answer submit" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate quiz answer submit" } as ErrorResponse)
 		return
 	}
 }

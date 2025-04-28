@@ -2,7 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import emailValidator from "../../joi/email-validator"
-
+import { ErrorResponse } from "@bluedotrobots/common-ts"
 const subscribeForEmailUpdatesSchema = Joi.object({
 	email: emailValidator.required()
 }).required()
@@ -19,7 +19,7 @@ export default function validateSubscribeForEmailUpdates(req: Request, res: Resp
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate email" })
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate email" } as ErrorResponse)
 		return
 	}
 }

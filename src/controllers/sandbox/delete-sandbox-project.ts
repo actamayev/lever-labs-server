@@ -1,17 +1,17 @@
 import { Response, Request } from "express"
 import markSandboxProjectInactive from "../../db-operations/write/sandbox-project/mark-sandbox-project-inactive"
-
+import { ErrorResponse , SuccessResponse} from "@bluedotrobots/common-ts"
 export default async function deleteSandboxProject(req: Request, res: Response): Promise<void> {
 	try {
 		const { sandboxProjectId } = req
 
 		await markSandboxProjectInactive(sandboxProjectId)
 
-		res.status(200).json({ success: "" })
+		res.status(200).json({ success: "" } as SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to delete sandbox project" })
+		res.status(500).json({ error: "Internal Server Error: Unable to delete sandbox project" } as ErrorResponse)
 		return
 	}
 }
