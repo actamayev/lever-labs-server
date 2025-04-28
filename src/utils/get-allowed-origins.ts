@@ -2,12 +2,10 @@ export default function allowedOrigins(): string[] {
 	if (process.env.NODE_ENV === "production" ) {
 		return [
 			"https://bluedotrobots.com", "https://www.bluedotrobots.com",
-			// "wss://production-api.bluedotrobots.com"
 		]
 	} else if (process.env.NODE_ENV === "staging") {
 		return [
 			"https://staging.bluedotrobots.com",
-			// "wss://staging-api.bluedotrobots.com"
 		]
 	} else {
 		return [
