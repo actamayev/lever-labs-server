@@ -37,7 +37,6 @@ export default async function login (req: Request, res: Response): Promise<void>
 
 		const userPipData = await retrieveUserPipUUIDsDetails(credentialsResult.user_id)
 
-		// TODO: Go through every controller and format the response to be consistent:
 		res.status(200).json({ accessToken, userPipData } as LoginSuccess)
 		return
 	} catch (error) {

@@ -3,6 +3,7 @@ import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import passwordValidatorSchema from "../../joi/password-validator"
 import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
+
 const loginInformationSchema = Joi.object({
 	loginInformation: Joi.object({
 		contact: Joi.string().required().min(3).max(100),

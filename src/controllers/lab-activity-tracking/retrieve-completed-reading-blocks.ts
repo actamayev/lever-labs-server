@@ -1,6 +1,7 @@
 import { Response, Request } from "express"
 import retrieveCompletedReadingBlocksDB from "../../db-operations/read/completed-reading-block/retrieve-completed-reading-blocks-db"
 import { ErrorResponse } from "@bluedotrobots/common-ts"
+
 export default async function retrieveCompletedReadingBlocks(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId, activityId } = req

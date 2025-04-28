@@ -1,6 +1,7 @@
 import { Response, Request } from "express"
 import { addCompletedReadingBlock } from "../../db-operations/write/completed-reading-block/add-completed-reading-block"
 import { ErrorResponse , SuccessResponse} from "@bluedotrobots/common-ts"
+
 export default async function markReadingBlockComplete(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId, readingBlockId } = req
