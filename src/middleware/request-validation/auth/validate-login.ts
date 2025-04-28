@@ -2,7 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import passwordValidatorSchema from "../../joi/password-validator"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
 const loginInformationSchema = Joi.object({
 	loginInformation: Joi.object({
 		contact: Joi.string().required().min(3).max(100),
@@ -15,7 +15,7 @@ export default function validateLogin (req: Request, res: Response, next: NextFu
 		const { error } = loginInformationSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message })
+			res.status(400).json({ validationError: error.details[0].message }) as ValidationErrorResponse
 			return
 		}
 

@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
 const updateNameSchema = Joi.object({
 	name: Joi.string().max(50).trim().allow("")
 }).required()
@@ -14,7 +14,7 @@ export default function validateUpdateName(req: Request, res: Response, next: Ne
 		const { error } = updateNameSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: "Invalid name" })
+			res.status(400).json({ validationError: "Invalid name" }) as ValidationErrorResponse
 			return
 		}
 

@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import retrieveSingleSandboxProjectData from "../../db-operations/read/sandbox_project/retrieve-single-sandbox-project-data"
-import { ErrorResponse, ProjectUUID } from "@bluedotrobots/common-ts"
+import { ErrorResponse, ProjectUUID, SandboxProject } from "@bluedotrobots/common-ts"
 
 export default async function getSingleSandboxProject(req: Request, res: Response): Promise<void> {
 	try {
@@ -8,7 +8,7 @@ export default async function getSingleSandboxProject(req: Request, res: Respons
 
 		const sandboxProject = await retrieveSingleSandboxProjectData(projectUUID)
 
-		res.status(200).json({ sandboxProject })
+		res.status(200).json({ sandboxProject } as { sandboxProject: SandboxProject })
 		return
 	} catch (error) {
 		console.error(error)

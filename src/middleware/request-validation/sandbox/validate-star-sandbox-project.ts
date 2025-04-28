@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
 const starSandboxProjectSchema = Joi.object({
 	starStatus: Joi.bool().required()
 }).required()
@@ -11,7 +11,7 @@ export default function validateStarSandboxProject(req: Request, res: Response, 
 		const { error } = starSandboxProjectSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message })
+			res.status(400).json({ validationError: error.details[0].message }) as ValidationErrorResponse
 			return
 		}
 

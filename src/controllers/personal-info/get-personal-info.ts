@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import Encryptor from "../../classes/encryptor"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse, PersonalInfoResponse } from "@bluedotrobots/common-ts"
 
 export default async function getPersonalInfo(req: Request, res: Response): Promise<void> {
 	try {
@@ -16,7 +16,7 @@ export default async function getPersonalInfo(req: Request, res: Response): Prom
 			profilePictureUrl: user.profile_picture?.image_url || null,
 			sandboxNotesOpen: user.sandbox_notes_open,
 			name: user.name
-		})
+		} as PersonalInfoResponse)
 		return
 	} catch (error) {
 		console.error(error)

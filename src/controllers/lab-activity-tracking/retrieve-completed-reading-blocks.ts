@@ -6,7 +6,7 @@ export default async function retrieveCompletedReadingBlocks(req: Request, res: 
 		const { userId, activityId } = req
 		const completedReadingBlocks = await retrieveCompletedReadingBlocksDB(userId, activityId)
 
-		res.status(200).json({ completedReadingBlocks })
+		res.status(200).json({ completedReadingBlocks } as { completedReadingBlocks: string[] })
 		return
 	} catch (error: unknown) {
 		console.error(error)

@@ -2,7 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import emailValidator from "../../joi/email-validator"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
 const subscribeForEmailUpdatesSchema = Joi.object({
 	email: emailValidator.required()
 }).required()
@@ -12,7 +12,7 @@ export default function validateSubscribeForEmailUpdates(req: Request, res: Resp
 		const { error } = subscribeForEmailUpdatesSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message })
+			res.status(400).json({ validationError: error.details[0].message }) as ValidationErrorResponse
 			return
 		}
 

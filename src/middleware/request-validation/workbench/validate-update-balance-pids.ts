@@ -2,7 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
 const updateBalancePipdsSchema = Joi.object({
 	pipUUID: pipUUIDValidator.required(),
 	pValue: Joi.number().required(),
@@ -22,7 +22,7 @@ export default function validateUpdateBalancePids(req: Request, res: Response, n
 		const { error } = updateBalancePipdsSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message })
+			res.status(400).json({ validationError: error.details[0].message }) as ValidationErrorResponse
 			return
 		}
 

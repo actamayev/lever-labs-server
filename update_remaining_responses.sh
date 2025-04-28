@@ -1,15 +1,12 @@
 #!/bin/bash
 
-# This script will find all instances of res.status(400).json({ message: ... }) and replace them
-# with res.status(400).json({ message: ... } as MessageResponse)
-# It will also add the import for MessageResponse if needed
+# This script will find all instances of res.status(400).json({ message: ... }) that don't already 
+# have as MessageResponse and fix them
+# It will also make sure all files have the import for MessageResponse
 
-# Find all .ts files that contain the pattern but don't already have MessageResponse
-find_pattern="res.status(400).json({ message:"
-exception_pattern="as MessageResponse"
-
-# Find all files with the pattern
-files=$(find ./src -name "*.ts" -type f -exec grep -l "$find_pattern" {} \; | xargs grep -L "$exception_pattern" || true)
+# Find files with message responses that don't have type assertion
+find_cmd="find ./src -name \"*.ts\" -type f -exec grep -l \"res.status(400).json({ message:\" {} \\;"
+files=$(eval $find_cmd | xargs cat | grep -v "as MessageResponse" | cut -d':' -f1 | sort | uniq)
 
 if [ -z "$files" ]; then
   echo "No files found that need updating"
@@ -44,8 +41,8 @@ import { MessageResponse } from "@bluedotrobots/common-ts"
     fi
   fi
   
-  # Update all instances of res.status(400).json({ message: ... }) to include as MessageResponse
-  sed -i '' -E 's/res\.status\(400\)\.json\(\{ message: "(.*)" \}\)/res.status\(400\).json\({ message: "\1" \} as MessageResponse)/g' "$file"
+  # Update all instances of res.status(400).json({ message: ... }) that don't have as MessageResponse
+  perl -i -pe 's/(res\.status\(400\)\.json\(\{ message: "(.*?)".*?\})(?!\s*as)/$1 as MessageResponse/g' "$file"
 done
 
 echo "All files updated!"

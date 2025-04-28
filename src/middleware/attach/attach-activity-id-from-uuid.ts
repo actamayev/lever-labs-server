@@ -1,7 +1,7 @@
 import isNull from "lodash/isNull"
 import { Request, Response, NextFunction } from "express"
 import findActivityIdFromUUID from "../../db-operations/read/find/find-activity-id-from-uuid"
-import { ActivityUUID, ErrorResponse } from "@bluedotrobots/common-ts"
+import { ActivityUUID, ErrorResponse , MessageResponse} from "@bluedotrobots/common-ts"
 
 export default async function attachActivityIdFromUUID(req: Request, res: Response, next: NextFunction): Promise<void> {
 	try {

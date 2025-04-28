@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express"
 import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse , MessageResponse} from "@bluedotrobots/common-ts"
 export default async function confirmUsernameNotTaken(
 	req: Request,
 	res: Response,

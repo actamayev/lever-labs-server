@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
 const editSandboxProjectNameSchema = Joi.object({
 	projectName: Joi.string().max(50).required()
 }).required()
@@ -11,7 +11,7 @@ export default function validateEditSandboxProjectName(req: Request, res: Respon
 		const { error } = editSandboxProjectNameSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message })
+			res.status(400).json({ validationError: error.details[0].message }) as ValidationErrorResponse
 			return
 		}
 

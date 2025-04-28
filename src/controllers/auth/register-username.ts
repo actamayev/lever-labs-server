@@ -14,7 +14,7 @@ export default async function registerUsername (req: Request, res: Response): Pr
 		const username = req.body.username as string
 		const usernameExists = await doesUsernameExist(username)
 		if (usernameExists === true) {
-			res.status(400).json({ message: "Username already taken" })
+			res.status(400).json({ message: "Username already taken" } as MessageResponse)
 			return
 		}
 

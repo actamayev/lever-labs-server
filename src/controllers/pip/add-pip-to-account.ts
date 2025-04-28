@@ -4,7 +4,7 @@ import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import espStatusToPipConnectionStatus from "../../utils/esp-status-to-pip-connection-status"
 import addUserPipUUIDMapRecord from "../../db-operations/write/user-pip-uuid-map/add-user-pip-uuid-map-record"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { AddNewPipResponse, ErrorResponse } from "@bluedotrobots/common-ts"
 export default async function addPipToAccount(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId, pipUUIDData } = req
@@ -24,7 +24,7 @@ export default async function addPipToAccount(req: Request, res: Response): Prom
 
 		if (isUndefined(pipName)) pipName = pipUUIDData.pip_name || ""
 
-		res.status(200).json({ pipName, userPipUUIDId, pipConnectionStatus })
+		res.status(200).json({ pipName, userPipUUIDId, pipConnectionStatus } as AddNewPipResponse)
 		return
 	} catch (error) {
 		console.error(error)

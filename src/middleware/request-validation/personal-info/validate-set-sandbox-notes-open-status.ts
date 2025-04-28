@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
 const setSandboxNotesOpenStatusSchema = Joi.object({
 	isOpen: Joi.bool().required()
 }).required()
@@ -11,7 +11,7 @@ export default function validateSetSandboxNotesOpenStatus (req: Request, res: Re
 		const { error } = setSandboxNotesOpenStatusSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: "Invalid open status" })
+			res.status(400).json({ validationError: "Invalid open status" }) as ValidationErrorResponse
 			return
 		}
 

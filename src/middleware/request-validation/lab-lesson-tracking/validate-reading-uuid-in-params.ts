@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
 const readingUUIDInParamsSchema = Joi.object({
 	readingUUID: Joi.string().uuid({ version: "uuidv4" }).required()
 }).required()
@@ -11,7 +11,7 @@ export default function validateReadingUUIDInParams(req: Request, res: Response,
 		const { error } = readingUUIDInParamsSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message })
+			res.status(400).json({ validationError: error.details[0].message }) as ValidationErrorResponse
 			return
 		}
 

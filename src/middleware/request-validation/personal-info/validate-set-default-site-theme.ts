@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
 const setDefaultSiteThemeSchema = Joi.object({
 	defaultSiteTheme: Joi.string().required().trim().valid("light", "dark")
 }).required()
@@ -11,7 +11,7 @@ export default function validateSetDefaultSiteTheme (req: Request, res: Response
 		const { error } = setDefaultSiteThemeSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: "Invalid default site theme" })
+			res.status(400).json({ validationError: "Invalid default site theme" }) as ValidationErrorResponse
 			return
 		}
 
