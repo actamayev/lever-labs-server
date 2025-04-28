@@ -1,6 +1,7 @@
 import { isUndefined } from "lodash"
 import { Request, Response, NextFunction } from "express"
 import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
+
 export default function validateImageType (req: Request, res: Response, next: NextFunction): void {
 	try {
 		const imageMimeTypes = ["image/jpeg", "image/png"]
