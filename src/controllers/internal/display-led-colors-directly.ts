@@ -1,10 +1,11 @@
 import { Response, Request } from "express"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
+import { LedControlData } from "@bluedotrobots/common-ts"
 
 // This is an internal route to not have to go through the WS in Postman
 export default async function displayLedColorsDirectly (req: Request, res: Response): Promise<void> {
 	try {
-		const body = req.body as IncomingNewLedControlData
+		const body = req.body as LedControlData
 
 		await SendEsp32MessageManager.getInstance().transferLedControlData(body)
 

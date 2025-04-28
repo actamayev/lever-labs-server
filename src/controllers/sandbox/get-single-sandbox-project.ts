@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import retrieveSingleSandboxProjectData from "../../db-operations/read/sandbox_project/retrieve-single-sandbox-project-data"
+import { ProjectUUID } from "@bluedotrobots/common-ts"
 
 export default async function getSingleSandboxProject(req: Request, res: Response): Promise<void> {
 	try {

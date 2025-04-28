@@ -1,3 +1,4 @@
+import { PipUUID } from "@bluedotrobots/common-ts"
 import { credentials, pip_uuid } from "@prisma/client"
 
 declare global {

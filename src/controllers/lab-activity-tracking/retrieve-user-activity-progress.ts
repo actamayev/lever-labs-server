@@ -1,4 +1,5 @@
 import { Response, Request } from "express"
+import { UserActivityProgress } from "@bluedotrobots/common-ts"
 import retrieveUserActivityProgressDB from "../../db-operations/read/user-activity-progress/retrieve-user-activity-progress-db"
 
 export default async function retrieveUserActivityProgress(req: Request, res: Response): Promise<void> {
@@ -7,7 +8,7 @@ export default async function retrieveUserActivityProgress(req: Request, res: Re
 
 		const userActivityProgress = await retrieveUserActivityProgressDB(userId)
 
-		res.status(200).json({ userActivityProgress })
+		res.status(200).json({ userActivityProgress } as { userActivityProgress: UserActivityProgress[] })
 		return
 	} catch (error: unknown) {
 		console.error(error)

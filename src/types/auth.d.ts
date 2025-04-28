@@ -1,18 +1,6 @@
 import { AuthMethods, SiteThemes } from "@prisma/client"
 
 declare global {
-	interface LoginInformation {
-		contact: string
-		password: string
-	}
-
-	interface RegisterInformation {
-		email: string
-		username: string
-		siteTheme: SiteThemes
-		password: string
-	}
-
 	interface NewLocalUserFields {
 		username: string
 		password: HashedString

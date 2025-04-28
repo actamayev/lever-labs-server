@@ -1,5 +1,6 @@
 import { Response, Request } from "express"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
+import { PipUUID } from "@bluedotrobots/common-ts"
 
 export default function clientDisconnectFromPipRequest (req: Request, res: Response): void {
 	try {

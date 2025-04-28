@@ -1,6 +1,7 @@
+import { ActivityUUID } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function findActivityIdFromUUID(activityUUID:ActivityUUID): Promise<number | null> {
+export default async function findActivityIdFromUUID(activityUUID: ActivityUUID): Promise<number | null> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 

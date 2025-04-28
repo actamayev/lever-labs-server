@@ -9,6 +9,7 @@ import createGoogleAuthClient from "../../utils/google/create-google-auth-client
 import retrieveUserIdByEmail from "../../db-operations/read/credentials/retrieve-user-id-by-email"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
+import { PipData } from "@bluedotrobots/common-ts"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function googleLoginAuthCallback (req: Request, res: Response): Promise<void> {

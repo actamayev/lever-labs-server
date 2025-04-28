@@ -1,3 +1,4 @@
+import { LedControlData } from "@bluedotrobots/common-ts"
 import { BalanceStatus, LightAnimationType, MessageType, SoundType, SpeakerStatus } from "../../utils/protocol"
 
 export class MessageBuilder {
@@ -43,7 +44,7 @@ export class MessageBuilder {
 		return buffer
 	}
 
-	static createLedMessage(data: Omit<IncomingNewLedControlData, "pipUUID">): ArrayBuffer {
+	static createLedMessage(data: Omit<LedControlData, "pipUUID">): ArrayBuffer {
 		// Calculate buffer size: 1 byte for message type + 6 RGB colors × 3 components × 1 byte per uint8
 		const buffer = new ArrayBuffer(1 + 6 * 3 * 1) // 19 bytes total
 		const view = new DataView(buffer)

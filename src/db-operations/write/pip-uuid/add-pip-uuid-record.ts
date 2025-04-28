@@ -1,3 +1,4 @@
+import { PipUUID } from "@bluedotrobots/common-ts"
 import SecretsManager from "../../../classes/aws/secrets-manager"
 import PrismaClientClass from "../../../classes/prisma-client"
 

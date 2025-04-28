@@ -1,6 +1,7 @@
 import isNull from "lodash/isNull"
 import { Response, Request } from "express"
 import Hash from "../../classes/hash"
+import { LoginRequest, LoginSuccess } from "@bluedotrobots/common-ts"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import determineLoginContactType from "../../utils/auth-helpers/determine-contact-type"
 import retrieveUserFromContact from "../../utils/auth-helpers/login/retrieve-user-from-contact"
@@ -9,7 +10,7 @@ import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-
 
 export default async function login (req: Request, res: Response): Promise<void> {
 	try {
-		const { contact, password } = req.body.loginInformation as LoginInformation
+		const { contact, password } = req.body.loginInformation as LoginRequest
 		const loginContactType = determineLoginContactType(contact)
 
 		const credentialsResult = await retrieveUserFromContact(contact, loginContactType)
@@ -34,7 +35,8 @@ export default async function login (req: Request, res: Response): Promise<void>
 
 		const userPipData = await retrieveUserPipUUIDsDetails(credentialsResult.user_id)
 
-		res.status(200).json({ accessToken, userPipData })
+		// TODO: Go through every controller and format the response to be consistent:
+		res.status(200).json({ accessToken, userPipData } as LoginSuccess)
 		return
 	} catch (error) {
 		console.error(error)

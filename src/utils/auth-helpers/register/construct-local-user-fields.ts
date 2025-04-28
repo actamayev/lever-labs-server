@@ -1,7 +1,8 @@
+import { RegisterRequest } from "@bluedotrobots/common-ts"
 import Encryptor from "../../../classes/encryptor"
 
 export default async function constructLocalUserFields(
-	registerInformation: RegisterInformation,
+	registerInformation: RegisterRequest,
 	hashedPassword: HashedString
 ): Promise<NewLocalUserFields> {
 	try {

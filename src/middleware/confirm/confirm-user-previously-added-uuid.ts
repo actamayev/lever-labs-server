@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express"
 import doesUUIDUserRecordExist from "../../db-operations/read/does-x-exist/does-uuid-user-record-exist"
+import { PipUUID } from "@bluedotrobots/common-ts"
 
 export default async function confirmUserPreviouslyAddedUUID(
 	req: Request,

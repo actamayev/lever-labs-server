@@ -1,6 +1,7 @@
 import { Response, Request } from "express"
 import generatePipUUID from "../../utils/generate-pip-uuid"
 import addPipUUIDRecord from "../../db-operations/write/pip-uuid/add-pip-uuid-record"
+import { PipUUID } from "@bluedotrobots/common-ts"
 
 export default async function addNewPipUUID (_req: Request, res: Response): Promise<void> {
 	try {

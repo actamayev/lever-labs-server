@@ -7,10 +7,11 @@ import doesEmailExist from "../../db-operations/read/does-x-exist/does-email-exi
 import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import constructLocalUserFields from "../../utils/auth-helpers/register/construct-local-user-fields"
+import { RegisterRequest } from "@bluedotrobots/common-ts"
 
 export default async function register(req: Request, res: Response): Promise<void> {
 	try {
-		const registerInformation = req.body.registerInformation as RegisterInformation
+		const registerInformation = req.body.registerInformation as RegisterRequest
 
 		const encryptor = new Encryptor()
 		const encryptedEmail = await encryptor.deterministicEncrypt(registerInformation.email, "EMAIL_ENCRYPTION_KEY")
