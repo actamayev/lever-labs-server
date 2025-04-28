@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
 const submitQuizAnswerSchema = Joi.object({
 	readingQuestionAnswerChoiceId: Joi.number().integer().required()

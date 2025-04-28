@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import Hash from "../../classes/hash"
 import updatePassword from "../../db-operations/write/credentials/update-password"
-import { ErrorResponse , SuccessResponse, MessageResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse, MessageResponse} from "@bluedotrobots/common-ts"
 
 export default async function setNewPassword(req: Request, res: Response): Promise<void> {
 	try {

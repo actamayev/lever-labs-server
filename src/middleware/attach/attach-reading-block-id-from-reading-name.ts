@@ -1,7 +1,7 @@
 import isNull from "lodash/isNull"
 import { Request, Response, NextFunction } from "express"
 import findReadingBlockIdFromReadingName from "../../db-operations/read/find/find-reading-block-id-from-reading-name"
-import { ErrorResponse , MessageResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
 
 export default async function attachReadingBlockIdFromReadingName(req: Request, res: Response, next: NextFunction): Promise<void> {
 	try {

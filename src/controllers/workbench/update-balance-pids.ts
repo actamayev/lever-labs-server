@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
-import { ErrorResponse , SuccessResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
 export default async function updateBalancePids(req: Request, res: Response): Promise<void> {
 	try {
 		const body = req.body as BalancePidsProps

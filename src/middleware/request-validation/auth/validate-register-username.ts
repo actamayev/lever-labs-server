@@ -2,7 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import usernameValidator from "../../joi/username-validator"
-import { ErrorResponse , ValidationErrorResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
 const registerUsernameSchema = Joi.object({
 	username: usernameValidator.required().trim().min(3).max(100)

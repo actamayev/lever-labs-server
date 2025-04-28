@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express"
 import doesUUIDIdUserRecordExist from "../../db-operations/read/does-x-exist/does-uuid-id-user-record-exist"
-import { ErrorResponse , MessageResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
 
 export default async function confirmUserHasntAlreadyAddedUUID(
 	req: Request,
