@@ -2,12 +2,13 @@ import isNull from "lodash/isNull"
 import { Response, Request } from "express"
 import setUsername from "../../db-operations/write/credentials/set-username"
 import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"
+import { MessageResponse, SuccessResponse } from "@bluedotrobots/common-ts"
 
 export default async function registerUsername (req: Request, res: Response): Promise<void> {
 	try {
 		const { user } = req
 		if (!isNull(user.username)) {
-			res.status(400).json({ message: "You've already registered a username for this account" })
+			res.status(400).json({ message: "You've already registered a username for this account" } as MessageResponse)
 			return
 		}
 		const username = req.body.username as string
@@ -19,7 +20,7 @@ export default async function registerUsername (req: Request, res: Response): Pr
 
 		await setUsername(user.user_id, username)
 
-		res.status(200).json({ success: "Username registered" })
+		res.status(200).json({ success: "Username registered" } as SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
