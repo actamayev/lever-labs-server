@@ -10,7 +10,7 @@ export default async function attachSandboxProjectIdFromUUID(req: Request, res: 
 		const sandboxProjectId = await findSandboxProjectIdFromUUID(projectUUID)
 
 		if (isUndefined(sandboxProjectId)) {
-			res.status(400).json({ message: "Sandbox Project ID doesn't exist"})
+			res.status(400).json({ message: "Sandbox Project ID doesn't exist" } as MessageResponse)
 			return
 		}
 

@@ -14,7 +14,7 @@ export default function validateUpdateName(req: Request, res: Response, next: Ne
 		const { error } = updateNameSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: "Invalid name" }) as ValidationErrorResponse
+			res.status(400).json({ validationError: "Invalid name" } as ValidationErrorResponse)
 			return
 		}
 

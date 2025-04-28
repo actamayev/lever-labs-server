@@ -13,12 +13,12 @@ export default async function confirmSandboxProjectExistsAndValidUserId(
 		const foundOwnerId = await retrieveUserIdFromSandboxProjectUUID(sandboxProjectId)
 
 		if (isUndefined(foundOwnerId)) {
-			res.status(400).json({ message: "Sandbox UUID doesn't exist"})
+			res.status(400).json({ message: "Sandbox UUID doesn't exist" } as MessageResponse)
 			return
 		}
 
 		if (userId !== foundOwnerId) {
-			res.status(400).json({ message: "This sandbox project is associated with another user"})
+			res.status(400).json({ message: "This sandbox project is associated with another user" } as MessageResponse)
 			return
 		}
 		next()

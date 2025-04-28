@@ -18,13 +18,15 @@ export default function confirmOtherUserIsntConnectedToPip(
 			res.status(200).json({ success: "You are already connected to this Pip" } as SuccessResponse)
 			return
 		} else if (!isUndefined(userIdConnectToPip)) {
-			res.status(400).json({ message: "Someone is already connected to this Pip"})
+			res.status(400).json({ message: "Someone is already connected to this Pip"} as MessageResponse)
 			return
 		}
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm another user isn't connected to this Pip" } as ErrorResponse)
+		res.status(500).json(
+			{ error: "Internal Server Error: Unable to confirm another user isn't connected to this Pip" } as ErrorResponse
+		)
 		return
 	}
 }

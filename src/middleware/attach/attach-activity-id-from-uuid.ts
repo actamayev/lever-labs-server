@@ -10,7 +10,7 @@ export default async function attachActivityIdFromUUID(req: Request, res: Respon
 		const activityId = await findActivityIdFromUUID(readingUUID)
 
 		if (isNull(activityId)) {
-			res.status(400).json({ message: "Activity ID doesn't exist"})
+			res.status(400).json({ message: "Activity ID doesn't exist" } as MessageResponse)
 			return
 		}
 

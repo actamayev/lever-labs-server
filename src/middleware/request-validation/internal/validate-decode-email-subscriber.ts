@@ -12,12 +12,12 @@ export default function validateDecodeEmailSubscriber(req: Request, res: Respons
 		const { error } = subscribeForEmailUpdatesSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message }) as ValidationErrorResponse
+			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
 			return
 		}
 
 		if (!Encryptor.isDeterministicEncryptedString(req.body.email)) {
-			res.status(400).json({ validationError: "Email is not encrypted" }) as ValidationErrorResponse
+			res.status(400).json({ validationError: "Email is not encrypted" } as ValidationErrorResponse)
 			return
 		}
 

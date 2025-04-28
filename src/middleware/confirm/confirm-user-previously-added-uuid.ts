@@ -14,7 +14,7 @@ export default async function confirmUserPreviouslyAddedUUID(
 		const uuidUserRecord = await doesUUIDUserRecordExist(userId, pipUUID)
 
 		if (uuidUserRecord === false) {
-			res.status(400).json({ message: "User hasn't registered this UUID"})
+			res.status(400).json({ message: "User hasn't registered this UUID" } as MessageResponse)
 			return
 		}
 		next()

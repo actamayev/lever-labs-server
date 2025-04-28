@@ -12,7 +12,7 @@ export default function validateRegisterUsername (req: Request, res: Response, n
 		const { error } = registerUsernameSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message }) as ValidationErrorResponse
+			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
 			return
 		}
 

@@ -19,7 +19,7 @@ export default function validateRegister (req: Request, res: Response, next: Nex
 		const { error } = registerInformationSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message }) as ValidationErrorResponse
+			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
 			return
 		}
 

@@ -15,12 +15,12 @@ export default async function attachPipUUIDData(
 		const pipUUIDData = await findPipUUID(pipUUID)
 
 		if (isNull(pipUUIDData)) {
-			res.status(400).json({ message: "Pip UUID doesn't exist"})
+			res.status(400).json({ message: "Pip UUID doesn't exist" } as MessageResponse)
 			return
 		}
 
 		if (!validateExtendedPipUUID(pipUUIDData)) {
-			res.status(400).json({ message: "Invalid Pip UUID"})
+			res.status(400).json({ message: "Invalid Pip UUID" } as MessageResponse)
 			return
 		}
 

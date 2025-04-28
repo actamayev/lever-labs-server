@@ -15,7 +15,7 @@ export default function validateLogin (req: Request, res: Response, next: NextFu
 		const { error } = loginInformationSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message }) as ValidationErrorResponse
+			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
 			return
 		}
 

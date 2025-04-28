@@ -13,7 +13,7 @@ export default function validateUpdateChangePassword(req: Request, res: Response
 		const { error } = updateNameSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: "Invalid password" }) as ValidationErrorResponse
+			res.status(400).json({ validationError: "Invalid password" } as ValidationErrorResponse)
 			return
 		}
 

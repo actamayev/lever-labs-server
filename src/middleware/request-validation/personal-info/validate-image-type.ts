@@ -6,7 +6,7 @@ export default function validateImageType (req: Request, res: Response, next: Ne
 		const imageMimeTypes = ["image/jpeg", "image/png"]
 
 		if (isUndefined(req.file) || !imageMimeTypes.includes(req.file.mimetype)) {
-			res.status(400).json({ validationError: "File is not a valid image." }) as ValidationErrorResponse
+			res.status(400).json({ validationError: "File is not a valid image." } as ValidationErrorResponse)
 			return
 		}
 		next()

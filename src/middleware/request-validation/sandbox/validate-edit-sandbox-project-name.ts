@@ -11,7 +11,7 @@ export default function validateEditSandboxProjectName(req: Request, res: Respon
 		const { error } = editSandboxProjectNameSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message }) as ValidationErrorResponse
+			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
 			return
 		}
 

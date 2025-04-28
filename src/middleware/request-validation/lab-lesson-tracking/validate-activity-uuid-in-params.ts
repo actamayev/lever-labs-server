@@ -11,7 +11,7 @@ export default function validateActivityUUIDInParams(req: Request, res: Response
 		const { error } = activityUUIDInParamsSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message }) as ValidationErrorResponse
+			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
 			return
 		}
 
