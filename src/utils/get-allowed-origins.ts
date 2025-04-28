@@ -12,6 +12,7 @@ export default function allowedOrigins(): string[] {
 	} else {
 		return [
 			"http://localhost:3000",
+			"http://localhost:3001",
 			// "ws://localhost:8080"
 		]
 	}
