@@ -1,11 +1,12 @@
 import { isUndefined } from "lodash"
 import Singleton from "../singleton"
-import { MessageBuilder } from "./message-builder"
 import Esp32SocketManager from "./esp32-socket-manager"
 import EspLatestFirmwareManager from "./esp-latest-firmware-manager"
 import calculateMotorSpeeds from "../../utils/calculate-motor-speeds"
-import { lightToLEDType, tuneToSoundType } from "../../utils/protocol"
-import { LedControlData, LightAnimation, MotorControlData, PipUUID, TuneToPlay } from "@bluedotrobots/common-ts"
+import { BalancePidsProps, LedControlData, LightAnimation,
+	tuneToSoundType,lightToLEDType,
+	MessageBuilder, MotorControlData, PipUUID, TuneToPlay,
+} from "@bluedotrobots/common-ts"
 
 export default class SendEsp32MessageManager extends Singleton {
 	private constructor() {
