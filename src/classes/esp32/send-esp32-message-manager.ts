@@ -6,6 +6,7 @@ import calculateMotorSpeeds from "../../utils/calculate-motor-speeds"
 import { BalancePidsProps, LedControlData, LightAnimation,
 	tuneToSoundType,lightToLEDType,
 	MessageBuilder, MotorControlData, PipUUID, TuneToPlay,
+	HeadlightData,
 } from "@bluedotrobots/common-ts"
 
 export default class SendEsp32MessageManager extends Singleton {
@@ -67,6 +68,17 @@ export default class SendEsp32MessageManager extends Singleton {
 	public transferLedControlData(data: LedControlData): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createLedMessage(data)
+
+			return this.sendBinaryMessage(data.pipUUID, buffer)
+		} catch (error: unknown) {
+			console.error("Transfer failed:", error)
+			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
+		}
+	}
+
+	public transferHeadlightControlData(data: HeadlightData): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createHeadlightMessage(data.areHeadlightsOn)
 
 			return this.sendBinaryMessage(data.pipUUID, buffer)
 		} catch (error: unknown) {
