@@ -4,7 +4,7 @@ import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
-import { LedControlData, MotorControlData, PipConnectionStatus, PipUUID, SensorPayload } from "@bluedotrobots/common-ts"
+import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus, PipUUID, SensorPayload } from "@bluedotrobots/common-ts"
 
 export default class BrowserSocketManager extends Singleton {
 	private connections = new Map<number, BrowserSocketConnectionInfo>() // Maps UserID to BrowserSocketConnectionInfo
@@ -29,6 +29,7 @@ export default class BrowserSocketManager extends Singleton {
 			await this.handleBrowserConnection(socket)
 			this.setupMotorControlListener(socket)
 			this.setupNewLedColorListener(socket)
+			this.setupHeadlightListener(socket)
 		})
 	}
 
@@ -61,6 +62,16 @@ export default class BrowserSocketManager extends Singleton {
 				await SendEsp32MessageManager.getInstance().transferLedControlData(ledControlData)
 			} catch (error) {
 				console.error("New LED Colors Error:", error)
+			}
+		})
+	}
+
+	private setupHeadlightListener(socket: Socket): void {
+		socket.on("headlight-update", async (headlightControlData: HeadlightData) => {
+			try {
+				await SendEsp32MessageManager.getInstance().transferHeadlightControlData(headlightControlData)
+			} catch (error) {
+				console.error("Headlight update Error:", error)
 			}
 		})
 	}

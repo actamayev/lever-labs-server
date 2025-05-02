@@ -27,7 +27,7 @@ To SSH into AWS:
 
 In AWS:
 `cd blue-dot-robots`
-`npm install --production`
+`npm i --omit=dev`
 `pm2 restart <app_name or app_id>`
 
 For Database migrations, navigate to dist/src, and run::
