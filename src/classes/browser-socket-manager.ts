@@ -71,7 +71,7 @@ export default class BrowserSocketManager extends Singleton {
 			try {
 				await SendEsp32MessageManager.getInstance().transferHeadlightControlData(headlightControlData)
 			} catch (error) {
-				console.error("New LED Colors Error:", error)
+				console.error("Headlight update Error:", error)
 			}
 		})
 	}
