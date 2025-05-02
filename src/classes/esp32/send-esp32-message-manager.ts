@@ -1,11 +1,13 @@
 import { isUndefined } from "lodash"
 import Singleton from "../singleton"
-import { MessageBuilder } from "./message-builder"
 import Esp32SocketManager from "./esp32-socket-manager"
 import EspLatestFirmwareManager from "./esp-latest-firmware-manager"
 import calculateMotorSpeeds from "../../utils/calculate-motor-speeds"
-import { lightToLEDType, tuneToSoundType } from "../../utils/protocol"
-import { LedControlData, LightAnimation, MotorControlData, PipUUID, TuneToPlay } from "@bluedotrobots/common-ts"
+import { BalancePidsProps, LedControlData, LightAnimation,
+	tuneToSoundType,lightToLEDType,
+	MessageBuilder, MotorControlData, PipUUID, TuneToPlay,
+	HeadlightData,
+} from "@bluedotrobots/common-ts"
 
 export default class SendEsp32MessageManager extends Singleton {
 	private constructor() {
@@ -66,6 +68,17 @@ export default class SendEsp32MessageManager extends Singleton {
 	public transferLedControlData(data: LedControlData): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createLedMessage(data)
+
+			return this.sendBinaryMessage(data.pipUUID, buffer)
+		} catch (error: unknown) {
+			console.error("Transfer failed:", error)
+			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
+		}
+	}
+
+	public transferHeadlightControlData(data: HeadlightData): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createHeadlightMessage(data.areHeadlightsOn)
 
 			return this.sendBinaryMessage(data.pipUUID, buffer)
 		} catch (error: unknown) {
