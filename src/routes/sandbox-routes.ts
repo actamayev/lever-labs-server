@@ -25,6 +25,7 @@ import validateProjectUUIDInParams from "../middleware/request-validation/sandbo
 import validateEditSandboxProjectName from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-name"
 import validateEditSandboxProjectNotes from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-notes"
 import confirmSandboxProjectExistsAndValidUserId from "../middleware/confirm/confirm-sandbox-project-exists-and-valid-user-id"
+import pollSensors from "../controllers/sandbox/poll-sensors"
 
 const sandboxRoutes = express.Router()
 
@@ -107,6 +108,14 @@ sandboxRoutes.post(
 	jwtVerifyAttachUserId,
 	confirmUserPreviouslyAddedUUID,
 	stopCurrentlyRunningSandboxCode
+)
+
+sandboxRoutes.post(
+	"/poll-sensors",
+	validatePipUUIDInBody,
+	jwtVerifyAttachUserId,
+	confirmUserPreviouslyAddedUUID,
+	pollSensors
 )
 
 export default sandboxRoutes
