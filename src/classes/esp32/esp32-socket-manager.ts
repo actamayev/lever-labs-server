@@ -139,7 +139,6 @@ export default class Esp32SocketManager extends Singleton {
 			connection
 		})
 		this.socketToPip.set(socketId, pipUUID)
-		console.log(`ESP32 Connected: socketId: ${socketId} (PipID ${pipUUID})`)
 
 		// Notify of status change
 		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "online")
