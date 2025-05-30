@@ -60,10 +60,6 @@ Other:
 - Update linux packages
 	sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
 
-To get into the Docker container inside the instance:
-	Run: `sudo docker ps`
-	`sudo docker exec -it <container_id> /bin/bash`
-
 To get into DB:
 	For Staging, access via PGAdmin
 	For production:
