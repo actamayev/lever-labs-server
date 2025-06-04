@@ -7,6 +7,7 @@ import { BalancePidsProps, LedControlData, LightAnimation,
 	tuneToSoundType,lightToLEDType,
 	MessageBuilder, MotorControlData, PipUUID, TuneToPlay,
 	HeadlightData,
+	PipUUIDPayload,
 } from "@bluedotrobots/common-ts"
 
 export default class SendEsp32MessageManager extends Singleton {
