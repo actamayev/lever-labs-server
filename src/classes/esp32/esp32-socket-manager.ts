@@ -5,7 +5,7 @@ import isPipUUID from "../../utils/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"
 import SingleESP32Connection from "./single-esp32-connection"
 import SendEsp32MessageManager from "./send-esp32-message-manager"
-import { ESPConnectionStatus, PipUUID, SensorPayload } from "@bluedotrobots/common-ts"
+import { BytecodeMessage, ESPConnectionStatus, ESPMessage, PipUUID, PipUUIDPayload, SensorPayload } from "@bluedotrobots/common-ts"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
