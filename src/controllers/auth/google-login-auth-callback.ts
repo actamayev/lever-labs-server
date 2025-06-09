@@ -15,6 +15,7 @@ import { ErrorResponse, GoogleAuthSuccess, PipData } from "@bluedotrobots/common
 export default async function googleLoginAuthCallback (req: Request, res: Response): Promise<void> {
 	try {
 		const { idToken, siteTheme } = req.body
+		// TODO 6/9/25: Should we get the user's age when they login with Google?
 		const client = await createGoogleAuthClient()
 		const googleClientId = await SecretsManager.getInstance().getSecret("GOOGLE_CLIENT_ID")
 		const ticket = await client.verifyIdToken({

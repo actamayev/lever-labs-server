@@ -2,6 +2,7 @@ import { AuthMethods, SiteThemes } from "@prisma/client"
 
 declare global {
 	interface NewLocalUserFields {
+		age: number
 		username: string
 		password: HashedString
 		auth_method: AuthMethods
