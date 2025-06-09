@@ -14,6 +14,7 @@ export async function findUserById(userId: number): Promise<ExtendedCredentials 
 			select: {
 				user_id: true,
 				username: true,
+				age: true,
 				password: true,
 				is_active: true,
 				default_site_theme: true,

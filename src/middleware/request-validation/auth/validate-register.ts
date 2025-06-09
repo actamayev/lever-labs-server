@@ -8,6 +8,7 @@ import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
 const registerInformationSchema = Joi.object({
 	registerInformation: Joi.object({
+		age: Joi.number().integer().max(120).required(),
 		email: emailValidator.required(),
 		username: usernameValidator.required().trim().min(3).max(100),
 		password: passwordValidatorSchema.required(),
