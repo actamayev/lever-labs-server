@@ -20,6 +20,7 @@ enum AuthMethods {
 model credentials {
 	user_id                                                     Int      @id @default(autoincrement())
 	username                                                    String?     @unique
+	age 														Int?
 
 	password                                                    String?
 	is_active                                                   Boolean  @default(true)

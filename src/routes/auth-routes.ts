@@ -25,7 +25,6 @@ authRoutes.post(
 	registerUsername
 )
 
-authRoutes.use("/google-auth/login-callback", validateGoogleLoginAuthCallback, googleLoginAuthCallback)
-
+authRoutes.post("/google-auth/login-callback", validateGoogleLoginAuthCallback, googleLoginAuthCallback)
 
 export default authRoutes

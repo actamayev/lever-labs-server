@@ -10,6 +10,7 @@ export default async function constructLocalUserFields(
 		const encryptedEmail = await encryptor.deterministicEncrypt(registerInformation.email, "EMAIL_ENCRYPTION_KEY")
 
 		return {
+			age: registerInformation.age,
 			username: registerInformation.username,
 			password: hashedPassword,
 			auth_method: "blue_dot",
