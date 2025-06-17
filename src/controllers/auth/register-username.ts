@@ -1,8 +1,9 @@
 import isNull from "lodash/isNull"
 import { Response, Request } from "express"
+import { ErrorResponse, MessageResponse, EmailUpdatesRequest } from "@bluedotrobots/common-ts"
+import Encryptor from "../../classes/encryptor"
 import setUsername from "../../db-operations/write/credentials/set-username"
 import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"
-import { ErrorResponse, MessageResponse, SuccessResponse } from "@bluedotrobots/common-ts"
 
 export default async function registerUsername (req: Request, res: Response): Promise<void> {
 	try {
@@ -19,8 +20,11 @@ export default async function registerUsername (req: Request, res: Response): Pr
 		}
 
 		await setUsername(user.user_id, username)
+		const encryptor = new Encryptor()
+		const email = await encryptor.deterministicDecrypt(user.email__encrypted, "EMAIL_ENCRYPTION_KEY")
 
-		res.status(200).json({ success: "Username registered" } as SuccessResponse)
+		// We're returning the email in the response for the client to update their UI
+		res.status(200).json({ email } as EmailUpdatesRequest)
 		return
 	} catch (error) {
 		console.error(error)
