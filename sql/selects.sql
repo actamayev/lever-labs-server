@@ -1,4 +1,4 @@
--- SELECT * FROM credentials;
+-- SELECT user_id FROM credentials where auth_method = 'google'; 
 -- SELECT * FROM login_history;
 -- SELECT * FROM pip_uuid;
 -- SELECT * FROM user_pip_uuid_map;
@@ -7,4 +7,6 @@
 -- SELECT * FROM reading_question_answer_choice ORDER BY reading_question_answer_choice_id;
 
 -- DELETE FROM activity;
-SELECT * FROM sandbox_project;
+-- SELECT * FROM sandbox_project;
+DELETE FROM credentials
+WHERE user_id IN (11, 17, 27, 60);

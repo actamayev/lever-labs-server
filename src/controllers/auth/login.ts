@@ -1,13 +1,15 @@
 import isNull from "lodash/isNull"
 import { Response, Request } from "express"
-import Hash from "../../classes/hash"
 import { ErrorResponse, LoginRequest, LoginSuccess, MessageResponse } from "@bluedotrobots/common-ts"
+import Hash from "../../classes/hash"
+import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import determineLoginContactType from "../../utils/auth-helpers/determine-contact-type"
 import retrieveUserFromContact from "../../utils/auth-helpers/login/retrieve-user-from-contact"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
 
+// eslint-disable-next-line max-lines-per-function
 export default async function login (req: Request, res: Response): Promise<void> {
 	try {
 		const { contact, password } = req.body.loginInformation as LoginRequest
@@ -33,11 +35,24 @@ export default async function login (req: Request, res: Response): Promise<void>
 
 		const accessToken = await signJWT({ userId: credentialsResult.user_id, newUser: false })
 
-		await addLoginHistoryRecord(credentialsResult.user_id)
-
 		const userPipData = await retrieveUserPipUUIDsDetails(credentialsResult.user_id)
 
-		res.status(200).json({ accessToken, userPipData } as LoginSuccess)
+		const encryptor = new Encryptor()
+		const email = await encryptor.deterministicDecrypt(credentialsResult.email__encrypted, "EMAIL_ENCRYPTION_KEY")
+		await addLoginHistoryRecord(credentialsResult.user_id)
+
+		res.status(200).json({
+			accessToken,
+			personalInfo: {
+				username: credentialsResult.username,
+				email,
+				defaultSiteTheme: credentialsResult.default_site_theme,
+				profilePictureUrl: credentialsResult.profile_picture?.image_url || null,
+				sandboxNotesOpen: credentialsResult.sandbox_notes_open,
+				name: credentialsResult.name
+			},
+			userPipData
+		} as LoginSuccess)
 		return
 	} catch (error) {
 		console.error(error)

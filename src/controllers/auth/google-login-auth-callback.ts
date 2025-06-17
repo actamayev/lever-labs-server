@@ -1,15 +1,16 @@
 import { Request, Response } from "express"
 import { SiteThemes } from "@prisma/client"
 import { isNull, isUndefined } from "lodash"
+import { ErrorResponse, GoogleAuthSuccess, MessageResponse, PersonalInfoResponse, PipData } from "@bluedotrobots/common-ts"
 import Encryptor from "../../classes/encryptor"
-import SecretsManager from "../../classes/aws/secrets-manager"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
+import SecretsManager from "../../classes/aws/secrets-manager"
+import { findUserById } from "../../db-operations/read/find/find-user"
 import { addGoogleUser } from "../../db-operations/write/credentials/add-user"
 import createGoogleAuthClient from "../../utils/google/create-google-auth-client"
 import retrieveUserIdByEmail from "../../db-operations/read/credentials/retrieve-user-id-by-email"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
-import { ErrorResponse, GoogleAuthSuccess, PipData } from "@bluedotrobots/common-ts"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function googleLoginAuthCallback (req: Request, res: Response): Promise<void> {
@@ -38,22 +39,41 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 		let accessToken: string
 		let isNewUser = false
 		let userPipData: PipData[] = []
-
+		let personalInfo: PersonalInfoResponse | undefined = undefined
 		if (isUndefined(userId)) {
 			res.status(500).json({ error: "Unable to login with this email. Account offline." } as ErrorResponse)
 			return
-		} else if (!isNull(userId)) {
-			accessToken = await signJWT({ userId, newUser: false })
-			userPipData = await retrieveUserPipUUIDsDetails(userId)
-		} else {
+		} else if (isNull(userId)) {
 			userId = await addGoogleUser(encryptedEmail, siteTheme as SiteThemes)
 			accessToken = await signJWT({ userId, newUser: true })
 			isNewUser = true
+		} else {
+			accessToken = await signJWT({ userId, newUser: false })
+			userPipData = await retrieveUserPipUUIDsDetails(userId)
+			const credentialsResult = await findUserById(userId)
+			if (isNull(credentialsResult)) {
+				// eslint-disable-next-line max-len
+				res.status(400).json({ message: `There is no Blue Dot Robots account associated with ${payload.email}. Please try again.` } as MessageResponse)
+				return
+			}
+			personalInfo = {
+				username: credentialsResult.username as string,
+				email: payload.email,
+				defaultSiteTheme: credentialsResult.default_site_theme as SiteThemes,
+				profilePictureUrl: credentialsResult.profile_picture?.image_url || null,
+				sandboxNotesOpen: credentialsResult.sandbox_notes_open,
+				name: credentialsResult.name
+			}
 		}
 
 		await addLoginHistoryRecord(userId)
 
-		res.status(200).json({ accessToken, isNewUser, userPipData } as GoogleAuthSuccess)
+		res.status(200).json({
+			accessToken,
+			isNewUser,
+			personalInfo,
+			userPipData
+		} as GoogleAuthSuccess)
 		return
 	} catch (error) {
 		console.error(error)
