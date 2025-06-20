@@ -7,6 +7,6 @@
 -- SELECT * FROM reading_question_answer_choice ORDER BY reading_question_answer_choice_id;
 
 -- DELETE FROM activity;
--- SELECT * FROM sandbox_project;
-DELETE FROM credentials
-WHERE user_id IN (11, 17, 27, 60);
+-- DELETE FROM sandbox_project;
+-- DELETE FROM credentials
+-- WHERE user_id IN (11, 17, 27, 60);

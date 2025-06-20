@@ -228,7 +228,7 @@ model user_answer {
 
 model sandbox_project {
 	sandbox_project_id											Int       @id @default(autoincrement())
-	sandbox_xml													String
+	sandbox_json												String
 	project_owner_id       										Int
 	project_uuid												String		@unique
 	project_name												String?

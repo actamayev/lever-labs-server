@@ -1,6 +1,6 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function updateSandboxProject(sandboxProjectId: number, newXml: string): Promise<void> {
+export default async function updateSandboxProject(sandboxProjectId: number, newJson: string): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -9,7 +9,7 @@ export default async function updateSandboxProject(sandboxProjectId: number, new
 				sandbox_project_id: sandboxProjectId
 			},
 			data: {
-				sandbox_xml: newXml
+				sandbox_json: newJson
 			}
 		})
 

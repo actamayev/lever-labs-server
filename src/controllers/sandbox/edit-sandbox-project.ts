@@ -4,9 +4,9 @@ import { ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
 export default async function editSandboxProject(req: Request, res: Response): Promise<void> {
 	try {
 		const { sandboxProjectId } = req
-		const { newXml } = req.body as { newXml: string }
+		const { newJson } = req.body as { newJson: string }
 
-		await updateSandboxProject(sandboxProjectId, newXml)
+		await updateSandboxProject(sandboxProjectId, newJson)
 
 		res.status(200).json({ success: "" } as SuccessResponse)
 		return
