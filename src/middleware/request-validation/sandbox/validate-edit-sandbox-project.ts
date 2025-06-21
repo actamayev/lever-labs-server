@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
 const editSandboxProjectSchema = Joi.object({
-	newJsonBlockly: Joi.object().required()
+	newBlocklyJson: Joi.object().required()
 }).required()
 
 export default function validateEditSandboxProject(req: Request, res: Response, next: NextFunction): void {

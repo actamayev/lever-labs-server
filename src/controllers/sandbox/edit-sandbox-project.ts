@@ -5,9 +5,9 @@ import { BlocklyJson, ErrorResponse, SuccessResponse} from "@bluedotrobots/commo
 export default async function editSandboxProject(req: Request, res: Response): Promise<void> {
 	try {
 		const { sandboxProjectId } = req
-		const { newJsonBlockly } = req.body as { newJsonBlockly: BlocklyJson }
+		const { newBlocklyJson } = req.body as { newBlocklyJson: BlocklyJson }
 
-		await updateSandboxProject(sandboxProjectId, newJsonBlockly)
+		await updateSandboxProject(sandboxProjectId, newBlocklyJson)
 
 		res.status(200).json({ success: "" } as SuccessResponse)
 		return

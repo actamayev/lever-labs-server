@@ -10,7 +10,7 @@ import addLoginHistoryRecord from "../../db-operations/write/login-history/add-l
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
 
 // eslint-disable-next-line max-lines-per-function
-export default async function login (req: Request, res: Response): Promise<void> {
+export default async function login(req: Request, res: Response): Promise<void> {
 	try {
 		const { contact, password } = req.body.loginInformation as LoginRequest
 		const loginContactType = determineLoginContactType(contact)
