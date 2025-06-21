@@ -1,10 +1,10 @@
-import { ProjectUUID, SandboxProject } from "@bluedotrobots/common-ts"
 import { sandbox_project } from "@prisma/client"
+import { ProjectUUID, SandboxProject } from "@bluedotrobots/common-ts"
 
 export default function camelCaseSandboxProject(sandboxProject: sandbox_project): SandboxProject {
 	try {
 		return {
-			sandboxJson: sandboxProject.sandbox_json,
+			sandboxJson: JSON.parse(sandboxProject.sandbox_json),
 			projectUUID: sandboxProject.project_uuid as ProjectUUID,
 			isStarred: sandboxProject.is_starred,
 			projectName: sandboxProject.project_name,

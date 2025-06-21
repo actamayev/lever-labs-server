@@ -1,6 +1,7 @@
+import { BlocklyJson } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function updateSandboxProject(sandboxProjectId: number, newJson: string): Promise<void> {
+export default async function updateSandboxProject(sandboxProjectId: number, newJsonBlockly: BlocklyJson): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -9,7 +10,7 @@ export default async function updateSandboxProject(sandboxProjectId: number, new
 				sandbox_project_id: sandboxProjectId
 			},
 			data: {
-				sandbox_json: newJson
+				sandbox_json: JSON.stringify(newJsonBlockly)
 			}
 		})
 
