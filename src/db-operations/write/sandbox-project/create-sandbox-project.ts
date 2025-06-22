@@ -7,10 +7,10 @@ export default async function createSandboxProjectDB(userId: number): Promise<Sa
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
 		const uuid = crypto.randomUUID()
-		const defaultSandboxXml = "<xml xmlns=\"https://developers.google.com/blockly/xml\"/>"
+		const defaultSandboxJson = "{}"
 		const sandboxProject = await prismaClient.sandbox_project.create({
 			data: {
-				sandbox_xml: defaultSandboxXml,
+				sandbox_json: defaultSandboxJson,
 				project_owner_id: userId,
 				project_uuid: uuid
 			}
