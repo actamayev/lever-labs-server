@@ -36,7 +36,6 @@ export default class StreamManager extends Singleton {
 		if (abortController) {
 			abortController.abort()
 			this.cleanupStream(streamId)
-			console.log(`Stream ${streamId} stopped`)
 			return true
 		}
 

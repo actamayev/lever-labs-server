@@ -2,7 +2,7 @@ import { Response, Request } from "express"
 import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts"
 import StreamManager from "../../classes/stream-manager"
 
-export default function stopChatbotStream(req: Request, res: Response): void {
+export default function stopChatStream(req: Request, res: Response): void {
 	try {
 		const { streamId } = req.body
 

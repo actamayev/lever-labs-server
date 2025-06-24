@@ -7,7 +7,7 @@ import OpenAiClientClass from "../../classes/openai-client"
 import { buildLLMContext } from "../../utils/llm/build-llm-context"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 
-export default function chatbotChat(req: Request, res: Response): void {
+export default function sendCareerQuestMessage(req: Request, res: Response): void {
 	try {
 		const { userId } = req
 		const chatData = req.body as IncomingChatData
@@ -44,10 +44,7 @@ async function processLLMRequest(
 
 	try {
 		// Check if already aborted
-		if (abortSignal.aborted) {
-			console.log(`Stream ${streamId} was aborted before processing`)
-			return
-		}
+		if (abortSignal.aborted) return
 
 		// Build LLM context
 		const messages = buildLLMContext(
@@ -65,10 +62,8 @@ async function processLLMRequest(
 		socketManager.emitChatbotStart(userId, chatData.interactionType, challengeId)
 
 		// Check abort before making OpenAI call
-		if (abortSignal.aborted) {
-			console.log(`Stream ${streamId} was aborted before OpenAI call`)
-			return
-		}
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		if (abortSignal.aborted) return
 
 		// Get OpenAI client and make streaming request with abort signal
 		const openAiClient = await OpenAiClientClass.getOpenAiClient()
@@ -91,10 +86,8 @@ async function processLLMRequest(
 			// Stream chunks back via WebSocket with challengeId
 			for await (const chunk of stream) {
 				// Check if aborted during streaming
-				if (abortSignal.aborted) {
-					console.log(`Stream ${streamId} was aborted during token streaming`)
-					break
-				}
+				// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+				if (abortSignal.aborted) break
 
 				const content = chunk.choices[0]?.delta?.content
 				if (content) {
@@ -104,16 +97,13 @@ async function processLLMRequest(
 			}
 
 			// Only send completion if not aborted
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!abortSignal.aborted) {
 				socketManager.emitChatbotComplete(userId, fullResponse, chatData.interactionType, challengeId)
-				console.log(`Stream ${streamId} completed successfully`)
 			}
 
 		} catch (error) {
 			if (error instanceof Error && error.name === "AbortError") { // ✅ Properly typed
-				console.log(`Stream ${streamId} was aborted by user`)
-				// Optionally notify client that stream was stopped
-				// socketManager.emitChatbotStopped(userId, challengeId)
 			} else {
 				throw error
 			}
@@ -121,7 +111,6 @@ async function processLLMRequest(
 
 	} catch (error) {
 		if (error instanceof Error && error.name === "AbortError") { // ✅ Properly typed
-			console.log(`Stream ${streamId} was aborted`)
 		} else {
 			console.error("LLM processing error:", error)
 			// Only send error if not aborted

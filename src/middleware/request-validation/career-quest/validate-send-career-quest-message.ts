@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 import { challengeDataSchema } from "../../joi/challenge-data-validator"
 
-const validateChatbotRequestSchema = Joi.object({
+const validateSendCareerQuestMessageSchema = Joi.object({
 	challengeData: challengeDataSchema.required(),
 	userCode: Joi.string().allow("").required(),
 	interactionType: Joi.string().valid("checkCode", "hint", "generalQuestion").required(),
@@ -24,9 +24,9 @@ const validateChatbotRequestSchema = Joi.object({
 	return value
 }, "General question validation")
 
-export default function validateChatbotRequest(req: Request, res: Response, next: NextFunction): void {
+export default function validateSendCareerQuestMessage(req: Request, res: Response, next: NextFunction): void {
 	try {
-		const { error } = validateChatbotRequestSchema.validate(req.body)
+		const { error } = validateSendCareerQuestMessageSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
 			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
