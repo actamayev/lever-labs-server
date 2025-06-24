@@ -277,22 +277,32 @@ export default class BrowserSocketManager extends Singleton {
 	}
 
 	public emitChatbotStart(userId: number, interactionType: InteractionType): void {
+		const connectionInfo = this.connections.get(userId)
+		if (!connectionInfo) {
+			console.warn(`No connection found for userId: ${userId}`)
+			return
+		}
 		const event: ChatbotStreamEvent = {
 			type: "chatbotStart",
 			userId,
 			interactionType
 		}
-		this.io.emit("chatbot-stream", event)
+		this.io.to(connectionInfo.socketId).emit("chatbot-stream", event)
 	}
 
 	public emitChatbotChunk(userId: number, content: string, interactionType: InteractionType): void {
+		const connectionInfo = this.connections.get(userId)
+		if (!connectionInfo) {
+			console.warn(`No connection found for userId: ${userId}`)
+			return
+		}
 		const event: ChatbotStreamEvent = {
 			type: "chatbotChunk",
 			userId,
 			interactionType,
 			content
 		}
-		this.io.emit("chatbot-stream", event)
+		this.io.to(connectionInfo.socketId).emit("chatbot-stream", event)
 	}
 
 	public emitChatbotComplete(
@@ -300,12 +310,17 @@ export default class BrowserSocketManager extends Singleton {
 		fullResponse: string,
 		interactionType: InteractionType
 	): void {
+		const connectionInfo = this.connections.get(userId)
+		if (!connectionInfo) {
+			console.warn(`No connection found for userId: ${userId}`)
+			return
+		}
 		const event: ChatbotStreamEvent = {
 			type: "chatbotComplete",
 			userId,
 			interactionType,
 			fullResponse
 		}
-		this.io.emit("chatbot-stream", event)
+		this.io.to(connectionInfo.socketId).emit("chatbot-stream", event)
 	}
 }

@@ -23,6 +23,8 @@ export default async function chatbotChat(req: Request, res: Response): Promise<
 	}
 }
 
+
+// eslint-disable-next-line max-lines-per-function
 async function processLLMRequest(
 	chatData: IncomingChatData,
 	userId: number
@@ -67,6 +69,7 @@ async function processLLMRequest(
 				fullResponse += content
 				socketManager.emitChatbotChunk(userId, content, chatData.interactionType)
 			}
+			console.log(content)
 		}
 
 		// Send completion event
