@@ -11,7 +11,7 @@ export function buildLLMContext(
 	conversationHistory: ChatMessage[],
 	message?: string,
 ): ChatMessage[] {
-	const systemPrompt = `You are a robotics tutor helping students aged 10-70 with programming challenges.
+	const systemPrompt = `You are a robotics tutor helping students aged 10-20 with programming challenges.
 
 CURRENT CHALLENGE: ${challengeData.title}
 CHALLENGE ID: ${challengeData.id}

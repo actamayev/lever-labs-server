@@ -276,7 +276,7 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	public emitChatbotStart(userId: number, interactionType: InteractionType): void {
+	public emitChatbotStart(userId: number, interactionType: InteractionType, challengeId: string): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) {
 			console.warn(`No connection found for userId: ${userId}`)
@@ -285,12 +285,13 @@ export default class BrowserSocketManager extends Singleton {
 		const event: ChatbotStreamEvent = {
 			type: "chatbotStart",
 			userId,
-			interactionType
+			interactionType,
+			challengeId
 		}
 		this.io.to(connectionInfo.socketId).emit("chatbot-stream", event)
 	}
 
-	public emitChatbotChunk(userId: number, content: string, interactionType: InteractionType): void {
+	public emitChatbotChunk(userId: number, content: string, interactionType: InteractionType, challengeId: string): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) {
 			console.warn(`No connection found for userId: ${userId}`)
@@ -300,7 +301,8 @@ export default class BrowserSocketManager extends Singleton {
 			type: "chatbotChunk",
 			userId,
 			interactionType,
-			content
+			content,
+			challengeId
 		}
 		this.io.to(connectionInfo.socketId).emit("chatbot-stream", event)
 	}
@@ -308,7 +310,8 @@ export default class BrowserSocketManager extends Singleton {
 	public emitChatbotComplete(
 		userId: number,
 		fullResponse: string,
-		interactionType: InteractionType
+		interactionType: InteractionType,
+		challengeId: string
 	): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) {
@@ -319,7 +322,8 @@ export default class BrowserSocketManager extends Singleton {
 			type: "chatbotComplete",
 			userId,
 			interactionType,
-			fullResponse
+			fullResponse,
+			challengeId
 		}
 		this.io.to(connectionInfo.socketId).emit("chatbot-stream", event)
 	}
