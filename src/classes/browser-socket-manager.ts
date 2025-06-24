@@ -5,6 +5,7 @@ import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
 import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus, PipUUID, SensorPayload } from "@bluedotrobots/common-ts"
+import { ChatbotStreamEvent, InteractionType } from "@bluedotrobots/common-ts/dist/src/types/public/chat"
 
 export default class BrowserSocketManager extends Singleton {
 	private connections = new Map<number, BrowserSocketConnectionInfo>() // Maps UserID to BrowserSocketConnectionInfo
@@ -273,5 +274,38 @@ export default class BrowserSocketManager extends Singleton {
 				this.io.to(connectionInfo.socketId).emit("sensor-data", { pipUUID, sensorPayload })
 			}
 		})
+	}
+
+	public emitChatbotStart(userId: number, interactionType: InteractionType): void {
+		const event: ChatbotStreamEvent = {
+			type: "chatbotStart",
+			userId,
+			interactionType
+		}
+		this.io.emit("chatbot-stream", event)
+	}
+
+	public emitChatbotChunk(userId: number, content: string, interactionType: InteractionType): void {
+		const event: ChatbotStreamEvent = {
+			type: "chatbotChunk",
+			userId,
+			interactionType,
+			content
+		}
+		this.io.emit("chatbot-stream", event)
+	}
+
+	public emitChatbotComplete(
+		userId: number,
+		fullResponse: string,
+		interactionType: InteractionType
+	): void {
+		const event: ChatbotStreamEvent = {
+			type: "chatbotComplete",
+			userId,
+			interactionType,
+			fullResponse
+		}
+		this.io.emit("chatbot-stream", event)
 	}
 }
