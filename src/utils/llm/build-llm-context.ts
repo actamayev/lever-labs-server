@@ -2,7 +2,7 @@
 /* eslint-disable max-lines-per-function */
 
 import { isEmpty } from "lodash"
-import { ChallengeData, ChatMessage } from "@bluedotrobots/common-ts/dist/src/types/public/chat"
+import { ChallengeData, ChatMessage } from "@bluedotrobots/common-ts"
 
 export function buildLLMContext(
 	challengeData: ChallengeData,

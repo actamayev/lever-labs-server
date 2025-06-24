@@ -1,9 +1,8 @@
 import { Response, Request } from "express"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse, ChatMessageRole, IncomingChatData, InteractionType } from "@bluedotrobots/common-ts"
 import { buildLLMContext } from "../../utils/llm/build-llm-context"
 import OpenAiClientClass from "../../classes/openai-client"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
-import { ChatMessageRole, IncomingChatData, InteractionType } from "@bluedotrobots/common-ts/dist/src/types/public/chat"
 
 export default async function chatbotChat(req: Request, res: Response): Promise<void> {
 	try {

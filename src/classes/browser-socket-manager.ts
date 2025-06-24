@@ -4,8 +4,8 @@ import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
-import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus, PipUUID, SensorPayload } from "@bluedotrobots/common-ts"
-import { ChatbotStreamEvent, InteractionType } from "@bluedotrobots/common-ts/dist/src/types/public/chat"
+import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
+	PipUUID, SensorPayload, ChatbotStreamEvent, InteractionType } from "@bluedotrobots/common-ts"
 
 export default class BrowserSocketManager extends Singleton {
 	private connections = new Map<number, BrowserSocketConnectionInfo>() // Maps UserID to BrowserSocketConnectionInfo
