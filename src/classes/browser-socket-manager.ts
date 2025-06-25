@@ -1,11 +1,11 @@
 import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
+import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
+	PipUUID, SensorPayload, ChatbotStreamEvent, InteractionType } from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
-import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
-	PipUUID, SensorPayload, ChatbotStreamEvent, InteractionType } from "@bluedotrobots/common-ts"
 
 export default class BrowserSocketManager extends Singleton {
 	private connections = new Map<number, BrowserSocketConnectionInfo>() // Maps UserID to BrowserSocketConnectionInfo
@@ -309,7 +309,6 @@ export default class BrowserSocketManager extends Singleton {
 
 	public emitChatbotComplete(
 		userId: number,
-		fullResponse: string,
 		interactionType: InteractionType,
 		challengeId: string
 	): void {
@@ -322,7 +321,6 @@ export default class BrowserSocketManager extends Singleton {
 			type: "chatbotComplete",
 			userId,
 			interactionType,
-			fullResponse,
 			challengeId
 		}
 		this.io.to(connectionInfo.socketId).emit("chatbot-stream", event)

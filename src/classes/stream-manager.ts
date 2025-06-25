@@ -39,7 +39,6 @@ export default class StreamManager extends Singleton {
 			return true
 		}
 
-		console.warn(`Stream ${streamId} not found`)
 		return false
 	}
 

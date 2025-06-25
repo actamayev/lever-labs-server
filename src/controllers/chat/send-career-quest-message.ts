@@ -80,8 +80,6 @@ async function processLLMRequest(
 			signal: abortSignal // Pass abort signal to OpenAI request
 		})
 
-		let fullResponse = ""
-
 		try {
 			// Stream chunks back via WebSocket with challengeId
 			for await (const chunk of stream) {
@@ -91,7 +89,6 @@ async function processLLMRequest(
 
 				const content = chunk.choices[0]?.delta?.content
 				if (content) {
-					fullResponse += content
 					socketManager.emitChatbotChunk(userId, content, chatData.interactionType, challengeId)
 				}
 			}
@@ -99,7 +96,7 @@ async function processLLMRequest(
 			// Only send completion if not aborted
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!abortSignal.aborted) {
-				socketManager.emitChatbotComplete(userId, fullResponse, chatData.interactionType, challengeId)
+				socketManager.emitChatbotComplete(userId, chatData.interactionType, challengeId)
 			}
 
 		} catch (error) {
