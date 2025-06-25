@@ -1,10 +1,14 @@
 import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
+import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
+	PipUUID, SensorPayload, IncomingChatData,
+	ChatbotStreamCompleteEvent,
+	ChatbotStreamChunkEvent,
+	ChatbotStreamStartEvent} from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
-import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus, PipUUID, SensorPayload } from "@bluedotrobots/common-ts"
 
 export default class BrowserSocketManager extends Singleton {
 	private connections = new Map<number, BrowserSocketConnectionInfo>() // Maps UserID to BrowserSocketConnectionInfo
@@ -273,5 +277,43 @@ export default class BrowserSocketManager extends Singleton {
 				this.io.to(connectionInfo.socketId).emit("sensor-data", { pipUUID, sensorPayload })
 			}
 		})
+	}
+
+	public emitChatbotStart(userId: number, chatData: IncomingChatData): void {
+		const connectionInfo = this.connections.get(userId)
+		if (!connectionInfo) {
+			console.warn(`No connection found for userId: ${userId}`)
+			return
+		}
+		const event: ChatbotStreamStartEvent = {
+			challengeId: chatData.challengeId,
+			interactionType: chatData.interactionType
+		}
+		this.io.to(connectionInfo.socketId).emit("chatbot-stream-start", event)
+	}
+
+	public emitChatbotChunk(userId: number, content: string, challengeId: string): void {
+		const connectionInfo = this.connections.get(userId)
+		if (!connectionInfo) {
+			console.warn(`No connection found for userId: ${userId}`)
+			return
+		}
+		const event: ChatbotStreamChunkEvent = {
+			challengeId,
+			content
+		}
+		this.io.to(connectionInfo.socketId).emit("chatbot-stream-chunk", event)
+	}
+
+	public emitChatbotComplete(userId: number, challengeId: string): void {
+		const connectionInfo = this.connections.get(userId)
+		if (!connectionInfo) {
+			console.warn(`No connection found for userId: ${userId}`)
+			return
+		}
+		const event: ChatbotStreamCompleteEvent = {
+			challengeId
+		}
+		this.io.to(connectionInfo.socketId).emit("chatbot-stream-complete", event)
 	}
 }

@@ -23,6 +23,9 @@ declare global {
 		| "PIP_HARDWARE_VERSION"
 		| "BDR_S3_BUCKET"
 		| "FIRMWARE_S3_BUCKET"
+		| "OPENROUTER_API_KEY"
+		| "SITE_URL"
+		| "SITE_NAME"
 
 	type SecretsObject = { [K in SecretKeys]: string }
 }

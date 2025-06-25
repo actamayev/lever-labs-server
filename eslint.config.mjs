@@ -80,7 +80,7 @@ export default [
 				selector: "variable",
 				modifiers: ["destructured"],
 				filter: {
-					regex: "GOOGLE_CLIENT_ID|GOOGLE_CLIENT_SECRET",
+					regex: "GOOGLE_CLIENT_ID|GOOGLE_CLIENT_SECRET|OPENROUTER_API_KEY|SITE_URL|SITE_NAME",
 					match: true,
 				},
 				format: null,
