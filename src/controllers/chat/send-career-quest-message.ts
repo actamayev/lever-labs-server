@@ -70,12 +70,12 @@ async function processLLMRequest(
 		const stream = await openAiClient.chat.completions.create({
 			model: modelId,
 			messages: messages.map(msg => ({
-				role: msg.role as "system" | "user" | "assistant",
+				role: msg.role,
 				content: msg.content
 			})),
 			stream: true,
 			temperature: 0.7,
-			max_tokens: 1000
+			max_completion_tokens: 1000
 		}, {
 			signal: abortSignal // Pass abort signal to OpenAI request
 		})
