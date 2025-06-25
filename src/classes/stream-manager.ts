@@ -16,7 +16,7 @@ export default class StreamManager extends Singleton {
 
 	// Start a new stream and return streamId
 	public createStream(): { streamId: string; abortController: AbortController } {
-		const streamId = `stream_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+		const streamId = `stream_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`
 		const abortController = new AbortController()
 
 		this.activeStreams.set(streamId, abortController)
@@ -46,21 +46,5 @@ export default class StreamManager extends Singleton {
 	// Clean up a stream
 	private cleanupStream(streamId: string): void {
 		this.activeStreams.delete(streamId)
-	}
-
-	// Get abort signal for a stream
-	public getAbortSignal(streamId: string): AbortSignal | null {
-		const abortController = this.activeStreams.get(streamId)
-		return abortController ? abortController.signal : null
-	}
-
-	// Check if stream is active
-	public isStreamActive(streamId: string): boolean {
-		return this.activeStreams.has(streamId)
-	}
-
-	// Get count of active streams
-	public getActiveStreamCount(): number {
-		return this.activeStreams.size
 	}
 }
