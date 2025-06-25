@@ -40,7 +40,6 @@ async function processLLMRequest(
 	abortSignal: AbortSignal
 ): Promise<void> {
 	const socketManager = BrowserSocketManager.getInstance()
-	const challengeId = chatData.challengeData.id
 
 	try {
 		// Check if already aborted
@@ -59,7 +58,7 @@ async function processLLMRequest(
 		const modelId = selectModel(chatData.interactionType)
 
 		// Send start event with challengeId
-		socketManager.emitChatbotStart(userId, chatData.interactionType, challengeId)
+		socketManager.emitChatbotStart(userId, chatData)
 
 		// Check abort before making OpenAI call
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -89,14 +88,14 @@ async function processLLMRequest(
 
 				const content = chunk.choices[0]?.delta?.content
 				if (content) {
-					socketManager.emitChatbotChunk(userId, content, chatData.interactionType, challengeId)
+					socketManager.emitChatbotChunk(userId, content, chatData.challengeData.id)
 				}
 			}
 
 			// Only send completion if not aborted
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!abortSignal.aborted) {
-				socketManager.emitChatbotComplete(userId, chatData.interactionType, challengeId)
+				socketManager.emitChatbotComplete(userId, chatData.challengeData.id)
 			}
 
 		} catch (error) {
