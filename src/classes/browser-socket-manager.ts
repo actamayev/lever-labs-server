@@ -286,7 +286,7 @@ export default class BrowserSocketManager extends Singleton {
 			return
 		}
 		const event: ChatbotStreamStartEvent = {
-			challengeId: chatData.challengeData.id,
+			challengeId: chatData.challengeId,
 			interactionType: chatData.interactionType
 		}
 		this.io.to(connectionInfo.socketId).emit("chatbot-stream-start", event)

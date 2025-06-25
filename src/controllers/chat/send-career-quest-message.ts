@@ -6,6 +6,7 @@ import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
 import { buildLLMContext } from "../../utils/llm/build-llm-context"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
+import findChallengeDataFromId from "../../utils/llm/find-challenge-data-from-id"
 
 export default function sendCareerQuestMessage(req: Request, res: Response): void {
 	try {
@@ -47,7 +48,7 @@ async function processLLMRequest(
 
 		// Build LLM context
 		const messages = buildLLMContext(
-			chatData.challengeData,
+			findChallengeDataFromId(chatData.challengeId),
 			chatData.userCode,
 			chatData.interactionType,
 			chatData.conversationHistory,
@@ -88,14 +89,14 @@ async function processLLMRequest(
 
 				const content = chunk.choices[0]?.delta?.content
 				if (content) {
-					socketManager.emitChatbotChunk(userId, content, chatData.challengeData.id)
+					socketManager.emitChatbotChunk(userId, content, chatData.challengeId)
 				}
 			}
 
 			// Only send completion if not aborted
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!abortSignal.aborted) {
-				socketManager.emitChatbotComplete(userId, chatData.challengeData.id)
+				socketManager.emitChatbotComplete(userId, chatData.challengeId)
 			}
 
 		} catch (error) {

@@ -2,10 +2,9 @@ import Joi from "joi"
 import { isUndefined } from "lodash"
 import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
-import { challengeDataSchema } from "../../joi/challenge-data-validator"
 
 const validateSendCareerQuestMessageSchema = Joi.object({
-	challengeData: challengeDataSchema.required(),
+	challengeId: Joi.string().required(),
 	userCode: Joi.string().allow("").required(),
 	interactionType: Joi.string().valid("checkCode", "hint", "generalQuestion").required(),
 	message: Joi.string().allow("").optional(),
