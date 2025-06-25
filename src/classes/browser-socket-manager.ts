@@ -1,7 +1,10 @@
 import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
-	PipUUID, SensorPayload, ChatbotStartEvent, ChatbotChunkEvent, ChatbotEndEvent, IncomingChatData} from "@bluedotrobots/common-ts"
+	PipUUID, SensorPayload, IncomingChatData,
+	ChatbotStreamCompleteEvent,
+	ChatbotStreamChunkEvent,
+	ChatbotStreamStartEvent} from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
@@ -282,12 +285,11 @@ export default class BrowserSocketManager extends Singleton {
 			console.warn(`No connection found for userId: ${userId}`)
 			return
 		}
-		const event: ChatbotStartEvent = {
-			type: "chatbotStart",
-			interactionType: chatData.interactionType,
-			challengeId: chatData.challengeData.id
+		const event: ChatbotStreamStartEvent = {
+			challengeId: chatData.challengeData.id,
+			interactionType: chatData.interactionType
 		}
-		this.io.to(connectionInfo.socketId).emit("chatbot-stream", event)
+		this.io.to(connectionInfo.socketId).emit("chatbot-stream-start", event)
 	}
 
 	public emitChatbotChunk(userId: number, content: string, challengeId: string): void {
@@ -296,12 +298,11 @@ export default class BrowserSocketManager extends Singleton {
 			console.warn(`No connection found for userId: ${userId}`)
 			return
 		}
-		const event: ChatbotChunkEvent = {
-			type: "chatbotChunk",
-			content,
-			challengeId
+		const event: ChatbotStreamChunkEvent = {
+			challengeId,
+			content
 		}
-		this.io.to(connectionInfo.socketId).emit("chatbot-stream", event)
+		this.io.to(connectionInfo.socketId).emit("chatbot-stream-chunk", event)
 	}
 
 	public emitChatbotComplete(userId: number, challengeId: string): void {
@@ -310,10 +311,9 @@ export default class BrowserSocketManager extends Singleton {
 			console.warn(`No connection found for userId: ${userId}`)
 			return
 		}
-		const event: ChatbotEndEvent = {
-			type: "chatbotComplete",
+		const event: ChatbotStreamCompleteEvent = {
 			challengeId
 		}
-		this.io.to(connectionInfo.socketId).emit("chatbot-stream", event)
+		this.io.to(connectionInfo.socketId).emit("chatbot-stream-complete", event)
 	}
 }
