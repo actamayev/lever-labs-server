@@ -19,13 +19,11 @@ DIFFICULTY: ${challengeData.difficulty}
 
 TASK DESCRIPTION: ${challengeData.description}
 
-AVAILABLE BLOCKS:
+AVAILABLE BLOCKS/SENSORS:
 ${challengeData.availableBlocks.map(block =>
-		`- ${block.type} (${block.category}): ${block.description}${block.codeTemplate ? `
+		`- ${block.type} (${block.description}${block.codeTemplate ? `
   Template: ${block.codeTemplate}` : ""}`
 	).join("\n")}
-
-AVAILABLE SENSORS: ${challengeData.availableSensors.join(", ")}
 
 EXPECTED BEHAVIOR: ${challengeData.expectedBehavior}
 
