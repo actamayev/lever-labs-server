@@ -11,7 +11,7 @@ export default function calculateMotorSpeeds(data: Omit<MotorControlData, "pipUU
 	const spinSpeed = 100
 	const turnSpeed = 50
 
-	// Define min/max speeds for different directions
+	// Define min/max speeds for different directions (this is used when throttling)
 	const forwardMinSpeed = 52
 	const backwardMaxSpeed = -56
 	const backwardMinSpeed = -255
@@ -61,10 +61,10 @@ export default function calculateMotorSpeeds(data: Omit<MotorControlData, "pipUU
 	} else if (vertical === -1 && horizontal === -1) {
 		// Backward + Left
 		speeds.leftMotor = applyThrottle(-maxSpeed, backwardMinSpeed, backwardMaxSpeed)
-		speeds.rightMotor = applyThrottle(-turnSpeed, backwardMaxSpeed / 2, backwardMinSpeed / 2)
+		speeds.rightMotor = applyThrottle(-turnSpeed, backwardMaxSpeed, backwardMinSpeed)
 	} else if (vertical === -1 && horizontal === 1) {
 		// Backward + Right
-		speeds.leftMotor = applyThrottle(-turnSpeed, backwardMaxSpeed / 2, backwardMinSpeed / 2)
+		speeds.leftMotor = applyThrottle(-turnSpeed, backwardMaxSpeed, backwardMinSpeed)
 		speeds.rightMotor = applyThrottle(-maxSpeed, backwardMinSpeed, backwardMaxSpeed)
 	}
 
