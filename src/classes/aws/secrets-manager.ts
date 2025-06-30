@@ -1,4 +1,3 @@
-import dotenv from "dotenv"
 import { isEmpty, isNull, isUndefined } from "lodash"
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager"
 import Singleton from "../singleton"
@@ -9,10 +8,7 @@ export default class SecretsManager extends Singleton {
 
 	private constructor() {
 		super()
-		if (isUndefined(process.env.NODE_ENV)) {
-			dotenv.config({ path: ".env.local" })
-			return
-		}
+		if (isUndefined(process.env.NODE_ENV)) return
 		this.secretsManager = new SecretsManagerClient({
 			credentials: {
 				accessKeyId: process.env.AWS_ACCESS_KEY_ID,
