@@ -5,7 +5,7 @@ import PrismaClientClass from "../../../classes/prisma-client"
 export async function getCareerQuestChatMessages(
 	userId: number,
 	challengeId: string
-): Promise<ChatMessage[] | null> {
+): Promise<ChatMessage[]> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -30,7 +30,7 @@ export async function getCareerQuestChatMessages(
 			}
 		})
 
-		if (isNull(chat)) return null
+		if (isNull(chat)) return []
 
 		return chat.messages.map(msg => ({
 			content: msg.message_text,

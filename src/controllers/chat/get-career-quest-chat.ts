@@ -1,4 +1,3 @@
-import { isNull } from "lodash"
 import { Request, Response } from "express"
 import { CareerQuestChatDataResponse, ErrorResponse } from "@bluedotrobots/common-ts"
 import { getCareerQuestChatMessages } from "../../db-operations/read/career-quest-message/get-career-quest-chat-with-messages"
@@ -9,11 +8,6 @@ export default async function getCareerQuestChat(req: Request, res: Response): P
 		const { challengeId } = req.params
 
 		const chatData = await getCareerQuestChatMessages(userId, challengeId)
-
-		if (isNull(chatData)) {
-			res.status(200).json({ chatData: [] } as CareerQuestChatDataResponse)
-			return
-		}
 
 		res.status(200).json({ chatData } as CareerQuestChatDataResponse)
 	} catch (error) {
