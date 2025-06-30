@@ -8,13 +8,6 @@ const validateSendCareerQuestMessageSchema = Joi.object({
 	userCode: Joi.string().allow("").required(),
 	interactionType: Joi.string().valid("checkCode", "hint", "generalQuestion").required(),
 	message: Joi.string().allow("").optional(),
-	conversationHistory: Joi.array().items(
-		Joi.object({
-			role: Joi.string().valid("user", "assistant").required(),
-			content: Joi.string().required(),
-			timestamp: Joi.date().optional()
-		})
-	).max(20).optional()
 }).custom((value, helpers) => {
 	// Custom validation: generalQuestion requires a message
 	if (value.interactionType === "generalQuestion" && !value.message?.trim()) {
