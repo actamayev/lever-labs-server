@@ -1,10 +1,11 @@
 import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
-	PipUUID, SensorPayload, IncomingChatData,
+	PipUUID, SensorPayload,
 	ChatbotStreamCompleteEvent,
 	ChatbotStreamChunkEvent,
-	ChatbotStreamStartEvent} from "@bluedotrobots/common-ts"
+	ChatbotStreamStartEvent,
+	ProcessedCareerQuestChatData} from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
@@ -279,14 +280,14 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	public emitChatbotStart(userId: number, chatData: IncomingChatData): void {
+	public emitChatbotStart(userId: number, chatData: ProcessedCareerQuestChatData): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) {
 			console.warn(`No connection found for userId: ${userId}`)
 			return
 		}
 		const event: ChatbotStreamStartEvent = {
-			challengeId: chatData.challengeId,
+			challengeId: chatData.careerQuestChallengeId,
 			interactionType: chatData.interactionType
 		}
 		this.io.to(connectionInfo.socketId).emit("chatbot-stream-start", event)

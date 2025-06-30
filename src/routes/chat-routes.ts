@@ -6,6 +6,7 @@ import validateSendCareerQuestMessage from "../middleware/request-validation/car
 
 import stopChatbotStream from "../controllers/chat/stop-chat-stream"
 import sendCareerQuestMessage from "../controllers/chat/send-career-quest-message"
+import attachCareerQuestChatId from "../middleware/confirm/confirm-career-quest-chat-exists"
 
 const chatRoutes = express.Router()
 
@@ -13,6 +14,7 @@ chatRoutes.post(
 	"/send-career-quest-message",
 	jwtVerifyAttachUserId,
 	validateSendCareerQuestMessage,
+	attachCareerQuestChatId,
 	sendCareerQuestMessage
 )
 

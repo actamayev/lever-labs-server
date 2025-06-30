@@ -300,7 +300,6 @@ model career_quest_message {
 	sender                     MessageSender
 	model_used                 String?       // Only for AI messages
 
-	// Polymorphic reference to chat
 	career_quest_chat_id       Int
 
 	created_at                DateTime      @default(now())

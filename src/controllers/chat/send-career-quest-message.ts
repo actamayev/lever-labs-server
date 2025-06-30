@@ -1,6 +1,6 @@
 /* eslint-disable max-depth */
 import { Response, Request } from "express"
-import { ErrorResponse, IncomingChatData, StartChatSuccess } from "@bluedotrobots/common-ts"
+import { ErrorResponse, ProcessedCareerQuestChatData, StartChatSuccess } from "@bluedotrobots/common-ts"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
@@ -11,7 +11,7 @@ import findChallengeDataFromId from "../../utils/llm/find-challenge-data-from-id
 export default function sendCareerQuestMessage(req: Request, res: Response): void {
 	try {
 		const { userId } = req
-		const chatData = req.body as IncomingChatData
+		const chatData = req.body as ProcessedCareerQuestChatData
 
 		// Create a new stream and get streamId
 		const { streamId, abortController } = StreamManager.getInstance().createStream()
@@ -35,7 +35,7 @@ export default function sendCareerQuestMessage(req: Request, res: Response): voi
 
 // eslint-disable-next-line complexity, max-lines-per-function
 async function processLLMRequest(
-	chatData: IncomingChatData,
+	chatData: ProcessedCareerQuestChatData,
 	userId: number,
 	streamId: string,
 	abortSignal: AbortSignal
@@ -48,7 +48,7 @@ async function processLLMRequest(
 
 		// Build LLM context
 		const messages = buildLLMContext(
-			findChallengeDataFromId(chatData.challengeId),
+			findChallengeDataFromId(chatData.careerQuestChallengeId),
 			chatData.userCode,
 			chatData.interactionType,
 			chatData.conversationHistory,
@@ -89,14 +89,14 @@ async function processLLMRequest(
 
 				const content = chunk.choices[0]?.delta?.content
 				if (content) {
-					socketManager.emitChatbotChunk(userId, content, chatData.challengeId)
+					socketManager.emitChatbotChunk(userId, content, chatData.careerQuestChallengeId)
 				}
 			}
 
 			// Only send completion if not aborted
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!abortSignal.aborted) {
-				socketManager.emitChatbotComplete(userId, chatData.challengeId)
+				socketManager.emitChatbotComplete(userId, chatData.careerQuestChallengeId)
 			}
 
 		} catch (error) {
