@@ -1,6 +1,6 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export async function addCompletedReadingBlock(readingBlockId: number, userId: number): Promise<void> {
+export default async function addCompletedReadingBlock(readingBlockId: number, userId: number): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
