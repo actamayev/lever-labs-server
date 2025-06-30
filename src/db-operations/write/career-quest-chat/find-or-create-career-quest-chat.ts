@@ -4,7 +4,10 @@ export default async function findOrCreateCareerQuestChat(userId: number, career
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		const chat = await prismaClient.career_quest_chat.upsert({
+		const careerQuestChatId = await prismaClient.career_quest_chat.upsert({
+			select: {
+				career_quest_chat_id: true,
+			},
 			where: {
 				career_quest_id_user_id: {
 					career_quest_id: careerQuestId,
@@ -18,7 +21,7 @@ export default async function findOrCreateCareerQuestChat(userId: number, career
 			}
 		})
 
-		return chat.career_quest_chat_id
+		return careerQuestChatId.career_quest_chat_id
 	} catch (error) {
 		console.error(error)
 		throw error
