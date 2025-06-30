@@ -21,13 +21,11 @@ export default async function retrieveChatMessages(careerQuestChatId: number): P
 		})
 
 		// Transform to conversation history format
-		const conversationHistory = messages.map(msg => ({
+		return messages.map(msg => ({
 			role: msg.sender === "USER" ? "user" as const : "assistant" as const,
 			content: msg.message_text,
 			timestamp: msg.created_at
 		}))
-
-		return conversationHistory
 	} catch (error) {
 		console.error(error)
 		throw error

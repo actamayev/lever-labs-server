@@ -1,3 +1,4 @@
+import { isNull } from "lodash"
 import { ChatMessage } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
@@ -15,7 +16,7 @@ export async function getCareerQuestChatMessages(
 					user_id: userId
 				}
 			},
-			include: {
+			select: {
 				messages: {
 					orderBy: {
 						created_at: "asc"
@@ -29,7 +30,7 @@ export async function getCareerQuestChatMessages(
 			}
 		})
 
-		if (!chat) return null
+		if (isNull(chat)) return null
 
 		return chat.messages.map(msg => ({
 			content: msg.message_text,
