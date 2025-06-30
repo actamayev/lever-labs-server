@@ -50,7 +50,7 @@ ${userCode || "// No code provided yet"}
 \`\`\``
 
 	const messages: ChatMessage[] = [
-		{ role: "system", content: systemPrompt }
+		{ role: "system", content: systemPrompt, timestamp: new Date() }
 	]
 
 	// Add conversation history if available
@@ -74,7 +74,7 @@ ${userCode || "// No code provided yet"}
 		break
 	}
 
-	messages.push({ role: "user", content: userMessage })
+	messages.push({ role: "user", content: userMessage, timestamp: new Date() })
 	return messages
 }
 

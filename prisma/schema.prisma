@@ -42,6 +42,7 @@ model credentials {
 	user_answer													user_answer[]
 	completed_reading_block										completed_reading_block[]
 	sandbox_project												sandbox_project[]
+	career_quest_chat											career_quest_chat[]
 
 	profile_picture                                             profile_picture? @relation(fields: [profile_picture_id], references: [profile_picture_id])
 
@@ -241,6 +242,7 @@ model sandbox_project {
 	updated_at                                                  DateTime @default(now()) @updatedAt
 
 	user                                                        credentials @relation(fields: [project_owner_id], references: [user_id])
+	sandbox_chat												sandbox_chat[]
 
 	@@index([project_owner_id], name: "sandbox_project__project_owner_id_idx")
 	@@index([project_uuid], name: "sandbox_project__project_uuid_idx")
@@ -259,4 +261,67 @@ model profile_picture {
 	updated_at                                                  DateTime  @default(now()) @updatedAt
 
 	user                                                        credentials?
+}
+
+model career_quest_chat {
+	career_quest_chat_id  Int      @id @default(autoincrement())
+	career_quest_id       String   // Your hardcoded challenge ID
+	user_id               Int
+
+	created_at            DateTime @default(now())
+	updated_at            DateTime @default(now()) @updatedAt
+
+	user                  credentials @relation(fields: [user_id], references: [user_id])
+	messages              career_quest_message[]
+
+	@@unique([career_quest_id, user_id]) // One chat per user per challenge
+	@@index([user_id])
+}
+
+model sandbox_chat {
+	sandbox_chat_id       Int      @id @default(autoincrement())
+	sandbox_project_id    Int      @unique // 1:1 with sandbox project
+
+	created_at            DateTime @default(now())
+	updated_at            DateTime @default(now()) @updatedAt
+
+	sandbox_project       sandbox_project @relation(fields: [sandbox_project_id], references: [sandbox_project_id])
+	messages              sandbox_message[]
+}
+
+enum MessageSender {
+	USER
+	AI
+}
+
+model career_quest_message {
+	message_id                 Int           @id @default(autoincrement())
+	message_text               String
+	sender                     MessageSender
+	model_used                 String?       // Only for AI messages
+
+	career_quest_chat_id       Int
+
+	created_at                DateTime      @default(now())
+	updated_at                DateTime      @default(now()) @updatedAt
+
+	career_quest_chat         career_quest_chat @relation(fields: [career_quest_chat_id], references: [career_quest_chat_id])
+
+	@@index([career_quest_chat_id, created_at])
+}
+
+model sandbox_message {
+	message_id                 Int           @id @default(autoincrement())
+	message_text               String
+	sender                     MessageSender
+	model_used                 String?       // Only for AI messages
+
+	sandbox_chat_id           Int
+
+	created_at                DateTime      @default(now())
+	updated_at                DateTime      @default(now()) @updatedAt
+
+	sandbox_chat              sandbox_chat @relation(fields: [sandbox_chat_id], references: [sandbox_chat_id])
+
+	@@index([sandbox_chat_id, created_at])
 }

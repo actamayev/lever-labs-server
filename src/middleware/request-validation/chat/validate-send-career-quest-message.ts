@@ -4,17 +4,10 @@ import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
 const validateSendCareerQuestMessageSchema = Joi.object({
-	challengeId: Joi.string().required(),
+	careerQuestChallengeId: Joi.string().required(),
 	userCode: Joi.string().allow("").required(),
 	interactionType: Joi.string().valid("checkCode", "hint", "generalQuestion").required(),
 	message: Joi.string().allow("").optional(),
-	conversationHistory: Joi.array().items(
-		Joi.object({
-			role: Joi.string().valid("user", "assistant").required(),
-			content: Joi.string().required(),
-			timestamp: Joi.date().optional()
-		})
-	).max(20).optional()
 }).custom((value, helpers) => {
 	// Custom validation: generalQuestion requires a message
 	if (value.interactionType === "generalQuestion" && !value.message?.trim()) {
