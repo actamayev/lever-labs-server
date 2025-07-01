@@ -1,5 +1,6 @@
 import express from "express"
 
+import pollSensors from "../controllers/sandbox/poll-sensors"
 import starSandboxProject from "../controllers/sandbox/star-sandbox-project"
 import editSandboxProject from "../controllers/sandbox/edit-sandbox-project"
 import deleteSandboxProject from "../controllers/sandbox/delete-sandbox-project"
@@ -25,7 +26,6 @@ import validateProjectUUIDInParams from "../middleware/request-validation/sandbo
 import validateEditSandboxProjectName from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-name"
 import validateEditSandboxProjectNotes from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-notes"
 import confirmSandboxProjectExistsAndValidUserId from "../middleware/confirm/confirm-sandbox-project-exists-and-valid-user-id"
-import pollSensors from "../controllers/sandbox/poll-sensors"
 
 const sandboxRoutes = express.Router()
 

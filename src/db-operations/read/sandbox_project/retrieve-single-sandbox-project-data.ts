@@ -1,22 +1,45 @@
-import { isNull } from "lodash"
+import { SandboxProject } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 import camelCaseSandboxProject from "../../../utils/sandbox/camel-case-sandbox-project"
-import { ProjectUUID, SandboxProject } from "@bluedotrobots/common-ts"
+import { isNull } from "lodash"
 
-export default async function retrieveSingleSandboxProjectData(projectUUID: ProjectUUID): Promise<SandboxProject | null> {
+export default async function retrieveSingleSandboxProjectData(sandboxProjectId: number): Promise<SandboxProject | null> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		const sandboxProject = await prismaClient.sandbox_project.findFirst({
+		const sandboxData = await prismaClient.sandbox_project.findFirst({
 			where: {
-				project_uuid: projectUUID,
+				sandbox_project_id: sandboxProjectId,
 				is_active: true
+			},
+			select: {
+				sandbox_json: true,
+				project_uuid: true,
+				is_starred: true,
+				project_name: true,
+				created_at: true,
+				updated_at: true,
+				project_notes: true,
+				sandbox_chat: {
+					select: {
+						messages: {
+							orderBy: {
+								created_at: "asc"
+							},
+							select: {
+								message_text: true,
+								sender: true,
+								created_at: true
+							}
+						}
+					}
+				}
 			}
 		})
 
-		if (isNull(sandboxProject)) return null
+		if (isNull(sandboxData)) return null
 
-		return camelCaseSandboxProject(sandboxProject)
+		return camelCaseSandboxProject(sandboxData)
 	} catch (error) {
 		console.error(error)
 		throw error

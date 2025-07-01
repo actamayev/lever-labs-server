@@ -10,6 +10,29 @@ export default async function retrieveUserSandboxProjectData(userId: number): Pr
 			where: {
 				project_owner_id: userId,
 				is_active: true
+			},
+			select: {
+				sandbox_json: true,
+				project_uuid: true,
+				is_starred: true,
+				project_name: true,
+				created_at: true,
+				updated_at: true,
+				project_notes: true,
+				sandbox_chat: {
+					select: {
+						messages: {
+							orderBy: {
+								created_at: "asc"
+							},
+							select: {
+								message_text: true,
+								sender: true,
+								created_at: true
+							}
+						}
+					}
+				}
 			}
 		})
 
