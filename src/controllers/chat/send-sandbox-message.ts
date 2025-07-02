@@ -1,19 +1,19 @@
 
 import { Response, Request } from "express"
 import { MessageSender } from "@prisma/client"
-import { ErrorResponse, ProcessedCareerQuestChatData, StartChatSuccess } from "@bluedotrobots/common-ts"
+import { ErrorResponse, ProcessedSandboxChatData, ProjectUUID, StartChatSuccess } from "@bluedotrobots/common-ts"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
-import buildCqLLMContext from "../../utils/llm/build-cq-llm-context"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
-import findChallengeDataFromId from "../../utils/llm/find-challenge-data-from-id"
-import addCareerQuestMessage from "../../db-operations/write/career-quest-message/add-career-quest-message"
+import buildSandboxLLMContext from "../../utils/llm/build-sandbox-llm-context"
+import addSandboxMessage from "../../db-operations/write/sandbox-message/add-sandbox-message"
 
-export default function sendCareerQuestMessage(req: Request, res: Response): void {
+export default function sendSandboxMessage(req: Request, res: Response): void {
 	try {
 		const { userId } = req
-		const chatData = req.body as ProcessedCareerQuestChatData
+		const { projectUUID } = req.params as { projectUUID: ProjectUUID }
+		const chatData = req.body as ProcessedSandboxChatData
 
 		// Create a new stream and get streamId
 		const { streamId, abortController } = StreamManager.getInstance().createStream()
@@ -22,7 +22,7 @@ export default function sendCareerQuestMessage(req: Request, res: Response): voi
 		res.status(200).json({ streamId } as StartChatSuccess)
 
 		// Process LLM request with streaming via WebSocket (async)
-		processLLMRequest(chatData, userId, streamId, abortController.signal)
+		processLLMRequest(chatData, userId, streamId, abortController.signal, projectUUID)
 			.catch(error => {
 				console.error("Background LLM processing error:", error)
 			})
@@ -37,10 +37,11 @@ export default function sendCareerQuestMessage(req: Request, res: Response): voi
 
 // eslint-disable-next-line complexity, max-lines-per-function
 async function processLLMRequest(
-	chatData: ProcessedCareerQuestChatData,
+	chatData: ProcessedSandboxChatData,
 	userId: number,
 	streamId: string,
-	abortSignal: AbortSignal
+	abortSignal: AbortSignal,
+	sandboxProjectUUID: ProjectUUID
 ): Promise<void> {
 	const socketManager = BrowserSocketManager.getInstance()
 
@@ -48,41 +49,20 @@ async function processLLMRequest(
 		// Check if already aborted
 		if (abortSignal.aborted) return
 
-		// Save user message to database first
-		let userMessage = ""
-		if (chatData.interactionType === "generalQuestion" && chatData.message) {
-			userMessage = chatData.message
-		} else {
-			// For other interaction types, create a descriptive message
-			if (chatData.interactionType === "checkCode") {
-				userMessage = `Check my code: ${chatData.userCode}`
-			} else if (chatData.interactionType === "hint") {
-				userMessage = "Give me a hint for this challenge"
-			} else {
-				userMessage = "User interaction"
-			}
-		}
-
-		await addCareerQuestMessage(
-			chatData.careerQuestChatId,
-			userMessage,
+		await addSandboxMessage(
+			chatData.sandboxChatId,
+			chatData.message,
 			MessageSender.USER
 		)
 
 		// Build LLM context
-		const messages = buildCqLLMContext(
-			findChallengeDataFromId(chatData.careerQuestChallengeId),
-			chatData.userCode,
-			chatData.interactionType,
-			chatData.conversationHistory,
-			chatData.message,
-		)
+		const messages = buildSandboxLLMContext(chatData)
 
 		// Select model based on interaction type
-		const modelId = selectModel(chatData.interactionType)
+		const modelId = selectModel("generalQuestion")
 
 		// Send start event with challengeId
-		socketManager.emitCqChatbotStart(userId, chatData)
+		socketManager.emitSandboxChatbotStart(userId, sandboxProjectUUID)
 
 		// Check abort before making OpenAI call
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -109,13 +89,14 @@ async function processLLMRequest(
 			// Stream chunks back via WebSocket with challengeId
 			for await (const chunk of stream) {
 				// Check if aborted during streaming
-				// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+				// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, max-depth
 				if (abortSignal.aborted) break
 
 				const content = chunk.choices[0]?.delta?.content
+				// eslint-disable-next-line max-depth
 				if (content) {
 					aiResponseContent += content // Collect the content
-					socketManager.emitCqChatbotChunk(userId, content, chatData.careerQuestChallengeId)
+					socketManager.emitSandboxChatbotChunk(userId, content, sandboxProjectUUID)
 				}
 			}
 
@@ -123,14 +104,14 @@ async function processLLMRequest(
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!abortSignal.aborted && aiResponseContent.trim()) {
 				// Save AI response to database
-				await addCareerQuestMessage(
-					chatData.careerQuestChatId,
+				await addSandboxMessage(
+					chatData.sandboxChatId,
 					aiResponseContent,
 					MessageSender.AI,
 					modelId
 				)
 
-				socketManager.emitCqChatbotComplete(userId, chatData.careerQuestChallengeId)
+				socketManager.emitSandboxChatbotComplete(userId, sandboxProjectUUID)
 			}
 
 		} catch (error) {

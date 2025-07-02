@@ -8,7 +8,7 @@ export default async function createSandboxProjectDB(userId: number): Promise<Sa
 
 		const uuid = crypto.randomUUID()
 		const defaultSandboxJson = "{}"
-		const sandboxProject = await prismaClient.sandbox_project.create({
+		const sandboxProjectWithoutChat = await prismaClient.sandbox_project.create({
 			data: {
 				sandbox_json: defaultSandboxJson,
 				project_owner_id: userId,
@@ -16,6 +16,10 @@ export default async function createSandboxProjectDB(userId: number): Promise<Sa
 			}
 		})
 
+		const sandboxProject: RetrievedSandboxData = {
+			...sandboxProjectWithoutChat,
+			sandbox_chat: null
+		}
 		return camelCaseSandboxProject(sandboxProject)
 	} catch (error) {
 		console.error(error)

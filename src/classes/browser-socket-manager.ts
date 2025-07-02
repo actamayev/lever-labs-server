@@ -2,10 +2,13 @@ import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
 	PipUUID, SensorPayload,
-	ChatbotStreamCompleteEvent,
-	ChatbotStreamChunkEvent,
-	ChatbotStreamStartEvent,
-	ProcessedCareerQuestChatData} from "@bluedotrobots/common-ts"
+	CqChatbotStreamStartEvent,
+	CqChatbotStreamChunkEvent,
+	CqChatbotStreamCompleteEvent,
+	ProcessedCareerQuestChatData,
+	SandboxChatbotStreamChunkEvent,
+	SandboxChatbotStreamStartOrCompleteEvent,
+	ProjectUUID} from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
@@ -280,41 +283,78 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	public emitChatbotStart(userId: number, chatData: ProcessedCareerQuestChatData): void {
+	public emitCqChatbotStart(userId: number, chatData: ProcessedCareerQuestChatData): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) {
 			console.warn(`No connection found for userId: ${userId}`)
 			return
 		}
-		const event: ChatbotStreamStartEvent = {
+		const event: CqChatbotStreamStartEvent = {
 			challengeId: chatData.careerQuestChallengeId,
 			interactionType: chatData.interactionType
 		}
-		this.io.to(connectionInfo.socketId).emit("chatbot-stream-start", event)
+		this.io.to(connectionInfo.socketId).emit("cq-chatbot-stream-start", event)
 	}
 
-	public emitChatbotChunk(userId: number, content: string, challengeId: string): void {
+	public emitCqChatbotChunk(userId: number, content: string, challengeId: string): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) {
 			console.warn(`No connection found for userId: ${userId}`)
 			return
 		}
-		const event: ChatbotStreamChunkEvent = {
+		const event: CqChatbotStreamChunkEvent = {
 			challengeId,
 			content
 		}
-		this.io.to(connectionInfo.socketId).emit("chatbot-stream-chunk", event)
+		this.io.to(connectionInfo.socketId).emit("cq-chatbot-stream-chunk", event)
 	}
 
-	public emitChatbotComplete(userId: number, challengeId: string): void {
+	public emitCqChatbotComplete(userId: number, challengeId: string): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) {
 			console.warn(`No connection found for userId: ${userId}`)
 			return
 		}
-		const event: ChatbotStreamCompleteEvent = {
+		const event: CqChatbotStreamCompleteEvent = {
 			challengeId
 		}
-		this.io.to(connectionInfo.socketId).emit("chatbot-stream-complete", event)
+		this.io.to(connectionInfo.socketId).emit("cq-chatbot-stream-complete", event)
+	}
+
+	public emitSandboxChatbotStart(userId: number, sandboxProjectUUID: ProjectUUID): void {
+		const connectionInfo = this.connections.get(userId)
+		if (!connectionInfo) {
+			console.warn(`No connection found for userId: ${userId}`)
+			return
+		}
+		const event: SandboxChatbotStreamStartOrCompleteEvent = {
+			sandboxProjectUUID
+		}
+		this.io.to(connectionInfo.socketId).emit("sandbox-chatbot-stream-start", event)
+	}
+
+	public emitSandboxChatbotChunk(userId: number, content: string, sandboxProjectUUID: ProjectUUID): void {
+		const connectionInfo = this.connections.get(userId)
+		if (!connectionInfo) {
+			console.warn(`No connection found for userId: ${userId}`)
+			return
+		}
+		const event: SandboxChatbotStreamChunkEvent = {
+			sandboxProjectUUID,
+			content
+		}
+		this.io.to(connectionInfo.socketId).emit("sandbox-chatbot-stream-chunk", event)
+	}
+
+	public emitSandboxChatbotComplete(userId: number, sandboxProjectUUID: ProjectUUID): void {
+		const connectionInfo = this.connections.get(userId)
+		if (!connectionInfo) {
+			console.warn(`No connection found for userId: ${userId}`)
+			return
+		}
+		const event: SandboxChatbotStreamStartOrCompleteEvent = {
+			sandboxProjectUUID
+		}
+		this.io.to(connectionInfo.socketId).emit("sandbox-chatbot-stream-complete", event)
 	}
 }

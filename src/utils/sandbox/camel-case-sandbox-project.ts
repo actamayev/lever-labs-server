@@ -1,8 +1,13 @@
-import { sandbox_project } from "@prisma/client"
-import { ProjectUUID, SandboxProject } from "@bluedotrobots/common-ts"
+import { ChatMessage, ProjectUUID, SandboxProject } from "@bluedotrobots/common-ts"
 
-export default function camelCaseSandboxProject(sandboxProject: sandbox_project): SandboxProject {
+export default function camelCaseSandboxProject(sandboxProject: RetrievedSandboxData): SandboxProject {
 	try {
+		const sandboxChatMessages: ChatMessage[] = sandboxProject.sandbox_chat?.messages.map(msg => ({
+			role: msg.sender === "USER" ? "user" : "assistant",
+			content: msg.message_text,
+			timestamp: msg.created_at
+		})) || []
+
 		return {
 			sandboxJson: JSON.parse(sandboxProject.sandbox_json),
 			projectUUID: sandboxProject.project_uuid as ProjectUUID,
@@ -10,7 +15,8 @@ export default function camelCaseSandboxProject(sandboxProject: sandbox_project)
 			projectName: sandboxProject.project_name,
 			createdAt: sandboxProject.created_at,
 			updatedAt: sandboxProject.updated_at,
-			projectNotes: sandboxProject.project_notes
+			projectNotes: sandboxProject.project_notes,
+			sandboxChatMessages
 		}
 	} catch (error) {
 		console.error(error)
