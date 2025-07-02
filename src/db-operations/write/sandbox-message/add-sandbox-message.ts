@@ -1,8 +1,8 @@
 import { MessageSender } from "@prisma/client"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function addCareerQuestMessage(
-	careerQuestChatId: number,
+export default async function addSandboxMessage(
+	sandboxChatId: number,
 	messageText: string,
 	sender: MessageSender,
 	modelUsed?: string
@@ -10,16 +10,16 @@ export default async function addCareerQuestMessage(
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		const careerQuestMessage = await prismaClient.career_quest_message.create({
+		const sandboxMessage = await prismaClient.sandbox_message.create({
 			data: {
-				career_quest_chat_id: careerQuestChatId,
+				sandbox_chat_id: sandboxChatId,
 				message_text: messageText,
 				sender: sender,
 				model_used: modelUsed
 			}
 		})
 
-		return careerQuestMessage.career_quest_message_id
+		return sandboxMessage.sandbox_message_id
 	} catch (error) {
 		console.error(error)
 		throw error

@@ -1,14 +1,14 @@
 import { ChatMessage } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function retrieveChatMessages(careerQuestChatId: number): Promise<ChatMessage[]> {
+export default async function retrieveSandboxChatMessages(sandboxChatId: number): Promise<ChatMessage[]> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
 		// Fetch all messages for this chat, ordered by creation time
-		const messages = await prismaClient.career_quest_message.findMany({
+		const messages = await prismaClient.sandbox_message.findMany({
 			where: {
-				career_quest_chat_id: careerQuestChatId
+				sandbox_chat_id: sandboxChatId
 			},
 			orderBy: {
 				created_at: "asc"

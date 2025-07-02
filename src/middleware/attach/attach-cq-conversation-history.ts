@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express"
 import { ErrorResponse } from "@bluedotrobots/common-ts"
-import retrieveChatMessages from "../../db-operations/read/career-quest-message/retrieve-chat-messages"
+import retrieveCqChatMessages from "../../db-operations/read/career-quest-message/retrieve-cq-chat-messages"
 
-export default async function attachConversationHistory(req: Request, res: Response, next: NextFunction): Promise<void> {
+export default async function attachCQConversationHistory(req: Request, res: Response, next: NextFunction): Promise<void> {
 	try {
 		const { careerQuestChatId } = req.body
 
-		const chatMessages = await retrieveChatMessages(careerQuestChatId)
+		const chatMessages = await retrieveCqChatMessages(careerQuestChatId)
 
 		req.body.conversationHistory = chatMessages
 		next()
