@@ -56,11 +56,7 @@ async function processLLMRequest(
 		)
 
 		// Build LLM context
-		const messages = buildSandboxLLMContext(
-			chatData.userCode,
-			chatData.conversationHistory,
-			chatData.message,
-		)
+		const messages = buildSandboxLLMContext(chatData)
 
 		// Select model based on interaction type
 		const modelId = selectModel("generalQuestion")

@@ -1,7 +1,7 @@
+import { isNull } from "lodash"
 import { SandboxProject } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 import camelCaseSandboxProject from "../../../utils/sandbox/camel-case-sandbox-project"
-import { isNull } from "lodash"
 
 export default async function retrieveSingleSandboxProjectData(sandboxProjectId: number): Promise<SandboxProject | null> {
 	try {

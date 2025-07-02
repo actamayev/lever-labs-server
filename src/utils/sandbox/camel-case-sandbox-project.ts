@@ -2,7 +2,7 @@ import { ChatMessage, ProjectUUID, SandboxProject } from "@bluedotrobots/common-
 
 export default function camelCaseSandboxProject(sandboxProject: RetrievedSandboxData): SandboxProject {
 	try {
-		const messages: ChatMessage[] = sandboxProject.sandbox_chat?.messages.map(msg => ({
+		const sandboxChatMessages: ChatMessage[] = sandboxProject.sandbox_chat?.messages.map(msg => ({
 			role: msg.sender === "USER" ? "user" : "assistant",
 			content: msg.message_text,
 			timestamp: msg.created_at
@@ -16,7 +16,7 @@ export default function camelCaseSandboxProject(sandboxProject: RetrievedSandbox
 			createdAt: sandboxProject.created_at,
 			updatedAt: sandboxProject.updated_at,
 			projectNotes: sandboxProject.project_notes,
-			sandboxChatMessages: messages
+			sandboxChatMessages
 		}
 	} catch (error) {
 		console.error(error)

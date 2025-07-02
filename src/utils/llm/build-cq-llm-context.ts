@@ -4,7 +4,7 @@
 import { isEmpty } from "lodash"
 import { ChallengeData, ChatMessage } from "@bluedotrobots/common-ts"
 
-export function buildCqLLMContext(
+export default function buildCqLLMContext(
 	challengeData: ChallengeData,
 	userCode: string,
 	interactionType: "checkCode" | "hint" | "generalQuestion",

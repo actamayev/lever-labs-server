@@ -1,6 +1,7 @@
 import { Response, Request } from "express"
-import createSandboxProjectDB from "../../db-operations/write/sandbox-project/create-sandbox-project"
 import { ErrorResponse, SandboxProject } from "@bluedotrobots/common-ts"
+import createSandboxProjectDB from "../../db-operations/write/sandbox-project/create-sandbox-project"
+
 export default async function createSandboxProject(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req

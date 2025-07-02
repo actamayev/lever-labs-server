@@ -5,7 +5,7 @@ import { ErrorResponse, ProcessedCareerQuestChatData, StartChatSuccess } from "@
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
-import { buildCqLLMContext } from "../../utils/llm/build-cq-llm-context"
+import buildCqLLMContext from "../../utils/llm/build-cq-llm-context"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import findChallengeDataFromId from "../../utils/llm/find-challenge-data-from-id"
 import addCareerQuestMessage from "../../db-operations/write/career-quest-message/add-career-quest-message"

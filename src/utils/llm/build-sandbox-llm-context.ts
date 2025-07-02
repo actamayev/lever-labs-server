@@ -1,15 +1,9 @@
 import { isEmpty } from "lodash"
-import { ChatMessage } from "@bluedotrobots/common-ts"
+import { ChatMessage, ProcessedSandboxChatData } from "@bluedotrobots/common-ts"
 
 // TODO 7/1/25: Import and list all available blocks
 // Placeholder - will be populated with expanded block set
-
-// eslint-disable-next-line max-lines-per-function
-export default function buildSandboxLLMContext(
-	userCode: string,
-	conversationHistory: ChatMessage[],
-	message?: string,
-): ChatMessage[] {
+export default function buildSandboxLLMContext(chatData: ProcessedSandboxChatData): ChatMessage[] {
 	// eslint-disable-next-line max-len
 	const systemPrompt = `You are a robotics tutor helping students aged 10-20 explore and experiment with programming in a creative sandbox environment.
 
@@ -42,7 +36,7 @@ INTERACTION APPROACH:
 
 USER'S CURRENT CODE:
 \`\`\`cpp
-${userCode || "// No code provided yet - ready to start exploring!"}
+${chatData.userCode || "// No code provided yet - ready to start exploring!"}
 \`\``
 
 	const messages: ChatMessage[] = [
@@ -50,14 +44,14 @@ ${userCode || "// No code provided yet - ready to start exploring!"}
 	]
 
 	// Add conversation history if available
-	if (!isEmpty(conversationHistory)) {
+	if (!isEmpty(chatData.conversationHistory)) {
 		// Only include the last 10 exchanges to manage context length
-		const recentHistory = conversationHistory.slice(-10)
+		const recentHistory = chatData.conversationHistory.slice(-10)
 		messages.push(...recentHistory)
 	}
 
 	// Add current user message
-	const userMessage = message || "I'm ready to explore and experiment with robotics programming!"
+	const userMessage = chatData.message || "I'm ready to explore and experiment with robotics programming!"
 
 	messages.push({ role: "user", content: userMessage, timestamp: new Date() })
 	return messages
