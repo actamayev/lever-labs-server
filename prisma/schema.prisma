@@ -43,6 +43,7 @@ model credentials {
 	completed_reading_block										completed_reading_block[]
 	sandbox_project												sandbox_project[]
 	career_quest_chat											career_quest_chat[]
+	career_quest_sandbox										career_quest_sandbox[]
 
 	profile_picture                                             profile_picture? @relation(fields: [profile_picture_id], references: [profile_picture_id])
 
@@ -324,4 +325,19 @@ model sandbox_message {
 	sandbox_chat              									sandbox_chat @relation(fields: [sandbox_chat_id], references: [sandbox_chat_id])
 
 	@@index([sandbox_chat_id, created_at])
+}
+
+model career_quest_sandbox {
+	career_quest_sandbox_id										Int       @id @default(autoincrement())
+	career_quest_sandbox_json									String
+	user_id			       										Int
+	career_quest_id												String // Hardcoded Challenge Id
+
+	created_at                                                  DateTime  @default(now())
+	updated_at                                                  DateTime @default(now()) @updatedAt
+
+	user                                                        credentials @relation(fields: [user_id], references: [user_id])
+
+	@@index([user_id], name: "career_quest_sandbox__user_id_idx")
+	@@unique([user_id, career_quest_id]) // One sandbox per user per challenge
 }
