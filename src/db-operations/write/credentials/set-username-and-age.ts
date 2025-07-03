@@ -1,6 +1,10 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function setUsername(userId: number, username: string): Promise<void> {
+export default async function setUsernameAndAge(
+	userId: number,
+	username: string,
+	age: number
+): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -9,7 +13,8 @@ export default async function setUsername(userId: number, username: string): Pro
 				user_id: userId
 			},
 			data: {
-				username
+				username,
+				age
 			}
 		})
 	} catch (error) {

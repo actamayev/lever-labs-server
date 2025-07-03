@@ -4,13 +4,14 @@ import { Request, Response, NextFunction } from "express"
 import usernameValidator from "../../joi/username-validator"
 import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
-const registerUsernameSchema = Joi.object({
+const googleUserInfoSchema = Joi.object({
+	age: Joi.number().integer().max(120).required(),
 	username: usernameValidator.required().trim().min(3).max(100)
 }).required()
 
-export default function validateRegisterUsername (req: Request, res: Response, next: NextFunction): void {
+export default function validateGoogleUserInfo(req: Request, res: Response, next: NextFunction): void {
 	try {
-		const { error } = registerUsernameSchema.validate(req.body)
+		const { error } = googleUserInfoSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
 			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
