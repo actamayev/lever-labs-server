@@ -6,6 +6,7 @@ import validateEditCareerQuestSandboxProject
 import validateChallengeIdInParams from "../middleware/request-validation/chat/validate-challenge-id-in-params"
 
 import editCareerQuestSandboxProject from "../controllers/career-quest/edit-career-quest-sandbox-project"
+import retrieveCareerQuestChallengeData from "../controllers/career-quest/retrieve-career-quest-challenge-data"
 
 const careerQuestRoutes = express.Router()
 
@@ -15,6 +16,13 @@ careerQuestRoutes.post(
 	validateEditCareerQuestSandboxProject,
 	jwtVerifyAttachUserId,
 	editCareerQuestSandboxProject
+)
+
+careerQuestRoutes.get(
+	"/get-career-quest-challenge-data/:challengeId",
+	validateChallengeIdInParams,
+	jwtVerifyAttachUserId,
+	retrieveCareerQuestChallengeData
 )
 
 export default careerQuestRoutes
