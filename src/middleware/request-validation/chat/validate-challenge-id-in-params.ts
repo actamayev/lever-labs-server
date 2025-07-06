@@ -3,13 +3,13 @@ import { isUndefined } from "lodash"
 import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
-const validateGetCareerQuestChatSchema = Joi.object({
+const validateChallengeIdInParamsSchema = Joi.object({
 	challengeId: Joi.string().required()
 })
 
-export default function validateGetCareerQuestChat(req: Request, res: Response, next: NextFunction): void {
+export default function validateChallengeIdInParams(req: Request, res: Response, next: NextFunction): void {
 	try {
-		const { error } = validateGetCareerQuestChatSchema.validate(req.params)
+		const { error } = validateChallengeIdInParamsSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
 			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
