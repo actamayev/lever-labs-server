@@ -97,8 +97,10 @@ async function processLLMRequest(
 				content: msg.content
 			})),
 			stream: true,
-			temperature: 0.7,
-			max_completion_tokens: 3500
+			temperature: 0.5,              // Lower than sandbox (0.6) for more focused, goal-oriented responses
+			max_completion_tokens: 1800,   // Higher than sandbox for detailed code analysis
+			presence_penalty: 0.2,         // Lower - want to stay focused on challenge objectives
+			frequency_penalty: 0.3,        // Same as sandbox
 		}, {
 			signal: abortSignal
 		})
