@@ -89,12 +89,23 @@ ${chatData.userCode || "// Ready to start exploring! What would you like Pip to 
 	]
 
 	if (!isEmpty(chatData.conversationHistory)) {
-		const recentHistory = chatData.conversationHistory.slice(-12)
+		const recentHistory = chatData.conversationHistory.slice(-50)
 		messages.push(...recentHistory)
 	}
 
-	const userMessage = chatData.message || "I'm ready to explore and experiment with robotics programming! What can I create with Pip?"
-	messages.push({ role: "user", content: userMessage, timestamp: new Date() })
+	// Enhanced sandbox context section
+	const codeSection = `CURRENT CODE STATE:
+\`\`\`cpp
+${chatData.userCode || "// Ready to start exploring! What would you like Pip to do?"}
+\`\`\`
 
+`
+
+	const baseUserMessage = chatData.message || "I'm ready to explore and experiment with robotics programming! What can I create with Pip?"
+
+	// Combine code state with user message
+	const userMessage = `${codeSection}${baseUserMessage}`
+
+	messages.push({ role: "user", content: userMessage, timestamp: new Date() })
 	return messages
 }

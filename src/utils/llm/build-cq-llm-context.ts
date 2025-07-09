@@ -111,21 +111,27 @@ Remember: Your goal is to help them discover the solution through guided learnin
 	]
 
 	if (!isEmpty(conversationHistory)) {
-		const recentHistory = conversationHistory.slice(-10)
+		const recentHistory = conversationHistory.slice(-50)
 		messages.push(...recentHistory)
 	}
 
 	// Add current user message based on interaction type
 	let userMessage: string
+	const codeSection = `CURRENT CODE STATE:
+\`\`\`cpp
+${userCode || "// No code written yet"}
+\`\`\`
+
+`
 	switch (interactionType) {
 	case "checkCode":
-		userMessage = "Please analyze my current code and provide specific feedback. Tell me what needs to be fixed or improved to complete the challenge correctly."
+		userMessage = `${codeSection}Please analyze my current code. What's working well and what needs to be improved to complete the challenge?`
 		break
 	case "hint":
-		userMessage = generateHintMessage(challengeData, conversationHistory)
+		userMessage = `${codeSection}${generateHintMessage(challengeData, conversationHistory)}`
 		break
 	case "generalQuestion":
-		userMessage = message || "I have a question about this robotics challenge."
+		userMessage = `${codeSection}${message || "I have a question about this challenge."}`
 		break
 	}
 
