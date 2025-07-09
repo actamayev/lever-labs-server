@@ -35,8 +35,8 @@ ${challengeData.commonMistakes.map(mistake => `- ${mistake}`).join("\n")}
 
 ROBOTICS PROGRAMMING PATTERNS:
 - 🤖 Sense → Think → Act: Always read sensors before making decisions
-- 🔄 Use forever loops (while(true)) for continuous robot behavior
-- 💡 Provide LED feedback to show what the robot is "thinking"
+- 🔄 Use forever loops (while(true)) for continuous Pip behavior
+- 💡 Provide LED feedback to show what Pip is "thinking"
 - 🏗️ Structure: setup → wait for button → main behavior loop
 - 🧪 Test one feature at a time (e.g., just sensors, then just motors, then combined)
 

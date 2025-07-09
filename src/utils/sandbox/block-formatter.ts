@@ -1,4 +1,4 @@
-import { groupBy } from "lodash"
+import { groupBy, isNull } from "lodash"
 import { BlockNames, AvailableBlock, ParentCategoryName,
 	SensorCategoryName, LogicCategoryName, BLOCK_REGISTRY } from "@bluedotrobots/common-ts"
 
@@ -14,7 +14,7 @@ export class BlockFormatter {
 
 	// Public methods stay the same, but now use caching
 	public static formatBlocksForSandboxLLMContext(): string {
-		if (this._formattedSandboxText === null) {
+		if (isNull(this._formattedSandboxText)) {
 			const { flatCategories, hierarchicalBlocks } = this.getCategorizedBlocks()
 
 			let formattedText = ""
@@ -46,7 +46,7 @@ export class BlockFormatter {
 
 	// Cached helper methods
 	private static getAllSandboxBlocks(): AvailableBlock[] {
-		if (this._allSandboxBlocks === null) {
+		if (isNull(this._allSandboxBlocks)) {
 			this._allSandboxBlocks = Object.entries(BLOCK_REGISTRY).map(([blockType, definition]) => ({
 				type: blockType as BlockNames,
 				description: definition.description,
@@ -57,7 +57,7 @@ export class BlockFormatter {
 	}
 
 	private static getCategorizedBlocks(): CategorizedBlocks {
-		if (this._categorizedBlocks === null) {
+		if (isNull(this._categorizedBlocks)) {
 			const allBlocks = this.getAllSandboxBlocks()
 			this._categorizedBlocks = this.categorizeBlocks(allBlocks)
 		}
@@ -78,6 +78,7 @@ export class BlockFormatter {
 
 			if (blockDef.parentCategory) {
 				// This is a hierarchical block
+				// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 				if (!hierarchicalBlocks[blockDef.parentCategory][blockDef.category]) {
 					hierarchicalBlocks[blockDef.parentCategory][blockDef.category] = []
 				}
@@ -236,6 +237,7 @@ export class BlockFormatter {
 					? `${blockDef.parentCategory} > ${blockDef.category}`
 					: blockDef.category
 
+				// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 				if (!acc[categoryKey]) {
 					acc[categoryKey] = []
 				}
