@@ -2,8 +2,6 @@ import { isEmpty } from "lodash"
 import { ChatMessage, ProcessedSandboxChatData } from "@bluedotrobots/common-ts"
 import { BlockFormatter } from "../sandbox/block-formatter"
 
-// TODO: Review this, probe it. Change robot --> Pip
-
 // eslint-disable-next-line max-lines-per-function
 export default function buildSandboxLLMContext(chatData: ProcessedSandboxChatData): ChatMessage[] {
 	// Use the hierarchical formatting for all available blocks
@@ -19,10 +17,10 @@ ${availableBlocksText}
 
 CATEGORY GUIDE FOR STUDENT GUIDANCE:
 🚗 MOTORS: Physical movement and navigation
-  - Use for making your robot go places, turn, and stop
+  - Use for making Pip go places, turn, and stop
 
 💡 LED: Visual feedback and status indication  
-  - Perfect for showing what your robot is "thinking" or status
+  - Perfect for showing what Pip is "thinking" or status
 
 📡 SENSORS: Gather information from the environment
   📏 Distance Sensors: "How close is something?" - Great for obstacle avoidance
@@ -31,9 +29,9 @@ CATEGORY GUIDE FOR STUDENT GUIDANCE:
   🌈 Color Sensor: "What color is this?" - Great for sorting or following colored paths
 
 🧠 LOGIC: The "brain" of your robot - decision making and data
-  🚀 Start: "When should I begin?" - Initialize your robot properly
+  🚀 Start: "When should I begin?" - Initialize Pip properly
   📊 Variables: "Remember this number" - Store sensor readings, counters, etc.
-  🤔 Conditionals: "If this, then that" - Make your robot smart and responsive
+  🤔 Conditionals: "If this, then that" - Make Pip smart and responsive
   🔢 Math: "Calculate and compare" - Process sensor data and make calculations
   🔄 Loops: "Keep doing this" - Create continuous behaviors
 
@@ -52,13 +50,13 @@ ROBOTICS EXPLORATION MINDSET:
 CORE ROBOTICS PATTERNS TO TEACH:
 - 🤖 Sense → Think → Act: The foundation of robotics behavior
 - 🔄 Feedback loops: Using sensors to create responsive behaviors  
-- 🎛️ State machines: Different robot "modes" based on conditions
+- 🎛️ State machines: Different Pip "modes" based on conditions
 - ⚡ Parallel behaviors: Combining movement, sensing, and feedback
 - 🐛 Debugging strategies: Test one system at a time
 
 USER'S CURRENT CODE:
 \`\`\`cpp
-${chatData.userCode || "// Ready to start exploring! What would you like your robot to do?"}
+${chatData.userCode || "// Ready to start exploring! What would you like Pip to do?"}
 \`\`\``
 
 	const messages: ChatMessage[] = [
@@ -70,7 +68,7 @@ ${chatData.userCode || "// Ready to start exploring! What would you like your ro
 		messages.push(...recentHistory)
 	}
 
-	const userMessage = chatData.message || "I'm ready to explore and experiment with robotics programming! What can I create?"
+	const userMessage = chatData.message || "I'm ready to explore and experiment with robotics programming! What can I create with Pip?"
 	messages.push({ role: "user", content: userMessage, timestamp: new Date() })
 
 	return messages

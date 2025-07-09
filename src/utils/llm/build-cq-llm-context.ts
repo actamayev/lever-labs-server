@@ -3,7 +3,6 @@ import { isEmpty } from "lodash"
 import { ChallengeData, ChatMessage } from "@bluedotrobots/common-ts"
 import { BlockFormatter } from "../sandbox/block-formatter"
 
-
 // eslint-disable-next-line max-lines-per-function
 export default function buildCqLLMContext(
 	challengeData: ChallengeData,

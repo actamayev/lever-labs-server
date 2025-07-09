@@ -2,23 +2,69 @@ import { groupBy } from "lodash"
 import { BlockNames, AvailableBlock, ParentCategoryName,
 	SensorCategoryName, LogicCategoryName, BLOCK_REGISTRY } from "@bluedotrobots/common-ts"
 
+interface CategorizedBlocks {
+	flatCategories: Record<string, AvailableBlock[]>
+	hierarchicalBlocks: Record<ParentCategoryName, Record<string, AvailableBlock[]>>
+}
+
 export class BlockFormatter {
-	//Formats all available blocks for LLM context with hierarchical organization
+	private static _allSandboxBlocks: AvailableBlock[] | null = null
+	private static _categorizedBlocks: CategorizedBlocks | null = null
+	private static _formattedSandboxText: string | null = null
+
+	// Public methods stay the same, but now use caching
 	public static formatBlocksForSandboxLLMContext(): string {
-		const allBlocks = this.getAllSandboxBlocks()
-		const { flatCategories, hierarchicalBlocks } = this.categorizeBlocks(allBlocks)
+		if (this._formattedSandboxText === null) {
+			const { flatCategories, hierarchicalBlocks } = this.getCategorizedBlocks()
 
-		let formattedText = ""
-		formattedText += this.formatFlatCategories(flatCategories)
-		formattedText += this.formatHierarchicalCategories(hierarchicalBlocks)
+			let formattedText = ""
+			formattedText += this.formatFlatCategories(flatCategories)
+			formattedText += this.formatHierarchicalCategories(hierarchicalBlocks)
 
-		return formattedText.trim()
+			this._formattedSandboxText = formattedText.trim()
+		}
+
+		return this._formattedSandboxText
 	}
 
-	private static categorizeBlocks(allBlocks: AvailableBlock[]): {
-		flatCategories: Record<string, AvailableBlock[]>,
-		hierarchicalBlocks: Record<ParentCategoryName, Record<string, AvailableBlock[]>>
-	} {
+	public static formatChallengeBlocksForCqLLMContext(availableBlocks: AvailableBlock[]): string {
+		// This one can't be fully cached since availableBlocks changes per challenge
+		// But we can still use cached helper methods
+		const blocksByCategory = this.createChallengeCategories(availableBlocks)
+		const sortedCategories = this.sortCategoriesByHierarchy(Object.entries(blocksByCategory))
+
+		return sortedCategories
+			.map(([categoryPath, blocks]) => {
+				const blockList = blocks.map(block =>
+					this.formatBlockEntry(block, "challenge")
+				).join("\n")
+
+				const emoji = this.getCategoryEmojiUnified(categoryPath)
+				return `${emoji} ${categoryPath}:\n${blockList}`
+			}).join("\n\n")
+	}
+
+	// Cached helper methods
+	private static getAllSandboxBlocks(): AvailableBlock[] {
+		if (this._allSandboxBlocks === null) {
+			this._allSandboxBlocks = Object.entries(BLOCK_REGISTRY).map(([blockType, definition]) => ({
+				type: blockType as BlockNames,
+				description: definition.description,
+				codeTemplate: definition.codeTemplate
+			}))
+		}
+		return this._allSandboxBlocks
+	}
+
+	private static getCategorizedBlocks(): CategorizedBlocks {
+		if (this._categorizedBlocks === null) {
+			const allBlocks = this.getAllSandboxBlocks()
+			this._categorizedBlocks = this.categorizeBlocks(allBlocks)
+		}
+		return this._categorizedBlocks
+	}
+
+	private static categorizeBlocks(allBlocks: AvailableBlock[]): CategorizedBlocks {
 		const flatCategoryBlocks: AvailableBlock[] = []
 		const hierarchicalBlocks: Record<ParentCategoryName, Record<string, AvailableBlock[]>> = {
 			"Sensors": {},
@@ -117,44 +163,6 @@ export class BlockFormatter {
 		})
 
 		return formattedText
-	}
-	// Simpler format for challenges (less visual noise)
-	public static formatChallengeBlocksForCqLLMContext(availableBlocks: AvailableBlock[]): string {
-		const blocksByCategory = this.createChallengeCategories(availableBlocks) // CHANGED: use shared method
-
-		const sortedCategories = this.sortCategoriesByHierarchy(Object.entries(blocksByCategory)) // CHANGED: use shared sorting
-
-		return sortedCategories
-			.map(([categoryPath, blocks]) => {
-				const blockList = blocks.map(block =>
-					this.formatBlockEntry(block, "challenge") // CHANGED: use unified formatting
-				).join("\n")
-
-				const emoji = this.getCategoryEmojiUnified(categoryPath) // CHANGED: use unified emoji
-
-				return `${emoji} ${categoryPath}:\n${blockList}`
-			}).join("\n\n")
-	}
-
-	// Get all blocks for sandbox mode
-	private static getAllSandboxBlocks(): AvailableBlock[] {
-		return Object.entries(BLOCK_REGISTRY).map(([blockType, definition]) => ({
-			type: blockType as BlockNames,
-			description: definition.description,
-			codeTemplate: definition.codeTemplate
-		}))
-	}
-
-	// Private helper methods for emojis
-	private static getCategoryEmoji(category: string): string {
-		const emojis: Record<string, string> = {
-			"Motors": "🚗",
-			"LED": "💡",
-			"Screen": "📱",
-			"Speaker": "🔊",
-			"Buttons": "🎮"
-		}
-		return emojis[category] || "🔧"
 	}
 
 	private static getParentCategoryEmoji(parentCategory: ParentCategoryName): string {
