@@ -77,8 +77,12 @@ async function processLLMRequest(
 				content: msg.content
 			})),
 			stream: true,
-			temperature: 0.7,
-			max_completion_tokens: 1000
+
+			temperature: 0.6,              // Lower than 0.7 for more focused responses
+			max_completion_tokens: 1200,   // Slightly shorter to stay concise
+			presence_penalty: 0.4,         // Higher to avoid repetitive unsafe suggestions
+			frequency_penalty: 0.3,        // Reduce repetition of potentially problematic phrases
+			stop: ["```cpp\n// END", "\n---\n", "CHALLENGE COMPLETE"]
 		}, {
 			signal: abortSignal
 		})
