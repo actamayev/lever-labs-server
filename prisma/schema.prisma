@@ -361,6 +361,7 @@ model classroom {
 model teacher {
     teacher_id          										Int       @id @default(autoincrement())
     user_id             										Int       @unique  // One teacher record per user
+	teacher_name												String
 
     is_approved         										Boolean @default(false)
     classroom_teacher_map   									classroom_teacher_map[]

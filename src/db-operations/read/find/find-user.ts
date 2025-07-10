@@ -25,6 +25,7 @@ export async function findUserById(userId: number): Promise<ExtendedCredentials 
 				name: true,
 				created_at: true,
 				updated_at: true,
+				teacher_id: true,
 				profile_picture: {
 					select: {
 						image_url: true
@@ -73,6 +74,7 @@ export async function findUserByWhereCondition(
 				name: true,
 				created_at: true,
 				updated_at: true,
+				teacher_id: true,
 				profile_picture: {
 					select: {
 						image_url: true
