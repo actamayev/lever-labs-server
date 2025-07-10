@@ -8,7 +8,7 @@ export default async function getStudentClasses(req: Request, res: Response): Pr
 
 		const studentClasses = await retrieveStudentClasses(userId)
 
-		res.status(200).json({ ...studentClasses } as StudentClassroomData[])
+		res.status(200).json(studentClasses as StudentClassroomData[])
 		return
 	} catch (error) {
 		console.error(error)

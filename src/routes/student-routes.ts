@@ -9,7 +9,6 @@ import validateInviteResponse from "../middleware/request-validation/student/val
 
 import joinClass from "../controllers/student/join-class"
 import getStudentClasses from "../controllers/student/get-student-classes"
-import getPendingInvitations from "../controllers/student/get-pending-invitations"
 import respondToClassroomInvite from "../controllers/student/respond-to-classroom-invite"
 
 const studentRoutes = express.Router()
@@ -19,7 +18,6 @@ studentRoutes.post(
 	validateClassCode,
 	jwtVerifyAttachUserId,
 	confirmUserIsNotInClassroom,
-	attachStudentId,
 	joinClass
 )
 
@@ -37,12 +35,6 @@ studentRoutes.get(
 	"/classrooms",
 	jwtVerifyAttachUserId,
 	getStudentClasses
-)
-
-studentRoutes.get(
-	"/pending-invitations",
-	jwtVerifyAttachUserId,
-	getPendingInvitations
 )
 
 export default studentRoutes

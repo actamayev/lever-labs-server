@@ -4,9 +4,9 @@ import joinClassroom from "../../db-operations/write/student/join-classroom"
 
 export default async function joinClass(req: Request, res: Response): Promise<void> {
 	try {
-		const { studentId, classroomId } = req
+		const { userId, classroomId } = req
 
-		await joinClassroom(studentId, classroomId)
+		await joinClassroom(userId, classroomId)
 
 		res.status(200).json({ success: "" } as SuccessResponse)
 		return
