@@ -358,18 +358,33 @@ model classroom {
 	updated_at                                                  DateTime @default(now()) @updatedAt
 }
 
+model school {
+    school_id	          										Int       @id @default(autoincrement())
+	school_name													String @unique
+
+	teachers													teacher[]
+
+    created_at          										DateTime  @default(now())
+    updated_at          										DateTime @default(now()) @updatedAt
+}
+
 model teacher {
     teacher_id          										Int       @id @default(autoincrement())
     user_id             										Int       @unique  // One teacher record per user
-	teacher_name												String
+	teacher_first_name											String
+	teacher_last_name											String
+	school_id													Int
 
     is_approved         										Boolean @default(false)
     classroom_teacher_map   									classroom_teacher_map[]
     user                										credentials?
     student_invited     										student[]
+    school														school @relation(fields: [school_id], references: [school_id])
 
     created_at          										DateTime  @default(now())
     updated_at          										DateTime @default(now()) @updatedAt
+
+    @@index([school_id], name: "teacher__school_id_idx")
 }
 
 model classroom_teacher_map {

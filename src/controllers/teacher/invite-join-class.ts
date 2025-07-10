@@ -1,4 +1,4 @@
-import { isUndefined } from "lodash"
+import { isNull, isUndefined } from "lodash"
 import { Response, Request } from "express"
 import { ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
 import addStudent from "../../db-operations/write/student/add-student"
@@ -13,7 +13,7 @@ export default async function inviteStudentJoinClass(req: Request, res: Response
 		const teacherName = await getTeacherName(teacherId)
 		const classroomName = await getClassroomName(classroomId)
 
-		if (isUndefined(teacherName) || isUndefined(classroomName)) {
+		if (isNull(teacherName) || isUndefined(classroomName)) {
 			res.status(500).json({ error: "Unable to find teacher or classroom name" } as ErrorResponse)
 			return
 		}

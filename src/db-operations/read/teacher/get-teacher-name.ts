@@ -1,6 +1,7 @@
+import { TeacherName } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function getTeacherName(teacherId: number): Promise<string | undefined> {
+export default async function getTeacherName(teacherId: number): Promise<TeacherName | null> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -9,11 +10,15 @@ export default async function getTeacherName(teacherId: number): Promise<string 
 				user_id: teacherId
 			},
 			select: {
-				teacher_name: true
+				teacher_first_name: true,
+				teacher_last_name: true,
 			}
 		})
 
-		return teacherName?.teacher_name
+		return teacherName ? {
+			teacherFirstName: teacherName.teacher_first_name,
+			teacherLastName: teacherName.teacher_last_name
+		} : null
 	} catch (error) {
 		console.error(error)
 		throw error

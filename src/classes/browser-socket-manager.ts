@@ -9,7 +9,8 @@ import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
 	SandboxChatbotStreamChunkEvent,
 	SandboxChatbotStreamStartOrCompleteEvent,
 	ProjectUUID,
-	StudentInviteJoinClass} from "@bluedotrobots/common-ts"
+	StudentInviteJoinClass,
+	TeacherName} from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
@@ -361,7 +362,7 @@ export default class BrowserSocketManager extends Singleton {
 
 	public emitStudentInviteJoinClass(
 		studentId: number,
-		teacherName: string,
+		teacherNameInfo: TeacherName,
 		classroomName: string
 	): void {
 		const connectionInfo = this.connections.get(studentId)
@@ -369,7 +370,7 @@ export default class BrowserSocketManager extends Singleton {
 			console.warn(`No connection found for userId: ${studentId}`)
 			return
 		}
-		const event: StudentInviteJoinClass = { teacherName, classroomName }
+		const event: StudentInviteJoinClass = { teacherNameInfo, classroomName }
 		this.io.to(connectionInfo.socketId).emit("sandbox-chatbot-stream-complete", event)
 	}
 }
