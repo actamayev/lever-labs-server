@@ -6,6 +6,7 @@ import chatRoutes from "./routes/chat-routes"
 import garageRoutes from "./routes/garage-routes"
 import sandboxRoutes from "./routes/sandbox-routes"
 import teacherRoutes from "./routes/teacher-routes"
+import studentRoutes from "./routes/student-routes"
 import internalRoutes from "./routes/internal-routes"
 import workbenchRoutes from "./routes/workbench-routes"
 import careerQuestRoutes from "./routes/career-quest-routes"
@@ -23,6 +24,7 @@ export default function setupRoutes(app: Express): void {
 	app.use("/personal-info", personalInfoRoutes)
 	app.use("/pip", pipRoutes)
 	app.use("/sandbox", sandboxRoutes)
+	app.use("/student", studentRoutes)
 	app.use("/teacher", teacherRoutes)
 	app.use("/workbench", workbenchRoutes)
 	app.use("/internal", internalRoutes)

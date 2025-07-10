@@ -18,7 +18,7 @@ export default async function getDetailedTeacherClassroomData(teacherId: number)
 						class_code: true,
 						student: {
 							select: {
-								accepted_at: true,
+								joined_classroom_at: true,
 								user: {
 									select: {
 										username: true
@@ -37,7 +37,7 @@ export default async function getDetailedTeacherClassroomData(teacherId: number)
 			classCode: item.classroom.class_code,
 			students: item.classroom.student.map(student => ({
 				username: student.user.username || "",
-				didAccept: student.accepted_at !== null
+				didAccept: student.joined_classroom_at !== null
 			}))
 		}))
 	} catch (error) {

@@ -3,7 +3,6 @@ import { ClassCode, ClassCodeResponse, ErrorResponse, IncomingClassroomData } fr
 import generateClassroomCode from "../../utils/generate-classroom-code"
 import addClassroom from "../../db-operations/write/simultaneous-writes/add-classroom"
 
-// Modified controller
 export default async function createClassroom(req: Request, res: Response): Promise<void> {
 	try {
 		const { teacherId } = req

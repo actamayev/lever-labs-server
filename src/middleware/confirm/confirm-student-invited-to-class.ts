@@ -1,0 +1,26 @@
+import { InvitationStatus } from "@prisma/client"
+import { Request, Response, NextFunction } from "express"
+import { ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
+import retrieveStudentInviteStatus from "../../db-operations/read/student/retrieve-student-invite-status"
+
+export default async function confirmUserInvitedToClass(
+	req: Request,
+	res: Response,
+	next: NextFunction
+): Promise<void> {
+	try {
+		const { userId, classroomId } = req
+
+		const inviteStatus = await retrieveStudentInviteStatus(userId, classroomId)
+
+		if (inviteStatus !== InvitationStatus.PENDING) { //If joined Date exists, that means the user has already joined the class
+			res.status(400).json({ message: "You have already responded to this invite" } as MessageResponse)
+			return
+		}
+		next()
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm user is not already in class" } as ErrorResponse)
+		return
+	}
+}

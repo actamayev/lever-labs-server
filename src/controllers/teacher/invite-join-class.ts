@@ -9,7 +9,6 @@ import getClassroomName from "../../db-operations/read/classroom/get-classroom-n
 export default async function inviteStudentJoinClass(req: Request, res: Response): Promise<void> {
 	try {
 		const { teacherId, classroomId, studentId } = req
-		// TODO: Add a WS command to invite the user
 		await addStudent(teacherId, classroomId, studentId)
 		const teacherName = await getTeacherName(teacherId)
 		const classroomName = await getClassroomName(classroomId)

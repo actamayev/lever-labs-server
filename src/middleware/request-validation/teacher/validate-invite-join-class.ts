@@ -2,11 +2,9 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
-import classCodeValidator from "../../joi/class-code-validator"
 import usernameValidator from "../../joi/username-validator"
 
 const inviteJoinClassSchema = Joi.object({
-	classCode: classCodeValidator.required(),
 	username: usernameValidator.required().trim().min(3).max(100)
 }).required()
 

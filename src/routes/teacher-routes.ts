@@ -8,10 +8,9 @@ import validateCreateClassroom from "../middleware/request-validation/teacher/va
 import validateInviteJoinClass from "../middleware/request-validation/teacher/validate-invite-join-class"
 
 import createClassroom from "../controllers/teacher/create-classroom"
+import inviteStudentJoinClass from "../controllers/teacher/invite-join-class"
 import retrieveBasicClassroomInfo from "../controllers/teacher/retrieve-basic-classroom-info"
 import retrieveDetailedClassroomInfo from "../controllers/teacher/retrieve-detailed-classroom-info"
-import inviteStudentJoinClass from "../controllers/teacher/invite-join-class"
-import confirmClassCodeValid from "../middleware/confirm/confirm-class-code-valid"
 
 const teacherRoutes = express.Router()
 
@@ -39,12 +38,12 @@ teacherRoutes.get(
 )
 
 teacherRoutes.post(
-	"/invite-student-join-class",
+	"/invite-student-join-class/:classCode",
+	validateClassCode,
 	validateInviteJoinClass,
 	jwtVerifyAttachUserId,
 	confirmUserIsTeacher,
 	confirmUsernameExists,
-	confirmClassCodeValid,
 	inviteStudentJoinClass
 )
 

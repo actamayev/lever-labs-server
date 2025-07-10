@@ -393,14 +393,21 @@ enum InvitationMethod {
 	CLASS_CODE
 }
 
+enum InvitationStatus {
+    PENDING
+    ACCEPTED
+    DECLINED
+}
+
 model student {
-    student_id          										Int       @id @default(autoincrement())
-    user_id             										Int
-    classroom_id        										Int
-    teacher_id_invited  										Int?      // Optional - null for class code joins
-    invitation_method   										InvitationMethod
-    accepted_at         										DateTime? // null = pending, timestamp = accepted
-										
+    student_id              									Int       @id @default(autoincrement())
+    user_id                 									Int
+    classroom_id            									Int
+    teacher_id_invited      									Int?
+    invitation_method       									InvitationMethod
+    invitation_status       									InvitationStatus @default(PENDING)
+    joined_classroom_at     									DateTime? // Only set when ACCEPTED
+
     created_at          										DateTime  @default(now())
     updated_at          										DateTime  @default(now()) @updatedAt
 										
