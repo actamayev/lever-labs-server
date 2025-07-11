@@ -375,7 +375,7 @@ model teacher {
 	teacher_last_name											String
 	school_id													Int
 
-    is_approved         										Boolean @default(false)
+    is_approved         										Boolean?
     classroom_teacher_map   									classroom_teacher_map[]
     user                										credentials?
     student_invited     										student[]

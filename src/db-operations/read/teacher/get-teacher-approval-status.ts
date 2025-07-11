@@ -1,6 +1,6 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function getTeacherApprovalStatus(userId: number): Promise<boolean | undefined> {
+export default async function getTeacherApprovalStatus(userId: number): Promise<boolean | null | undefined> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 

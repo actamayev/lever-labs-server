@@ -1,4 +1,4 @@
-SELECT * FROM credentials where auth_method = 'google'; 
+-- SELECT * FROM credentials where auth_method = 'google'; 
 -- SELECT * FROM login_history;
 -- SELECT * FROM pip_uuid;
 -- SELECT * FROM user_pip_uuid_map;
@@ -6,6 +6,7 @@ SELECT * FROM credentials where auth_method = 'google';
 -- SELECT * FROM reading_question ORDER BY reading_question_id;
 -- SELECT * FROM reading_question_answer_choice ORDER BY reading_question_answer_choice_id;
 -- SELECT * FROM career_quest_message;
+-- SELECT * FROM teacher;
 -- DELETE FROM sandbox_message;
 
 -- DELETE FROM activity;

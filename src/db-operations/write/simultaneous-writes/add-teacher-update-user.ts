@@ -32,7 +32,6 @@ export default async function addTeacherUpdateUser(
 					teacher_first_name: becomeTeacherData.teacherFirstName,
 					teacher_last_name: becomeTeacherData.teacherLastName,
 					school_id: school.school_id,
-					is_approved: false // Requires approval
 				}
 			})
 

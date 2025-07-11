@@ -5,8 +5,8 @@ import addTeacherUpdateUser from "../../db-operations/write/simultaneous-writes/
 export default async function requestBecomeTeacher(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
-		const becomeTeacherData = req.body as IncomingTeacherRequestData
-		await addTeacherUpdateUser(userId, becomeTeacherData)
+		const { teacherRequestData } = req.body as { teacherRequestData: IncomingTeacherRequestData }
+		await addTeacherUpdateUser(userId, teacherRequestData)
 
 		res.status(200).json({ success: "" } as SuccessResponse)
 		return

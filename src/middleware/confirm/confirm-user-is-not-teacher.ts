@@ -1,3 +1,4 @@
+import { isNull } from "lodash"
 import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
 import getTeacherApprovalStatus from "../../db-operations/read/teacher/get-teacher-approval-status"
@@ -12,13 +13,16 @@ export default async function confirmUserIsNotTeacher(
 
 		const teacherApproved = await getTeacherApprovalStatus(userId)
 
-		if (teacherApproved) {
+		if (teacherApproved === true) {
 			res.status(400).json({ message: "You have already been approved to be a teacher"} as MessageResponse)
 			return
 		} else if (teacherApproved === false) {
 			res.status(400).json({
 				message: "Your application to be a teacher was not accepted. Please contact our support team"
 			} as MessageResponse)
+			return
+		} else if (isNull(teacherApproved)) {
+			res.status(400).json({ message: "Your application to be a teacher is still being processed." } as MessageResponse)
 			return
 		}
 		next()
