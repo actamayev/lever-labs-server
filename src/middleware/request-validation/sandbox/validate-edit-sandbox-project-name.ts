@@ -19,7 +19,7 @@ export default function validateEditSandboxProjectName(req: Request, res: Respon
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate edit sandbox project name" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate edit sandbox project name" } satisfies ErrorResponse)
 		return
 	}
 }

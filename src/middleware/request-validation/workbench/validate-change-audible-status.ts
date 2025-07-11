@@ -21,7 +21,7 @@ export default function validateChangeAudibleStatus(req: Request, res: Response,
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate change audible status" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate change audible status" } satisfies ErrorResponse)
 		return
 	}
 }

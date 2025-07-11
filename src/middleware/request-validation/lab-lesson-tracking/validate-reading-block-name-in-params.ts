@@ -19,7 +19,7 @@ export default function validateReadingBlockNameInParams(req: Request, res: Resp
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate reading block in params" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate reading block in params" } satisfies ErrorResponse)
 		return
 	}
 }

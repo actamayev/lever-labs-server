@@ -12,7 +12,7 @@ export default async function getSingleSandboxProject(req: Request, res: Respons
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve single sandbox project" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve single sandbox project" } satisfies ErrorResponse)
 		return
 	}
 }

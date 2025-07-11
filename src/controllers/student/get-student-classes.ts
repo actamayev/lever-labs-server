@@ -12,7 +12,7 @@ export default async function getStudentClasses(req: Request, res: Response): Pr
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to join classroom" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to join classroom" } satisfies ErrorResponse)
 		return
 	}
 }

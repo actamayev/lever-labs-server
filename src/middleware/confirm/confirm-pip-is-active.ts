@@ -19,7 +19,7 @@ export default function confirmPipIsActive(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm Pip is connected to the internet" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm Pip is connected to the internet" } satisfies ErrorResponse)
 		return
 	}
 }

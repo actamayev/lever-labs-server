@@ -13,7 +13,7 @@ export default async function retrieveCareerQuestChallengeData(req: Request, res
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to edit sandbox project" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to edit sandbox project" } satisfies ErrorResponse)
 		return
 	}
 }

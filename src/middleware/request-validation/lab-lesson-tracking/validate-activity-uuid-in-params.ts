@@ -19,7 +19,7 @@ export default function validateActivityUUIDInParams(req: Request, res: Response
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate activity UUID" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate activity UUID" } satisfies ErrorResponse)
 		return
 	}
 }

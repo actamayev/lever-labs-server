@@ -21,7 +21,7 @@ export default function checkIfUserConnectedToPip(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to check if user is connected to this Pip" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to check if user is connected to this Pip" } satisfies ErrorResponse)
 		return
 	}
 }

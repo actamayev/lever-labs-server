@@ -11,7 +11,7 @@ export default async function retrieveDetailedClassroomInfo(req: Request, res: R
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve detailed classroom info" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve detailed classroom info" } satisfies ErrorResponse)
 		return
 	}
 }

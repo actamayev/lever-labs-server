@@ -20,7 +20,7 @@ export default function validateSendSandboxMessage(req: Request, res: Response, 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate sandbox chatbot request" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate sandbox chatbot request" } satisfies ErrorResponse)
 		return
 	}
 }

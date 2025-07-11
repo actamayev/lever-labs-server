@@ -29,7 +29,7 @@ export default async function attachPipUUIDData(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm New Pip UUID Exists" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm New Pip UUID Exists" } satisfies ErrorResponse)
 		return
 	}
 }

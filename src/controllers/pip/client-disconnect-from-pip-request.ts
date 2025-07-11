@@ -9,11 +9,11 @@ export default function clientDisconnectFromPipRequest (req: Request, res: Respo
 
 		BrowserSocketManager.getInstance().addPipStatusToAccount(userId, pipUUID, "online")
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to disconnect from Pip" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to disconnect from Pip" } satisfies ErrorResponse)
 		return
 	}
 }

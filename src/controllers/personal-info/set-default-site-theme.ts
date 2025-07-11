@@ -9,11 +9,11 @@ export default async function setDefaultSiteTheme(req: Request, res: Response): 
 		const { defaultSiteTheme } = req.params as { defaultSiteTheme: SiteThemes }
 		await updateDefaultSiteTheme(userId, defaultSiteTheme)
 
-		res.status(200).json({ success: `Default site theme set to ${defaultSiteTheme}` } as SuccessResponse)
+		res.status(200).json({ success: `Default site theme set to ${defaultSiteTheme}` } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to set new default site theme" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to set new default site theme" } satisfies ErrorResponse)
 		return
 	}
 }

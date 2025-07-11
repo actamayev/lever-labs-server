@@ -21,7 +21,7 @@ export default function validateCppCode(req: Request, res: Response, next: NextF
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate C++ code" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate C++ code" } satisfies ErrorResponse)
 		return
 	}
 }

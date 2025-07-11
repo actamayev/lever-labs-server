@@ -30,7 +30,7 @@ export default async function validateClassCode(req: Request, res: Response, nex
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm Class Code is valid" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm Class Code is valid" } satisfies ErrorResponse)
 		return
 	}
 }

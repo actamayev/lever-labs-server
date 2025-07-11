@@ -20,7 +20,7 @@ export default function validateInviteJoinClass(req: Request, res: Response, nex
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm invite join class" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm invite join class" } satisfies ErrorResponse)
 		return
 	}
 }

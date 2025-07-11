@@ -20,7 +20,7 @@ export default function validatePipUUID (req: Request, res: Response, next: Next
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm Pip UUID is valid" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm Pip UUID is valid" } satisfies ErrorResponse)
 		return
 	}
 }

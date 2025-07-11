@@ -23,7 +23,7 @@ export default function validateLightAnimation(req: Request, res: Response, next
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate display lights" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate display lights" } satisfies ErrorResponse)
 		return
 	}
 }

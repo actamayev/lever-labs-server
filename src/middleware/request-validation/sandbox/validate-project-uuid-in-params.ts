@@ -19,7 +19,7 @@ export default function validateProjectUUIDInParams(req: Request, res: Response,
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate projectUUID" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate projectUUID" } satisfies ErrorResponse)
 		return
 	}
 }

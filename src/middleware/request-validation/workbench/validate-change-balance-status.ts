@@ -21,7 +21,7 @@ export default function validateChangeBalanceStatus(req: Request, res: Response,
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate change balance status" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate change balance status" } satisfies ErrorResponse)
 		return
 	}
 }

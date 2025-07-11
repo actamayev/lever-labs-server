@@ -27,7 +27,7 @@ export default async function confirmUserIsTeacher(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm if user is an approved teacher" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm if user is an approved teacher" } satisfies ErrorResponse)
 		return
 	}
 }

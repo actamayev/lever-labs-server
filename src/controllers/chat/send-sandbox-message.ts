@@ -31,7 +31,7 @@ export default function sendSandboxMessage(req: Request, res: Response): void {
 		console.error("Chatbot endpoint error:", error)
 		res.status(500).json({
 			error: "Internal Server Error: Unable to process chatbot request"
-		} as ErrorResponse)
+		} satisfies ErrorResponse)
 	}
 }
 

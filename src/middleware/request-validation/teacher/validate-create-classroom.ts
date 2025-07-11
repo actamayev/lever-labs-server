@@ -22,7 +22,7 @@ export default function validateCreateClassroom(req: Request, res: Response, nex
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to create classroom" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to create classroom" } satisfies ErrorResponse)
 		return
 	}
 }

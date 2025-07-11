@@ -12,7 +12,7 @@ export default async function retrieveUserActivityProgress(req: Request, res: Re
 		return
 	} catch (error: unknown) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve user activity progress" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve user activity progress" } satisfies ErrorResponse)
 		return
 	}
 }

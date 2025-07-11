@@ -21,7 +21,7 @@ export default async function createClassroom(req: Request, res: Response): Prom
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to create classroom" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to create classroom" } satisfies ErrorResponse)
 		return
 	}
 }

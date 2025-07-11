@@ -21,7 +21,7 @@ export default async function retrievePipUUIDStatus(req: Request, res: Response)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve PipUUID status" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve PipUUID status" } satisfies ErrorResponse)
 		return
 	}
 }

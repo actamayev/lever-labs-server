@@ -22,7 +22,7 @@ export default function validateUpdateName(req: Request, res: Response, next: Ne
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate name" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate name" } satisfies ErrorResponse)
 		return
 	}
 }

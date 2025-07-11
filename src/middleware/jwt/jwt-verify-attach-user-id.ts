@@ -26,7 +26,7 @@ export default async function jwtVerifyAttachUserId(req: Request, res: Response,
 	}
 
 	function handleUnauthorized(): void {
-		res.status(401).json({ error: "Unauthorized User" } as ErrorResponse)
+		res.status(401).json({ error: "Unauthorized User" } satisfies ErrorResponse)
 		return
 	}
 }

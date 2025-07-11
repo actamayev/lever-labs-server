@@ -8,11 +8,11 @@ export default async function changeAudibleStatus(req: Request, res: Response): 
 
 		await SendEsp32MessageManager.getInstance().changeAudibleStatus(pipUUID, audibleStatus)
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to change audible status" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to change audible status" } satisfies ErrorResponse)
 		return
 	}
 }

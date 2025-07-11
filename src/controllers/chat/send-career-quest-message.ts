@@ -31,7 +31,7 @@ export default function sendCareerQuestMessage(req: Request, res: Response): voi
 		console.error("Chatbot endpoint error:", error)
 		res.status(500).json({
 			error: "Internal Server Error: Unable to process chatbot request"
-		} as ErrorResponse)
+		} satisfies ErrorResponse)
 	}
 }
 

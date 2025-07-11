@@ -20,7 +20,7 @@ export default async function confirmUserIsNotInClassroom(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm user is not already in class" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm user is not already in class" } satisfies ErrorResponse)
 		return
 	}
 }

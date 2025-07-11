@@ -19,7 +19,7 @@ export default function validateEditSandboxProjectNotes(req: Request, res: Respo
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate edit sandbox project notes" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate edit sandbox project notes" } satisfies ErrorResponse)
 		return
 	}
 }

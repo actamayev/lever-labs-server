@@ -20,7 +20,7 @@ export default function validateSubscribeForEmailUpdates(req: Request, res: Resp
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate email" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate email" } satisfies ErrorResponse)
 		return
 	}
 }

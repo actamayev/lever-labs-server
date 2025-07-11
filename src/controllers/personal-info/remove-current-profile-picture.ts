@@ -8,11 +8,11 @@ export default async function removeCurrentProfilePicture (req: Request, res: Re
 
 		await markProfilePictureInactive(userId)
 
-		res.status(200).json({ success: "Removed Profile picture" } as SuccessResponse)
+		res.status(200).json({ success: "Removed Profile picture" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to remove profile picture" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to remove profile picture" } satisfies ErrorResponse)
 		return
 	}
 }

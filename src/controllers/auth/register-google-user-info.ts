@@ -28,7 +28,7 @@ export default async function registerGoogleInfo(req: Request, res: Response): P
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to register username" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to register username" } satisfies ErrorResponse)
 		return
 	}
 }

@@ -26,7 +26,7 @@ export default function validateLogin (req: Request, res: Response, next: NextFu
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate Login" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate Login" } satisfies ErrorResponse)
 		return
 	}
 }

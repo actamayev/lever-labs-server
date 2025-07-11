@@ -20,7 +20,7 @@ export default function validatePipUUIDInBody(req: Request, res: Response, next:
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate client connect to Pip request" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate client connect to Pip request" } satisfies ErrorResponse)
 		return
 	}
 }

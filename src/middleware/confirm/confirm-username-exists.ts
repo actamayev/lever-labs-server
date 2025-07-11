@@ -21,7 +21,7 @@ export default async function confirmUsernameExists(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm if username exists" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm if username exists" } satisfies ErrorResponse)
 		return
 	}
 }

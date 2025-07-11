@@ -28,7 +28,7 @@ export default function confirmUserConnectedToPip(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm user is connected to this Pip" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm user is connected to this Pip" } satisfies ErrorResponse)
 		return
 	}
 }

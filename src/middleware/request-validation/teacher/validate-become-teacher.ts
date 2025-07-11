@@ -23,7 +23,7 @@ export default function validateBecomeTeacher(req: Request, res: Response, next:
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate teacher data" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate teacher data" } satisfies ErrorResponse)
 		return
 	}
 }

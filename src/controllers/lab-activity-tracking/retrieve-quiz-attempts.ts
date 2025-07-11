@@ -10,7 +10,7 @@ export default async function retrieveQuizAttempts(req: Request, res: Response):
 		return
 	} catch (error: unknown) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve quizzes and attempts" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve quizzes and attempts" } satisfies ErrorResponse)
 		return
 	}
 }

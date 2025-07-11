@@ -30,7 +30,7 @@ export default function validateRegister (req: Request, res: Response, next: Nex
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate Registration" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate Registration" } satisfies ErrorResponse)
 		return
 	}
 }

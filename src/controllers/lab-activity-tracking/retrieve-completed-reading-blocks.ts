@@ -11,7 +11,7 @@ export default async function retrieveCompletedReadingBlocks(req: Request, res: 
 		return
 	} catch (error: unknown) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve completed reading blocks" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve completed reading blocks" } satisfies ErrorResponse)
 		return
 	}
 }

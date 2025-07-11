@@ -8,11 +8,11 @@ export default async function requestBecomeTeacher(req: Request, res: Response):
 		const { teacherRequestData } = req.body as { teacherRequestData: IncomingTeacherRequestData }
 		await addTeacherUpdateUser(userId, teacherRequestData)
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to create classroom" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to create classroom" } satisfies ErrorResponse)
 		return
 	}
 }

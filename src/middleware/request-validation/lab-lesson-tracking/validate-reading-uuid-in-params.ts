@@ -19,7 +19,7 @@ export default function validateReadingUUIDInParams(req: Request, res: Response,
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate reading UUID" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate reading UUID" } satisfies ErrorResponse)
 		return
 	}
 }

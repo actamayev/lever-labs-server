@@ -1,6 +1,6 @@
 import isNull from "lodash/isNull"
 import { Response, Request } from "express"
-import { ErrorResponse, LoginRequest, LoginSuccess, MessageResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse, LoginRequest, LoginSuccess, MessageResponse, TeacherData } from "@bluedotrobots/common-ts"
 import Hash from "../../classes/hash"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
@@ -41,6 +41,14 @@ export default async function login(req: Request, res: Response): Promise<void> 
 		const email = await encryptor.deterministicDecrypt(credentialsResult.email__encrypted, "EMAIL_ENCRYPTION_KEY")
 		await addLoginHistoryRecord(credentialsResult.user_id)
 
+		const teacherData: TeacherData | null = credentialsResult.teacher ? {
+			teacherId: credentialsResult.teacher.teacher_id,
+			teacherFirstName: credentialsResult.teacher.teacher_first_name,
+			teacherLastName: credentialsResult.teacher.teacher_last_name,
+			isApproved: credentialsResult.teacher.is_approved,
+			schoolName: credentialsResult.teacher.school.school_name
+		} : null
+
 		res.status(200).json({
 			accessToken,
 			personalInfo: {
@@ -49,14 +57,15 @@ export default async function login(req: Request, res: Response): Promise<void> 
 				defaultSiteTheme: credentialsResult.default_site_theme,
 				profilePictureUrl: credentialsResult.profile_picture?.image_url || null,
 				sandboxNotesOpen: credentialsResult.sandbox_notes_open,
-				name: credentialsResult.name
+				name: credentialsResult.name,
+				teacherData
 			},
 			userPipData
-		} as LoginSuccess)
+		} satisfies LoginSuccess)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Login" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Login" } satisfies ErrorResponse)
 		return
 	}
 }

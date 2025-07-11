@@ -25,7 +25,7 @@ export default function validateDecodeEmailSubscriber(req: Request, res: Respons
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate encrypted email" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate encrypted email" } satisfies ErrorResponse)
 		return
 	}
 }

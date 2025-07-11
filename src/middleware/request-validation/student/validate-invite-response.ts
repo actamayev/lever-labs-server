@@ -19,7 +19,7 @@ export default function validateInviteResponse(req: Request, res: Response, next
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate invite response" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate invite response" } satisfies ErrorResponse)
 		return
 	}
 }

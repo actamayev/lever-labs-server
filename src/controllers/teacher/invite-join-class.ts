@@ -14,15 +14,15 @@ export default async function inviteStudentJoinClass(req: Request, res: Response
 		const classroomName = await getClassroomName(classroomId)
 
 		if (isNull(teacherName) || isUndefined(classroomName)) {
-			res.status(500).json({ error: "Unable to find teacher or classroom name" } as ErrorResponse)
+			res.status(500).json({ error: "Unable to find teacher or classroom name" } satisfies ErrorResponse)
 			return
 		}
 		void BrowserSocketManager.getInstance().emitStudentInviteJoinClass(studentId, teacherName, classroomName)
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to invite student to join class" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to invite student to join class" } satisfies ErrorResponse)
 		return
 	}
 }

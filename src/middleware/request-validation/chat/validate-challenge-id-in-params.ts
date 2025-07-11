@@ -19,7 +19,7 @@ export default function validateChallengeIdInParams(req: Request, res: Response,
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate request" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate request" } satisfies ErrorResponse)
 		return
 	}
 }

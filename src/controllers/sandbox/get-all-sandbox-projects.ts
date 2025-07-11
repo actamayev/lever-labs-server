@@ -11,7 +11,7 @@ export default async function getAllSandboxProjects(req: Request, res: Response)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve sandbox project" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve sandbox project" } satisfies ErrorResponse)
 		return
 	}
 }

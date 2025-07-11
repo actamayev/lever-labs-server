@@ -13,7 +13,7 @@ export default function validateImageType (req: Request, res: Response, next: Ne
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate Image Type" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate Image Type" } satisfies ErrorResponse)
 		return
 	}
 }

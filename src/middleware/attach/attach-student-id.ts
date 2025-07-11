@@ -21,7 +21,7 @@ export default async function attachStudentId(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm if student exists" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm if student exists" } satisfies ErrorResponse)
 		return
 	}
 }

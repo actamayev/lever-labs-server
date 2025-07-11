@@ -19,7 +19,7 @@ export default function validateStreamId(req: Request, res: Response, next: Next
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate stream ID" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate stream ID" } satisfies ErrorResponse)
 		return
 	}
 }

@@ -19,7 +19,7 @@ export default function validateSetSandboxNotesOpenStatus (req: Request, res: Re
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate open status" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate open status" } satisfies ErrorResponse)
 		return
 	}
 }

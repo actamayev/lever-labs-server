@@ -13,10 +13,10 @@ export default function stopChatStream(req: Request, res: Response): void {
 			throw Error("Stream not found or already completed")
 		}
 
-		res.status(200).json({ success: "Stream stopped successfully"} as SuccessResponse)
+		res.status(200).json({ success: "Stream stopped successfully"} satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error("Stop chatbot stream error:", error)
-		res.status(500).json({ error: "Internal Server Error: Unable to stop stream" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to stop stream" } satisfies ErrorResponse)
 	}
 }

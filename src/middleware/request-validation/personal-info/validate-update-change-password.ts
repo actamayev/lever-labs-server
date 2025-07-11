@@ -26,7 +26,7 @@ export default function validateUpdateChangePassword(req: Request, res: Response
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate password" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate password" } satisfies ErrorResponse)
 		return
 	}
 }

@@ -8,11 +8,11 @@ export default async function joinClass(req: Request, res: Response): Promise<vo
 
 		await joinClassroom(userId, classroomId)
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to join classroom" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to join classroom" } satisfies ErrorResponse)
 		return
 	}
 }

@@ -8,7 +8,7 @@ export default async function subscribeForEmailUpdates (req: Request, res: Respo
 
 		await addEmailUpdateSubscriber(email)
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (error: any) {
@@ -17,7 +17,7 @@ export default async function subscribeForEmailUpdates (req: Request, res: Respo
 			res.status(400).json({ message: "Email is already subscribed." } as MessageResponse)
 			return
 		} else {
-			res.status(500).json({ error: "Internal Server Error: Unable to subscribe user for email updates" } as ErrorResponse)
+			res.status(500).json({ error: "Internal Server Error: Unable to subscribe user for email updates" } satisfies ErrorResponse)
 			return
 		}
 	}

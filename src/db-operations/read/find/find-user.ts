@@ -2,6 +2,7 @@ import isNull from "lodash/isNull"
 import PrismaClientClass from "../../../classes/prisma-client"
 import { validateExtendedCredentials } from "../../../utils/type-guards"
 
+// eslint-disable-next-line max-lines-per-function
 export async function findUserById(userId: number): Promise<ExtendedCredentials | null> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
@@ -32,6 +33,19 @@ export async function findUserById(userId: number): Promise<ExtendedCredentials 
 					},
 					where: {
 						is_active: true
+					}
+				},
+				teacher: {
+					select: {
+						teacher_id: true,
+						teacher_first_name: true,
+						teacher_last_name: true,
+						school: {
+							select: {
+								school_name: true
+							}
+						},
+						is_approved: true
 					}
 				}
 			}
@@ -81,6 +95,19 @@ export async function findUserByWhereCondition(
 					},
 					where: {
 						is_active: true
+					}
+				},
+				teacher: {
+					select: {
+						teacher_id: true,
+						teacher_first_name: true,
+						teacher_last_name: true,
+						school: {
+							select: {
+								school_name: true
+							}
+						},
+						is_approved: true
 					}
 				}
 			}

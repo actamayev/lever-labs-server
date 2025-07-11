@@ -19,7 +19,7 @@ export default function validateSubmitQuizAnswer(req: Request, res: Response, ne
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate quiz answer submit" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate quiz answer submit" } satisfies ErrorResponse)
 		return
 	}
 }

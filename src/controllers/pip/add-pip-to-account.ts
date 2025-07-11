@@ -25,7 +25,7 @@ export default async function addPipToAccount(req: Request, res: Response): Prom
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to add Pip to account" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to add Pip to account" } satisfies ErrorResponse)
 		return
 	}
 }

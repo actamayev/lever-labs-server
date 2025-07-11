@@ -19,7 +19,7 @@ export default function validateUpdateUsername (req: Request, res: Response, nex
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate username" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate username" } satisfies ErrorResponse)
 		return
 	}
 }

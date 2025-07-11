@@ -11,7 +11,7 @@ export default async function retrievePreviouslyAddedPips (req: Request, res: Re
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve previously added Pips" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve previously added Pips" } satisfies ErrorResponse)
 		return
 	}
 }

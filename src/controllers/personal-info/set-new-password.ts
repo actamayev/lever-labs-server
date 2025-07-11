@@ -23,11 +23,11 @@ export default async function setNewPassword(req: Request, res: Response): Promi
 
 		await updatePassword(user.user_id, newHashedPassword)
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to set new password" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to set new password" } satisfies ErrorResponse)
 		return
 	}
 }

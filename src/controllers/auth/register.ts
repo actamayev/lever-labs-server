@@ -41,7 +41,7 @@ export default async function register(req: Request, res: Response): Promise<voi
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Register New User" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Register New User" } satisfies ErrorResponse)
 		return
 	}
 }

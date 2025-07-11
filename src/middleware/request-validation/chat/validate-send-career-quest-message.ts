@@ -28,7 +28,7 @@ export default function validateSendCareerQuestMessage(req: Request, res: Respon
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate chatbot request" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate chatbot request" } satisfies ErrorResponse)
 		return
 	}
 }

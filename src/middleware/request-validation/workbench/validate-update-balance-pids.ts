@@ -30,7 +30,7 @@ export default function validateUpdateBalancePids(req: Request, res: Response, n
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate update balance pids" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate update balance pids" } satisfies ErrorResponse)
 		return
 	}
 }

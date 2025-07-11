@@ -19,7 +19,7 @@ export default async function confirmUsernameNotTaken(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm if this username is already taken" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm if this username is already taken" } satisfies ErrorResponse)
 		return
 	}
 }

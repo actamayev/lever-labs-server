@@ -20,7 +20,7 @@ export default function validateGoogleLoginAuthCallback (req: Request, res: Resp
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate Google Login Callback" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate Google Login Callback" } satisfies ErrorResponse)
 		return
 	}
 }

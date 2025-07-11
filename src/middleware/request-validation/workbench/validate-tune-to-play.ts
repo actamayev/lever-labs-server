@@ -21,7 +21,7 @@ export default function validateTuneToPlay(req: Request, res: Response, next: Ne
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate tune to play" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate tune to play" } satisfies ErrorResponse)
 		return
 	}
 }

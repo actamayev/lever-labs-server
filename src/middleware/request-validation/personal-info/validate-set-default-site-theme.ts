@@ -19,7 +19,7 @@ export default function validateSetDefaultSiteTheme (req: Request, res: Response
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate Default Site Theme" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate Default Site Theme" } satisfies ErrorResponse)
 		return
 	}
 }

@@ -21,7 +21,7 @@ export default async function confirmUserPreviouslyAddedUUID(
 	} catch (error) {
 		console.error(error)
 		res.status(500).json(
-			{ error: "Internal Server Error: Unable to confirm user hasn't already registered this pip UUID" } as ErrorResponse
+			{ error: "Internal Server Error: Unable to confirm user hasn't already registered this pip UUID" } satisfies ErrorResponse
 		)
 		return
 	}
