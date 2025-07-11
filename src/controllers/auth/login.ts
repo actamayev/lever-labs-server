@@ -1,10 +1,11 @@
 import isNull from "lodash/isNull"
 import { Response, Request } from "express"
-import { ErrorResponse, LoginRequest, LoginSuccess, MessageResponse, TeacherData } from "@bluedotrobots/common-ts"
+import { ErrorResponse, LoginRequest, LoginSuccess, MessageResponse } from "@bluedotrobots/common-ts"
 import Hash from "../../classes/hash"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import determineLoginContactType from "../../utils/auth-helpers/determine-contact-type"
+import extractTeacherDataFromUserData from "../../utils/extract-teacher-data-from-user-data"
 import retrieveUserFromContact from "../../utils/auth-helpers/login/retrieve-user-from-contact"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
@@ -41,14 +42,6 @@ export default async function login(req: Request, res: Response): Promise<void> 
 		const email = await encryptor.deterministicDecrypt(credentialsResult.email__encrypted, "EMAIL_ENCRYPTION_KEY")
 		await addLoginHistoryRecord(credentialsResult.user_id)
 
-		const teacherData: TeacherData | null = credentialsResult.teacher ? {
-			teacherId: credentialsResult.teacher.teacher_id,
-			teacherFirstName: credentialsResult.teacher.teacher_first_name,
-			teacherLastName: credentialsResult.teacher.teacher_last_name,
-			isApproved: credentialsResult.teacher.is_approved,
-			schoolName: credentialsResult.teacher.school.school_name
-		} : null
-
 		res.status(200).json({
 			accessToken,
 			personalInfo: {
@@ -58,7 +51,7 @@ export default async function login(req: Request, res: Response): Promise<void> 
 				profilePictureUrl: credentialsResult.profile_picture?.image_url || null,
 				sandboxNotesOpen: credentialsResult.sandbox_notes_open,
 				name: credentialsResult.name,
-				teacherData
+				teacherData: extractTeacherDataFromUserData(credentialsResult)
 			},
 			userPipData
 		} satisfies LoginSuccess)

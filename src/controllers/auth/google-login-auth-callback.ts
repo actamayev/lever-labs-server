@@ -1,18 +1,19 @@
 import { Request, Response } from "express"
 import { SiteThemes } from "@prisma/client"
 import { isNull, isUndefined } from "lodash"
-import { ErrorResponse, GoogleAuthSuccess, MessageResponse, PersonalInfoResponse, PipData, TeacherData } from "@bluedotrobots/common-ts"
+import { ErrorResponse, GoogleAuthSuccess, MessageResponse, PersonalInfoResponse, PipData } from "@bluedotrobots/common-ts"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import SecretsManager from "../../classes/aws/secrets-manager"
 import { findUserById } from "../../db-operations/read/find/find-user"
 import { addGoogleUser } from "../../db-operations/write/credentials/add-user"
 import createGoogleAuthClient from "../../utils/google/create-google-auth-client"
+import extractTeacherDataFromUserData from "../../utils/extract-teacher-data-from-user-data"
 import retrieveUserIdByEmail from "../../db-operations/read/credentials/retrieve-user-id-by-email"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
 
-// eslint-disable-next-line max-lines-per-function, complexity
+// eslint-disable-next-line max-lines-per-function
 export default async function googleLoginAuthCallback (req: Request, res: Response): Promise<void> {
 	try {
 		const { idToken, siteTheme } = req.body
@@ -56,13 +57,6 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 				res.status(400).json({ message: `There is no Blue Dot Robots account associated with ${payload.email}. Please try again.` } satisfies MessageResponse)
 				return
 			}
-			const teacherData: TeacherData | null = credentialsResult.teacher ? {
-				teacherId: credentialsResult.teacher.teacher_id,
-				teacherFirstName: credentialsResult.teacher.teacher_first_name,
-				teacherLastName: credentialsResult.teacher.teacher_last_name,
-				isApproved: credentialsResult.teacher.is_approved,
-				schoolName: credentialsResult.teacher.school.school_name
-			} : null
 			personalInfo = {
 				username: credentialsResult.username as string,
 				email: payload.email,
@@ -70,7 +64,7 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 				profilePictureUrl: credentialsResult.profile_picture?.image_url || null,
 				sandboxNotesOpen: credentialsResult.sandbox_notes_open,
 				name: credentialsResult.name,
-				teacherData
+				teacherData: extractTeacherDataFromUserData(credentialsResult)
 			}
 		}
 

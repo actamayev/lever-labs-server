@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import Encryptor from "../../classes/encryptor"
-import { ErrorResponse, PersonalInfoResponse, TeacherData } from "@bluedotrobots/common-ts"
+import { ErrorResponse, PersonalInfoResponse } from "@bluedotrobots/common-ts"
+import extractTeacherDataFromUserData from "../../utils/extract-teacher-data-from-user-data"
 
 export default async function getPersonalInfo(req: Request, res: Response): Promise<void> {
 	try {
@@ -9,21 +10,14 @@ export default async function getPersonalInfo(req: Request, res: Response): Prom
 		const encryptor = new Encryptor()
 		const email = await encryptor.deterministicDecrypt(user.email__encrypted, "EMAIL_ENCRYPTION_KEY")
 
-		const teacherData: TeacherData | null = user.teacher ? {
-			teacherId: user.teacher.teacher_id,
-			teacherFirstName: user.teacher.teacher_first_name,
-			teacherLastName: user.teacher.teacher_last_name,
-			isApproved: user.teacher.is_approved,
-			schoolName: user.teacher.school.school_name
-		} : null
 		res.status(200).json({
-			username: user.username,
+			username: user.username as string,
 			email,
 			defaultSiteTheme: user.default_site_theme,
 			profilePictureUrl: user.profile_picture?.image_url || null,
 			sandboxNotesOpen: user.sandbox_notes_open,
 			name: user.name,
-			teacherData
+			teacherData: extractTeacherDataFromUserData(user)
 		} satisfies PersonalInfoResponse)
 		return
 	} catch (error) {
