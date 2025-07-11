@@ -1,4 +1,4 @@
-import { DetailedClassroomData } from "@bluedotrobots/common-ts"
+import { ClassCode, DetailedClassroomData } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 // eslint-disable-next-line max-lines-per-function
@@ -34,7 +34,7 @@ export default async function getDetailedTeacherClassroomData(teacherId: number)
 		return classrooms.map(item => ({
 			classroomName: item.classroom.classroom_name,
 			classroomDescription: item.classroom.classroom_description,
-			classCode: item.classroom.class_code,
+			classCode: item.classroom.class_code as ClassCode,
 			students: item.classroom.student.map(student => ({
 				username: student.user.username || "",
 				didAccept: student.joined_classroom_at !== null

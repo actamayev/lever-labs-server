@@ -1,4 +1,4 @@
-import { BasicTeacherClassroomData } from "@bluedotrobots/common-ts"
+import { BasicTeacherClassroomData, ClassCode } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function getTeacherClassrooms(teacherId: number): Promise<BasicTeacherClassroomData[]> {
@@ -23,7 +23,7 @@ export default async function getTeacherClassrooms(teacherId: number): Promise<B
 		return classrooms.map(item => ({
 			classroomName: item.classroom.classroom_name,
 			classroomDescription: item.classroom.classroom_description,
-			classCode: item.classroom.class_code
+			classCode: item.classroom.class_code as ClassCode
 		}))
 	} catch (error) {
 		console.error(error)

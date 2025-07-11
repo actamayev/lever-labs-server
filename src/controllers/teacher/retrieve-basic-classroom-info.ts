@@ -7,7 +7,7 @@ export default async function retrieveBasicClassroomInfo(req: Request, res: Resp
 		const { teacherId } = req
 		const classrooms = await getTeacherClassrooms(teacherId)
 
-		res.status(200).json({ ...classrooms } satisfies BasicTeacherClassroomData[])
+		res.status(200).json(classrooms satisfies BasicTeacherClassroomData[])
 		return
 	} catch (error) {
 		console.error(error)
