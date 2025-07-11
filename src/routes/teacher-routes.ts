@@ -8,8 +8,10 @@ import validateClassCode from "../middleware/request-validation/teacher/validate
 import validateBecomeTeacher from "../middleware/request-validation/teacher/validate-become-teacher"
 import validateCreateClassroom from "../middleware/request-validation/teacher/validate-create-classroom"
 import validateInviteJoinClass from "../middleware/request-validation/teacher/validate-invite-join-class"
+import validateTeacherNameData from "../middleware/request-validation/teacher/validate-teacher-name-data"
 
 import createClassroom from "../controllers/teacher/create-classroom"
+import editTeacherName from "../controllers/teacher/edit-teacher-name-data"
 import inviteStudentJoinClass from "../controllers/teacher/invite-join-class"
 import requestBecomeTeacher from "../controllers/teacher/request-become-teacher"
 import retrieveBasicClassroomInfo from "../controllers/teacher/retrieve-basic-classroom-info"
@@ -23,6 +25,13 @@ teacherRoutes.post(
 	jwtVerifyAttachUserId,
 	confirmUserIsNotTeacher,
 	requestBecomeTeacher
+)
+
+teacherRoutes.post(
+	"/edit-teacher-name-data",
+	validateTeacherNameData,
+	jwtVerifyAttachUserId,
+	editTeacherName
 )
 
 teacherRoutes.post(
