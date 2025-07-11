@@ -6,14 +6,14 @@ import addClassroom from "../../db-operations/write/simultaneous-writes/add-clas
 export default async function createClassroom(req: Request, res: Response): Promise<void> {
 	try {
 		const { teacherId } = req
-		const classroomData = req.body as IncomingClassroomData
+		const { createClassroomData } = req.body as { createClassroomData: IncomingClassroomData }
 
 		let classCode: ClassCode
 
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		while (true) {
 			classCode = generateClassroomCode()
-			const success = await addClassroom({ ...classroomData, classCode }, teacherId)
+			const success = await addClassroom({ ...createClassroomData, classCode }, teacherId)
 			if (success) break // Exit loop if the classroom was successfully created
 		}
 
