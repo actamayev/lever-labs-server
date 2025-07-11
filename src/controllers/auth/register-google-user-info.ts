@@ -9,13 +9,13 @@ export default async function registerGoogleInfo(req: Request, res: Response): P
 	try {
 		const { user } = req
 		if (!isNull(user.username)) {
-			res.status(400).json({ message: "You've already registered a username for this account" } as MessageResponse)
+			res.status(400).json({ message: "You've already registered a username for this account" } satisfies MessageResponse)
 			return
 		}
 		const googleData = req.body as NewGoogleInfoRequest
 		const usernameExists = await doesUsernameExist(googleData.username)
 		if (usernameExists === true) {
-			res.status(400).json({ message: "Username already taken" } as MessageResponse)
+			res.status(400).json({ message: "Username already taken" } satisfies MessageResponse)
 			return
 		}
 
@@ -24,7 +24,7 @@ export default async function registerGoogleInfo(req: Request, res: Response): P
 		const email = await encryptor.deterministicDecrypt(user.email__encrypted, "EMAIL_ENCRYPTION_KEY")
 
 		// We're returning the email in the response for the client to update their UI
-		res.status(200).json({ email } as EmailUpdatesRequest)
+		res.status(200).json({ email } satisfies EmailUpdatesRequest)
 		return
 	} catch (error) {
 		console.error(error)

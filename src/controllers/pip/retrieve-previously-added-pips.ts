@@ -7,7 +7,7 @@ export default async function retrievePreviouslyAddedPips (req: Request, res: Re
 		const { userId } = req
 		const userPipData = await retrieveUserPipUUIDsDetails(userId)
 
-		res.status(200).json({ userPipData } as { userPipData: PipData[]})
+		res.status(200).json({ userPipData } satisfies { userPipData: PipData[]})
 		return
 	} catch (error) {
 		console.error(error)

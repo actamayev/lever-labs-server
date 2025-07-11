@@ -14,13 +14,13 @@ export default async function confirmUserIsTeacher(
 		const teacherApproved = await getTeacherApprovalStatus(userId)
 
 		 if (teacherApproved === false) {
-			res.status(400).json({ message: "You have not yet been approved to be a teacher"} as MessageResponse)
+			res.status(400).json({ message: "You have not yet been approved to be a teacher"} satisfies MessageResponse)
 			return
 		} else if (isUndefined(teacherApproved)) {
-			res.status(400).json({ message: "Please apply to be registered as a teacher"} as MessageResponse)
+			res.status(400).json({ message: "Please apply to be registered as a teacher"} satisfies MessageResponse)
 			return
 		} else if (isNull(teacherApproved)) {
-			res.status(400).json({ message: "Your application to be a teacher is still being processed." } as MessageResponse)
+			res.status(400).json({ message: "Your application to be a teacher is still being processed." } satisfies MessageResponse)
 			return
 		}
 		req.teacherId = userId

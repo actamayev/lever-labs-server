@@ -18,18 +18,18 @@ export default async function login(req: Request, res: Response): Promise<void> 
 		const credentialsResult = await retrieveUserFromContact(contact, loginContactType)
 		if (isNull(credentialsResult)) {
 			res.status(400).json(
-				{ message: `There is no Blue Dot Robots account associated with ${contact}. Please try again.` } as MessageResponse
+				{ message: `There is no Blue Dot Robots account associated with ${contact}. Please try again.` } satisfies MessageResponse
 			)
 			return
 		}
 		if (credentialsResult.auth_method === "google") {
-			res.status(400).json({ message: "Please log in with Google" } as MessageResponse)
+			res.status(400).json({ message: "Please log in with Google" } satisfies MessageResponse)
 			return
 		}
 
 		const doPasswordsMatch = await Hash.checkPassword(password, credentialsResult.password as HashedString)
 		if (doPasswordsMatch === false) {
-			res.status(400).json({ message: "Wrong password. Please try again." } as MessageResponse)
+			res.status(400).json({ message: "Wrong password. Please try again." } satisfies MessageResponse)
 			return
 		}
 
@@ -52,7 +52,7 @@ export default async function login(req: Request, res: Response): Promise<void> 
 		res.status(200).json({
 			accessToken,
 			personalInfo: {
-				username: credentialsResult.username,
+				username: credentialsResult.username as string,
 				email,
 				defaultSiteTheme: credentialsResult.default_site_theme,
 				profilePictureUrl: credentialsResult.profile_picture?.image_url || null,

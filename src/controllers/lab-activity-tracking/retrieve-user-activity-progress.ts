@@ -8,7 +8,7 @@ export default async function retrieveUserActivityProgress(req: Request, res: Re
 
 		const userActivityProgress = await retrieveUserActivityProgressDB(userId)
 
-		res.status(200).json({ userActivityProgress } as { userActivityProgress: UserActivityProgress[] })
+		res.status(200).json({ userActivityProgress } satisfies { userActivityProgress: UserActivityProgress[] })
 		return
 	} catch (error: unknown) {
 		console.error(error)

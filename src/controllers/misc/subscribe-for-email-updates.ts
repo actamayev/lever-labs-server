@@ -14,7 +14,7 @@ export default async function subscribeForEmailUpdates (req: Request, res: Respo
 	} catch (error: any) {
 		console.error(error)
 		if (error.code === "P2002") {
-			res.status(400).json({ message: "Email is already subscribed." } as MessageResponse)
+			res.status(400).json({ message: "Email is already subscribed." } satisfies MessageResponse)
 			return
 		} else {
 			res.status(500).json({ error: "Internal Server Error: Unable to subscribe user for email updates" } satisfies ErrorResponse)

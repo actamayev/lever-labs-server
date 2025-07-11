@@ -6,7 +6,7 @@ export default async function retrieveQuizAttempts(req: Request, res: Response):
 		const { userId, activityId } = req
 		const quizAttempts = await retrieveQuestionsFromActivity(userId, activityId)
 
-		res.status(200).json({ quizAttempts } as { quizAttempts: RetrievedQuestions[] })
+		res.status(200).json({ quizAttempts } satisfies { quizAttempts: RetrievedQuestions[] })
 		return
 	} catch (error: unknown) {
 		console.error(error)

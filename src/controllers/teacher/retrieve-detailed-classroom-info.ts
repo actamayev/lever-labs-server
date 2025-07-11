@@ -7,7 +7,7 @@ export default async function retrieveDetailedClassroomInfo(req: Request, res: R
 		const { teacherId } = req
 		const detailedClassroomInfo = await getDetailedTeacherClassroomData(teacherId)
 
-		res.status(200).json({ ...detailedClassroomInfo } as DetailedClassroomData[])
+		res.status(200).json({ ...detailedClassroomInfo } satisfies DetailedClassroomData[])
 		return
 	} catch (error) {
 		console.error(error)

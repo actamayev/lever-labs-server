@@ -13,7 +13,7 @@ export default function validateGoogleLoginAuthCallback (req: Request, res: Resp
 		const { error } = googleLoginAuthCallback.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
+			res.status(400).json({ validationError: error.details[0].message } satisfies ValidationErrorResponse)
 			return
 		}
 

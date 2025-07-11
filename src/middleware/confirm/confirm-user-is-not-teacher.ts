@@ -14,15 +14,15 @@ export default async function confirmUserIsNotTeacher(
 		const teacherApproved = await getTeacherApprovalStatus(userId)
 
 		if (teacherApproved === true) {
-			res.status(400).json({ message: "You have already been approved to be a teacher"} as MessageResponse)
+			res.status(400).json({ message: "You have already been approved to be a teacher"} satisfies MessageResponse)
 			return
 		} else if (teacherApproved === false) {
 			res.status(400).json({
 				message: "Your application to be a teacher was not accepted. Please contact our support team"
-			} as MessageResponse)
+			} satisfies MessageResponse)
 			return
 		} else if (isNull(teacherApproved)) {
-			res.status(400).json({ message: "Your application to be a teacher is still being processed." } as MessageResponse)
+			res.status(400).json({ message: "Your application to be a teacher is still being processed." } satisfies MessageResponse)
 			return
 		}
 		next()

@@ -14,7 +14,7 @@ export default async function attachStudentId(
 		const studentId = await retrieveStudentId(userId, classroomId)
 
 		if (isUndefined(studentId)) {
-			res.status(400).json({ message: "This user is not in this class" } as MessageResponse)
+			res.status(400).json({ message: "This user is not in this class" } satisfies MessageResponse)
 			return
 		}
 		req.studentId = studentId

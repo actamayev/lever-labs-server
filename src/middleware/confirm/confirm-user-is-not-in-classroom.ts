@@ -14,7 +14,7 @@ export default async function confirmUserIsNotInClassroom(
 		const joinedDate = await retrieveStudentClassroomStatus(userId, classroomId)
 
 		if (isDate(joinedDate)) { //If joined Date exists, that means the user has already joined the class
-			res.status(400).json({ message: "You are already in this class" } as MessageResponse)
+			res.status(400).json({ message: "You are already in this class" } satisfies MessageResponse)
 			return
 		}
 		next()

@@ -21,7 +21,7 @@ export default async function addPipToAccount(req: Request, res: Response): Prom
 
 		if (isUndefined(pipName)) pipName = pipUUIDData.pip_name || ""
 
-		res.status(200).json({ pipName, userPipUUIDId } as AddNewPipResponse)
+		res.status(200).json({ pipName, userPipUUIDId } satisfies AddNewPipResponse)
 		return
 	} catch (error) {
 		console.error(error)

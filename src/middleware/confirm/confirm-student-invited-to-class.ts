@@ -14,7 +14,7 @@ export default async function confirmUserInvitedToClass(
 		const inviteStatus = await retrieveStudentInviteStatus(userId, classroomId)
 
 		if (inviteStatus !== InvitationStatus.PENDING) { //If joined Date exists, that means the user has already joined the class
-			res.status(400).json({ message: "You have already responded to this invite" } as MessageResponse)
+			res.status(400).json({ message: "You have already responded to this invite" } satisfies MessageResponse)
 			return
 		}
 		next()

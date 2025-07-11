@@ -14,7 +14,7 @@ export default async function confirmUsernameExists(
 		const studentId = await retrieveUserIdByUsername(username)
 
 		if (isUndefined(studentId)) {
-			res.status(400).json({ message: "This username does not exist" } as MessageResponse)
+			res.status(400).json({ message: "This username does not exist" } satisfies MessageResponse)
 			return
 		}
 		req.studentId = studentId

@@ -18,7 +18,7 @@ export default function confirmOtherUserIsntConnectedToPip(
 			res.status(200).json({ success: "You are already connected to this Pip" } satisfies SuccessResponse)
 			return
 		} else if (!isUndefined(userIdConnectToPip)) {
-			res.status(400).json({ message: "Someone is already connected to this Pip"} as MessageResponse)
+			res.status(400).json({ message: "Someone is already connected to this Pip"} satisfies MessageResponse)
 			return
 		}
 		next()

@@ -10,7 +10,7 @@ export default async function attachReadingBlockIdFromReadingName(req: Request, 
 		const readingBlockId = await findReadingBlockIdFromReadingName(readingBlockName)
 
 		if (isNull(readingBlockId)) {
-			res.status(400).json({ message: "Reading Block ID doesn't exist" } as MessageResponse)
+			res.status(400).json({ message: "Reading Block ID doesn't exist" } satisfies MessageResponse)
 			return
 		}
 

@@ -9,13 +9,13 @@ export default async function setNewPassword(req: Request, res: Response): Promi
 		const { oldPassword, newPassword } = req.body
 
 		if (user.auth_method === "google") {
-			res.status(400).json({ message: "Please log in with Google" } as MessageResponse)
+			res.status(400).json({ message: "Please log in with Google" } satisfies MessageResponse)
 			return
 		}
 
 		const doPasswordsMatch = await Hash.checkPassword(oldPassword, user.password as HashedString)
 		if (doPasswordsMatch === false) {
-			res.status(400).json({ message: "Wrong password. Please try again." } as MessageResponse)
+			res.status(400).json({ message: "Wrong password. Please try again." } satisfies MessageResponse)
 			return
 		}
 

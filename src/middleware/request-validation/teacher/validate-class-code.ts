@@ -14,7 +14,7 @@ export default async function validateClassCode(req: Request, res: Response, nex
 		const { error } = classCodeSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
+			res.status(400).json({ validationError: error.details[0].message } satisfies ValidationErrorResponse)
 			return
 		}
 
@@ -23,7 +23,7 @@ export default async function validateClassCode(req: Request, res: Response, nex
 		const classroomId = await getClassroomIdFromClassCode(classCode)
 
 		if (isUndefined(classroomId)) {
-			res.status(400).json({ message: "This class code does not exist" } as MessageResponse)
+			res.status(400).json({ message: "This class code does not exist" } satisfies MessageResponse)
 			return
 		}
 		req.classroomId = classroomId

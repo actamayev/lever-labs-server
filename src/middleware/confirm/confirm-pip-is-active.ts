@@ -13,7 +13,7 @@ export default function confirmPipIsActive(
 		const isPipUUIDConnected = Esp32SocketManager.getInstance().isPipUUIDConnected(pipUUID)
 
 		if (isPipUUIDConnected === false) {
-			res.status(400).json({ message: "This Pip is not active/connected to the internet"} as MessageResponse)
+			res.status(400).json({ message: "This Pip is not active/connected to the internet"} satisfies MessageResponse)
 			return
 		}
 		next()

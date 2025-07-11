@@ -8,7 +8,7 @@ export default async function getSingleSandboxProject(req: Request, res: Respons
 
 		const sandboxProject = await retrieveSingleSandboxProjectData(sandboxProjectId)
 
-		res.status(200).json({ sandboxProject } as { sandboxProject: SandboxProject })
+		res.status(200).json({ sandboxProject } satisfies { sandboxProject: SandboxProject })
 		return
 	} catch (error) {
 		console.error(error)

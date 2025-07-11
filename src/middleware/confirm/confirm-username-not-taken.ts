@@ -13,7 +13,7 @@ export default async function confirmUsernameNotTaken(
 		const usernameExists = await doesUsernameExist(username)
 
 		if (usernameExists) {
-			res.status(400).json({ message: "This username is taken" } as MessageResponse)
+			res.status(400).json({ message: "This username is taken" } satisfies MessageResponse)
 			return
 		}
 		next()

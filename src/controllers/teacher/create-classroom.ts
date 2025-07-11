@@ -17,7 +17,7 @@ export default async function createClassroom(req: Request, res: Response): Prom
 			if (success) break // Exit loop if the classroom was successfully created
 		}
 
-		res.status(200).json({ classCode } as ClassCodeResponse)
+		res.status(200).json({ classCode } satisfies ClassCodeResponse)
 		return
 	} catch (error) {
 		console.error(error)

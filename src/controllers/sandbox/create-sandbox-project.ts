@@ -8,7 +8,7 @@ export default async function createSandboxProject(req: Request, res: Response):
 
 		const sandboxProject = await createSandboxProjectDB(userId)
 
-		res.status(200).json({ sandboxProject } as { sandboxProject: SandboxProject })
+		res.status(200).json({ sandboxProject } satisfies { sandboxProject: SandboxProject })
 		return
 	} catch (error) {
 		console.error(error)

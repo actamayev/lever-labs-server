@@ -53,7 +53,7 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 			const credentialsResult = await findUserById(userId)
 			if (isNull(credentialsResult)) {
 				// eslint-disable-next-line max-len
-				res.status(400).json({ message: `There is no Blue Dot Robots account associated with ${payload.email}. Please try again.` } as MessageResponse)
+				res.status(400).json({ message: `There is no Blue Dot Robots account associated with ${payload.email}. Please try again.` } satisfies MessageResponse)
 				return
 			}
 			const teacherData: TeacherData | null = credentialsResult.teacher ? {

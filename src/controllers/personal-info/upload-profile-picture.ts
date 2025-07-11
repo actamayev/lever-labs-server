@@ -8,7 +8,7 @@ export default async function uploadProfilePicture (req: Request, res: Response)
 	try {
 		const { userId } = req
 		if (isUndefined(req.file)) {
-			res.status(400).json({ message: "No image uploaded" } as MessageResponse)
+			res.status(400).json({ message: "No image uploaded" } satisfies MessageResponse)
 			return
 		}
 
@@ -20,7 +20,7 @@ export default async function uploadProfilePicture (req: Request, res: Response)
 
 		await upsertProfilePictureRecordAndUpdateUser(profilePictureUrl, originalname, uuid, userId)
 
-		res.status(200).json({ profilePictureUrl } as ProfilePictureUrl)
+		res.status(200).json({ profilePictureUrl } satisfies ProfilePictureUrl)
 		return
 	} catch (error) {
 		console.error(error)

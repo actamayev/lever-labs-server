@@ -17,13 +17,13 @@ export default async function register(req: Request, res: Response): Promise<voi
 		const encryptedEmail = await encryptor.deterministicEncrypt(registerInformation.email, "EMAIL_ENCRYPTION_KEY")
 		const emailExists = await doesEmailExist(encryptedEmail)
 		if (emailExists === true) {
-			res.status(400).json({ message: "Email already taken" } as MessageResponse)
+			res.status(400).json({ message: "Email already taken" } satisfies MessageResponse)
 			return
 		}
 
 		const usernameExists = await doesUsernameExist(registerInformation.username)
 		if (usernameExists === true) {
-			res.status(400).json({ message: "Username already taken" } as MessageResponse)
+			res.status(400).json({ message: "Username already taken" } satisfies MessageResponse)
 			return
 		}
 
@@ -37,7 +37,7 @@ export default async function register(req: Request, res: Response): Promise<voi
 
 		const accessToken = await signJWT({ userId, newUser: true })
 
-		res.status(200).json({ accessToken } as RegisterSuccess)
+		res.status(200).json({ accessToken } satisfies RegisterSuccess)
 		return
 	} catch (error) {
 		console.error(error)
