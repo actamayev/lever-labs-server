@@ -8,6 +8,7 @@ export default async function joinClass(req: Request, res: Response): Promise<vo
 
 		await joinClassroom(userId, classroomId)
 
+		// TODO: Return the basic classroom data so the user can be navigated there right after entering class code
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {

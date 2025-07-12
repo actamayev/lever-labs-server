@@ -23,7 +23,6 @@ export default async function retrieveStudentClasses(userId: number): Promise<St
 						classroom: {
 							select: {
 								classroom_name: true,
-								classroom_description: true,
 								class_code: true
 							}
 						}
@@ -36,7 +35,6 @@ export default async function retrieveStudentClasses(userId: number): Promise<St
 			invitationStatus: singleStudentData.invitation_status,
 			joinedClassroomAt: singleStudentData.joined_classroom_at,
 			classroomName: singleStudentData.classroom.classroom_name,
-			classroomDescription: singleStudentData.classroom.classroom_description,
 			classCode: singleStudentData.classroom.class_code as ClassCode
 		})) || []
 	} catch (error) {

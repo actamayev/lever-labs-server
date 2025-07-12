@@ -1,13 +1,8 @@
-import { IncomingClassroomData } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-interface ExtendedIncomingClassroomData extends IncomingClassroomData {
-	classCode: string
-}
-
-// Modified addClassroom function
 export default async function addClassroom(
-	classroomData: ExtendedIncomingClassroomData,
+	classroomName: string,
+	classCode: string,
 	teacherId: number
 ): Promise<boolean> {
 	try {
@@ -16,9 +11,8 @@ export default async function addClassroom(
 		await prismaClient.$transaction(async (prisma) => {
 			const createClassroomResponse = await prisma.classroom.create({
 				data: {
-					classroom_name: classroomData.classroomName,
-					classroom_description: classroomData.classroomDescription,
-					class_code: classroomData.classCode,
+					classroom_name: classroomName,
+					class_code: classCode,
 				}
 			})
 

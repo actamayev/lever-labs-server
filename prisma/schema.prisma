@@ -348,9 +348,8 @@ model career_quest_sandbox {
 model classroom {
 	classroom_id												Int       @id @default(autoincrement())
 	classroom_name												String
-	classroom_description										String?
 	class_code													String		@unique
-	
+
 	classroom_teacher_map										classroom_teacher_map[]
 	student														student[]
 

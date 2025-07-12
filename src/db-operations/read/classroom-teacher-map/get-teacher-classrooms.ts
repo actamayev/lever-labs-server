@@ -13,7 +13,6 @@ export default async function getTeacherClassrooms(teacherId: number): Promise<B
 				classroom: {
 					select: {
 						classroom_name: true,
-						classroom_description: true,
 						class_code: true
 					}
 				}
@@ -22,7 +21,6 @@ export default async function getTeacherClassrooms(teacherId: number): Promise<B
 
 		return classrooms.map(item => ({
 			classroomName: item.classroom.classroom_name,
-			classroomDescription: item.classroom.classroom_description,
 			classCode: item.classroom.class_code as ClassCode
 		}))
 	} catch (error) {

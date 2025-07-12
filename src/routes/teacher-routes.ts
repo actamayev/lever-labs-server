@@ -6,16 +6,18 @@ import confirmUsernameExists from "../middleware/confirm/confirm-username-exists
 import confirmUserIsNotTeacher from "../middleware/confirm/confirm-user-is-not-teacher"
 import validateClassCode from "../middleware/request-validation/teacher/validate-class-code"
 import validateBecomeTeacher from "../middleware/request-validation/teacher/validate-become-teacher"
-import validateCreateClassroom from "../middleware/request-validation/teacher/validate-create-classroom"
+import validateClassroomName from "../middleware/request-validation/teacher/validate-classroom-name"
 import validateInviteJoinClass from "../middleware/request-validation/teacher/validate-invite-join-class"
 import validateTeacherNameData from "../middleware/request-validation/teacher/validate-teacher-name-data"
 
 import createClassroom from "../controllers/teacher/create-classroom"
+import editClassroomName from "../controllers/teacher/edit-classroom-name"
 import editTeacherName from "../controllers/teacher/edit-teacher-name-data"
 import inviteStudentJoinClass from "../controllers/teacher/invite-join-class"
 import requestBecomeTeacher from "../controllers/teacher/request-become-teacher"
 import retrieveBasicClassroomInfo from "../controllers/teacher/retrieve-basic-classroom-info"
 import retrieveDetailedClassroomInfo from "../controllers/teacher/retrieve-detailed-classroom-info"
+import confirmClassBelongsToTeacher from "../middleware/confirm/confirm-class-belongs-to-teacher"
 
 const teacherRoutes = express.Router()
 
@@ -36,10 +38,21 @@ teacherRoutes.post(
 
 teacherRoutes.post(
 	"/create-classroom",
-	validateCreateClassroom,
+	validateClassroomName,
 	jwtVerifyAttachUserId,
 	confirmUserIsTeacher,
 	createClassroom
+)
+
+teacherRoutes.post(
+	"/edit-classroom-name/:classCode",
+	validateClassCode,
+	validateClassroomName,
+	jwtVerifyAttachUserId,
+	confirmUserIsTeacher,
+	confirmClassBelongsToTeacher,
+	// confirm this classroom belongs to this teacher
+	editClassroomName
 )
 
 teacherRoutes.get(
