@@ -7,7 +7,7 @@ export default async function editClassroomName(req: Request, res: Response): Pr
 		const { classCode } = req.params as { classCode: ClassCode }
 		const { classroomName } = req.body as { classroomName: string }
 
-		await updateClassroomName(classroomName, classCode)
+		await updateClassroomName(classCode, classroomName)
 
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return

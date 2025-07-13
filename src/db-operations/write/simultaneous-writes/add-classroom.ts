@@ -1,8 +1,9 @@
+import { ClassCode } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function addClassroom(
 	classroomName: string,
-	classCode: string,
+	classCode: ClassCode,
 	teacherId: number
 ): Promise<boolean> {
 	try {
@@ -12,7 +13,7 @@ export default async function addClassroom(
 			const createClassroomResponse = await prisma.classroom.create({
 				data: {
 					classroom_name: classroomName,
-					class_code: classCode,
+					class_code: classCode
 				}
 			})
 

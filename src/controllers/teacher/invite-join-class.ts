@@ -1,5 +1,5 @@
-import { isNull, isUndefined } from "lodash"
 import { Response, Request } from "express"
+import { isNull, isUndefined } from "lodash"
 import { ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
 import addStudent from "../../db-operations/write/student/add-student"
 import BrowserSocketManager from "../../classes/browser-socket-manager"

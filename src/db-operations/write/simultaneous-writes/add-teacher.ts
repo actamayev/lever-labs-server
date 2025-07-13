@@ -1,7 +1,7 @@
 import { IncomingTeacherRequestData } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function createTeacher(
+export default async function addTeacher(
 	userId: number,
 	becomeTeacherData: IncomingTeacherRequestData
 ): Promise<void> {

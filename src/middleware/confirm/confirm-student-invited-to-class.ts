@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
 import retrieveStudentInviteStatus from "../../db-operations/read/student/retrieve-student-invite-status"
 
-export default async function confirmUserInvitedToClass(
+export default async function confirmStudentInvitedToClass(
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -13,7 +13,7 @@ export default async function confirmUserInvitedToClass(
 
 		const inviteStatus = await retrieveStudentInviteStatus(studentId)
 
-		if (inviteStatus !== InvitationStatus.PENDING) { //If joined Date exists, that means the user has already joined the class
+		if (inviteStatus !== InvitationStatus.PENDING) {
 			res.status(400).json({ message: "You have already responded to this invite" } satisfies MessageResponse)
 			return
 		}

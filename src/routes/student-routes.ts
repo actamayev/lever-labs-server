@@ -2,7 +2,7 @@ import express from "express"
 
 import attachStudentId from "../middleware/attach/attach-student-id"
 import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
-import confirmUserInvitedToClass from "../middleware/confirm/confirm-student-invited-to-class"
+import confirmStudentInvitedToClass from "../middleware/confirm/confirm-student-invited-to-class"
 import confirmUserIsNotInClassroom from "../middleware/confirm/confirm-user-is-not-in-classroom"
 import validateInviteResponse from "../middleware/request-validation/student/validate-invite-response"
 import attachClassroomIdValidateClassCode from "../middleware/confirm/attach-classroom-id-attach-class-code"
@@ -27,7 +27,7 @@ studentRoutes.post(
 	validateInviteResponse,
 	jwtVerifyAttachUserId,
 	attachStudentId,
-	confirmUserInvitedToClass,
+	confirmStudentInvitedToClass,
 	respondToClassroomInvite
 )
 

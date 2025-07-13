@@ -1,8 +1,9 @@
+import { ClassCode } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function updateClassroomName(
-	newClassroomName: string,
-	classCode: string,
+	classCode: ClassCode,
+	newClassroomName: string
 ): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()

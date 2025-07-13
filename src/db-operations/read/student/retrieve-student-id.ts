@@ -4,7 +4,7 @@ export default async function retrieveStudentId(userId: number, classroomId: num
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		const studentId = await prismaClient.student.findUnique({
+		const student = await prismaClient.student.findUnique({
 			where: {
 				user_id_classroom_id: {
 					user_id: userId,
@@ -16,7 +16,7 @@ export default async function retrieveStudentId(userId: number, classroomId: num
 			}
 		})
 
-		return studentId?.student_id
+		return student?.student_id
 	} catch (error) {
 		console.error(error)
 		throw error
