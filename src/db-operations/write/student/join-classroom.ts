@@ -1,14 +1,16 @@
 import { InvitationMethod, InvitationStatus } from "@prisma/client"
+import { ClassCode, StudentClassroomData } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
+// eslint-disable-next-line max-lines-per-function
 export default async function joinClassroom(
 	studentId: number,
 	classroomId: number
-): Promise<void> {
+): Promise<StudentClassroomData> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		await prismaClient.student.upsert({
+		const result = await prismaClient.student.upsert({
 			where: {
 				user_id_classroom_id: {
 					user_id: studentId,
@@ -27,10 +29,18 @@ export default async function joinClassroom(
 				invitation_method: InvitationMethod.CLASS_CODE,
 				invitation_status: InvitationStatus.ACCEPTED,
 				joined_classroom_at: new Date()
+			},
+			include: {
+				classroom: true
 			}
 		})
 
-		return
+		return {
+			invitationStatus: "ACCEPTED",
+			joinedClassroomAt: result.joined_classroom_at,
+			classroomName: result.classroom.classroom_name,
+			classCode: result.classroom.class_code as ClassCode
+		}
 	} catch (error) {
 		console.error(error)
 		throw error
