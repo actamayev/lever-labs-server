@@ -31,10 +31,6 @@ studentRoutes.post(
 	respondToClassroomInvite
 )
 
-studentRoutes.get(
-	"/classrooms",
-	jwtVerifyAttachUserId,
-	getStudentClasses
-)
+studentRoutes.get("/classrooms", jwtVerifyAttachUserId, getStudentClasses)
 
 export default studentRoutes
