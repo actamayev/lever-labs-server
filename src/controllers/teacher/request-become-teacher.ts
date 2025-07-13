@@ -1,12 +1,12 @@
 import { Response, Request } from "express"
 import { ErrorResponse, IncomingTeacherRequestData, SuccessResponse } from "@bluedotrobots/common-ts"
-import addTeacherUpdateUser from "../../db-operations/write/simultaneous-writes/add-teacher-update-user"
+import createTeacher from "../../db-operations/write/simultaneous-writes/create-teacher"
 
 export default async function requestBecomeTeacher(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
 		const { teacherRequestData } = req.body as { teacherRequestData: IncomingTeacherRequestData }
-		await addTeacherUpdateUser(userId, teacherRequestData)
+		await createTeacher(userId, teacherRequestData)
 
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return

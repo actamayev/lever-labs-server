@@ -1,7 +1,7 @@
 import { IncomingTeacherRequestData } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function addTeacherUpdateUser(
+export default async function createTeacher(
 	userId: number,
 	becomeTeacherData: IncomingTeacherRequestData
 ): Promise<void> {
@@ -10,9 +10,13 @@ export default async function addTeacherUpdateUser(
 	await prismaClient.$transaction(async (prisma) => {
 		// Upsert school
 		const school = await prisma.school.upsert({
-			where: { school_name: becomeTeacherData.schoolName },
+			where: {
+				school_name: becomeTeacherData.schoolName
+			},
 			update: {}, // No updates needed if exists
-			create: { school_name: becomeTeacherData.schoolName }
+			create: {
+				school_name: becomeTeacherData.schoolName
+			}
 		})
 
 		// Create teacher

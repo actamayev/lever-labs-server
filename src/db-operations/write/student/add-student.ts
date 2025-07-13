@@ -4,7 +4,7 @@ import PrismaClientClass from "../../../classes/prisma-client"
 export default async function addStudent(
 	teacherId: number,
 	classroomId: number,
-	newStudentId: number
+	newStudentUserId: number
 ): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
@@ -12,12 +12,12 @@ export default async function addStudent(
 		await prismaClient.student.upsert({
 			where: {
 				user_id_classroom_id: {
-					user_id: newStudentId,
+					user_id: newStudentUserId,
 					classroom_id: classroomId,
 				}
 			},
 			create: {
-				user_id: newStudentId,
+				user_id: newStudentUserId,
 				classroom_id: classroomId,
 				teacher_id_invited: teacherId,
 				invitation_method: InvitationMethod.TEACHER_INVITE,
