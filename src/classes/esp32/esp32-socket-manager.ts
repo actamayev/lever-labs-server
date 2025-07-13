@@ -18,7 +18,7 @@ export default class Esp32SocketManager extends Singleton {
 		this.initializeWSServer()
 	}
 
-	public static getInstance(wss?: WSServer): Esp32SocketManager {
+	public static override getInstance(wss?: WSServer): Esp32SocketManager {
 		if (!Esp32SocketManager.instance) {
 			if (!wss) {
 				throw new Error("WebSocket Server instance required to initialize Esp32SocketManager")

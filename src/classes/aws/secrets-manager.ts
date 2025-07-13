@@ -19,7 +19,7 @@ export default class SecretsManager extends Singleton {
 		})
 	}
 
-	public static getInstance(): SecretsManager {
+	public static override getInstance(): SecretsManager {
 		if (isNull(SecretsManager.instance)) {
 			SecretsManager.instance = new SecretsManager()
 		}

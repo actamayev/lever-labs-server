@@ -1,8 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Socket } from "socket.io"
+import { Socket as SocketIOSocket } from "socket.io"
 
 declare module "socket.io" {
-	interface Socket {
+	interface Socket extends Partial<Pick<SocketIOSocket, never>> {
 		userId?: number
 	}
 }

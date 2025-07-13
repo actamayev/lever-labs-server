@@ -1,44 +1,67 @@
 {
 	"compilerOptions": {
-	  /* Language and Environment */
-	  "target": "ES2023",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-	  "typeRoots": [
-		"./src/types",
-		"./node_modules/@types"
-	  ],
-	"types": ["node"],
-	  /* Modules */
-	  "module": "commonjs",                                /* Specify what module code is generated. */
-	  "rootDir": "./",                                  /* Specify the root folder within your source files. */
-	  "moduleResolution": "Node",                     /* Specify how TypeScript looks up a file from a given module specifier. */
-	  "baseUrl": "./src",     // Changed to ./src
+		/* Language and Environment */
+		"target": "ES2023",
+		"lib": ["ES2023"],
+		"typeRoots": [
+			"./src/types",
+			"./node_modules/@types"
+		],
+		"types": ["node"],
 
-	  /* Emit */
-	  "outDir": "./dist",                                   /* Specify an output folder for all emitted files. */
+		/* Modules */
+		"module": "commonjs",
+		"rootDir": "./",
+		"moduleResolution": "Node",
+		"baseUrl": "./src",
+		"resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true,
 
-	  /* Interop Constraints */
-	  "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
-	  "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
+		/* Emit */
+		"outDir": "./dist",
 
-	  /* Type Checking */
-	  "strict": true,                                      /* Enable all strict type-checking options. */
-	  "strictNullChecks": true,                         /* When type checking, take into account 'null' and 'undefined'. */
+		/* Interop Constraints */
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"isolatedModules": true,
 
-	  /* Completeness */
-	  "skipLibCheck": true,                                 /* Skip type checking all .d.ts files. */
-	  "paths": {              // Add paths for cleaner imports
-            "@/*": ["*"],
-            "@types/*": ["types/*"]
-        }
+		/* Type Checking - Core Strict Options */
+		"strict": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"strictBindCallApply": true,
+		"strictPropertyInitialization": true,
+		"noImplicitAny": true,
+		"noImplicitThis": true,
+		"alwaysStrict": true,
+
+		/* Type Checking - Additional Strict Options */
+		"exactOptionalPropertyTypes": false,        // Set to true if you want maximum strictness (but may cause issues with some libraries)
+		"noImplicitOverride": true,                 // Require explicit override keywords
+		"noImplicitReturns": true,                  // Ensure all code paths return a value
+		"noFallthroughCasesInSwitch": true,        // Prevent fallthrough in switch statements
+		"noUnusedLocals": true,                    // Report unused local variables
+		"noUnusedParameters": true,                // Report unused function parameters
+		"useUnknownInCatchVariables": true,        // Use unknown instead of any in catch variables
+		"allowUnusedLabels": false,                // Disallow unused labels
+		"allowUnreachableCode": false,             // Disallow unreachable code
+
+		/* Completeness */
+		"skipLibCheck": true,
+
+		/* Paths */
+		"paths": {
+			"@/*": ["*"],
+			"@types/*": ["types/*"]
+		}
 	},
 	"include": [
-	  "src/**/*",
-	  "src/**/*.d.ts",        // Explicitly include .d.ts files
-	  "./.eslint.config.mjs",
-	  "src/prisma/seed.ts",
-	  "tests/**/*"
+		"src/**/*",
+		"./eslint.config.mjs",
+		"src/prisma/seed.ts"
 	],
 	"exclude": [
-	  "node_modules"
+		"node_modules",
+		"dist"
 	]
 }

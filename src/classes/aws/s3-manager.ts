@@ -19,7 +19,7 @@ export default class AwsS3 extends Singleton {
 		})
 	}
 
-	public static getInstance(): AwsS3 {
+	public static override getInstance(): AwsS3 {
 		if (isNull(AwsS3.instance)) {
 			AwsS3.instance = new AwsS3()
 		}

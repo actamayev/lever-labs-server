@@ -7,7 +7,7 @@ export default class StreamManager extends Singleton {
 		super()
 	}
 
-	public static getInstance(): StreamManager {
+	public static override getInstance(): StreamManager {
 		if (!StreamManager.instance) {
 			StreamManager.instance = new StreamManager()
 		}

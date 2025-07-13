@@ -24,7 +24,7 @@ export default class BrowserSocketManager extends Singleton {
 		this.initializeListeners()
 	}
 
-	public static getInstance(io?: SocketIOServer): BrowserSocketManager {
+	public static override getInstance(io?: SocketIOServer): BrowserSocketManager {
 		if (!BrowserSocketManager.instance) {
 			if (!io) {
 				throw new Error("SocketIOServer instance required to initialize BrowserSocketManager")
