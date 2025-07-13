@@ -14,7 +14,7 @@ export default async function attachCQConversationHistory(req: Request, res: Res
 		console.error(error)
 		res.status(500).json({
 			error: "Internal Server Error: Unable to fetch conversation history"
-		} as ErrorResponse)
+		} satisfies ErrorResponse)
 		return
 	}
 }

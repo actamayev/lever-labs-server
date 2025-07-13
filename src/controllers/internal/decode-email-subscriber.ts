@@ -13,7 +13,7 @@ export default async function decodeEmailSubscriber (req: Request, res: Response
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to decrypt email" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to decrypt email" } satisfies ErrorResponse)
 		return
 	}
 }

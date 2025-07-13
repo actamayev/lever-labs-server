@@ -12,14 +12,14 @@ export default function validateSetSandboxNotesOpenStatus (req: Request, res: Re
 		const { error } = setSandboxNotesOpenStatusSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: "Invalid open status" } as ValidationErrorResponse)
+			res.status(400).json({ validationError: "Invalid open status" } satisfies ValidationErrorResponse)
 			return
 		}
 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate open status" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate open status" } satisfies ErrorResponse)
 		return
 	}
 }

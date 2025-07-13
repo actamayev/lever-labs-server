@@ -25,20 +25,16 @@ To SSH into AWS:
 	Prod:
 		aws ec2-instance-connect ssh --instance-id i-0af414ad7e5d89c3e --os-user ubuntu
 
-In AWS:
-`cd blue-dot-robots`
-`npm i --omit=dev`
-`pm2 restart <app_name or app_id>`
-
-For Database migrations, navigate to dist/src, and run::
-	`npx prisma migrate deploy`
-	Run `npx prisma generate` in the src directory.
-	`pm2 restart <app_name or app_id>`
-	If nothing is working after doing a migration, try restarting the pm2 `pm2 restart <app_name or app_id>`
+For Database migrations, navigate to dist/src, and run:
+	npx prisma migrate deploy && npx prisma generate && pm2 restart 0 && pm2 logs;
+	If nothing is working after doing a migration, try restarting the pm2 `pm2 restart 0`
 	If there is new data to seed, run `npm run cloud-seed`
 	
-	Shortcut:
-		`npx prisma migrate deploy; npx prisma generate; pm2 restart 0; pm2 logs;`
+Shortcuts:
+	Restart server after application update:
+		cd blue-dot-robots/ && npm i --production && pm2 restart 0 && pm2 logs;
+	DB:
+		npx prisma migrate deploy && npx prisma generate && pm2 restart 0 && pm2 logs;
 
 I am using the package pm2 to run the server on the instance (even after I close my connection)
 Important pm2 commands:

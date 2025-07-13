@@ -9,11 +9,11 @@ export default async function displayLedColorsDirectly (req: Request, res: Respo
 
 		await SendEsp32MessageManager.getInstance().transferLedControlData(body)
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to change led colors" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to change led colors" } satisfies ErrorResponse)
 		return
 	}
 }

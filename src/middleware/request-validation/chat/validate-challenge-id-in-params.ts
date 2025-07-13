@@ -12,14 +12,14 @@ export default function validateChallengeIdInParams(req: Request, res: Response,
 		const { error } = validateChallengeIdInParamsSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
+			res.status(400).json({ validationError: error.details[0].message } satisfies ValidationErrorResponse)
 			return
 		}
 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate request" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate request" } satisfies ErrorResponse)
 		return
 	}
 }

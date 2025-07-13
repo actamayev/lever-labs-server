@@ -10,7 +10,7 @@ export default async function attachSandboxProjectIdFromUUID(req: Request, res: 
 		const sandboxProjectId = await findSandboxProjectIdFromUUID(projectUUID)
 
 		if (isUndefined(sandboxProjectId)) {
-			res.status(400).json({ message: "Sandbox Project ID doesn't exist" } as MessageResponse)
+			res.status(400).json({ message: "Sandbox Project ID doesn't exist" } satisfies MessageResponse)
 			return
 		}
 
@@ -19,7 +19,7 @@ export default async function attachSandboxProjectIdFromUUID(req: Request, res: 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to attach sandbox project Id from UUID" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to attach sandbox project Id from UUID" } satisfies ErrorResponse)
 		return
 	}
 }

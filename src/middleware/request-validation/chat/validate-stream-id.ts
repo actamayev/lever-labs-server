@@ -12,14 +12,14 @@ export default function validateStreamId(req: Request, res: Response, next: Next
 		const { error } = validateStreamIdSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
+			res.status(400).json({ validationError: error.details[0].message } satisfies ValidationErrorResponse)
 			return
 		}
 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate stream ID" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate stream ID" } satisfies ErrorResponse)
 		return
 	}
 }

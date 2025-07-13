@@ -13,14 +13,14 @@ export default function validateSendSandboxMessage(req: Request, res: Response, 
 		const { error } = validateSendSandboxMessageSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
+			res.status(400).json({ validationError: error.details[0].message } satisfies ValidationErrorResponse)
 			return
 		}
 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate sandbox chatbot request" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate sandbox chatbot request" } satisfies ErrorResponse)
 		return
 	}
 }

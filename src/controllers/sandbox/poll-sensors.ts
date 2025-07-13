@@ -8,11 +8,11 @@ export default async function pollSensors(req: Request, res: Response): Promise<
 
 		await SendEsp32MessageManager.getInstance().pollSensors(pipUUID)
 
-		res.status(200).json({ success: "Polling sensors" } as SuccessResponse)
+		res.status(200).json({ success: "Polling sensors" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to poll sensors" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to poll sensors" } satisfies ErrorResponse)
 		return
 	}
 }

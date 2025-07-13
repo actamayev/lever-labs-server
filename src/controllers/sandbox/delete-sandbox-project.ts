@@ -8,11 +8,11 @@ export default async function deleteSandboxProject(req: Request, res: Response):
 
 		await markSandboxProjectInactive(sandboxProjectId)
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to delete sandbox project" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to delete sandbox project" } satisfies ErrorResponse)
 		return
 	}
 }

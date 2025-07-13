@@ -16,14 +16,14 @@ export default function validateAddPipToAccount (req: Request, res: Response, ne
 		const { error } = addPipToAccountSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
+			res.status(400).json({ validationError: error.details[0].message } satisfies ValidationErrorResponse)
 			return
 		}
 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Add Pip to account" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Add Pip to account" } satisfies ErrorResponse)
 		return
 	}
 }

@@ -10,7 +10,7 @@ export default async function attachReadingBlockIdFromReadingName(req: Request, 
 		const readingBlockId = await findReadingBlockIdFromReadingName(readingBlockName)
 
 		if (isNull(readingBlockId)) {
-			res.status(400).json({ message: "Reading Block ID doesn't exist" } as MessageResponse)
+			res.status(400).json({ message: "Reading Block ID doesn't exist" } satisfies MessageResponse)
 			return
 		}
 
@@ -19,7 +19,9 @@ export default async function attachReadingBlockIdFromReadingName(req: Request, 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to attach reading block ID from reading name" } as ErrorResponse)
+		res.status(500).json({
+			error: "Internal Server Error: Unable to attach reading block ID from reading name"
+		} satisfies ErrorResponse)
 		return
 	}
 }

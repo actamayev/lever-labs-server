@@ -13,13 +13,15 @@ export default async function confirmUsernameNotTaken(
 		const usernameExists = await doesUsernameExist(username)
 
 		if (usernameExists) {
-			res.status(400).json({ message: "This username is taken" } as MessageResponse)
+			res.status(400).json({ message: "This username is taken" } satisfies MessageResponse)
 			return
 		}
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm if this username is already taken" } as ErrorResponse)
+		res.status(500).json({
+			error: "Internal Server Error: Unable to confirm if this username is already taken"
+		} satisfies ErrorResponse)
 		return
 	}
 }

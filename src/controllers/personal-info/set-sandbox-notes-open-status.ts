@@ -8,11 +8,11 @@ export default async function setSandboxNotesOpenStatus(req: Request, res: Respo
 		const isOpen = req.params.isOpen === "true"
 		await updateSandboxNotesOpenStatus(userId, isOpen)
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to set new sandbox notes open status" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to set new sandbox notes open status" } satisfies ErrorResponse)
 		return
 	}
 }

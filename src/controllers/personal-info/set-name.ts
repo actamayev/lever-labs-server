@@ -8,11 +8,11 @@ export default async function setName(req: Request, res: Response): Promise<void
 		const { name } = req.params
 		await updateName(userId, name)
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to set new name" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to set new name" } satisfies ErrorResponse)
 		return
 	}
 }

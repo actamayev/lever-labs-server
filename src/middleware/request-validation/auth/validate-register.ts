@@ -21,7 +21,7 @@ export default function validateRegister (req: Request, res: Response, next: Nex
 		const { error } = registerInformationSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
+			res.status(400).json({ validationError: error.details[0].message } satisfies ValidationErrorResponse)
 			return
 		}
 
@@ -30,7 +30,7 @@ export default function validateRegister (req: Request, res: Response, next: Nex
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate Registration" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate Registration" } satisfies ErrorResponse)
 		return
 	}
 }

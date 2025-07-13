@@ -30,7 +30,6 @@ model credentials {
 	auth_method                                                 AuthMethods
 
 	email__encrypted                                            String @unique
-	profile_picture_id                                          Int?    @unique
 	name														String?
 
 	created_at                                                  DateTime @default(now())
@@ -44,10 +43,9 @@ model credentials {
 	sandbox_project												sandbox_project[]
 	career_quest_chat											career_quest_chat[]
 	career_quest_sandbox										career_quest_sandbox[]
-
-	profile_picture                                             profile_picture? @relation(fields: [profile_picture_id], references: [profile_picture_id])
-
-	@@index([profile_picture_id], name:"credentials__profile_picture_id_idx")
+	student														student[]
+	teacher														teacher?
+	profile_picture												profile_picture?
 }
 
 model login_history {
@@ -230,7 +228,7 @@ model user_answer {
 
 model sandbox_project {
 	sandbox_project_id											Int       @id @default(autoincrement())
-	sandbox_json												String
+	sandbox_json												Json
 	project_owner_id       										Int
 	project_uuid												String		@unique
 	project_name												String?
@@ -261,7 +259,7 @@ model profile_picture {
 	created_at                                                  DateTime  @default(now())
 	updated_at                                                  DateTime  @default(now()) @updatedAt
 
-	user                                                        credentials?
+	user                                                        credentials @relation(fields: [user_id], references: [user_id])
 }
 
 model career_quest_chat {
@@ -329,7 +327,7 @@ model sandbox_message {
 
 model career_quest_sandbox {
 	career_quest_sandbox_id										Int       @id @default(autoincrement())
-	career_quest_sandbox_json									String
+	career_quest_sandbox_json									Json
 	user_id			       										Int
 	career_quest_id												String // Hardcoded Challenge Id
 
@@ -340,4 +338,93 @@ model career_quest_sandbox {
 
 	@@index([user_id], name: "career_quest_sandbox__user_id_idx")
 	@@unique([user_id, career_quest_id]) // One sandbox per user per challenge
+}
+
+model classroom {
+	classroom_id												Int       @id @default(autoincrement())
+	classroom_name												String
+	class_code													String		@unique
+
+	classroom_teacher_map										classroom_teacher_map[]
+	student														student[]
+
+	created_at                                                  DateTime  @default(now())
+	updated_at                                                  DateTime @default(now()) @updatedAt
+}
+
+model school {
+    school_id	          										Int       @id @default(autoincrement())
+	school_name													String @unique
+
+	teachers													teacher[]
+
+    created_at          										DateTime  @default(now())
+    updated_at          										DateTime @default(now()) @updatedAt
+}
+
+model teacher {
+    teacher_id          										Int       @id @default(autoincrement())
+    user_id             										Int       @unique  // One teacher record per user
+	teacher_first_name											String
+	teacher_last_name											String
+	school_id													Int
+
+    is_approved         										Boolean?
+    classroom_teacher_map   									classroom_teacher_map[]
+    student_invited     										student[]
+    school														school @relation(fields: [school_id], references: [school_id])
+
+	user                                                        credentials @relation(fields: [user_id], references: [user_id])
+
+    created_at          										DateTime  @default(now())
+    updated_at          										DateTime @default(now()) @updatedAt
+
+    @@index([school_id], name: "teacher__school_id_idx")
+}
+
+model classroom_teacher_map {
+    classroom_teacher_map_id    								Int       @id @default(autoincrement())
+    teacher_id                  								Int
+    classroom_id                								Int
+								
+    created_at                  								DateTime  @default(now())
+    updated_at                  								DateTime  @default(now()) @updatedAt
+								
+    teacher                     								teacher @relation(fields: [teacher_id], references: [teacher_id])
+    classroom                   								classroom @relation(fields: [classroom_id], references: [classroom_id])
+
+    @@unique([classroom_id, teacher_id])
+    @@index([teacher_id])
+    @@index([classroom_id])
+}
+
+enum InvitationMethod {
+	TEACHER_INVITE
+	CLASS_CODE
+}
+
+enum InvitationStatus {
+    PENDING
+    ACCEPTED
+    DECLINED
+}
+
+model student {
+    student_id              									Int       @id @default(autoincrement())
+    user_id                 									Int
+    classroom_id            									Int
+    teacher_id_invited      									Int?
+    invitation_method       									InvitationMethod
+    invitation_status       									InvitationStatus @default(PENDING)
+    joined_classroom_at     									DateTime? // Only set when ACCEPTED
+
+    created_at          										DateTime  @default(now())
+    updated_at          										DateTime  @default(now()) @updatedAt
+										
+    user                										credentials @relation(fields: [user_id], references: [user_id])
+    classroom           										classroom @relation(fields: [classroom_id], references: [classroom_id])
+    teacher_invited     										teacher? @relation(fields: [teacher_id_invited], references: [teacher_id])
+
+    @@unique([user_id, classroom_id])
+    @@index([classroom_id])
 }

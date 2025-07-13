@@ -10,7 +10,7 @@ export default async function attachActivityIdFromUUID(req: Request, res: Respon
 		const activityId = await findActivityIdFromUUID(readingUUID)
 
 		if (isNull(activityId)) {
-			res.status(400).json({ message: "Activity ID doesn't exist" } as MessageResponse)
+			res.status(400).json({ message: "Activity ID doesn't exist" } satisfies MessageResponse)
 			return
 		}
 
@@ -19,7 +19,7 @@ export default async function attachActivityIdFromUUID(req: Request, res: Respon
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to attach activity Id from UUID" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to attach activity Id from UUID" } satisfies ErrorResponse)
 		return
 	}
 }

@@ -18,7 +18,7 @@ export default async function attachCareerQuestChatId(
 	} catch (error) {
 		console.error(error)
 		res.status(500).json(
-			{ error: "Internal Server Error: Unable to confirm another user isn't connected to this Pip" } as ErrorResponse
+			{ error: "Internal Server Error: Unable to confirm another user isn't connected to this Pip" } satisfies ErrorResponse
 		)
 		return
 	}

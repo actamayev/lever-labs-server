@@ -15,12 +15,12 @@ export default async function attachPipUUIDData(
 		const pipUUIDData = await findPipUUID(pipUUID)
 
 		if (isNull(pipUUIDData)) {
-			res.status(400).json({ message: "Pip UUID doesn't exist" } as MessageResponse)
+			res.status(400).json({ message: "Pip UUID doesn't exist" } satisfies MessageResponse)
 			return
 		}
 
 		if (!validateExtendedPipUUID(pipUUIDData)) {
-			res.status(400).json({ message: "Invalid Pip UUID" } as MessageResponse)
+			res.status(400).json({ message: "Invalid Pip UUID" } satisfies MessageResponse)
 			return
 		}
 
@@ -29,7 +29,7 @@ export default async function attachPipUUIDData(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm New Pip UUID Exists" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm New Pip UUID Exists" } satisfies ErrorResponse)
 		return
 	}
 }

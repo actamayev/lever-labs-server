@@ -18,7 +18,7 @@ export default async function addNewPipUUID (_req: Request, res: Response): Prom
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to add new Pip UUID" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to add new Pip UUID" } satisfies ErrorResponse)
 		return
 	}
 }

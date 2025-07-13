@@ -14,7 +14,7 @@ export default async function attachSandboxConversationHistory(req: Request, res
 		console.error(error)
 		res.status(500).json({
 			error: "Internal Server Error: Unable to fetch conversation history"
-		} as ErrorResponse)
+		} satisfies ErrorResponse)
 		return
 	}
 }

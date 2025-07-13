@@ -9,11 +9,11 @@ export default function clientConnectToPipRequest (req: Request, res: Response):
 
 		BrowserSocketManager.getInstance().addPipStatusToAccount(userId, pipUUID, "connected")
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to connect to Pip" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to connect to Pip" } satisfies ErrorResponse)
 		return
 	}
 }

@@ -61,7 +61,7 @@ export async function getCQChallengeData(
 		let sandboxJson: object = {}
 		if (!isNull(sandbox) && sandbox.career_quest_sandbox_json) {
 			try {
-				sandboxJson = JSON.parse(sandbox.career_quest_sandbox_json)
+				sandboxJson = sandbox.career_quest_sandbox_json as BlocklyJson
 			} catch (parseError) {
 				console.error("Failed to parse career_quest_sandbox_json:", parseError)
 				sandboxJson = {}

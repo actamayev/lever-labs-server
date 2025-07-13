@@ -1,14 +1,17 @@
 import { Request, Response } from "express"
 import { SiteThemes } from "@prisma/client"
 import { isNull, isUndefined } from "lodash"
-import { ErrorResponse, GoogleAuthSuccess, MessageResponse, PersonalInfoResponse, PipData } from "@bluedotrobots/common-ts"
+import { BasicPersonalInfoResponse, ErrorResponse, GoogleAuthSuccess, MessageResponse,
+	PipData, StudentClassroomData, TeacherData } from "@bluedotrobots/common-ts"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import SecretsManager from "../../classes/aws/secrets-manager"
 import { findUserById } from "../../db-operations/read/find/find-user"
 import { addGoogleUser } from "../../db-operations/write/credentials/add-user"
 import createGoogleAuthClient from "../../utils/google/create-google-auth-client"
+import extractTeacherDataFromUserData from "../../utils/extract-teacher-data-from-user-data"
 import retrieveUserIdByEmail from "../../db-operations/read/credentials/retrieve-user-id-by-email"
+import retrieveStudentClasses from "../../db-operations/read/credentials/retrieve-student-classes"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
 
@@ -25,11 +28,11 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 		})
 		const payload = ticket.getPayload()
 		if (isUndefined(payload)) {
-			res.status(500).json({ error: "Unable to get payload" } as ErrorResponse)
+			res.status(500).json({ error: "Unable to get payload" } satisfies ErrorResponse)
 			return
 		}
 		if (isUndefined(payload.email)) {
-			res.status(500).json({ error: "Unable to find user email from payload" } as ErrorResponse)
+			res.status(500).json({ error: "Unable to find user email from payload" } satisfies ErrorResponse)
 			return
 		}
 
@@ -39,9 +42,11 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 		let accessToken: string
 		let isNewUser = false
 		let userPipData: PipData[] = []
-		let personalInfo: PersonalInfoResponse | undefined = undefined
+		let personalInfo: BasicPersonalInfoResponse | undefined = undefined
+		let studentClasses: StudentClassroomData[] = []
+		let teacherData: TeacherData | null = null
 		if (isUndefined(userId)) {
-			res.status(500).json({ error: "Unable to login with this email. Account offline." } as ErrorResponse)
+			res.status(500).json({ error: "Unable to login with this email. Account offline." } satisfies ErrorResponse)
 			return
 		} else if (isNull(userId)) {
 			userId = await addGoogleUser(encryptedEmail, siteTheme as SiteThemes)
@@ -53,7 +58,7 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 			const credentialsResult = await findUserById(userId)
 			if (isNull(credentialsResult)) {
 				// eslint-disable-next-line max-len
-				res.status(400).json({ message: `There is no Blue Dot Robots account associated with ${payload.email}. Please try again.` } as MessageResponse)
+				res.status(400).json({ message: `There is no Blue Dot Robots account associated with ${payload.email}. Please try again.` } satisfies MessageResponse)
 				return
 			}
 			personalInfo = {
@@ -62,22 +67,25 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 				defaultSiteTheme: credentialsResult.default_site_theme as SiteThemes,
 				profilePictureUrl: credentialsResult.profile_picture?.image_url || null,
 				sandboxNotesOpen: credentialsResult.sandbox_notes_open,
-				name: credentialsResult.name
+				name: credentialsResult.name,
 			}
+			teacherData = extractTeacherDataFromUserData(credentialsResult)
+			studentClasses = await retrieveStudentClasses(userId)
 		}
-
-		await addLoginHistoryRecord(userId)
 
 		res.status(200).json({
 			accessToken,
 			isNewUser,
 			personalInfo,
-			userPipData
-		} as GoogleAuthSuccess)
+			userPipData,
+			studentClasses,
+			teacherData
+		} satisfies GoogleAuthSuccess)
+		void addLoginHistoryRecord(userId)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Login with Google" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Login with Google" } satisfies ErrorResponse)
 		return
 	}
 }

@@ -21,14 +21,14 @@ export default function confirmUserConnectedToPip(
 		}
 
 		if (connectedUserId !== userId) {
-			res.status(400).json({ message: "Another user is connected to this Pip" } as MessageResponse)
+			res.status(400).json({ message: "Another user is connected to this Pip" } satisfies MessageResponse)
 			return
 		}
 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm user is connected to this Pip" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to confirm user is connected to this Pip" } satisfies ErrorResponse)
 		return
 	}
 }

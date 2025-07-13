@@ -8,11 +8,11 @@ export default async function stopCurrentlyRunningSandboxCode(req: Request, res:
 
 		await SendEsp32MessageManager.getInstance().stopCurrentlyRunningSandboxCode(pipUUID)
 
-		res.status(200).json({ success: "Stopped currently running sandbox code" } as SuccessResponse)
+		res.status(200).json({ success: "Stopped currently running sandbox code" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to stop currently running sandbox code" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to stop currently running sandbox code" } satisfies ErrorResponse)
 		return
 	}
 }

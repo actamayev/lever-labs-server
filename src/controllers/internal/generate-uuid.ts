@@ -9,7 +9,7 @@ export default function generateUUID(_req: Request, res: Response): void {
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to generate UUID" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to generate UUID" } satisfies ErrorResponse)
 		return
 	}
 }

@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import Encryptor from "../../classes/encryptor"
 import { ErrorResponse, PersonalInfoResponse } from "@bluedotrobots/common-ts"
+import extractTeacherDataFromUserData from "../../utils/extract-teacher-data-from-user-data"
 
 export default async function getPersonalInfo(req: Request, res: Response): Promise<void> {
 	try {
@@ -10,17 +11,18 @@ export default async function getPersonalInfo(req: Request, res: Response): Prom
 		const email = await encryptor.deterministicDecrypt(user.email__encrypted, "EMAIL_ENCRYPTION_KEY")
 
 		res.status(200).json({
-			username: user.username,
+			username: user.username as string,
 			email,
 			defaultSiteTheme: user.default_site_theme,
 			profilePictureUrl: user.profile_picture?.image_url || null,
 			sandboxNotesOpen: user.sandbox_notes_open,
-			name: user.name
-		} as PersonalInfoResponse)
+			name: user.name,
+			teacherData: extractTeacherDataFromUserData(user)
+		} satisfies PersonalInfoResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve personal info" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve personal info" } satisfies ErrorResponse)
 		return
 	}
 }

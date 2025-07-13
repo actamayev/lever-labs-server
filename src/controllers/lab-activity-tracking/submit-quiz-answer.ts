@@ -8,11 +8,11 @@ export default async function submitQuizAnswer(req: Request, res: Response): Pro
 
 		await submitQuestionAnswerDb(userId, Number(readingQuestionAnswerChoiceId))
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error: unknown) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to submit quiz answer" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to submit quiz answer" } satisfies ErrorResponse)
 		return
 	}
 }

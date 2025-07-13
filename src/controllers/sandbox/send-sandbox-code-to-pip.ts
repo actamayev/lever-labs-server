@@ -9,11 +9,11 @@ export default async function sendSandboxCodeToPip(req: Request, res: Response):
 
 		await SendEsp32MessageManager.getInstance().sendBytecodeToPip(pipUUID, bytecode)
 
-		res.status(200).json({ success: "Sent bytecode to Pip" } as SuccessResponse)
+		res.status(200).json({ success: "Sent bytecode to Pip" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to send bytecode to Pip" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to send bytecode to Pip" } satisfies ErrorResponse)
 		return
 	}
 }

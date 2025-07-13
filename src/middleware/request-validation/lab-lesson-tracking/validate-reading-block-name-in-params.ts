@@ -12,14 +12,14 @@ export default function validateReadingBlockNameInParams(req: Request, res: Resp
 		const { error } = readingBlockNameInParamsSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
+			res.status(400).json({ validationError: error.details[0].message } satisfies ValidationErrorResponse)
 			return
 		}
 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate reading block in params" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate reading block in params" } satisfies ErrorResponse)
 		return
 	}
 }

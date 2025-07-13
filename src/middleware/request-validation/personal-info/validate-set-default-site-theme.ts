@@ -12,14 +12,14 @@ export default function validateSetDefaultSiteTheme (req: Request, res: Response
 		const { error } = setDefaultSiteThemeSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: "Invalid default site theme" } as ValidationErrorResponse)
+			res.status(400).json({ validationError: "Invalid default site theme" } satisfies ValidationErrorResponse)
 			return
 		}
 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate Default Site Theme" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate Default Site Theme" } satisfies ErrorResponse)
 		return
 	}
 }
