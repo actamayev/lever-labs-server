@@ -1,6 +1,6 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function upsertProfilePictureRecordAndUpdateUser(
+export default async function upsertProfilePicture(
 	imageUploadUrl: string,
 	fileName: string,
 	uuid: string,

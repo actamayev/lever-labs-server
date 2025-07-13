@@ -18,6 +18,7 @@ export default async function createSandboxProjectDB(userId: number): Promise<Sa
 
 		const sandboxProject: RetrievedSandboxData = {
 			...sandboxProjectWithoutChat,
+			project_uuid: uuid,
 			sandbox_chat: null,
 			sandbox_json: defaultSandboxJson
 		}

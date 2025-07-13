@@ -3,7 +3,7 @@ import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function joinClassroom(
 	studentId: number,
-	classroomId: number,
+	classroomId: number
 ): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()

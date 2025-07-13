@@ -1,10 +1,10 @@
 import { MessageSender } from "@prisma/client"
-import { BlocklyJson } from "@bluedotrobots/common-ts"
+import { BlocklyJson, ProjectUUID } from "@bluedotrobots/common-ts"
 
 declare global {
 	interface RetrievedSandboxData {
 		sandbox_json: BlocklyJson
-		project_uuid: string
+		project_uuid: ProjectUUID
 		is_starred: boolean
 		project_name: string | null
 		created_at: Date
