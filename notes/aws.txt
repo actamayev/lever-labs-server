@@ -26,7 +26,7 @@ To SSH into AWS:
 		aws ec2-instance-connect ssh --instance-id i-0af414ad7e5d89c3e --os-user ubuntu
 
 For Database migrations, navigate to dist/src, and run:
-	npx prisma migrate deploy && npx prisma generate && pm2 restart 0;
+	npx prisma migrate deploy && npx prisma generate && pm2 restart 0 && pm2 logs;
 	If nothing is working after doing a migration, try restarting the pm2 `pm2 restart 0`
 	If there is new data to seed, run `npm run cloud-seed`
 	

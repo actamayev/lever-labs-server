@@ -6,7 +6,8 @@
 -- SELECT * FROM reading_question ORDER BY reading_question_id;
 -- SELECT * FROM reading_question_answer_choice ORDER BY reading_question_answer_choice_id;
 -- SELECT * FROM career_quest_message;
-SELECT * FROM teacher;
+-- SELECT * FROM teacher;
+SELECT * FROM student;
 -- DELETE FROM sandbox_message;
 
 -- DELETE FROM activity;
