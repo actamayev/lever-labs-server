@@ -2,8 +2,8 @@ import express from "express"
 
 import attachStudentId from "../middleware/attach/attach-student-id"
 import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
-import confirmStudentInvitedToClass from "../middleware/confirm/confirm-student-invited-to-class"
 import confirmUserIsNotInClassroom from "../middleware/confirm/confirm-user-is-not-in-classroom"
+import confirmStudentInvitedToClass from "../middleware/confirm/confirm-student-invited-to-class"
 import validateInviteResponse from "../middleware/request-validation/student/validate-invite-response"
 import attachClassroomIdValidateClassCode from "../middleware/confirm/attach-classroom-id-attach-class-code"
 

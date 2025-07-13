@@ -51,7 +51,6 @@ teacherRoutes.post(
 	jwtVerifyAttachUserId,
 	attachTeacherId,
 	confirmClassBelongsToTeacher,
-	// confirm this classroom belongs to this teacher
 	editClassroomName
 )
 
