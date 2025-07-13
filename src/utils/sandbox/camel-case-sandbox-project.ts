@@ -1,4 +1,4 @@
-import { ChatMessage, ProjectUUID, SandboxProject } from "@bluedotrobots/common-ts"
+import { BlocklyJson, ChatMessage, ProjectUUID, SandboxProject } from "@bluedotrobots/common-ts"
 
 export default function camelCaseSandboxProject(sandboxProject: RetrievedSandboxData): SandboxProject {
 	try {
@@ -9,7 +9,7 @@ export default function camelCaseSandboxProject(sandboxProject: RetrievedSandbox
 		})) || []
 
 		return {
-			sandboxJson: JSON.parse(sandboxProject.sandbox_json),
+			sandboxJson: sandboxProject.sandbox_json as BlocklyJson,
 			projectUUID: sandboxProject.project_uuid as ProjectUUID,
 			isStarred: sandboxProject.is_starred,
 			projectName: sandboxProject.project_name,

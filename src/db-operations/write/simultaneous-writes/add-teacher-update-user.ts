@@ -1,52 +1,28 @@
 import { IncomingTeacherRequestData } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-// eslint-disable-next-line max-lines-per-function
 export default async function addTeacherUpdateUser(
 	userId: number,
 	becomeTeacherData: IncomingTeacherRequestData
 ): Promise<void> {
-	try {
-		const prismaClient = await PrismaClientClass.getPrismaClient()
+	const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		await prismaClient.$transaction(async (prisma) => {
-			// Check if school exists, if not create it
-			let school = await prisma.school.findUnique({
-				where: {
-					school_name: becomeTeacherData.schoolName
-				}
-			})
-
-			if (!school) {
-				school = await prisma.school.create({
-					data: {
-						school_name: becomeTeacherData.schoolName
-					}
-				})
-			}
-
-			// Create teacher record
-			const teacher = await prisma.teacher.create({
-				data: {
-					user_id: userId,
-					teacher_first_name: becomeTeacherData.teacherFirstName,
-					teacher_last_name: becomeTeacherData.teacherLastName,
-					school_id: school.school_id,
-				}
-			})
-
-			// Update credentials to link to teacher
-			await prisma.credentials.update({
-				where: {
-					user_id: userId
-				},
-				data: {
-					teacher_id: teacher.teacher_id
-				}
-			})
+	await prismaClient.$transaction(async (prisma) => {
+		// Upsert school
+		const school = await prisma.school.upsert({
+			where: { school_name: becomeTeacherData.schoolName },
+			update: {}, // No updates needed if exists
+			create: { school_name: becomeTeacherData.schoolName }
 		})
-	} catch (error) {
-		console.error(error)
-		throw error
-	}
+
+		// Create teacher
+		await prisma.teacher.create({
+			data: {
+				user_id: userId,
+				teacher_first_name: becomeTeacherData.teacherFirstName,
+				teacher_last_name: becomeTeacherData.teacherLastName,
+				school_id: school.school_id
+			}
+		})
+	})
 }

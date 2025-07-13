@@ -10,7 +10,6 @@ declare global {
 			image_url: string
 		} | null
 		teacher: {
-			teacher_id: number
 			teacher_first_name: string
 			teacher_last_name: string
 			is_approved: boolean | null

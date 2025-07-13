@@ -1,8 +1,9 @@
 import { isNull } from "lodash"
-import { SandboxProject } from "@bluedotrobots/common-ts"
+import { BlocklyJson, SandboxProject } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 import camelCaseSandboxProject from "../../../utils/sandbox/camel-case-sandbox-project"
 
+// eslint-disable-next-line max-lines-per-function
 export default async function retrieveSingleSandboxProjectData(sandboxProjectId: number): Promise<SandboxProject | null> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
@@ -39,7 +40,10 @@ export default async function retrieveSingleSandboxProjectData(sandboxProjectId:
 
 		if (isNull(sandboxData)) return null
 
-		return camelCaseSandboxProject(sandboxData)
+		return camelCaseSandboxProject({
+			...sandboxData,
+			sandbox_json: sandboxData.sandbox_json as BlocklyJson
+		})
 	} catch (error) {
 		console.error(error)
 		throw error

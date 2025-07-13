@@ -22,11 +22,9 @@ export async function findUserById(userId: number): Promise<ExtendedCredentials 
 				sandbox_notes_open: true,
 				auth_method: true,
 				email__encrypted: true,
-				profile_picture_id: true,
 				name: true,
 				created_at: true,
 				updated_at: true,
-				teacher_id: true,
 				profile_picture: {
 					select: {
 						image_url: true
@@ -37,7 +35,6 @@ export async function findUserById(userId: number): Promise<ExtendedCredentials 
 				},
 				teacher: {
 					select: {
-						teacher_id: true,
 						teacher_first_name: true,
 						teacher_last_name: true,
 						school: {
@@ -84,11 +81,9 @@ export async function findUserByWhereCondition(
 				sandbox_notes_open: true,
 				auth_method: true,
 				email__encrypted: true,
-				profile_picture_id: true,
 				name: true,
 				created_at: true,
 				updated_at: true,
-				teacher_id: true,
 				profile_picture: {
 					select: {
 						image_url: true
@@ -99,7 +94,6 @@ export async function findUserByWhereCondition(
 				},
 				teacher: {
 					select: {
-						teacher_id: true,
 						teacher_first_name: true,
 						teacher_last_name: true,
 						school: {

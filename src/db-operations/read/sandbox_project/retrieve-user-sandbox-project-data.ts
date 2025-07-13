@@ -1,7 +1,8 @@
-import { SandboxProject } from "@bluedotrobots/common-ts"
+import { BlocklyJson, SandboxProject } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 import camelCaseSandboxProject from "../../../utils/sandbox/camel-case-sandbox-project"
 
+// eslint-disable-next-line max-lines-per-function
 export default async function retrieveUserSandboxProjectData(userId: number): Promise<SandboxProject[]> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
@@ -36,7 +37,10 @@ export default async function retrieveUserSandboxProjectData(userId: number): Pr
 			}
 		})
 
-		return sandboxProjects.map(sandboxProject => camelCaseSandboxProject(sandboxProject))
+		return sandboxProjects.map(sandboxProject => camelCaseSandboxProject({
+			...sandboxProject,
+			sandbox_json: sandboxProject.sandbox_json as BlocklyJson
+		}))
 	} catch (error) {
 		console.error(error)
 		throw error
