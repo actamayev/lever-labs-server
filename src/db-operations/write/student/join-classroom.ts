@@ -1,4 +1,4 @@
-import { InvitationMethod } from "@prisma/client"
+import { InvitationMethod, InvitationStatus } from "@prisma/client"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function joinClassroom(
@@ -19,11 +19,13 @@ export default async function joinClassroom(
 				user_id: studentId,
 				classroom_id: classroomId,
 				invitation_method: InvitationMethod.CLASS_CODE,
+				invitation_status: InvitationStatus.ACCEPTED,
 				joined_classroom_at: new Date()
 			},
 			update: {
 				teacher_id_invited: undefined,
 				invitation_method: InvitationMethod.CLASS_CODE,
+				invitation_status: InvitationStatus.ACCEPTED,
 				joined_classroom_at: new Date()
 			}
 		})

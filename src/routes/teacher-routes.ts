@@ -14,8 +14,8 @@ import attachClassroomIdValidateClassCode from "../middleware/confirm/attach-cla
 import createClassroom from "../controllers/teacher/create-classroom"
 import editClassroomName from "../controllers/teacher/edit-classroom-name"
 import editTeacherName from "../controllers/teacher/edit-teacher-name-data"
-import inviteStudentJoinClass from "../controllers/teacher/invite-join-class"
 import requestBecomeTeacher from "../controllers/teacher/request-become-teacher"
+import inviteStudentJoinClass from "../controllers/teacher/invite-student-join-class"
 import retrieveBasicClassroomInfo from "../controllers/teacher/retrieve-basic-classroom-info"
 import retrieveDetailedClassroomInfo from "../controllers/teacher/retrieve-detailed-classroom-info"
 
