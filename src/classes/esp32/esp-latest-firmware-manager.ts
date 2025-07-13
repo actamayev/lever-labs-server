@@ -11,7 +11,7 @@ export default class EspLatestFirmwareManager extends Singleton {
 		void this.retrieveLatestFirmwareInfo()
 	}
 
-	public static getInstance(): EspLatestFirmwareManager {
+	public static override getInstance(): EspLatestFirmwareManager {
 		if (isNull(EspLatestFirmwareManager.instance)) {
 			EspLatestFirmwareManager.instance = new EspLatestFirmwareManager()
 		}
