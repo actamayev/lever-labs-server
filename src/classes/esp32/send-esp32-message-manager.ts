@@ -15,7 +15,7 @@ export default class SendEsp32MessageManager extends Singleton {
 		super()
 	}
 
-	public static getInstance(): SendEsp32MessageManager {
+	public static override getInstance(): SendEsp32MessageManager {
 		if (!SendEsp32MessageManager.instance) {
 			SendEsp32MessageManager.instance = new SendEsp32MessageManager()
 		}
