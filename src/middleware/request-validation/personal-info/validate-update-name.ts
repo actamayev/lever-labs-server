@@ -15,14 +15,14 @@ export default function validateUpdateName(req: Request, res: Response, next: Ne
 		const { error } = updateNameSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: "Invalid name" } as ValidationErrorResponse)
+			res.status(400).json({ validationError: "Invalid name" } satisfies ValidationErrorResponse)
 			return
 		}
 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate name" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate name" } satisfies ErrorResponse)
 		return
 	}
 }

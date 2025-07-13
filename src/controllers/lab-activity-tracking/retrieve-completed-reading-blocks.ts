@@ -7,11 +7,11 @@ export default async function retrieveCompletedReadingBlocks(req: Request, res: 
 		const { userId, activityId } = req
 		const completedReadingBlocks = await retrieveCompletedReadingBlocksDB(userId, activityId)
 
-		res.status(200).json({ completedReadingBlocks } as { completedReadingBlocks: string[] })
+		res.status(200).json({ completedReadingBlocks } satisfies { completedReadingBlocks: string[] })
 		return
 	} catch (error: unknown) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve completed reading blocks" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve completed reading blocks" } satisfies ErrorResponse)
 		return
 	}
 }

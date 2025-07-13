@@ -10,11 +10,11 @@ export default async function editCareerQuestSandboxProject(req: Request, res: R
 
 		await updateCareerQuestSandboxProject(userId, challengeId, newBlocklyJson)
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to edit sandbox project" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to edit sandbox project" } satisfies ErrorResponse)
 		return
 	}
 }

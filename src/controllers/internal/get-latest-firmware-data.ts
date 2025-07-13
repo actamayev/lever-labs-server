@@ -15,7 +15,7 @@ export default function getLatestFirmwareData(_req: Request, res: Response): voi
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve current firmware version" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve current firmware version" } satisfies ErrorResponse)
 		return
 	}
 }

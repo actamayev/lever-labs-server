@@ -9,11 +9,11 @@ export default async function editSandboxProjectNotes(req: Request, res: Respons
 
 		await updateSandboxProjectNotes(sandboxProjectId, projectNotes)
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to edit sandbox project name" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to edit sandbox project name" } satisfies ErrorResponse)
 		return
 	}
 }

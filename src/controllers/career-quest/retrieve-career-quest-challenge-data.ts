@@ -9,11 +9,11 @@ export default async function retrieveCareerQuestChallengeData(req: Request, res
 
 		const cqChallengeData = await getCQChallengeData(userId, challengeId)
 
-		res.status(200).json({ ...cqChallengeData } as CareerQuestChallengeData)
+		res.status(200).json({ ...cqChallengeData } satisfies CareerQuestChallengeData)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to edit sandbox project" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to edit sandbox project" } satisfies ErrorResponse)
 		return
 	}
 }

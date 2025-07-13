@@ -8,11 +8,11 @@ export default async function markActivityComplete(req: Request, res: Response):
 
 		await markActivityCompleteDb(userId, activityId)
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error: unknown) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve user activity progress" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve user activity progress" } satisfies ErrorResponse)
 		return
 	}
 }

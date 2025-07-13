@@ -8,11 +8,11 @@ export default async function markReadingBlockComplete(req: Request, res: Respon
 
 		await addCompletedReadingBlock(readingBlockId, userId)
 
-		res.status(200).json({ success: "" } as SuccessResponse)
+		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error: unknown) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to mark reading block complete" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to mark reading block complete" } satisfies ErrorResponse)
 		return
 	}
 }

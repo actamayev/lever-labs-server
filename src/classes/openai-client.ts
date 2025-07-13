@@ -1,6 +1,7 @@
 import OpenAI from "openai"
 import isUndefined from "lodash/isUndefined"
 import SecretsManager from "./aws/secrets-manager"
+import { SITE_NAME, SITE_URL } from "../utils/constants"
 
 export default class OpenAiClientClass {
 	private static openAiClient?: OpenAI
@@ -11,12 +12,10 @@ export default class OpenAiClientClass {
 	public static async getOpenAiClient(): Promise<OpenAI> {
 		try {
 			if (isUndefined(this.openAiClient)) {
-				const { OPENROUTER_API_KEY, SITE_URL, SITE_NAME } = await SecretsManager.getInstance().getSecrets(
-					["OPENROUTER_API_KEY", "SITE_URL", "SITE_NAME"]
-				)
+				const openRouterApiKey = await SecretsManager.getInstance().getSecret("OPENROUTER_API_KEY")
 				this.openAiClient = new OpenAI({
 					baseURL: "https://openrouter.ai/api/v1",
-					apiKey: OPENROUTER_API_KEY,
+					apiKey: openRouterApiKey,
 					defaultHeaders: {
 						"HTTP-Referer": SITE_URL,
 						"X-Title": SITE_NAME,

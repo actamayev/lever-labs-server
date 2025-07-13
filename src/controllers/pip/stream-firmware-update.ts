@@ -12,6 +12,6 @@ export default async function streamFirmwareUpdate(_req: Request, res: Response)
 		res.send(binaryData)
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error" } satisfies ErrorResponse)
 	}
 }

@@ -6,11 +6,11 @@ export default async function retrieveQuizAttempts(req: Request, res: Response):
 		const { userId, activityId } = req
 		const quizAttempts = await retrieveQuestionsFromActivity(userId, activityId)
 
-		res.status(200).json({ quizAttempts } as { quizAttempts: RetrievedQuestions[] })
+		res.status(200).json({ quizAttempts } satisfies { quizAttempts: RetrievedQuestions[] })
 		return
 	} catch (error: unknown) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve quizzes and attempts" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve quizzes and attempts" } satisfies ErrorResponse)
 		return
 	}
 }

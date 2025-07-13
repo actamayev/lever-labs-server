@@ -11,17 +11,17 @@ export default async function retrievePipUUIDStatus(req: Request, res: Response)
 		const pipUUIDData = await findPipUUID(pipUUID)
 
 		if (isNull(pipUUIDData)) {
-			res.status(400).json({ message: "Pip UUID doesn't exist"} as MessageResponse)
+			res.status(400).json({ message: "Pip UUID doesn't exist"} satisfies MessageResponse)
 			return
 		}
 
 		const pipConnectionStatus = Esp32SocketManager.getInstance().getESPStatus(pipUUID)
 
-		res.status(200).json({ pipName: pipUUIDData.pip_name, pipConnectionStatus } as RetrieveIsPipUUIDValidResponse)
+		res.status(200).json({ pipName: pipUUIDData.pip_name, pipConnectionStatus } satisfies RetrieveIsPipUUIDValidResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve PipUUID status" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve PipUUID status" } satisfies ErrorResponse)
 		return
 	}
 }

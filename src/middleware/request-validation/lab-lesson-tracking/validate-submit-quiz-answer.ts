@@ -12,14 +12,14 @@ export default function validateSubmitQuizAnswer(req: Request, res: Response, ne
 		const { error } = submitQuizAnswerSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
-			res.status(400).json({ validationError: error.details[0].message } as ValidationErrorResponse)
+			res.status(400).json({ validationError: error.details[0].message } satisfies ValidationErrorResponse)
 			return
 		}
 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate quiz answer submit" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate quiz answer submit" } satisfies ErrorResponse)
 		return
 	}
 }

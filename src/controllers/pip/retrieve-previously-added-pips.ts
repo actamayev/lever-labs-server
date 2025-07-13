@@ -7,11 +7,11 @@ export default async function retrievePreviouslyAddedPips (req: Request, res: Re
 		const { userId } = req
 		const userPipData = await retrieveUserPipUUIDsDetails(userId)
 
-		res.status(200).json({ userPipData } as { userPipData: PipData[]})
+		res.status(200).json({ userPipData } satisfies { userPipData: PipData[]})
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to retrieve previously added Pips" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve previously added Pips" } satisfies ErrorResponse)
 		return
 	}
 }

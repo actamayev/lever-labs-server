@@ -1,4 +1,5 @@
 import { Response, Request } from "express"
+import { ErrorResponse, MessageResponse, RegisterRequest, RegisterSuccess } from "@bluedotrobots/common-ts"
 import Hash from "../../classes/hash"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
@@ -7,7 +8,6 @@ import doesEmailExist from "../../db-operations/read/does-x-exist/does-email-exi
 import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import constructLocalUserFields from "../../utils/auth-helpers/register/construct-local-user-fields"
-import { ErrorResponse, MessageResponse, RegisterRequest, RegisterSuccess } from "@bluedotrobots/common-ts"
 
 export default async function register(req: Request, res: Response): Promise<void> {
 	try {
@@ -17,13 +17,13 @@ export default async function register(req: Request, res: Response): Promise<voi
 		const encryptedEmail = await encryptor.deterministicEncrypt(registerInformation.email, "EMAIL_ENCRYPTION_KEY")
 		const emailExists = await doesEmailExist(encryptedEmail)
 		if (emailExists === true) {
-			res.status(400).json({ message: "Email already taken" } as MessageResponse)
+			res.status(400).json({ message: "Email already taken" } satisfies MessageResponse)
 			return
 		}
 
 		const usernameExists = await doesUsernameExist(registerInformation.username)
 		if (usernameExists === true) {
-			res.status(400).json({ message: "Username already taken" } as MessageResponse)
+			res.status(400).json({ message: "Username already taken" } satisfies MessageResponse)
 			return
 		}
 
@@ -33,15 +33,14 @@ export default async function register(req: Request, res: Response): Promise<voi
 
 		const userId = await addLocalUser(userData)
 
-		await addLoginHistoryRecord(userId)
-
 		const accessToken = await signJWT({ userId, newUser: true })
 
-		res.status(200).json({ accessToken } as RegisterSuccess)
+		res.status(200).json({ accessToken } satisfies RegisterSuccess)
+		void addLoginHistoryRecord(userId)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Register New User" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Register New User" } satisfies ErrorResponse)
 		return
 	}
 }

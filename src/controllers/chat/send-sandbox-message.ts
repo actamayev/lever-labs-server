@@ -19,7 +19,7 @@ export default function sendSandboxMessage(req: Request, res: Response): void {
 		const { streamId, abortController } = StreamManager.getInstance().createStream()
 
 		// Immediately respond with streamId so client can use it to stop if needed
-		res.status(200).json({ streamId } as StartChatSuccess)
+		res.status(200).json({ streamId } satisfies StartChatSuccess)
 
 		// Process LLM request with streaming via WebSocket (async)
 		processLLMRequest(chatData, userId, streamId, abortController.signal, projectUUID)
@@ -31,7 +31,7 @@ export default function sendSandboxMessage(req: Request, res: Response): void {
 		console.error("Chatbot endpoint error:", error)
 		res.status(500).json({
 			error: "Internal Server Error: Unable to process chatbot request"
-		} as ErrorResponse)
+		} satisfies ErrorResponse)
 	}
 }
 

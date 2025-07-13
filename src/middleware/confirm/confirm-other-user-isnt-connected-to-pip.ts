@@ -15,17 +15,17 @@ export default function confirmOtherUserIsntConnectedToPip(
 		const userIdConnectToPip = BrowserSocketManager.getInstance().whichUserConnectedToPipUUID(pipUUID)
 
 		if (userIdConnectToPip === userId) {
-			res.status(200).json({ success: "You are already connected to this Pip" } as SuccessResponse)
+			res.status(200).json({ success: "You are already connected to this Pip" } satisfies SuccessResponse)
 			return
 		} else if (!isUndefined(userIdConnectToPip)) {
-			res.status(400).json({ message: "Someone is already connected to this Pip"} as MessageResponse)
+			res.status(400).json({ message: "Someone is already connected to this Pip"} satisfies MessageResponse)
 			return
 		}
 		next()
 	} catch (error) {
 		console.error(error)
 		res.status(500).json(
-			{ error: "Internal Server Error: Unable to confirm another user isn't connected to this Pip" } as ErrorResponse
+			{ error: "Internal Server Error: Unable to confirm another user isn't connected to this Pip" } satisfies ErrorResponse
 		)
 		return
 	}

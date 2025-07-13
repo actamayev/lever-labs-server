@@ -9,6 +9,11 @@ declare global {
 			readingBlockId: number
 			sandboxProjectId: number
 			bytecode: Float32Array
+
+			teacherId: number
+			classroomId: number
+			studentUserId: number
+			studentId: number
 		}
 	}
 }

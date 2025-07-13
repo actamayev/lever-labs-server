@@ -14,14 +14,14 @@ export default function checkIfUserConnectedToPip(
 		const connectedUserId = BrowserSocketManager.getInstance().whichUserConnectedToPipUUID(pipUUID)
 
 		if (connectedUserId !== userId) {
-			res.status(400).json({ message: "Another user is connected to this Pip" } as MessageResponse)
+			res.status(400).json({ message: "Another user is connected to this Pip" } satisfies MessageResponse)
 			return
 		}
 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to check if user is connected to this Pip" } as ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to check if user is connected to this Pip" } satisfies ErrorResponse)
 		return
 	}
 }
