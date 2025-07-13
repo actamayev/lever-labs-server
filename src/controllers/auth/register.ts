@@ -1,4 +1,5 @@
 import { Response, Request } from "express"
+import { ErrorResponse, MessageResponse, RegisterRequest, RegisterSuccess } from "@bluedotrobots/common-ts"
 import Hash from "../../classes/hash"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
@@ -7,7 +8,6 @@ import doesEmailExist from "../../db-operations/read/does-x-exist/does-email-exi
 import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import constructLocalUserFields from "../../utils/auth-helpers/register/construct-local-user-fields"
-import { ErrorResponse, MessageResponse, RegisterRequest, RegisterSuccess } from "@bluedotrobots/common-ts"
 
 export default async function register(req: Request, res: Response): Promise<void> {
 	try {
@@ -33,11 +33,10 @@ export default async function register(req: Request, res: Response): Promise<voi
 
 		const userId = await addLocalUser(userData)
 
-		await addLoginHistoryRecord(userId)
-
 		const accessToken = await signJWT({ userId, newUser: true })
 
 		res.status(200).json({ accessToken } satisfies RegisterSuccess)
+		void addLoginHistoryRecord(userId)
 		return
 	} catch (error) {
 		console.error(error)

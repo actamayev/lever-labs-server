@@ -371,6 +371,6 @@ export default class BrowserSocketManager extends Singleton {
 			return
 		}
 		const event: StudentInviteJoinClass = { teacherNameInfo, classroomName }
-		this.io.to(connectionInfo.socketId).emit("sandbox-chatbot-stream-complete", event)
+		this.io.to(connectionInfo.socketId).emit("student-invite-join-class", event)
 	}
 }
