@@ -8,8 +8,8 @@ import getClassroomName from "../../db-operations/read/classroom/get-classroom-n
 
 export default async function inviteStudentJoinClass(req: Request, res: Response): Promise<void> {
 	try {
-		const { teacherId, classroomId, studentId } = req
-		await addStudent(teacherId, classroomId, studentId)
+		const { teacherId, classroomId, studentUserId } = req
+		await addStudent(teacherId, classroomId, studentUserId)
 		const teacherName = await getTeacherName(teacherId)
 		const classroomName = await getClassroomName(classroomId)
 
@@ -17,7 +17,7 @@ export default async function inviteStudentJoinClass(req: Request, res: Response
 			res.status(500).json({ error: "Unable to find teacher or classroom name" } satisfies ErrorResponse)
 			return
 		}
-		void BrowserSocketManager.getInstance().emitStudentInviteJoinClass(studentId, teacherName, classroomName)
+		void BrowserSocketManager.getInstance().emitStudentInviteJoinClass(studentUserId, teacherName, classroomName)
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {

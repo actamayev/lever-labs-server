@@ -3,7 +3,8 @@ import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
 import retrieveUserIdByUsername from "../../db-operations/read/credentials/retrieve-user-id-by-username"
 
-export default async function confirmUsernameExists(
+// confirmUsernameExists
+export default async function attachStudentUserId(
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -11,13 +12,13 @@ export default async function confirmUsernameExists(
 	try {
 		const { username } = req.body as { username: string }
 
-		const studentId = await retrieveUserIdByUsername(username)
+		const studentUserId = await retrieveUserIdByUsername(username)
 
-		if (isUndefined(studentId)) {
+		if (isUndefined(studentUserId)) {
 			res.status(400).json({ message: "This username does not exist" } satisfies MessageResponse)
 			return
 		}
-		req.studentId = studentId
+		req.studentUserId = studentUserId
 		next()
 	} catch (error) {
 		console.error(error)

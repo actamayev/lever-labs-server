@@ -1,14 +1,15 @@
 import express from "express"
 
+import attachTeacherId from "../middleware/attach/attach-teacher-id"
+import attachStudentUserId from "../middleware/attach/attach-student-user-id"
 import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
-import confirmUserIsTeacher from "../middleware/confirm/confirm-user-is-teacher"
-import confirmUsernameExists from "../middleware/confirm/confirm-username-exists"
 import confirmUserIsNotTeacher from "../middleware/confirm/confirm-user-is-not-teacher"
-import validateClassCode from "../middleware/request-validation/teacher/validate-class-code"
+import confirmClassBelongsToTeacher from "../middleware/confirm/confirm-class-belongs-to-teacher"
 import validateBecomeTeacher from "../middleware/request-validation/teacher/validate-become-teacher"
 import validateClassroomName from "../middleware/request-validation/teacher/validate-classroom-name"
 import validateInviteJoinClass from "../middleware/request-validation/teacher/validate-invite-join-class"
 import validateTeacherNameData from "../middleware/request-validation/teacher/validate-teacher-name-data"
+import attachClassroomIdValidateClassCode from "../middleware/confirm/attach-classroom-id-attach-class-code"
 
 import createClassroom from "../controllers/teacher/create-classroom"
 import editClassroomName from "../controllers/teacher/edit-classroom-name"
@@ -17,7 +18,6 @@ import inviteStudentJoinClass from "../controllers/teacher/invite-join-class"
 import requestBecomeTeacher from "../controllers/teacher/request-become-teacher"
 import retrieveBasicClassroomInfo from "../controllers/teacher/retrieve-basic-classroom-info"
 import retrieveDetailedClassroomInfo from "../controllers/teacher/retrieve-detailed-classroom-info"
-import confirmClassBelongsToTeacher from "../middleware/confirm/confirm-class-belongs-to-teacher"
 
 const teacherRoutes = express.Router()
 
@@ -40,16 +40,16 @@ teacherRoutes.post(
 	"/create-classroom",
 	validateClassroomName,
 	jwtVerifyAttachUserId,
-	confirmUserIsTeacher,
+	attachTeacherId,
 	createClassroom
 )
 
 teacherRoutes.post(
 	"/edit-classroom-name/:classCode",
-	validateClassCode,
+	attachClassroomIdValidateClassCode,
 	validateClassroomName,
 	jwtVerifyAttachUserId,
-	confirmUserIsTeacher,
+	attachTeacherId,
 	confirmClassBelongsToTeacher,
 	// confirm this classroom belongs to this teacher
 	editClassroomName
@@ -58,25 +58,25 @@ teacherRoutes.post(
 teacherRoutes.get(
 	"/retrieve-basic-classroom-info",
 	jwtVerifyAttachUserId,
-	confirmUserIsTeacher,
+	attachTeacherId,
 	retrieveBasicClassroomInfo
 )
 
 teacherRoutes.get(
 	"/retrieve-detailed-classroom-info/:classCode",
-	validateClassCode,
+	attachClassroomIdValidateClassCode,
 	jwtVerifyAttachUserId,
-	confirmUserIsTeacher,
+	attachTeacherId,
 	retrieveDetailedClassroomInfo
 )
 
 teacherRoutes.post(
 	"/invite-student-join-class/:classCode",
-	validateClassCode,
+	attachClassroomIdValidateClassCode,
 	validateInviteJoinClass,
 	jwtVerifyAttachUserId,
-	confirmUserIsTeacher,
-	confirmUsernameExists,
+	attachTeacherId,
+	attachStudentUserId,
 	inviteStudentJoinClass
 )
 

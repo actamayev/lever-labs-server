@@ -5,8 +5,6 @@ export default async function getClassBelongsToTeacher(teacherId: number, classC
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		// Single query: find teacher-classroom mapping where teacher matches
-		// AND the classroom has the given class code
 		const teacherClassroomMapping = await prismaClient.classroom_teacher_map.findFirst({
 			where: {
 				teacher_id: teacherId,
@@ -18,7 +16,6 @@ export default async function getClassBelongsToTeacher(teacherId: number, classC
 
 		// Return true if mapping exists, false otherwise
 		return teacherClassroomMapping !== null
-
 	} catch (error) {
 		console.error(error)
 		throw error

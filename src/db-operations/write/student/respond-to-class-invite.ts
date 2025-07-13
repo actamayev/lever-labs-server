@@ -8,7 +8,6 @@ interface UpdateData {
 
 export default async function respondToClassInvite(
 	studentId: number,
-	classroomId: number,
 	inviteResponse: "accept" | "decline"
 ): Promise<void> {
 	const prismaClient = await PrismaClientClass.getPrismaClient()
@@ -28,10 +27,7 @@ export default async function respondToClassInvite(
 
 	await prismaClient.student.update({
 		where: {
-			user_id_classroom_id: {
-				user_id: studentId,
-				classroom_id: classroomId
-			}
+			student_id: studentId
 		},
 		data: updateData
 	})

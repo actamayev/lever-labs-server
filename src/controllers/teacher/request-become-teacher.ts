@@ -12,7 +12,7 @@ export default async function requestBecomeTeacher(req: Request, res: Response):
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to create classroom" } satisfies ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to request to become a teacher" } satisfies ErrorResponse)
 		return
 	}
 }

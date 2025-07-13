@@ -10,6 +10,9 @@ export default async function retrieveUserIdByUsername(username: string): Promis
 					equals: username,
 					mode: "insensitive"
 				}
+			},
+			select: {
+				user_id: true
 			}
 		})
 

@@ -3,7 +3,8 @@ import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
 import getTeacherApprovalStatus from "../../db-operations/read/teacher/get-teacher-approval-status-and-teacher-id"
 
-export default async function confirmUserIsTeacher(
+// confirmUserIsTeacher
+export default async function attachTeacherId(
 	req: Request,
 	res: Response,
 	next: NextFunction

@@ -12,6 +12,7 @@ declare global {
 
 			teacherId: number
 			classroomId: number
+			studentUserId: number
 			studentId: number
 		}
 	}

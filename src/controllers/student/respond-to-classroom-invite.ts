@@ -4,10 +4,10 @@ import respondToClassInvite from "../../db-operations/write/student/respond-to-c
 
 export default async function respondToClassroomInvite(req: Request, res: Response): Promise<void> {
 	try {
-		const { studentId, classroomId } = req
+		const { studentId } = req
 		const { inviteResponse } = req.body as InviteResponse
 
-		await respondToClassInvite(studentId, classroomId, inviteResponse)
+		await respondToClassInvite(studentId, inviteResponse)
 
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return

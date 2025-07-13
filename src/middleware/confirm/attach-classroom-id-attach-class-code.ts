@@ -2,14 +2,14 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import { ClassCode, ErrorResponse, MessageResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
-import classCodeValidator from "../../joi/class-code-validator"
-import getClassroomIdFromClassCode from "../../../db-operations/read/classroom/get-classroom-id-from-class-code"
+import classCodeValidator from "../joi/class-code-validator"
+import getClassroomIdFromClassCode from "../../db-operations/read/classroom/get-classroom-id-from-class-code"
 
 const classCodeSchema = Joi.object({
 	classCode: classCodeValidator.required()
 }).required()
 
-export default async function validateClassCode(req: Request, res: Response, next: NextFunction): Promise<void> {
+export default async function attachClassroomIdValidateClassCode(req: Request, res: Response, next: NextFunction): Promise<void> {
 	try {
 		const { error } = classCodeSchema.validate(req.params)
 

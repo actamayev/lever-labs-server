@@ -361,13 +361,13 @@ export default class BrowserSocketManager extends Singleton {
 	}
 
 	public emitStudentInviteJoinClass(
-		studentId: number,
+		studentUserId: number,
 		teacherNameInfo: TeacherName,
 		classroomName: string
 	): void {
-		const connectionInfo = this.connections.get(studentId)
+		const connectionInfo = this.connections.get(studentUserId)
 		if (!connectionInfo) {
-			console.warn(`No connection found for userId: ${studentId}`)
+			console.warn(`No connection found for userId: ${studentUserId}`)
 			return
 		}
 		const event: StudentInviteJoinClass = { teacherNameInfo, classroomName }

@@ -1,7 +1,6 @@
 import { ClassCode, DetailedClassroomData } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-
 export default async function getDetailedTeacherClassroomData(teacherId: number): Promise<DetailedClassroomData[]> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()

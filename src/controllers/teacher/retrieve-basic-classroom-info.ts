@@ -11,7 +11,7 @@ export default async function retrieveBasicClassroomInfo(req: Request, res: Resp
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to create classroom" } satisfies ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to retrieve basic classroom info" } satisfies ErrorResponse)
 		return
 	}
 }
