@@ -9,6 +9,7 @@ import extractTeacherDataFromUserData from "../../utils/extract-teacher-data-fro
 import retrieveUserFromContact from "../../utils/auth-helpers/login/retrieve-user-from-contact"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
+import retrieveStudentClasses from "../../db-operations/read/credentials/retrieve-student-classes"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function login(req: Request, res: Response): Promise<void> {
@@ -40,7 +41,7 @@ export default async function login(req: Request, res: Response): Promise<void> 
 
 		const encryptor = new Encryptor()
 		const email = await encryptor.deterministicDecrypt(credentialsResult.email__encrypted, "EMAIL_ENCRYPTION_KEY")
-		await addLoginHistoryRecord(credentialsResult.user_id)
+		const studentClasses = await retrieveStudentClasses(credentialsResult.user_id)
 
 		res.status(200).json({
 			accessToken,
@@ -53,8 +54,10 @@ export default async function login(req: Request, res: Response): Promise<void> 
 				name: credentialsResult.name,
 				teacherData: extractTeacherDataFromUserData(credentialsResult)
 			},
-			userPipData
+			userPipData,
+			studentClasses
 		} satisfies LoginSuccess)
+		void addLoginHistoryRecord(credentialsResult.user_id)
 		return
 	} catch (error) {
 		console.error(error)

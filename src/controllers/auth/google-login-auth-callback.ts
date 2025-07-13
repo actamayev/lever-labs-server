@@ -1,7 +1,8 @@
 import { Request, Response } from "express"
 import { SiteThemes } from "@prisma/client"
 import { isNull, isUndefined } from "lodash"
-import { ErrorResponse, GoogleAuthSuccess, MessageResponse, PersonalInfoResponse, PipData } from "@bluedotrobots/common-ts"
+import { ErrorResponse, GoogleAuthSuccess, MessageResponse,
+	PersonalInfoResponse, PipData, StudentClassroomData } from "@bluedotrobots/common-ts"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import SecretsManager from "../../classes/aws/secrets-manager"
@@ -12,6 +13,7 @@ import extractTeacherDataFromUserData from "../../utils/extract-teacher-data-fro
 import retrieveUserIdByEmail from "../../db-operations/read/credentials/retrieve-user-id-by-email"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
+import retrieveStudentClasses from "../../db-operations/read/credentials/retrieve-student-classes"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function googleLoginAuthCallback (req: Request, res: Response): Promise<void> {
@@ -41,6 +43,7 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 		let isNewUser = false
 		let userPipData: PipData[] = []
 		let personalInfo: PersonalInfoResponse | undefined = undefined
+		let studentClasses: StudentClassroomData[] = []
 		if (isUndefined(userId)) {
 			res.status(500).json({ error: "Unable to login with this email. Account offline." } satisfies ErrorResponse)
 			return
@@ -66,16 +69,17 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 				name: credentialsResult.name,
 				teacherData: extractTeacherDataFromUserData(credentialsResult)
 			}
+			studentClasses = await retrieveStudentClasses(userId)
 		}
-
-		await addLoginHistoryRecord(userId)
 
 		res.status(200).json({
 			accessToken,
 			isNewUser,
 			personalInfo,
-			userPipData
+			userPipData,
+			studentClasses
 		} satisfies GoogleAuthSuccess)
+		void addLoginHistoryRecord(userId)
 		return
 	} catch (error) {
 		console.error(error)
