@@ -1,14 +1,14 @@
 import { Response, Request } from "express"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse, StudentClassroomData } from "@bluedotrobots/common-ts"
 import joinClassroom from "../../db-operations/write/student/join-classroom"
 
 export default async function joinClass(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId, classroomId } = req
 
-		await joinClassroom(userId, classroomId)
+		const studentClassroomData = await joinClassroom(userId, classroomId)
 
-		res.status(200).json({ success: "" } satisfies SuccessResponse)
+		res.status(200).json(studentClassroomData satisfies StudentClassroomData)
 		return
 	} catch (error) {
 		console.error(error)
