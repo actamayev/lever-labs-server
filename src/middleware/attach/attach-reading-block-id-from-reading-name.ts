@@ -19,7 +19,9 @@ export default async function attachReadingBlockIdFromReadingName(req: Request, 
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to attach reading block ID from reading name" } satisfies ErrorResponse)
+		res.status(500).json({
+			error: "Internal Server Error: Unable to attach reading block ID from reading name"
+		} satisfies ErrorResponse)
 		return
 	}
 }

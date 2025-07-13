@@ -1,8 +1,8 @@
 import { Request, Response } from "express"
 import { SiteThemes } from "@prisma/client"
 import { isNull, isUndefined } from "lodash"
-import { ErrorResponse, GoogleAuthSuccess, MessageResponse,
-	PersonalInfoResponse, PipData, StudentClassroomData } from "@bluedotrobots/common-ts"
+import { BasicPersonalInfoResponse, ErrorResponse, GoogleAuthSuccess, MessageResponse,
+	PipData, StudentClassroomData, TeacherData } from "@bluedotrobots/common-ts"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import SecretsManager from "../../classes/aws/secrets-manager"
@@ -11,9 +11,9 @@ import { addGoogleUser } from "../../db-operations/write/credentials/add-user"
 import createGoogleAuthClient from "../../utils/google/create-google-auth-client"
 import extractTeacherDataFromUserData from "../../utils/extract-teacher-data-from-user-data"
 import retrieveUserIdByEmail from "../../db-operations/read/credentials/retrieve-user-id-by-email"
+import retrieveStudentClasses from "../../db-operations/read/credentials/retrieve-student-classes"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
-import retrieveStudentClasses from "../../db-operations/read/credentials/retrieve-student-classes"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function googleLoginAuthCallback (req: Request, res: Response): Promise<void> {
@@ -42,8 +42,9 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 		let accessToken: string
 		let isNewUser = false
 		let userPipData: PipData[] = []
-		let personalInfo: PersonalInfoResponse | undefined = undefined
+		let personalInfo: BasicPersonalInfoResponse | undefined = undefined
 		let studentClasses: StudentClassroomData[] = []
+		let teacherData: TeacherData | null = null
 		if (isUndefined(userId)) {
 			res.status(500).json({ error: "Unable to login with this email. Account offline." } satisfies ErrorResponse)
 			return
@@ -67,8 +68,8 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 				profilePictureUrl: credentialsResult.profile_picture?.image_url || null,
 				sandboxNotesOpen: credentialsResult.sandbox_notes_open,
 				name: credentialsResult.name,
-				teacherData: extractTeacherDataFromUserData(credentialsResult)
 			}
+			teacherData = extractTeacherDataFromUserData(credentialsResult)
 			studentClasses = await retrieveStudentClasses(userId)
 		}
 
@@ -77,7 +78,8 @@ export default async function googleLoginAuthCallback (req: Request, res: Respon
 			isNewUser,
 			personalInfo,
 			userPipData,
-			studentClasses
+			studentClasses,
+			teacherData
 		} satisfies GoogleAuthSuccess)
 		void addLoginHistoryRecord(userId)
 		return

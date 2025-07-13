@@ -52,8 +52,8 @@ export default async function login(req: Request, res: Response): Promise<void> 
 				profilePictureUrl: credentialsResult.profile_picture?.image_url || null,
 				sandboxNotesOpen: credentialsResult.sandbox_notes_open,
 				name: credentialsResult.name,
-				teacherData: extractTeacherDataFromUserData(credentialsResult)
 			},
+			teacherData: extractTeacherDataFromUserData(credentialsResult),
 			userPipData,
 			studentClasses
 		} satisfies LoginSuccess)

@@ -25,7 +25,9 @@ export default async function confirmSandboxProjectExistsAndValidUserId(
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to confirm sandbox project exists and valid userId" } satisfies ErrorResponse)
+		res.status(500).json({
+			error: "Internal Server Error: Unable to confirm sandbox project exists and valid userId"
+		} satisfies ErrorResponse)
 		return
 	}
 }
