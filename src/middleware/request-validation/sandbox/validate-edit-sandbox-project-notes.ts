@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
 const editSandboxProjectNotesSchema = Joi.object({
-	projectNotes: Joi.string().max(10000).required()
+	projectNotes: Joi.string().max(10000).allow("").required()
 }).required()
 
 export default function validateEditSandboxProjectNotes(req: Request, res: Response, next: NextFunction): void {
