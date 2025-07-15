@@ -8,13 +8,7 @@ const validateSendCareerQuestMessageSchema = Joi.object({
 	userCode: Joi.string().allow("").required(),
 	interactionType: Joi.string().valid("checkCode", "hint", "generalQuestion").required(),
 	message: Joi.string().required()
-}).custom((value, helpers) => {
-	// Custom validation: generalQuestion requires a message
-	if (value.interactionType === "generalQuestion" && !value.message?.trim()) {
-		return helpers.error("custom.generalQuestionRequiresMessage")
-	}
-	return value
-}, "General question validation")
+})
 
 export default function validateSendCareerQuestMessage(req: Request, res: Response, next: NextFunction): void {
 	try {
