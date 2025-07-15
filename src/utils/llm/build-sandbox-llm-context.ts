@@ -101,10 +101,8 @@ ${chatData.userCode || "// Ready to start exploring! What would you like Pip to 
 
 `
 
-	const baseUserMessage = chatData.message || "I'm ready to explore and experiment with robotics programming! What can I create with Pip?"
-
 	// Combine code state with user message
-	const userMessage = `${codeSection}${baseUserMessage}`
+	const userMessage = `${codeSection}${chatData.message}`
 
 	messages.push({ role: "user", content: userMessage, timestamp: new Date() })
 	return messages
