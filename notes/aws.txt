@@ -33,7 +33,7 @@ For Database migrations, navigate to dist/src, and run:
 Shortcuts:
 	Restart server after application update:
 		cd blue-dot-robots/ && npm i --production && pm2 restart 0 && pm2 logs;
-	DB:
+	DB (be in /dist/src folder)
 		npx prisma migrate deploy && npx prisma generate && pm2 restart 0 && pm2 logs;
 
 I am using the package pm2 to run the server on the instance (even after I close my connection)

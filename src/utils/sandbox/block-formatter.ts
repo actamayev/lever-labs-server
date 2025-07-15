@@ -74,6 +74,7 @@ export class BlockFormatter {
 		// Categorize all blocks
 		allBlocks.forEach(block => {
 			const blockDef = BLOCK_REGISTRY[block.type]
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!blockDef) return
 
 			if (blockDef.parentCategory) {
@@ -91,7 +92,7 @@ export class BlockFormatter {
 
 		// Group flat category blocks by category
 		const flatCategories = groupBy(flatCategoryBlocks, block =>
-			BLOCK_REGISTRY[block.type]?.category
+			BLOCK_REGISTRY[block.type].category
 		)
 
 		return { flatCategories, hierarchicalBlocks }
@@ -232,6 +233,7 @@ export class BlockFormatter {
 	private static createChallengeCategories(blocks: AvailableBlock[]): Record<string, AvailableBlock[]> {
 		return blocks.reduce((acc, block) => {
 			const blockDef = BLOCK_REGISTRY[block.type]
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (blockDef) {
 				const categoryKey = blockDef.parentCategory
 					? `${blockDef.parentCategory} > ${blockDef.category}`

@@ -22,6 +22,9 @@ export default async function retrieveSingleSandboxProjectData(sandboxProjectId:
 				updated_at: true,
 				project_notes: true,
 				sandbox_chat: {
+					where: {
+						is_active: true
+					},
 					select: {
 						messages: {
 							orderBy: {
@@ -33,7 +36,8 @@ export default async function retrieveSingleSandboxProjectData(sandboxProjectId:
 								created_at: true
 							}
 						}
-					}
+					},
+					take: 1
 				}
 			}
 		})
@@ -43,7 +47,8 @@ export default async function retrieveSingleSandboxProjectData(sandboxProjectId:
 		return camelCaseSandboxProject({
 			...sandboxData,
 			project_uuid: sandboxData.project_uuid as ProjectUUID,
-			sandbox_json: sandboxData.sandbox_json as BlocklyJson
+			sandbox_json: sandboxData.sandbox_json as BlocklyJson,
+			sandbox_chat: sandboxData.sandbox_chat[0] || null
 		})
 	} catch (error) {
 		console.error(error)
