@@ -5,7 +5,7 @@ import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
 const validateSendSandboxMessageSchema = Joi.object({
 	userCode: Joi.string().allow("").required(),
-	message: Joi.string().required(),
+	message: Joi.string().required()
 })
 
 export default function validateSendSandboxMessage(req: Request, res: Response, next: NextFunction): void {

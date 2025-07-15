@@ -7,7 +7,7 @@ const validateSendCareerQuestMessageSchema = Joi.object({
 	careerQuestChallengeId: Joi.string().required(),
 	userCode: Joi.string().allow("").required(),
 	interactionType: Joi.string().valid("checkCode", "hint", "generalQuestion").required(),
-	message: Joi.string().allow("").optional(),
+	message: Joi.string().required()
 }).custom((value, helpers) => {
 	// Custom validation: generalQuestion requires a message
 	if (value.interactionType === "generalQuestion" && !value.message?.trim()) {

@@ -101,7 +101,7 @@ ${chatData.userCode || "// Ready to start exploring! What would you like Pip to 
 
 `
 
-	const baseUserMessage = chatData.message || "I'm ready to explore and experiment with robotics programming! What can I create with Pip?"
+	const baseUserMessage = chatData.message
 
 	// Combine code state with user message
 	const userMessage = `${codeSection}${baseUserMessage}`

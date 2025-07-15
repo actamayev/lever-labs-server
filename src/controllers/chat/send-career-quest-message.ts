@@ -49,19 +49,7 @@ async function processLLMRequest(
 		if (abortSignal.aborted) return
 
 		// Save user message to database first
-		let userMessage = ""
-		if (chatData.interactionType === "generalQuestion" && chatData.message) {
-			userMessage = chatData.message
-		} else {
-			// For other interaction types, create a descriptive message
-			if (chatData.interactionType === "checkCode") {
-				userMessage = `Check my code: ${chatData.userCode}`
-			} else if (chatData.interactionType === "hint") {
-				userMessage = "Can you please give me a hint for this challenge?"
-			} else {
-				userMessage = "User interaction"
-			}
-		}
+		const userMessage = chatData.message
 
 		await addCareerQuestMessage(
 			chatData.careerQuestChatId,
@@ -111,10 +99,11 @@ async function processLLMRequest(
 			// Stream chunks back via WebSocket with challengeId
 			for await (const chunk of stream) {
 				// Check if aborted during streaming
-				// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+				// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, max-depth
 				if (abortSignal.aborted) break
 
 				const content = chunk.choices[0]?.delta?.content
+				// eslint-disable-next-line max-depth
 				if (content) {
 					aiResponseContent += content // Collect the content
 					socketManager.emitCqChatbotChunk(userId, content, chatData.careerQuestChallengeId)
