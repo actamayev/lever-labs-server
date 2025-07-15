@@ -15,13 +15,12 @@ export async function getCQChallengeData(
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		// Get chat messages
-		const chat = await prismaClient.career_quest_chat.findUnique({
+		// Get chat messages from active career quest chat
+		const chat = await prismaClient.career_quest_chat.findFirst({
 			where: {
-				career_quest_id_user_id: {
-					career_quest_id: challengeId,
-					user_id: userId
-				}
+				career_quest_id: challengeId,
+				user_id: userId,
+				is_active: true
 			},
 			select: {
 				messages: {

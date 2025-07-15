@@ -269,12 +269,13 @@ model career_quest_chat {
 
 	created_at            										DateTime @default(now())
 	updated_at            										DateTime @default(now()) @updatedAt
+	is_active													Boolean @default(true)
 
 	user                  										credentials @relation(fields: [user_id], references: [user_id])
 	messages              										career_quest_message[]
 
-	@@unique([career_quest_id, user_id]) // One chat per user per challenge
 	@@index([user_id])
+	@@index([career_quest_id])
 }
 
 model sandbox_chat {
