@@ -10,7 +10,8 @@ export default function stopChatStream(req: Request, res: Response): void {
 		const wasStopped = StreamManager.getInstance().stopStream(streamId)
 
 		if (!wasStopped) {
-			throw Error("Stream not found or already completed")
+			console.info("Stream not found or already completed")
+			return
 		}
 
 		res.status(200).json({ success: "Stream stopped successfully"} satisfies SuccessResponse)
