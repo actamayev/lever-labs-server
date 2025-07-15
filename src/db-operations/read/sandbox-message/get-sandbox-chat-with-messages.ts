@@ -6,9 +6,10 @@ export async function getSandboxChatMessages(sandboxProjectId: number): Promise<
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		const chat = await prismaClient.sandbox_chat.findUnique({
+		const chat = await prismaClient.sandbox_chat.findFirst({
 			where: {
-				sandbox_project_id: sandboxProjectId
+				sandbox_project_id: sandboxProjectId,
+				is_active: true
 			},
 			select: {
 				messages: {
