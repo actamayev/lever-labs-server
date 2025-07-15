@@ -57,7 +57,7 @@ async function processLLMRequest(
 			if (chatData.interactionType === "checkCode") {
 				userMessage = `Check my code: ${chatData.userCode}`
 			} else if (chatData.interactionType === "hint") {
-				userMessage = "Give me a hint for this challenge"
+				userMessage = "Can you please give me a hint for this challenge?"
 			} else {
 				userMessage = "User interaction"
 			}
