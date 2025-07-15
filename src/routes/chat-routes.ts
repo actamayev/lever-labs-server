@@ -10,10 +10,12 @@ import attachSandboxConversationHistory from "../middleware/attach/attach-sandbo
 import validateSendSandboxMessage from "../middleware/request-validation/chat/validate-send-sandbox-message"
 import validateProjectUUIDInParams from "../middleware/request-validation/sandbox/validate-project-uuid-in-params"
 import validateSendCareerQuestMessage from "../middleware/request-validation/chat/validate-send-career-quest-message"
+import confirmSandboxProjectExistsAndValidUserId from "../middleware/confirm/confirm-sandbox-project-exists-and-valid-user-id"
 
 import stopChatbotStream from "../controllers/chat/stop-chat-stream"
 import sendSandboxMessage from "../controllers/chat/send-sandbox-message"
 import sendCareerQuestMessage from "../controllers/chat/send-career-quest-message"
+import deleteSandboxChatController from "../controllers/chat/delete-sandbox-chat"
 
 const chatRoutes = express.Router()
 
@@ -42,6 +44,15 @@ chatRoutes.post(
 	attachSandboxChatId,
 	attachSandboxConversationHistory,
 	sendSandboxMessage
+)
+
+chatRoutes.post(
+	"/delete-sandbox-chat/:projectUUID",
+	validateProjectUUIDInParams,
+	jwtVerifyAttachUserId,
+	attachSandboxProjectIdFromUUID,
+	confirmSandboxProjectExistsAndValidUserId,
+	deleteSandboxChatController
 )
 
 export default chatRoutes

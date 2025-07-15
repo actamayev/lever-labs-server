@@ -241,7 +241,7 @@ model sandbox_project {
 	updated_at                                                  DateTime @default(now()) @updatedAt
 
 	user                                                        credentials @relation(fields: [project_owner_id], references: [user_id])
-	sandbox_chat												sandbox_chat?
+	sandbox_chat												sandbox_chat[]
 
 	@@index([project_owner_id], name: "sandbox_project__project_owner_id_idx")
 	@@index([project_uuid], name: "sandbox_project__project_uuid_idx")
@@ -279,10 +279,11 @@ model career_quest_chat {
 
 model sandbox_chat {
 	sandbox_chat_id       										Int      @id @default(autoincrement())
-	sandbox_project_id    										Int      @unique // 1:1 with sandbox project
+	sandbox_project_id    										Int      // Multiple chats per sandbox project
 
 	created_at            										DateTime @default(now())
 	updated_at            										DateTime @default(now()) @updatedAt
+	is_active													Boolean @default(true)
 
 	sandbox_project       										sandbox_project @relation(fields: [sandbox_project_id], references: [sandbox_project_id])
 	messages              										sandbox_message[]
