@@ -9,7 +9,7 @@ export default function buildCqLLMContext(
 	userCode: string,
 	interactionType: InteractionType,
 	conversationHistory: ChatMessage[],
-	message?: string,
+	message: string
 ): ChatMessage[] {
 	// Format challenge blocks hierarchically for better LLM understanding
 	const availableBlocksText = BlockFormatter.formatChallengeBlocksForCqLLMContext(challengeData.availableBlocks)
@@ -121,53 +121,14 @@ Remember: Your goal is to help them discover the solution through guided learnin
 	}
 
 	// Add current user message based on interaction type
-	let userMessage: string
 	const codeSection = `CURRENT CODE STATE:
 \`\`\`cpp
 ${userCode || "// No code written yet"}
 \`\`\`
 
 `
-	switch (interactionType) {
-	case "checkCode":
-		userMessage = `${codeSection}Please analyze my current code. What's working well and what needs to be improved to complete the challenge?`
-		break
-	case "hint":
-		userMessage = `${codeSection}${generateHintMessage(challengeData, conversationHistory)}`
-		break
-	case "generalQuestion":
-		userMessage = `${codeSection}${message || "I have a question about this challenge."}`
-		break
-	}
+	const userMessage = `${codeSection}${message}`
 
 	messages.push({ role: "user", content: userMessage, timestamp: new Date() })
 	return messages
-}
-
-function generateHintMessage(challengeData: ChallengeData, conversationHistory: ChatMessage[]): string {
-	const hintCount = conversationHistory.filter(msg =>
-		msg.role === "user" && msg.content.toLowerCase().includes("hint")
-	).length
-
-	let baseMessage = "I need a helpful hint to guide me in the right direction. "
-
-	if (challengeData.hints) {
-		if (hintCount === 0) {
-			baseMessage += `Here's a gentle nudge: ${challengeData.hints.level1}`
-		} else if (hintCount === 1) {
-			baseMessage += `Here's a more specific hint: ${challengeData.hints.level2}`
-		} else if (hintCount >= 2) {
-			baseMessage += `Here's a detailed hint: ${challengeData.hints.level3}`
-		}
-	} else {
-		if (hintCount === 0) {
-			baseMessage += "Please give me a gentle nudge in the right direction without giving away the full solution."
-		} else if (hintCount === 1) {
-			baseMessage += "I still need help. Can you give me a more specific hint?"
-		} else {
-			baseMessage += "I'm really struggling. Can you give me a more detailed hint, but still let me figure out the final steps?"
-		}
-	}
-
-	return baseMessage
 }
