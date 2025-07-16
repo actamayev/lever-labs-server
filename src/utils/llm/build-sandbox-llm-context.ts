@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { isEmpty } from "lodash"
-import { ChatMessage, ProcessedSandboxChatData } from "@bluedotrobots/common-ts"
+import { ChatMessage } from "@bluedotrobots/common-ts"
 import { BlockFormatter } from "../sandbox/block-formatter"
 
 // eslint-disable-next-line max-lines-per-function

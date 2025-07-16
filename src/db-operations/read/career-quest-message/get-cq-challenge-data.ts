@@ -43,6 +43,15 @@ export async function getCQChallengeData(
 						evaluation_result: true,
 						is_correct: true,
 					}
+				},
+				career_quest_hints: {
+					orderBy: {
+						created_at: "asc"
+					},
+					select: {
+						hint_text: true,
+						created_at: true
+					}
 				}
 			}
 		})
@@ -77,6 +86,12 @@ export async function getCQChallengeData(
 					isCorrect: submission.is_correct,
 					evaluationResult: submission.evaluation_result
 				}
+			})),
+			...chat.career_quest_hints.map(hint => ({
+				content: hint.hint_text,
+				role: "assistant" as const,
+				timestamp: hint.created_at,
+				isHint: true
 			}))
 			].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
 

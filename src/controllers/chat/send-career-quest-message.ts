@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import { MessageSender } from "@prisma/client"
-import { ErrorResponse, ProcessedCareerQuestChatData, StartChatSuccess } from "@bluedotrobots/common-ts"
+import { ErrorResponse, StartChatSuccess } from "@bluedotrobots/common-ts"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
@@ -60,18 +60,17 @@ async function processLLMRequest(
 		const messages = buildCqLLMContext(
 			findChallengeDataFromId(chatData.careerQuestChallengeId),
 			chatData.userCode,
-			chatData.interactionType,
 			chatData.conversationHistory,
 			chatData.message,
 		)
 
 		// Select model based on interaction type
-		const modelId = selectModel(chatData.interactionType)
+		const modelId = selectModel("generalQuestion")
 
 		// Send start event with challengeId
 		socketManager.emitCqChatbotStart(userId, {
 			challengeId: chatData.careerQuestChallengeId,
-			interactionType: chatData.interactionType
+			interactionType: "generalQuestion"
 		})
 
 		// Check abort before making OpenAI call

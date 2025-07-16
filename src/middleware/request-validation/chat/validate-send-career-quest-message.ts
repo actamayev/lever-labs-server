@@ -6,7 +6,6 @@ import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 const validateSendCareerQuestMessageSchema = Joi.object({
 	careerQuestChallengeId: Joi.string().required(),
 	userCode: Joi.string().allow("").required(),
-	interactionType: Joi.string().valid("hint", "generalQuestion").required(),
 	message: Joi.string().required()
 })
 

@@ -1,13 +1,12 @@
 /* eslint-disable max-len */
 import { isEmpty } from "lodash"
-import { ChallengeData, ChatMessage, InteractionType } from "@bluedotrobots/common-ts"
+import { ChallengeData, ChatMessage } from "@bluedotrobots/common-ts"
 import { BlockFormatter } from "../sandbox/block-formatter"
 
 // eslint-disable-next-line max-lines-per-function
 export default function buildCqLLMContext(
 	challengeData: ChallengeData,
 	userCode: string,
-	interactionType: InteractionType,
 	conversationHistory: ChatMessage[],
 	message: string
 ): ChatMessage[] {
@@ -102,8 +101,6 @@ PROGRESSIVE HINT STRATEGY:
 3. SPECIFIC: "Try using the distance sensor block inside your loop..."
 4. IMPLEMENTATION: "Place the sensor block before your if-statement..."
 
-INTERACTION TYPE: ${interactionType}
-
 USER'S CURRENT CODE:
 \`\`\`cpp
 ${userCode || "// No code provided yet"}
@@ -120,7 +117,7 @@ Remember: Your goal is to help them discover the solution through guided learnin
 		messages.push(...recentHistory)
 	}
 
-	// Add current user message based on interaction type
+	// Add current user message
 	const codeSection = `CURRENT CODE STATE:
 \`\`\`cpp
 ${userCode || "// No code written yet"}

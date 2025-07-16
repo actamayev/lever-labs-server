@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Response, Request } from "express"
 import { MessageSender } from "@prisma/client"
-import { CheckCodeResponse, ErrorResponse, ProcessedCareerQuestCheckCodeMessage } from "@bluedotrobots/common-ts"
+import { CheckCodeResponse, ErrorResponse } from "@bluedotrobots/common-ts"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
@@ -39,9 +39,7 @@ export default async function checkCareerQuestCode(req: Request, res: Response):
 			})
 	} catch (error) {
 		console.error("Code checking endpoint error:", error)
-		res.status(500).json({
-			error: "Internal Server Error: Unable to process code checking request"
-		} satisfies ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to process code checking request" } satisfies ErrorResponse)
 	}
 }
 
