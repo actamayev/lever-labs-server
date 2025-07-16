@@ -273,6 +273,7 @@ model career_quest_chat {
 
 	user                  										credentials @relation(fields: [user_id], references: [user_id])
 	messages              										career_quest_message[]
+	code_submissions      										career_quest_code_submission[]
 
 	@@index([user_id])
 	@@index([career_quest_id])
@@ -325,6 +326,22 @@ model sandbox_message {
 	sandbox_chat              									sandbox_chat @relation(fields: [sandbox_chat_id], references: [sandbox_chat_id])
 
 	@@index([sandbox_chat_id, created_at])
+}
+
+model career_quest_code_submission {
+	submission_id                   							Int       @id @default(autoincrement())
+	career_quest_chat_id            							Int
+	user_code                       							String    // The code they submitted
+	challenge_snapshot              							Json      // { id, title, description, expectedBehavior, solutionCode }
+	evaluation_result               							Json      // Current: {"isCorrect": true}, Future: more detailed
+	is_correct                      							Boolean   // Quick access to the result
+	model_used                      							String?   // Which model evaluated it
+								
+	created_at                      							DateTime  @default(now())
+	updated_at                      							DateTime  @default(now()) @updatedAt
+								
+	career_quest_chat               							career_quest_chat @relation(fields: [career_quest_chat_id], references: [career_quest_chat_id])
+	@@index([career_quest_chat_id, created_at])
 }
 
 model career_quest_sandbox {
