@@ -9,14 +9,16 @@ import attachSandboxProjectIdFromUUID from "../middleware/attach/attach-sandbox-
 import attachSandboxConversationHistory from "../middleware/attach/attach-sandbox-conversation-history"
 import validateSendSandboxMessage from "../middleware/request-validation/chat/validate-send-sandbox-message"
 import validateChallengeIdInParams from "../middleware/request-validation/chat/validate-challenge-id-in-params"
+import validateCheckCareerQuestCode from "../middleware/request-validation/chat/validate-check-career-quest-code"
 import validateProjectUUIDInParams from "../middleware/request-validation/sandbox/validate-project-uuid-in-params"
 import validateSendCareerQuestMessage from "../middleware/request-validation/chat/validate-send-career-quest-message"
 import confirmSandboxProjectExistsAndValidUserId from "../middleware/confirm/confirm-sandbox-project-exists-and-valid-user-id"
 
 import stopChatbotStream from "../controllers/chat/stop-chat-stream"
 import sendSandboxMessage from "../controllers/chat/send-sandbox-message"
-import sendCareerQuestMessage from "../controllers/chat/send-career-quest-message"
+import checkCareerQuestCode from "../controllers/chat/check-career-quest-code"
 import deleteSandboxChatController from "../controllers/chat/delete-sandbox-chat"
+import sendCareerQuestMessage from "../controllers/chat/send-career-quest-message"
 import deleteCareerQuestChatController from "../controllers/chat/delete-career-quest-chat"
 
 const chatRoutes = express.Router()
@@ -28,6 +30,14 @@ chatRoutes.post(
 	attachCareerQuestChatId,
 	attachCQConversationHistory,
 	sendCareerQuestMessage
+)
+
+chatRoutes.post(
+	"/check-career-quest-code",
+	jwtVerifyAttachUserId,
+	validateCheckCareerQuestCode,
+	attachCareerQuestChatId,
+	checkCareerQuestCode
 )
 
 chatRoutes.post(

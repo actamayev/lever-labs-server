@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, OutgoingCareerQuestChatData} from "@bluedotrobots/common-ts"
+import { ErrorResponse, OutgoingCareerQuestCheckCodeMessage, OutgoingCareerQuestGeneralMessage} from "@bluedotrobots/common-ts"
 import findOrCreateCareerQuestChat from "../../db-operations/write/career-quest-chat/find-or-create-career-quest-chat"
 
 export default async function attachCareerQuestChatId(
@@ -9,7 +9,7 @@ export default async function attachCareerQuestChatId(
 ): Promise<void> {
 	try {
 		const { userId } = req
-		const chatData = req.body as OutgoingCareerQuestChatData
+		const chatData = req.body as OutgoingCareerQuestGeneralMessage | OutgoingCareerQuestCheckCodeMessage
 
 		const careerQuestChatId = await findOrCreateCareerQuestChat(userId, chatData.careerQuestChallengeId)
 

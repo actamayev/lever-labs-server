@@ -6,6 +6,7 @@ export default async function attachCQConversationHistory(req: Request, res: Res
 	try {
 		const { careerQuestChatId } = req.body
 
+		// TODO: We need to also get the code submission history
 		const chatMessages = await retrieveCqChatMessages(careerQuestChatId)
 
 		req.body.conversationHistory = chatMessages

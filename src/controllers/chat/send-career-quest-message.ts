@@ -8,7 +8,6 @@ import buildCqLLMContext from "../../utils/llm/build-cq-llm-context"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import findChallengeDataFromId from "../../utils/llm/find-challenge-data-from-id"
 import addCareerQuestMessage from "../../db-operations/write/career-quest-message/add-career-quest-message"
-import addCareerQuestCodeSubmission from "../../db-operations/write/career-quest-code-submission/add-career-quest-code-submission"
 
 export default function sendCareerQuestMessage(req: Request, res: Response): void {
 	try {
@@ -35,7 +34,7 @@ export default function sendCareerQuestMessage(req: Request, res: Response): voi
 	}
 }
 
-// eslint-disable-next-line complexity, max-lines-per-function
+// eslint-disable-next-line max-lines-per-function, complexity
 async function processLLMRequest(
 	chatData: ProcessedCareerQuestChatData,
 	userId: number,
@@ -45,36 +44,6 @@ async function processLLMRequest(
 	const socketManager = BrowserSocketManager.getInstance()
 
 	try {
-		const isCodeSubmission = chatData.interactionType === "checkCode"
-
-		if (isCodeSubmission) {
-			// 1. Do the binary evaluation first
-			const binaryResult = await evaluateCodeBinary(chatData, abortSignal)
-
-			// 2. Save the code submission to DB
-			await addCareerQuestCodeSubmission({
-				careerQuestChatId: chatData.careerQuestChatId,
-				userCode: chatData.userCode,
-				challengeData: findChallengeDataFromId(chatData.careerQuestChallengeId),
-				evaluationResult: binaryResult,
-				isCorrect: binaryResult.isCorrect,
-				modelUsed: selectModel("checkCode")
-			})
-
-			// 3. Save user message (as you currently do)
-			await addCareerQuestMessage(
-				chatData.careerQuestChatId,
-				chatData.message,
-				MessageSender.USER
-			)
-
-			// 4. Send instant feedback via WebSocket
-			socketManager.emitCqCodeEvaluationResult(userId, {
-				challengeId: chatData.careerQuestChallengeId,
-				isCorrect: binaryResult.isCorrect,
-				hasSubmission: true
-			})
-		}
 		// Check if already aborted
 		if (abortSignal.aborted) return
 
@@ -100,7 +69,10 @@ async function processLLMRequest(
 		const modelId = selectModel(chatData.interactionType)
 
 		// Send start event with challengeId
-		socketManager.emitCqChatbotStart(userId, chatData)
+		socketManager.emitCqChatbotStart(userId, {
+			challengeId: chatData.careerQuestChallengeId,
+			interactionType: chatData.interactionType
+		})
 
 		// Check abort before making OpenAI call
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -161,7 +133,6 @@ async function processLLMRequest(
 				throw error
 			}
 		}
-
 	} catch (error) {
 		if (error instanceof Error && error.name === "AbortError") {
 			// Handle abort gracefully
@@ -175,57 +146,4 @@ async function processLLMRequest(
 		// Clean up the stream
 		StreamManager.getInstance().stopStream(streamId)
 	}
-}
-
-// eslint-disable-next-line max-lines-per-function
-async function evaluateCodeBinary(
-	chatData: ProcessedCareerQuestChatData,
-	abortSignal: AbortSignal
-): Promise<{ isCorrect: boolean }> {
-	const challengeData = findChallengeDataFromId(chatData.careerQuestChallengeId)
-
-	const openAiClient = await OpenAiClientClass.getOpenAiClient()
-
-	const response = await openAiClient.chat.completions.create({
-		model: selectModel("checkCode"),
-		messages: [
-			{
-				role: "system",
-				content: "You are a robotics code evaluator. Analyze if the user's code correctly solves the challenge."
-			},
-			{
-				role: "user",
-				content: `Challenge: ${challengeData.title}
-Description: ${challengeData.description}
-Expected Behavior: ${challengeData.expectedBehavior}
-Solution: ${challengeData.solutionCode}
-User Code: ${chatData.userCode}
-
-Evaluate if the user code correctly implements the challenge requirements.`
-			}
-		],
-		response_format: {
-			type: "json_schema",
-			json_schema: {
-				name: "code_evaluation",
-				strict: true,
-				schema: {
-					type: "object",
-					properties: {
-						isCorrect: {
-							type: "boolean",
-							description: "Whether the user's code correctly solves the challenge"
-						}
-					},
-					required: ["isCorrect"],
-					additionalProperties: false
-				}
-			}
-		},
-		stream: false
-	}, {
-		signal: abortSignal
-	})
-
-	return JSON.parse(response.choices[0].message.content || "{}")
 }

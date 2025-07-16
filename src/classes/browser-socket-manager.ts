@@ -5,7 +5,6 @@ import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
 	CqChatbotStreamStartEvent,
 	CqChatbotStreamChunkEvent,
 	CqChatbotStreamCompleteEvent,
-	ProcessedCareerQuestChatData,
 	SandboxChatbotStreamChunkEvent,
 	SandboxChatbotStreamStartOrCompleteEvent,
 	ProjectUUID,
@@ -285,15 +284,11 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	public emitCqChatbotStart(userId: number, chatData: ProcessedCareerQuestChatData): void {
+	public emitCqChatbotStart(userId: number, event: CqChatbotStreamStartEvent): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) {
 			console.warn(`No connection found for userId: ${userId}`)
 			return
-		}
-		const event: CqChatbotStreamStartEvent = {
-			challengeId: chatData.careerQuestChallengeId,
-			interactionType: chatData.interactionType
 		}
 		this.io.to(connectionInfo.socketId).emit("cq-chatbot-stream-start", event)
 	}
