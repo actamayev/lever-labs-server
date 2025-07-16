@@ -32,6 +32,17 @@ export async function getCQChallengeData(
 						sender: true,
 						created_at: true
 					}
+				},
+				code_submissions: {
+					orderBy: {
+						created_at: "asc"
+					},
+					select: {
+						user_code: true,
+						created_at: true,
+						evaluation_result: true,
+						is_correct: true,
+					}
 				}
 			}
 		})
@@ -50,11 +61,24 @@ export async function getCQChallengeData(
 		})
 
 		// Process messages
-		const messages: ChatMessage[] = isNull(chat) ? [] : chat.messages.map(msg => ({
-			content: msg.message_text,
-			role: msg.sender === "USER" ? "user" as const : "assistant" as const,
-			timestamp: msg.created_at
-		}))
+		const messages: ChatMessage[] = isNull(chat)
+			? []
+			: [...chat.messages.map(msg => ({
+				content: msg.message_text,
+				role: msg.sender === "USER" ? "user" as const : "assistant" as const,
+				timestamp: msg.created_at
+			})),
+			...chat.code_submissions.map(submission => ({
+				content: "",
+				role: "user" as const,
+				timestamp: submission.created_at,
+				codeSubmissionData: {
+					userCode: submission.user_code,
+					isCorrect: submission.is_correct,
+					evaluationResult: submission.evaluation_result
+				}
+			}))
+			].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
 
 		// Process sandbox JSON
 		let sandboxJson: object = {}

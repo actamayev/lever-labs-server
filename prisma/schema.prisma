@@ -336,7 +336,7 @@ model career_quest_code_submission {
 	evaluation_result               							Json      // Current: {"isCorrect": true}, Future: more detailed
 	is_correct                      							Boolean   // Quick access to the result
 	model_used                      							String?   // Which model evaluated it
-								
+
 	created_at                      							DateTime  @default(now())
 	updated_at                      							DateTime  @default(now()) @updatedAt
 								
