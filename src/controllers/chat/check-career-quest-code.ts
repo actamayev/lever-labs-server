@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Response, Request } from "express"
 import { MessageSender } from "@prisma/client"
-import { ErrorResponse, ProcessedCareerQuestCheckCodeMessage, StartChatSuccess } from "@bluedotrobots/common-ts"
+import { CheckCodeResponse, ErrorResponse, ProcessedCareerQuestCheckCodeMessage } from "@bluedotrobots/common-ts"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
@@ -10,24 +10,33 @@ import findChallengeDataFromId from "../../utils/llm/find-challenge-data-from-id
 import addCareerQuestMessage from "../../db-operations/write/career-quest-message/add-career-quest-message"
 import addCareerQuestCodeSubmission from "../../db-operations/write/career-quest-code-submission/add-career-quest-code-submission"
 
-// I think this should return the binary response immediately (REST), and then stream the explanation
-export default function checkCareerQuestCode(req: Request, res: Response): void {
+// Binary response returned immediately, then stream the explanation
+export default async function checkCareerQuestCode(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
 		const chatData = req.body as ProcessedCareerQuestCheckCodeMessage
 
-		// Create a new stream and get streamId
+		// 1. Get binary evaluation first (await it, don't chunk)
+		const binaryResult = await evaluateCodeBinary(chatData)
+
+		// 2. Save the code submission to DB
+		await addCareerQuestCodeSubmission(chatData, binaryResult)
+
+		// 3. Create stream for explanation
 		const { streamId, abortController } = StreamManager.getInstance().createStream()
 
-		// Immediately respond with streamId so client can use it to stop if needed
-		res.status(200).json({ streamId } satisfies StartChatSuccess)
+		// 4. Return binary response immediately with streamId
+		res.status(200).json({
+			isCorrect: binaryResult.isCorrect,
+			feedback: binaryResult.feedback || "Code evaluation completed",
+			streamId
+		} satisfies CheckCodeResponse)
 
-		// Process code checking with streaming via WebSocket (async)
-		processCodeChecking(chatData, userId, streamId, abortController.signal)
+		// 5. Process explanation streaming in background
+		processExplanationStreaming(chatData, binaryResult, userId, streamId, abortController.signal)
 			.catch(error => {
-				console.error("Background code checking error:", error)
+				console.error("Background explanation streaming error:", error)
 			})
-
 	} catch (error) {
 		console.error("Code checking endpoint error:", error)
 		res.status(500).json({
@@ -37,8 +46,9 @@ export default function checkCareerQuestCode(req: Request, res: Response): void 
 }
 
 // eslint-disable-next-line max-lines-per-function, complexity
-async function processCodeChecking(
+async function processExplanationStreaming(
 	chatData: ProcessedCareerQuestCheckCodeMessage,
+	binaryResult: BinaryEvaluationResult,
 	userId: number,
 	streamId: string,
 	abortSignal: AbortSignal
@@ -49,36 +59,13 @@ async function processCodeChecking(
 		// Check if already aborted
 		if (abortSignal.aborted) return
 
-		// 2. Do the binary evaluation
-		const binaryResult = await evaluateCodeBinary(chatData, abortSignal)
-
-		// 3. Save the code submission to DB
-		await addCareerQuestCodeSubmission({
-			careerQuestChatId: chatData.careerQuestChatId,
-			userCode: chatData.userCode,
-			challengeData: findChallengeDataFromId(chatData.careerQuestChallengeId),
-			evaluationResult: binaryResult,
-			isCorrect: binaryResult.isCorrect,
-			modelUsed: selectModel("checkCode")
-		})
-
-		// 4. Send instant feedback via WebSocket
-		socketManager.emitCqCodeEvaluationResult(userId, {
-			challengeId: chatData.careerQuestChallengeId,
-			isCorrect: binaryResult.isCorrect,
-			hasSubmission: true
-		})
-
-		// Check if already aborted before generating explanation
-		if (abortSignal.aborted) return
-
-		// 5. Generate targeted explanation based on binary result
+		// Generate targeted explanation based on binary result
 		const explanation = await generateCodeExplanation(chatData, binaryResult, abortSignal)
 
 		// Check if already aborted before saving explanation
 		if (abortSignal.aborted) return
 
-		// 6. Save explanation to database
+		// Save explanation to database
 		await addCareerQuestMessage(
 			chatData.careerQuestChatId,
 			explanation,
@@ -86,7 +73,7 @@ async function processCodeChecking(
 			selectModel("checkCode")
 		)
 
-		// 7. Stream the explanation to the user
+		// Stream the explanation to the user
 		socketManager.emitCqChatbotStart(userId, {
 			challengeId: chatData.careerQuestChallengeId,
 			interactionType: "checkCode"
@@ -113,7 +100,7 @@ async function processCodeChecking(
 		if (error instanceof Error && error.name === "AbortError") {
 			// Handle abort gracefully
 		} else {
-			console.error("Code checking processing error:", error)
+			console.error("Explanation streaming error:", error)
 			if (!abortSignal.aborted) {
 				// Could emit error via WebSocket here if needed
 			}
@@ -126,9 +113,8 @@ async function processCodeChecking(
 
 // eslint-disable-next-line max-lines-per-function
 async function evaluateCodeBinary(
-	chatData: ProcessedCareerQuestCheckCodeMessage,
-	abortSignal: AbortSignal
-): Promise<{ isCorrect: boolean; feedback?: string }> {
+	chatData: ProcessedCareerQuestCheckCodeMessage
+): Promise<BinaryEvaluationResult> {
 	const challengeData = findChallengeDataFromId(chatData.careerQuestChallengeId)
 	const openAiClient = await OpenAiClientClass.getOpenAiClient()
 
@@ -180,8 +166,6 @@ Evaluate if the user code correctly implements the challenge requirements. Provi
 			}
 		},
 		stream: false
-	}, {
-		signal: abortSignal
 	})
 
 	const fallbackResult = "{\"isCorrect\": false, \"feedback\": \"Unable to evaluate code\"}"
@@ -191,7 +175,7 @@ Evaluate if the user code correctly implements the challenge requirements. Provi
 // eslint-disable-next-line max-lines-per-function
 async function generateCodeExplanation(
 	chatData: ProcessedCareerQuestCheckCodeMessage,
-	binaryResult: { isCorrect: boolean; feedback?: string },
+	binaryResult: BinaryEvaluationResult,
 	abortSignal: AbortSignal
 ): Promise<string> {
 	const challengeData = findChallengeDataFromId(chatData.careerQuestChallengeId)

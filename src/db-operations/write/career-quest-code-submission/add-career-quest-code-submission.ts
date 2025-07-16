@@ -1,40 +1,24 @@
 import { Prisma } from "@prisma/client"
+import { ProcessedCareerQuestCheckCodeMessage } from "@bluedotrobots/common-ts"
+import selectModel from "../../../utils/llm/model-selector"
 import PrismaClientClass from "../../../classes/prisma-client"
-
-interface ChallengeData {
-	title: string
-	description: string
-	expectedBehavior: string
-	solutionCode: string
-}
-
-interface EvaluationResult {
-	isCorrect: boolean
-}
-
-interface CodeSubmissionData {
-	careerQuestChatId: number
-	userCode: string
-	challengeData: ChallengeData
-	evaluationResult: EvaluationResult
-	isCorrect: boolean
-	modelUsed?: string
-}
+import findChallengeDataFromId from "../../../utils/llm/find-challenge-data-from-id"
 
 export default async function addCareerQuestCodeSubmission(
-	data: CodeSubmissionData
+	chatData: ProcessedCareerQuestCheckCodeMessage,
+	evaluationResult: BinaryEvaluationResult
 ): Promise<number> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
 		const submission = await prismaClient.career_quest_code_submission.create({
 			data: {
-				career_quest_chat_id: data.careerQuestChatId,
-				user_code: data.userCode,
-				challenge_snapshot: data.challengeData as unknown as Prisma.InputJsonObject,
-				evaluation_result: data.evaluationResult as unknown as Prisma.InputJsonObject,
-				is_correct: data.isCorrect,
-				model_used: data.modelUsed
+				career_quest_chat_id: chatData.careerQuestChatId,
+				user_code: chatData.userCode,
+				challenge_snapshot: findChallengeDataFromId(chatData.careerQuestChallengeId) as unknown as Prisma.InputJsonObject,
+				evaluation_result: evaluationResult as unknown as Prisma.InputJsonObject,
+				is_correct: evaluationResult.isCorrect,
+				model_used: selectModel("checkCode")
 			}
 		})
 
