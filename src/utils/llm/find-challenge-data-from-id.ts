@@ -10,3 +10,24 @@ export default function findChallengeDataFromId(challengeId: string): ChallengeD
 	return challenge
 }
 
+interface ChallengeSnapshot {
+	title: string
+	description: string
+	expectedBehavior: string
+	solutionCode: string
+}
+
+export function findChallengeSnapshotFromId(challengeId: string): ChallengeSnapshot {
+	const challenge = CHALLENGES.find(foundChallenge => foundChallenge.id === challengeId)
+
+	if (!challenge) {
+		throw new Error(`Challenge with id "${challengeId}" not found`)
+	}
+
+	return {
+		title: challenge.title,
+		description: challenge.description,
+		expectedBehavior: challenge.expectedBehavior,
+		solutionCode: challenge.solutionCode
+	}
+}

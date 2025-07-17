@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client"
 import PrismaClientClass from "../../../classes/prisma-client"
-import findChallengeDataFromId from "../../../utils/llm/find-challenge-data-from-id"
+import { findChallengeSnapshotFromId } from "../../../utils/llm/find-challenge-data-from-id"
 
 export default async function addCareerQuestCodeSubmission(
 	chatData: ProcessedCareerQuestCheckCodeMessage,
@@ -14,7 +14,7 @@ export default async function addCareerQuestCodeSubmission(
 			data: {
 				career_quest_chat_id: chatData.careerQuestChatId,
 				user_code: chatData.userCode,
-				challenge_snapshot: findChallengeDataFromId(chatData.careerQuestChallengeId) as unknown as Prisma.InputJsonObject,
+				challenge_snapshot: findChallengeSnapshotFromId(chatData.careerQuestChallengeId) as unknown as Prisma.InputJsonObject,
 				is_correct: codeWithScore.isCorrect,
 				score: codeWithScore.score,
 				feedback
