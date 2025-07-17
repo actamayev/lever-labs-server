@@ -1,6 +1,6 @@
 
 import { Response, Request } from "express"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { CheckCodeResponse, ErrorResponse } from "@bluedotrobots/common-ts"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
 import findChallengeDataFromId from "../../utils/llm/find-challenge-data-from-id"
@@ -11,21 +11,19 @@ export default async function checkCareerQuestCode(req: Request, res: Response):
 	try {
 		const chatData = req.body as ProcessedCareerQuestCheckCodeMessage
 
-		// Get binary evaluation
-		const isCorrect = await evaluateCodeBinary(chatData)
+		// Get evaluation with score
+		const evaluation = await evaluateCodeWithScore(chatData)
 
-		// Get random feedback message
-		const feedback = isCorrect ? getRandomCorrectResponse() : getRandomIncorrectResponse()
+		// Get feedback message based on score
+		const feedback = evaluation.isCorrect
+			? getRandomCorrectResponse()
+			: getRandomIncorrectResponse(evaluation.score)
 
 		// Save the code submission to DB
-		await addCareerQuestCodeSubmission(chatData, isCorrect)
+		await addCareerQuestCodeSubmission(chatData, evaluation.isCorrect, evaluation.score, feedback)
 
 		// Return simple response immediately
-		res.status(200).json({
-			isCorrect,
-			feedback
-		})
-
+		res.status(200).json({ isCorrect: evaluation.isCorrect, feedback } satisfies CheckCodeResponse)
 	} catch (error) {
 		console.error("Code checking endpoint error:", error)
 		res.status(500).json({
@@ -35,7 +33,7 @@ export default async function checkCareerQuestCode(req: Request, res: Response):
 }
 
 // eslint-disable-next-line max-lines-per-function
-async function evaluateCodeBinary(chatData: ProcessedCareerQuestCheckCodeMessage): Promise<boolean> {
+async function evaluateCodeWithScore(chatData: ProcessedCareerQuestCheckCodeMessage): Promise<{ isCorrect: boolean; score: number }> {
 	const challengeData = findChallengeDataFromId(chatData.careerQuestChallengeId)
 	const openAiClient = await OpenAiClientClass.getOpenAiClient()
 
@@ -73,7 +71,9 @@ USER'S CODE:
 ${chatData.userCode}
 \`\`\`
 
-Evaluate if the user's code correctly solves this challenge. Return only "true" or "false".`
+Evaluate if the user's code correctly solves this challenge. ` +
+					"Also provide a score (0.0-1.0) indicating how close they are to the correct solution, " +
+					"where 1.0 means completely correct."
 			}
 		],
 		response_format: {
@@ -87,9 +87,13 @@ Evaluate if the user's code correctly solves this challenge. Return only "true" 
 						isCorrect: {
 							type: "boolean",
 							description: "Whether the user's code correctly solves the challenge"
+						},
+						score: {
+							type: "number",
+							description: "How close to correct (0.0 - 1.0, where 1.0 is correct)"
 						}
 					},
-					required: ["isCorrect"],
+					required: ["isCorrect", "score"],
 					additionalProperties: false
 				}
 			}
@@ -97,7 +101,7 @@ Evaluate if the user's code correctly solves this challenge. Return only "true" 
 		stream: false
 	})
 
-	const fallbackResult = "{\"isCorrect\": false}"
+	const fallbackResult = "{\"isCorrect\": false, \"score\": 0.0}"
 	const result = JSON.parse(response.choices[0].message.content || fallbackResult)
-	return result.isCorrect
+	return { isCorrect: result.isCorrect, score: result.score }
 }

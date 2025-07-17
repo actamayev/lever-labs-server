@@ -334,6 +334,7 @@ model career_quest_code_submission {
 	user_code                       							String    // The code they submitted
 	challenge_snapshot              							Json      // { id, title, description, expectedBehavior, solutionCode }
 	is_correct                      							Boolean   // Quick access to the result
+	score                           							Float     // How close to correct (0.0 - 1.0, where 1.0 is correct)
 	feedback                        							String    // Short response like "Great job!" or "Not quite, try again"
 
 	created_at                      							DateTime  @default(now())

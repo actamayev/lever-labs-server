@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import { isEmpty } from "lodash"
 import { ChallengeData, CareerQuestChatMessage } from "@bluedotrobots/common-ts"
-import { BlockFormatter } from "../sandbox/block-formatter"
+import { BlockFormatter } from "../../sandbox/block-formatter"
 
 // eslint-disable-next-line max-lines-per-function
 export default function buildCqLLMContext(
