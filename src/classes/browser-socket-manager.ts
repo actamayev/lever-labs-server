@@ -318,20 +318,6 @@ export default class BrowserSocketManager extends Singleton {
 		this.io.to(connectionInfo.socketId).emit("cq-chatbot-stream-complete", event)
 	}
 
-	public emitCqCodeEvaluationResult(
-		userId: number,
-		result: {
-			challengeId: string,
-			isCorrect: boolean,
-			hasSubmission: boolean
-		}
-	): void {
-		const connectionInfo = this.connections.get(userId)
-		if (!connectionInfo) return
-
-		this.io.to(connectionInfo.socketId).emit("cq-code-evaluation", result)
-	}
-
 	public emitSandboxChatbotStart(userId: number, sandboxProjectUUID: ProjectUUID): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) {
