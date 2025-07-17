@@ -1,11 +1,10 @@
 /* eslint-disable max-len */
 import { isEmpty } from "lodash"
-import { CareerQuestChatMessage } from "@bluedotrobots/common-ts"
 import { BlockFormatter } from "../../sandbox/block-formatter"
 import findChallengeDataFromId from "../find-challenge-data-from-id"
 
 // eslint-disable-next-line max-lines-per-function
-export default function buildCqLLMContext(chatData: ProcessedCareerQuestChatData): CareerQuestChatMessage[] {
+export default function buildCqLLMContext(chatData: ProcessedCareerQuestChatData): SimpleMessageData[] {
 	const challengeData = findChallengeDataFromId(chatData.careerQuestChallengeId)
 
 	// Format challenge blocks hierarchically for better LLM understanding
@@ -52,8 +51,8 @@ ROBOTICS BEST PRACTICES:
 
 Keep responses concise, encouraging, and focused on helping them learn robotics programming.`
 
-	const messages: CareerQuestChatMessage[] = [
-		{ role: "system", content: systemPrompt, timestamp: new Date() }
+	const messages: SimpleMessageData[] = [
+		{ role: "system", content: systemPrompt }
 	]
 
 	if (!isEmpty(chatData.conversationHistory)) {
@@ -70,6 +69,6 @@ ${chatData.userCode || "// No code written yet"}
 `
 	const userMessage = `${codeSection}${chatData.message}`
 
-	messages.push({ role: "user", content: userMessage, timestamp: new Date() })
+	messages.push({ role: "user", content: userMessage })
 	return messages
 }

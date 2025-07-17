@@ -4,8 +4,8 @@ import { ResponseFormatJSONSchema } from "openai/resources/shared"
 export default function buildCheckCodeLLMContext(
 	challengeData: ChallengeData,
 	userCode: string
-): Array<{ role: "system" | "user" | "assistant"; content: string }> {
-	const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> = []
+): SimpleMessageData[] {
+	const messages: SimpleMessageData[] = []
 
 	// System prompt for code evaluation
 	const systemPrompt = "You are a precise robotics code evaluator. " +

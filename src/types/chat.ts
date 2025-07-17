@@ -25,6 +25,11 @@ declare global {
 		isCorrect: boolean
 		score: number
 	}
+
+	interface SimpleMessageData {
+		role: "system" | "user" | "assistant"
+		content: string
+	}
 }
 
 export {}

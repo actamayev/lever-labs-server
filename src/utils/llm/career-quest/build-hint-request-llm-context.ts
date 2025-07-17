@@ -1,13 +1,12 @@
-import { CareerQuestChatMessage } from "@bluedotrobots/common-ts"
 import findChallengeDataFromId from "../find-challenge-data-from-id"
 
 // eslint-disable-next-line max-lines-per-function
 export default function buildHintLLMContext(
 	chatData: ProcessedCareerQuestHintMessage,
 	hintNumber: number
-): Array<{ role: "system" | "user" | "assistant"; content: string }> {
+): SimpleMessageData[] {
 	const challengeData = findChallengeDataFromId(chatData.careerQuestChallengeId)
-	const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> = []
+	const messages: SimpleMessageData[] = []
 
 	// System prompt for hint generation
 	const systemPrompt = `You are a robotics tutor providing concise, direct hints for coding challenges.
@@ -46,7 +45,7 @@ Provide only the essential guidance needed to help them progress.`
 	})
 
 	// Add conversation history for context
-	chatData.conversationHistory.forEach((message: CareerQuestChatMessage) => {
+	chatData.conversationHistory.forEach((message: SimpleMessageData) => {
 		messages.push({
 			role: message.role === "user" ? "user" : "assistant",
 			content: message.content
