@@ -1,7 +1,7 @@
-import { ChatMessage } from "@bluedotrobots/common-ts"
+import { SandboxChatMessage } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function retrieveSandboxChatMessages(sandboxChatId: number): Promise<ChatMessage[]> {
+export default async function retrieveSandboxChatMessages(sandboxChatId: number): Promise<SandboxChatMessage[]> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -24,8 +24,8 @@ export default async function retrieveSandboxChatMessages(sandboxChatId: number)
 		return messages.map(msg => ({
 			role: msg.sender === "USER" ? "user" as const : "assistant" as const,
 			content: msg.message_text,
-			timestamp: msg.created_at
-		}))
+			timestamp: new Date(msg.created_at)
+		}) satisfies SandboxChatMessage)
 	} catch (error) {
 		console.error(error)
 		throw error

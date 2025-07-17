@@ -1,4 +1,4 @@
-import { ClassCode, DetailedClassroomData } from "@bluedotrobots/common-ts"
+import { ClassCode, DetailedClassroomData, StudentData } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function getDetailedTeacherClassroomData(teacherId: number): Promise<DetailedClassroomData[]> {
@@ -35,8 +35,8 @@ export default async function getDetailedTeacherClassroomData(teacherId: number)
 			students: item.classroom.student.map(student => ({
 				username: student.user.username || "",
 				didAccept: student.joined_classroom_at !== null
-			}))
-		}))
+			}) satisfies StudentData)
+		}) satisfies DetailedClassroomData)
 	} catch (error) {
 		console.error(error)
 		throw error

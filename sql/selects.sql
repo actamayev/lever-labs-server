@@ -7,8 +7,11 @@
 -- SELECT * FROM reading_question_answer_choice ORDER BY reading_question_answer_choice_id;
 -- SELECT * FROM career_quest_message;
 -- SELECT * FROM teacher;
-SELECT * FROM student;
+-- SELECT * FROM student;
 -- DELETE FROM sandbox_message;
+
+DELETE FROM career_quest_code_submission;
+-- DELETE FROM career_quest_hint;
 
 -- DELETE FROM activity;
 -- DELETE FROM sandbox_project;

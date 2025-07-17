@@ -36,7 +36,7 @@ export default async function retrieveStudentClasses(userId: number): Promise<St
 			joinedClassroomAt: singleStudentData.joined_classroom_at,
 			classroomName: singleStudentData.classroom.classroom_name,
 			classCode: singleStudentData.classroom.class_code as ClassCode
-		})) || []
+		}) satisfies StudentClassroomData) || []
 	} catch (error) {
 		console.error(error)
 		throw error

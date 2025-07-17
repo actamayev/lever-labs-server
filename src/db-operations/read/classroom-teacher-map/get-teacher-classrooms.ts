@@ -22,7 +22,7 @@ export default async function getTeacherClassrooms(teacherId: number): Promise<B
 		return classrooms.map(item => ({
 			classroomName: item.classroom.classroom_name,
 			classCode: item.classroom.class_code as ClassCode
-		}))
+		}) satisfies BasicTeacherClassroomData)
 	} catch (error) {
 		console.error(error)
 		throw error

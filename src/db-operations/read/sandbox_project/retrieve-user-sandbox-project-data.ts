@@ -46,7 +46,7 @@ export default async function retrieveUserSandboxProjectData(userId: number): Pr
 			project_uuid: sandboxProject.project_uuid as ProjectUUID,
 			sandbox_json: sandboxProject.sandbox_json as BlocklyJson,
 			sandbox_chat: sandboxProject.sandbox_chat[0] || null
-		}))
+		}) satisfies SandboxProject)
 	} catch (error) {
 		console.error(error)
 		throw error

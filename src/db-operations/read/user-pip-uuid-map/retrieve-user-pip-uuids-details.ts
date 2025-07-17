@@ -27,7 +27,7 @@ export default async function retrieveUserPipUUIDsDetails(userId: number): Promi
 			userPipUUIDId: item.pip_uuid_id,
 			pipUUID: item.pip_uuid.uuid as PipUUID,
 			pipConnectionStatus: BrowserSocketManager.getInstance().getLivePipStatus(userId, item.pip_uuid.uuid as PipUUID)
-		}))
+		}) satisfies PipData)
 	} catch (error) {
 		console.error(error)
 		throw error
