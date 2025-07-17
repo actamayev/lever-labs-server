@@ -1,12 +1,13 @@
+/* eslint-disable max-depth */
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Response, Request } from "express"
 import { MessageSender } from "@prisma/client"
 import { ErrorResponse, StartChatSuccess } from "@bluedotrobots/common-ts"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
-import buildCqLLMContext from "../../utils/llm/careeer-quest/build-cq-llm-context"
+import buildCqLLMContext from "../../utils/llm/career-quest/build-cq-llm-context"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
-import findChallengeDataFromId from "../../utils/llm/find-challenge-data-from-id"
 import addCareerQuestMessage from "../../db-operations/write/career-quest-message/add-career-quest-message"
 
 export default function sendCareerQuestMessage(req: Request, res: Response): void {
@@ -21,11 +22,7 @@ export default function sendCareerQuestMessage(req: Request, res: Response): voi
 		res.status(200).json({ streamId } satisfies StartChatSuccess)
 
 		// Process LLM request with streaming via WebSocket (async)
-		processLLMRequest(chatData, userId, streamId, abortController.signal)
-			.catch(error => {
-				console.error("Background LLM processing error:", error)
-			})
-
+		void processLLMRequest(chatData, userId, streamId, abortController.signal)
 	} catch (error) {
 		console.error("Chatbot endpoint error:", error)
 		res.status(500).json({
@@ -47,22 +44,14 @@ async function processLLMRequest(
 		// Check if already aborted
 		if (abortSignal.aborted) return
 
-		// Save user message to database first
-		const userMessage = chatData.message
-
 		await addCareerQuestMessage(
 			chatData.careerQuestChatId,
-			userMessage,
+			chatData.message,
 			MessageSender.USER
 		)
 
 		// Build LLM context
-		const messages = buildCqLLMContext(
-			findChallengeDataFromId(chatData.careerQuestChallengeId),
-			chatData.userCode,
-			chatData.conversationHistory,
-			chatData.message,
-		)
+		const messages = buildCqLLMContext(chatData)
 
 		// Select model based on interaction type
 		const modelId = selectModel("generalQuestion")
@@ -74,7 +63,6 @@ async function processLLMRequest(
 		})
 
 		// Check abort before making OpenAI call
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		if (abortSignal.aborted) return
 
 		// Get OpenAI client and make streaming request with abort signal
@@ -99,12 +87,9 @@ async function processLLMRequest(
 		try {
 			// Stream chunks back via WebSocket with challengeId
 			for await (const chunk of stream) {
-				// Check if aborted during streaming
-				// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, max-depth
 				if (abortSignal.aborted) break
 
 				const content = chunk.choices[0]?.delta?.content
-				// eslint-disable-next-line max-depth
 				if (content) {
 					aiResponseContent += content // Collect the content
 					socketManager.emitCqChatbotChunk(userId, content, chatData.careerQuestChallengeId)
@@ -112,7 +97,6 @@ async function processLLMRequest(
 			}
 
 			// Only save and send completion if not aborted
-			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!abortSignal.aborted && aiResponseContent.trim()) {
 				// Save AI response to database
 				await addCareerQuestMessage(
@@ -124,7 +108,6 @@ async function processLLMRequest(
 
 				socketManager.emitCqChatbotComplete(userId, chatData.careerQuestChallengeId)
 			}
-
 		} catch (error) {
 			if (error instanceof Error && error.name === "AbortError") {
 				// If aborted during streaming, don't save partial response

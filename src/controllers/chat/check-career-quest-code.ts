@@ -6,6 +6,7 @@ import OpenAiClientClass from "../../classes/openai-client"
 import findChallengeDataFromId from "../../utils/llm/find-challenge-data-from-id"
 import addCareerQuestCodeSubmission from "../../db-operations/write/career-quest-code-submission/add-career-quest-code-submission"
 import { getRandomCorrectResponse, getRandomIncorrectResponse } from "../../utils/career-quest-responses"
+import buildCheckCodeLLMContext, { checkCodeResponseFormat } from "../../utils/llm/career-quest/build-check-code-llm-context"
 
 export default async function checkCareerQuestCode(req: Request, res: Response): Promise<void> {
 	try {
@@ -32,72 +33,20 @@ export default async function checkCareerQuestCode(req: Request, res: Response):
 	}
 }
 
-// eslint-disable-next-line max-lines-per-function
 async function evaluateCodeWithScore(chatData: ProcessedCareerQuestCheckCodeMessage): Promise<{ isCorrect: boolean; score: number }> {
 	const challengeData = findChallengeDataFromId(chatData.careerQuestChallengeId)
 	const openAiClient = await OpenAiClientClass.getOpenAiClient()
 
+	// Build LLM context messages
+	const messages = buildCheckCodeLLMContext(challengeData, chatData.userCode)
+
 	const response = await openAiClient.chat.completions.create({
 		model: selectModel("checkCode"),
-		messages: [
-			{
-				role: "system",
-				content: "You are a precise robotics code evaluator. " +
-					`Analyze if the user's code correctly implements the challenge requirements.
-
-EVALUATION CRITERIA:
-✅ Does it achieve the expected behavior?
-✅ Are the core logic and structure correct?
-✅ Does it follow safe robotics practices?
-
-❌ Identify logical errors or missing functionality
-❌ Note if it doesn't match the solution approach
-
-Be thorough but fair - focus on functional correctness for this challenge.`
-			},
-			{
-				role: "user",
-				content: `CHALLENGE: ${challengeData.title}
-DESCRIPTION: ${challengeData.description}
-EXPECTED BEHAVIOR: ${challengeData.expectedBehavior}
-
-REFERENCE SOLUTION:
-\`\`\`cpp
-${challengeData.solutionCode}
-\`\`\`
-
-USER'S CODE:
-\`\`\`cpp
-${chatData.userCode}
-\`\`\`
-
-Evaluate if the user's code correctly solves this challenge. ` +
-					"Also provide a score (0.0-1.0) indicating how close they are to the correct solution, " +
-					"where 1.0 means completely correct."
-			}
-		],
-		response_format: {
-			type: "json_schema",
-			json_schema: {
-				name: "code_evaluation",
-				strict: true,
-				schema: {
-					type: "object",
-					properties: {
-						isCorrect: {
-							type: "boolean",
-							description: "Whether the user's code correctly solves the challenge"
-						},
-						score: {
-							type: "number",
-							description: "How close to correct (0.0 - 1.0, where 1.0 is correct)"
-						}
-					},
-					required: ["isCorrect", "score"],
-					additionalProperties: false
-				}
-			}
-		},
+		messages: messages.map(msg => ({
+			role: msg.role,
+			content: msg.content
+		})),
+		response_format: checkCodeResponseFormat,
 		stream: false
 	})
 

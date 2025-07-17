@@ -1,15 +1,13 @@
 /* eslint-disable max-len */
 import { isEmpty } from "lodash"
-import { ChallengeData, CareerQuestChatMessage } from "@bluedotrobots/common-ts"
+import { CareerQuestChatMessage } from "@bluedotrobots/common-ts"
 import { BlockFormatter } from "../../sandbox/block-formatter"
+import findChallengeDataFromId from "../find-challenge-data-from-id"
 
 // eslint-disable-next-line max-lines-per-function
-export default function buildCqLLMContext(
-	challengeData: ChallengeData,
-	userCode: string,
-	conversationHistory: CareerQuestChatMessage[],
-	message: string
-): CareerQuestChatMessage[] {
+export default function buildCqLLMContext(chatData: ProcessedCareerQuestChatData): CareerQuestChatMessage[] {
+	const challengeData = findChallengeDataFromId(chatData.careerQuestChallengeId)
+
 	// Format challenge blocks hierarchically for better LLM understanding
 	const availableBlocksText = BlockFormatter.formatChallengeBlocksForCqLLMContext(challengeData.availableBlocks)
 
@@ -58,19 +56,19 @@ Keep responses concise, encouraging, and focused on helping them learn robotics 
 		{ role: "system", content: systemPrompt, timestamp: new Date() }
 	]
 
-	if (!isEmpty(conversationHistory)) {
-		const recentHistory = conversationHistory.slice(-50)
+	if (!isEmpty(chatData.conversationHistory)) {
+		const recentHistory = chatData.conversationHistory.slice(-50)
 		messages.push(...recentHistory)
 	}
 
 	// Add current user message
 	const codeSection = `CURRENT CODE STATE:
 \`\`\`cpp
-${userCode || "// No code written yet"}
+${chatData.userCode || "// No code written yet"}
 \`\`\`
 
 `
-	const userMessage = `${codeSection}${message}`
+	const userMessage = `${codeSection}${chatData.message}`
 
 	messages.push({ role: "user", content: userMessage, timestamp: new Date() })
 	return messages

@@ -1,12 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 /* eslint-disable max-depth */
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Response, Request } from "express"
-import { ErrorResponse, StartChatSuccess, ChallengeData, CareerQuestChatMessage } from "@bluedotrobots/common-ts"
+import { ErrorResponse, StartChatSuccess } from "@bluedotrobots/common-ts"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
-import findChallengeDataFromId from "../../utils/llm/find-challenge-data-from-id"
+import buildHintLLMContext from "../../utils/llm/career-quest/build-hint-request-llm-context"
 import getNextHintNumber from "../../db-operations/read/career-quest-hint/get-next-hint-number"
 import addCareerQuestHint from "../../db-operations/write/career-quest-hint/add-career-quest-hint"
 
@@ -22,11 +22,7 @@ export default function requestCareerQuestHint(req: Request, res: Response): voi
 		res.status(200).json({ streamId } satisfies StartChatSuccess)
 
 		// Process hint request with streaming via WebSocket (async)
-		processHintRequest(chatData, userId, streamId, abortController.signal)
-			.catch(error => {
-				console.error("Background hint processing error:", error)
-			})
-
+		void processHintRequest(chatData, userId, streamId, abortController.signal)
 	} catch (error) {
 		console.error("Hint request endpoint error:", error)
 		res.status(500).json({
@@ -52,12 +48,7 @@ async function processHintRequest(
 		const hintNumber = await getNextHintNumber(chatData.careerQuestChatId)
 
 		// Build specialized LLM context for hints
-		const messages = buildHintLLMContext(
-			findChallengeDataFromId(chatData.careerQuestChallengeId),
-			chatData.userCode,
-			chatData.conversationHistory,
-			hintNumber
-		)
+		const messages = buildHintLLMContext(chatData, hintNumber)
 
 		// Select model for hint generation
 		const modelId = selectModel("hint")
@@ -115,7 +106,6 @@ async function processHintRequest(
 
 				socketManager.emitCqChatbotComplete(userId, chatData.careerQuestChallengeId)
 			}
-
 		} catch (error) {
 			if (error instanceof Error && error.name === "AbortError") {
 				// If aborted during streaming, don't save partial response
@@ -123,7 +113,6 @@ async function processHintRequest(
 				throw error
 			}
 		}
-
 	} catch (error) {
 		if (error instanceof Error && error.name === "AbortError") {
 			// Handle abort gracefully
@@ -137,67 +126,4 @@ async function processHintRequest(
 		// Clean up the stream
 		StreamManager.getInstance().stopStream(streamId)
 	}
-}
-
-// eslint-disable-next-line max-lines-per-function
-function buildHintLLMContext(
-	challengeData: ChallengeData,
-	userCode: string,
-	conversationHistory: CareerQuestChatMessage[],
-	hintNumber: number
-): Array<{ role: "system" | "user" | "assistant"; content: string }> {
-	const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> = []
-
-	// System prompt for hint generation
-	const systemPrompt = `You are an encouraging robotics tutor providing progressive hints for coding challenges.
-
-CHALLENGE: ${challengeData.title}
-DESCRIPTION: ${challengeData.description}
-EXPECTED BEHAVIOR: ${challengeData.expectedBehavior}
-
-HINT #${hintNumber} STRATEGY:
-${hintNumber === 1 ? "• Start conceptual - what should the robot sense or do first?" : ""}
-${hintNumber === 2 ? "• Guide toward structure - what loop or logic pattern is needed?" : ""}
-${hintNumber >= 3 ? "• Be more specific - which blocks or code patterns to use?" : ""}
-${hintNumber >= 4 ? "• Give direct guidance - specific implementation details" : ""}
-
-COMMON MISTAKES TO AVOID:
-${challengeData.commonMistakes.map(mistake => `• ${mistake}`).join("\n")}
-
-CURRENT USER CODE:
-\`\`\`cpp
-${userCode || "// No code written yet"}
-\`\`\`
-
-GUIDELINES:
-✅ Guide discovery, don't give complete solutions
-✅ Be encouraging and age-appropriate (10-20 years old)
-✅ Focus on robotics learning concepts
-✅ Build on previous hints if this isn't the first
-
-Keep hint concise, helpful, and progressive. Help them take the next step in their learning journey.`
-
-	messages.push({
-		role: "system",
-		content: systemPrompt
-	})
-
-	// Add conversation history for context
-	conversationHistory.forEach(message => {
-		messages.push({
-			role: message.role === "user" ? "user" : "assistant",
-			content: message.content
-		})
-	})
-
-	// Add hint request
-	const hintRequest = `I need a hint for this challenge. This would be hint #${hintNumber}. ` +
-		"Please help me understand what I should focus on next."
-
-	messages.push({
-		role: "user",
-		content: hintRequest
-	})
-
-	return messages
 }
