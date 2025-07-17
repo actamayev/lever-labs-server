@@ -121,24 +121,36 @@ async function evaluateCodeBinary(
 		messages: [
 			{
 				role: "system",
-				content: `You are a robotics code evaluator. Analyze if the user's code correctly solves the challenge requirements.
+				content: "You are a precise robotics code evaluator. " +
+					`Analyze if the user's code correctly implements the challenge requirements.
 
-Focus on:
-- Does the code implement the expected behavior?
-- Are there any logical errors?
-- Does it match the solution approach?
+EVALUATION CRITERIA:
+✅ Does it achieve the expected behavior?
+✅ Are the core logic and structure correct?
+✅ Does it follow safe robotics practices?
 
-Be strict but fair in your evaluation.`
+❌ Identify logical errors or missing functionality
+❌ Note if it doesn't match the solution approach
+
+Be thorough but fair - focus on functional correctness for this challenge.`
 			},
 			{
 				role: "user",
-				content: `Challenge: ${challengeData.title}
-Description: ${challengeData.description}
-Expected Behavior: ${challengeData.expectedBehavior}
-Solution: ${challengeData.solutionCode}
-User Code: ${chatData.userCode}
+				content: `CHALLENGE: ${challengeData.title}
+DESCRIPTION: ${challengeData.description}
+EXPECTED BEHAVIOR: ${challengeData.expectedBehavior}
 
-Evaluate if the user code correctly implements the challenge requirements. Provide brief feedback on what's correct or incorrect.`
+REFERENCE SOLUTION:
+\`\`\`cpp
+${challengeData.solutionCode}
+\`\`\`
+
+USER'S CODE:
+\`\`\`cpp
+${chatData.userCode}
+\`\`\`
+
+Evaluate if the user's code correctly solves this challenge. Provide brief, specific feedback.`
 			}
 		],
 		response_format: {
@@ -180,31 +192,53 @@ async function generateCodeExplanation(
 	const openAiClient = await OpenAiClientClass.getOpenAiClient()
 
 	const systemPrompt = binaryResult.isCorrect
-		? "You are a supportive robotics mentor. The user's code is CORRECT. " +
-		  "Provide encouraging feedback and explain why their solution works well."
-		: "You are a helpful robotics mentor. The user's code is INCORRECT. " +
-		  "Provide constructive feedback to help them improve their solution."
+		? `You are an encouraging robotics mentor. The student's code is CORRECT! 
+
+Provide positive, educational feedback that:
+✅ Celebrates their success
+✅ Explains why their solution works well
+✅ Highlights good robotics practices they used
+✅ Connects to broader learning concepts
+
+Keep it concise, encouraging, and educational.`
+		: `You are a supportive robotics mentor. The student's code needs improvement.
+
+Provide constructive feedback that:
+✅ Stays encouraging and positive
+✅ Explains what needs to be fixed and why
+✅ Suggests next steps to improve
+✅ Connects to robotics learning concepts
+
+Keep it concise, helpful, and motivating.`
 
 	const userPrompt = binaryResult.isCorrect
-		? `Great work! The user's code correctly solves the challenge. Here's what they submitted:
+		? `EXCELLENT WORK! The student correctly solved the challenge:
 
-Challenge: ${challengeData.title}
-Description: ${challengeData.description}
-Expected Behavior: ${challengeData.expectedBehavior}
-User Code: ${chatData.userCode}
-Evaluation: ${binaryResult.feedback}
+CHALLENGE: ${challengeData.title}
+EXPECTED BEHAVIOR: ${challengeData.expectedBehavior}
 
-Explain why their solution works and what they did well. Keep it encouraging and educational.`
-		: `The user's code needs improvement. Here's what they submitted:
+STUDENT'S CODE:
+\`\`\`cpp
+${chatData.userCode}
+\`\`\`
 
-Challenge: ${challengeData.title}
-Description: ${challengeData.description}
-Expected Behavior: ${challengeData.expectedBehavior}
-User Code: ${chatData.userCode}
-Common Mistakes: ${challengeData.commonMistakes.join(", ")}
-Evaluation: ${binaryResult.feedback}
+EVALUATION: ${binaryResult.feedback}
 
-Explain what's wrong and provide guidance on how to fix it. Be helpful and encouraging.`
+Explain why their solution works and what they did well. Be encouraging and educational.`
+		: `The student's code needs improvement:
+
+CHALLENGE: ${challengeData.title}
+EXPECTED BEHAVIOR: ${challengeData.expectedBehavior}
+
+STUDENT'S CODE:
+\`\`\`cpp
+${chatData.userCode}
+\`\`\`
+
+COMMON MISTAKES: ${challengeData.commonMistakes.join(", ")}
+EVALUATION: ${binaryResult.feedback}
+
+Explain what needs fixing and guide them toward the solution. Be supportive and constructive.`
 
 	const response = await openAiClient.chat.completions.create({
 		model: selectModel("checkCode"),

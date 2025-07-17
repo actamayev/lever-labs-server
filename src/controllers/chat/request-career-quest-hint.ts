@@ -148,27 +148,33 @@ function buildHintLLMContext(
 	const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> = []
 
 	// System prompt for hint generation
-	const systemPrompt = "You are a helpful robotics tutor providing hints for coding challenges. " +
-		`Your goal is to guide students toward the solution without giving it away completely.
+	const systemPrompt = `You are an encouraging robotics tutor providing progressive hints for coding challenges.
 
-Guidelines for hints:
-- This is hint #${hintNumber} for this challenge
-- Be progressive: earlier hints should be more general, later hints more specific
-- Focus on the learning process, not just the answer
-- Encourage problem-solving thinking
-- Reference the challenge requirements and expected behavior
-- If this is a later hint (3+), you can be more direct but still educational
+CHALLENGE: ${challengeData.title}
+DESCRIPTION: ${challengeData.description}
+EXPECTED BEHAVIOR: ${challengeData.expectedBehavior}
 
-Challenge Context:
-- Title: ${challengeData.title}
-- Description: ${challengeData.description}
-- Expected Behavior: ${challengeData.expectedBehavior}
-- Common Mistakes: ${challengeData.commonMistakes.join(", ")}
+HINT #${hintNumber} STRATEGY:
+${hintNumber === 1 ? "• Start conceptual - what should the robot sense or do first?" : ""}
+${hintNumber === 2 ? "• Guide toward structure - what loop or logic pattern is needed?" : ""}
+${hintNumber >= 3 ? "• Be more specific - which blocks or code patterns to use?" : ""}
+${hintNumber >= 4 ? "• Give direct guidance - specific implementation details" : ""}
 
-Current user code:
-${userCode}
+COMMON MISTAKES TO AVOID:
+${challengeData.commonMistakes.map(mistake => `• ${mistake}`).join("\n")}
 
-Provide a helpful hint that moves the student forward in their learning journey.`
+CURRENT USER CODE:
+\`\`\`cpp
+${userCode || "// No code written yet"}
+\`\`\`
+
+GUIDELINES:
+✅ Guide discovery, don't give complete solutions
+✅ Be encouraging and age-appropriate (10-20 years old)
+✅ Focus on robotics learning concepts
+✅ Build on previous hints if this isn't the first
+
+Keep hint concise, helpful, and progressive. Help them take the next step in their learning journey.`
 
 	messages.push({
 		role: "system",
