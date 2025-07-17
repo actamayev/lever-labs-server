@@ -10,13 +10,13 @@ export default function buildHintLLMContext(
 	const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> = []
 
 	// System prompt for hint generation
-	const systemPrompt = `You are an encouraging robotics tutor providing progressive hints for coding challenges.
+	const systemPrompt = `You are a robotics tutor providing concise, direct hints for coding challenges.
 
 CHALLENGE: ${challengeData.title}
 DESCRIPTION: ${challengeData.description}
 EXPECTED BEHAVIOR: ${challengeData.expectedBehavior}
 
-HINT #${hintNumber} STRATEGY:
+HINT STRATEGY:
 ${hintNumber === 1 ? "• Start conceptual - what should the robot sense or do first?" : ""}
 ${hintNumber === 2 ? "• Guide toward structure - what loop or logic pattern is needed?" : ""}
 ${hintNumber >= 3 ? "• Be more specific - which blocks or code patterns to use?" : ""}
@@ -30,13 +30,15 @@ CURRENT USER CODE:
 ${chatData.userCode || "// No code written yet"}
 \`\`\`
 
-GUIDELINES:
-✅ Guide discovery, don't give complete solutions
-✅ Be encouraging and age-appropriate (10-20 years old)
-✅ Focus on robotics learning concepts
-✅ Build on previous hints if this isn't the first
+RESPONSE REQUIREMENTS:
+• Start with "Hint #${hintNumber}" as a header
+• Skip introductory praise or encouragement
+• Skip concluding encouragement paragraphs
+• Focus on the core issue or next step
+• Be direct and concise
+• Guide discovery, don't give complete solutions
 
-Keep hint concise, helpful, and progressive. Help them take the next step in their learning journey.`
+Provide only the essential guidance needed to help them progress.`
 
 	messages.push({
 		role: "system",
@@ -52,8 +54,7 @@ Keep hint concise, helpful, and progressive. Help them take the next step in the
 	})
 
 	// Add hint request
-	const hintRequest = `I need a hint for this challenge. This would be hint #${hintNumber}. ` +
-		"Please help me understand what I should focus on next."
+	const hintRequest = "I need a hint for this challenge. What should I focus on next?"
 
 	messages.push({
 		role: "user",
