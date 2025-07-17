@@ -5,7 +5,7 @@ import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
 const validateCheckCareerQuestCodeSchema = Joi.object({
 	careerQuestChallengeId: Joi.string().required(),
-	userCode: Joi.string().required()
+	userCode: Joi.string().allow("").required(),
 })
 
 export default function validateCheckCareerQuestCode(req: Request, res: Response, next: NextFunction): void {
