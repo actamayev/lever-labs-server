@@ -109,7 +109,8 @@ async function processHintRequest(
 				await addCareerQuestHint({
 					careerQuestChatId: chatData.careerQuestChatId,
 					hintText: hintContent,
-					modelUsed: modelId
+					modelUsed: modelId,
+					hintNumber
 				})
 
 				socketManager.emitCqChatbotComplete(userId, chatData.careerQuestChallengeId)

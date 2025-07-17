@@ -5,6 +5,7 @@ interface AddCareerQuestHintData {
 	careerQuestChatId: number
 	hintText: string
 	modelUsed: string
+	hintNumber: number
 }
 
 export default async function addCareerQuestHint(data: AddCareerQuestHintData): Promise<void> {
@@ -15,7 +16,8 @@ export default async function addCareerQuestHint(data: AddCareerQuestHintData): 
 			data: {
 				career_quest_chat_id: data.careerQuestChatId,
 				hint_text: data.hintText,
-				model_used: data.modelUsed
+				model_used: data.modelUsed,
+				hint_number: data.hintNumber
 			}
 		})
 	} catch (error) {

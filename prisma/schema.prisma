@@ -333,9 +333,8 @@ model career_quest_code_submission {
 	career_quest_chat_id            							Int
 	user_code                       							String    // The code they submitted
 	challenge_snapshot              							Json      // { id, title, description, expectedBehavior, solutionCode }
-	evaluation_result               							Json      // Current: {"isCorrect": true}, Future: more detailed
 	is_correct                      							Boolean   // Quick access to the result
-	model_used                      							String   // Which model evaluated it
+	feedback                        							String    // Short response like "Great job!" or "Not quite, try again"
 
 	created_at                      							DateTime  @default(now())
 	updated_at                      							DateTime  @default(now()) @updatedAt

@@ -1,5 +1,5 @@
 import { isNull } from "lodash"
-import { BinaryEvaluationResult, BlocklyJson, CareerQuestChatMessage } from "@bluedotrobots/common-ts"
+import { BlocklyJson, CareerQuestChatMessage } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 interface CQChallengeData {
@@ -40,7 +40,8 @@ export async function getCQChallengeData(
 					select: {
 						user_code: true,
 						created_at: true,
-						evaluation_result: true,
+						feedback: true,
+						is_correct: true
 					}
 				},
 				career_quest_hints: {
@@ -82,7 +83,10 @@ export async function getCQChallengeData(
 				timestamp: new Date(submission.created_at),
 				codeSubmissionData: {
 					userCode: submission.user_code,
-					evaluationResult: submission.evaluation_result as unknown as BinaryEvaluationResult
+					evaluationResult: {
+						isCorrect: submission.is_correct,
+						feedback: submission.feedback
+					}
 				}
 			} satisfies CareerQuestChatMessage)),
 			...chat.career_quest_hints.map(hint => ({
