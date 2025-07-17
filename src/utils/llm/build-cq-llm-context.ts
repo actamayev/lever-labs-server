@@ -1,15 +1,15 @@
 /* eslint-disable max-len */
 import { isEmpty } from "lodash"
-import { ChallengeData, ChatMessage } from "@bluedotrobots/common-ts"
+import { ChallengeData, CareerQuestChatMessage } from "@bluedotrobots/common-ts"
 import { BlockFormatter } from "../sandbox/block-formatter"
 
 // eslint-disable-next-line max-lines-per-function
 export default function buildCqLLMContext(
 	challengeData: ChallengeData,
 	userCode: string,
-	conversationHistory: ChatMessage[],
+	conversationHistory: CareerQuestChatMessage[],
 	message: string
-): ChatMessage[] {
+): CareerQuestChatMessage[] {
 	// Format challenge blocks hierarchically for better LLM understanding
 	const availableBlocksText = BlockFormatter.formatChallengeBlocksForCqLLMContext(challengeData.availableBlocks)
 
@@ -108,7 +108,7 @@ ${userCode || "// No code provided yet"}
 
 Remember: Your goal is to help them discover the solution through guided learning, not to solve it for them. Keep it safe, focused on robotics, and educational!`
 
-	const messages: ChatMessage[] = [
+	const messages: CareerQuestChatMessage[] = [
 		{ role: "system", content: systemPrompt, timestamp: new Date() }
 	]
 

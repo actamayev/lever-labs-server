@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
 import { isEmpty } from "lodash"
-import { ChatMessage } from "@bluedotrobots/common-ts"
+import { SandboxChatMessage } from "@bluedotrobots/common-ts"
 import { BlockFormatter } from "../sandbox/block-formatter"
 
 // eslint-disable-next-line max-lines-per-function
-export default function buildSandboxLLMContext(chatData: ProcessedSandboxChatData): ChatMessage[] {
+export default function buildSandboxLLMContext(chatData: ProcessedSandboxChatData): SandboxChatMessage[] {
 	// Use the hierarchical formatting for all available blocks
 	const availableBlocksText = BlockFormatter.formatBlocksForSandboxLLMContext()
 
@@ -84,7 +84,7 @@ USER'S CURRENT CODE:
 ${chatData.userCode || "// Ready to start exploring! What would you like Pip to do?"}
 \`\`\``
 
-	const messages: ChatMessage[] = [
+	const messages: SandboxChatMessage[] = [
 		{ role: "system", content: systemPrompt, timestamp: new Date() }
 	]
 

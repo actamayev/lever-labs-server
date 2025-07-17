@@ -1,8 +1,8 @@
 import { isNull } from "lodash"
-import { ChatMessage } from "@bluedotrobots/common-ts"
+import { SandboxChatMessage } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export async function getSandboxChatMessages(sandboxProjectId: number): Promise<ChatMessage[]> {
+export async function getSandboxChatMessages(sandboxProjectId: number): Promise<SandboxChatMessage[]> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -30,8 +30,8 @@ export async function getSandboxChatMessages(sandboxProjectId: number): Promise<
 		return chat.messages.map(msg => ({
 			content: msg.message_text,
 			role: msg.sender === "USER" ? "user" as const : "assistant" as const,
-			timestamp: msg.created_at
-		}))
+			timestamp: new Date(msg.created_at)
+		}) satisfies SandboxChatMessage)
 	} catch (error) {
 		console.error(error)
 		throw error

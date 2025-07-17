@@ -1,15 +1,10 @@
-import { ChatMessage, OutgoingCareerQuestGeneralMessage, OutgoingSandboxChatData,
-	OutgoingCareerQuestCheckCodeMessage, OutgoingCareerQuestHintMessage } from "@bluedotrobots/common-ts"
+import { OutgoingCareerQuestGeneralMessage, OutgoingSandboxChatData, SandboxChatMessage,
+	OutgoingCareerQuestCheckCodeMessage, OutgoingCareerQuestHintMessage, CareerQuestChatMessage } from "@bluedotrobots/common-ts"
 
 declare global {
-	interface BinaryEvaluationResult {
-		isCorrect: boolean
-		feedback?: string
-	}
-
 	interface ProcessedCareerQuestChatData extends OutgoingCareerQuestGeneralMessage {
 		careerQuestChatId: number
-		conversationHistory: ChatMessage[]
+		conversationHistory: CareerQuestChatMessage[]
 	}
 
 	interface ProcessedCareerQuestCheckCodeMessage extends OutgoingCareerQuestCheckCodeMessage {
@@ -18,12 +13,12 @@ declare global {
 
 	interface ProcessedCareerQuestHintMessage extends OutgoingCareerQuestHintMessage {
 		careerQuestChatId: number
-		conversationHistory: ChatMessage[]
+		conversationHistory: CareerQuestChatMessage[]
 	}
 
 	interface ProcessedSandboxChatData extends OutgoingSandboxChatData {
 		sandboxChatId: number
-		conversationHistory: ChatMessage[]
+		conversationHistory: SandboxChatMessage[]
 	}
 }
 

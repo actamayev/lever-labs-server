@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client"
+import { BinaryEvaluationResult } from "@bluedotrobots/common-ts"
 import selectModel from "../../../utils/llm/model-selector"
 import PrismaClientClass from "../../../classes/prisma-client"
 import findChallengeDataFromId from "../../../utils/llm/find-challenge-data-from-id"

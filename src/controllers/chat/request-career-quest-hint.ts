@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 /* eslint-disable max-depth */
 import { Response, Request } from "express"
-import { ErrorResponse, StartChatSuccess, ChallengeData, ChatMessage } from "@bluedotrobots/common-ts"
+import { ErrorResponse, StartChatSuccess, ChallengeData, CareerQuestChatMessage } from "@bluedotrobots/common-ts"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
@@ -142,7 +142,7 @@ async function processHintRequest(
 function buildHintLLMContext(
 	challengeData: ChallengeData,
 	userCode: string,
-	conversationHistory: ChatMessage[],
+	conversationHistory: CareerQuestChatMessage[],
 	hintNumber: number
 ): Array<{ role: "system" | "user" | "assistant"; content: string }> {
 	const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> = []

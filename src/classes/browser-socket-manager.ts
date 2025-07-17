@@ -235,7 +235,7 @@ export default class BrowserSocketManager extends Singleton {
 		return pipUUIDs.map((singlePipUUID) => ({
 			pipUUID: singlePipUUID,
 			status: this.getLivePipStatus(userId, singlePipUUID)
-		}))
+		}) satisfies PreviouslyConnectedPipUUIDs)
 	}
 
 	public getLivePipStatus(userId: number, pipUUID: PipUUID): PipConnectionStatus {

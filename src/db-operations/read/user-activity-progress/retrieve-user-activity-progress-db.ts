@@ -27,7 +27,7 @@ export default async function retrieveUserActivityProgressDB(userId: number): Pr
 			activityUUID: singleActivity.activity_uuid as ActivityUUID,
 			activityName: singleActivity.activity_name,
 			activityType: singleActivity.activity_type
-		}))
+		}) satisfies UserActivityProgress)
 	} catch (error) {
 		console.error(error)
 		throw error

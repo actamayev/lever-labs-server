@@ -1,20 +1,20 @@
-import { ChatMessage, SandboxProject } from "@bluedotrobots/common-ts"
+import { SandboxChatMessage, SandboxProject } from "@bluedotrobots/common-ts"
 
 export default function camelCaseSandboxProject(sandboxProject: RetrievedSandboxData): SandboxProject {
 	try {
-		const sandboxChatMessages: ChatMessage[] = sandboxProject.sandbox_chat?.messages.map(msg => ({
+		const sandboxChatMessages: SandboxChatMessage[] = sandboxProject.sandbox_chat?.messages.map(msg => ({
 			role: msg.sender === "USER" ? "user" : "assistant",
 			content: msg.message_text,
-			timestamp: msg.created_at
-		})) || []
+			timestamp: new Date(msg.created_at)
+		}) satisfies SandboxChatMessage) || []
 
 		return {
 			sandboxJson: sandboxProject.sandbox_json,
 			projectUUID: sandboxProject.project_uuid,
 			isStarred: sandboxProject.is_starred,
 			projectName: sandboxProject.project_name,
-			createdAt: sandboxProject.created_at,
-			updatedAt: sandboxProject.updated_at,
+			createdAt: new Date(sandboxProject.created_at),
+			updatedAt: new Date(sandboxProject.updated_at),
 			projectNotes: sandboxProject.project_notes,
 			sandboxChatMessages
 		}

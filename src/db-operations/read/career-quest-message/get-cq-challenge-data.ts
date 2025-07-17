@@ -1,9 +1,9 @@
 import { isNull } from "lodash"
-import { BlocklyJson, ChatMessage } from "@bluedotrobots/common-ts"
+import { BinaryEvaluationResult, BlocklyJson, CareerQuestChatMessage } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 interface CQChallengeData {
-	messages: ChatMessage[]
+	messages: CareerQuestChatMessage[]
 	sandboxJson: BlocklyJson
 }
 
@@ -41,7 +41,6 @@ export async function getCQChallengeData(
 						user_code: true,
 						created_at: true,
 						evaluation_result: true,
-						is_correct: true,
 					}
 				},
 				career_quest_hints: {
@@ -70,29 +69,28 @@ export async function getCQChallengeData(
 		})
 
 		// Process messages
-		const messages: ChatMessage[] = isNull(chat)
+		const messages: CareerQuestChatMessage[] = isNull(chat)
 			? []
 			: [...chat.messages.map(msg => ({
 				content: msg.message_text,
 				role: msg.sender === "USER" ? "user" as const : "assistant" as const,
-				timestamp: msg.created_at
-			})),
+				timestamp: new Date(msg.created_at)
+			} satisfies CareerQuestChatMessage)),
 			...chat.code_submissions.map(submission => ({
 				content: "",
 				role: "user" as const,
-				timestamp: submission.created_at,
+				timestamp: new Date(submission.created_at),
 				codeSubmissionData: {
 					userCode: submission.user_code,
-					isCorrect: submission.is_correct,
-					evaluationResult: submission.evaluation_result
+					evaluationResult: submission.evaluation_result as unknown as BinaryEvaluationResult
 				}
-			})),
+			} satisfies CareerQuestChatMessage)),
 			...chat.career_quest_hints.map(hint => ({
 				content: hint.hint_text,
 				role: "assistant" as const,
-				timestamp: hint.created_at,
+				timestamp: new Date(hint.created_at),
 				isHint: true
-			}))
+			} satisfies CareerQuestChatMessage))
 			].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
 
 		// Process sandbox JSON

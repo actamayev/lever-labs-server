@@ -42,7 +42,7 @@ export default async function retrieveQuestionsFromActivity(userId: number, acti
 				explanation: choice.explanation,
 				didUserSelectAnswer: choice.user_answer.length > 0
 			}))
-		}))
+		}) satisfies RetrievedQuestions)
 	} catch (error) {
 		console.error(error)
 		throw error
