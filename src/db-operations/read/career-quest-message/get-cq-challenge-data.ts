@@ -1,9 +1,9 @@
 import { isNull } from "lodash"
-import { BlocklyJson, ChatMessage } from "@bluedotrobots/common-ts"
+import { BlocklyJson, CareerQuestChatMessage } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 interface CQChallengeData {
-	messages: ChatMessage[]
+	messages: CareerQuestChatMessage[]
 	sandboxJson: BlocklyJson
 }
 
@@ -32,6 +32,26 @@ export async function getCQChallengeData(
 						sender: true,
 						created_at: true
 					}
+				},
+				code_submissions: {
+					orderBy: {
+						created_at: "asc"
+					},
+					select: {
+						user_code: true,
+						created_at: true,
+						feedback: true,
+						is_correct: true
+					}
+				},
+				career_quest_hints: {
+					orderBy: {
+						created_at: "asc"
+					},
+					select: {
+						hint_text: true,
+						created_at: true
+					}
 				}
 			}
 		})
@@ -50,11 +70,32 @@ export async function getCQChallengeData(
 		})
 
 		// Process messages
-		const messages: ChatMessage[] = isNull(chat) ? [] : chat.messages.map(msg => ({
-			content: msg.message_text,
-			role: msg.sender === "USER" ? "user" as const : "assistant" as const,
-			timestamp: msg.created_at
-		}))
+		const messages: CareerQuestChatMessage[] = isNull(chat)
+			? []
+			: [...chat.messages.map(msg => ({
+				content: msg.message_text,
+				role: msg.sender === "USER" ? "user" as const : "assistant" as const,
+				timestamp: new Date(msg.created_at)
+			} satisfies CareerQuestChatMessage)),
+			...chat.code_submissions.map(submission => ({
+				content: "",
+				role: "user" as const,
+				timestamp: new Date(submission.created_at),
+				codeSubmissionData: {
+					userCode: submission.user_code,
+					evaluationResult: {
+						isCorrect: submission.is_correct,
+						feedback: submission.feedback
+					}
+				}
+			} satisfies CareerQuestChatMessage)),
+			...chat.career_quest_hints.map(hint => ({
+				content: hint.hint_text,
+				role: "assistant" as const,
+				timestamp: new Date(hint.created_at),
+				isHint: true
+			} satisfies CareerQuestChatMessage))
+			].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
 
 		// Process sandbox JSON
 		let sandboxJson: object = {}

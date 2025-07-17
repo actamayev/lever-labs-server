@@ -273,6 +273,8 @@ model career_quest_chat {
 
 	user                  										credentials @relation(fields: [user_id], references: [user_id])
 	messages              										career_quest_message[]
+	code_submissions      										career_quest_code_submission[]
+	career_quest_hints											career_quest_hint[]
 
 	@@index([user_id])
 	@@index([career_quest_id])
@@ -308,6 +310,37 @@ model career_quest_message {
 									
 	career_quest_chat         									career_quest_chat @relation(fields: [career_quest_chat_id], references: [career_quest_chat_id])
 
+	@@index([career_quest_chat_id, created_at])
+}
+
+model career_quest_hint {
+	career_quest_hint_id										Int       @id @default(autoincrement())
+	career_quest_chat_id										Int
+	hint_text													String
+	model_used													String
+	hint_number													Int
+
+	created_at                                                  DateTime  @default(now())
+	updated_at                                                  DateTime @default(now()) @updatedAt
+
+	career_quest_chat               							career_quest_chat @relation(fields: [career_quest_chat_id], references: [career_quest_chat_id])
+
+	@@index([career_quest_chat_id, created_at])
+}
+
+model career_quest_code_submission {
+	submission_id                   							Int       @id @default(autoincrement())
+	career_quest_chat_id            							Int
+	user_code                       							String    // The code they submitted
+	challenge_snapshot              							Json      // { id, title, description, expectedBehavior, solutionCode }
+	is_correct                      							Boolean   // Quick access to the result
+	score                           							Float     // How close to correct (0.0 - 1.0, where 1.0 is correct)
+	feedback                        							String    // Short response like "Great job!" or "Not quite, try again"
+
+	created_at                      							DateTime  @default(now())
+	updated_at                      							DateTime  @default(now()) @updatedAt
+								
+	career_quest_chat               							career_quest_chat @relation(fields: [career_quest_chat_id], references: [career_quest_chat_id])
 	@@index([career_quest_chat_id, created_at])
 }
 

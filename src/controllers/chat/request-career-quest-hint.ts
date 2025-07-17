@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Response, Request } from "express"
-import { MessageSender } from "@prisma/client"
 import { ErrorResponse, StartChatSuccess } from "@bluedotrobots/common-ts"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
-import buildCqLLMContext from "../../utils/llm/career-quest/build-cq-llm-context"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
-import addCareerQuestMessage from "../../db-operations/write/career-quest-message/add-career-quest-message"
+import buildHintLLMContext from "../../utils/llm/career-quest/build-hint-request-llm-context"
+import getNextHintNumber from "../../db-operations/read/career-quest-hint/get-next-hint-number"
+import addCareerQuestHint from "../../db-operations/write/career-quest-hint/add-career-quest-hint"
 
-export default function sendCareerQuestMessage(req: Request, res: Response): void {
+export default function requestCareerQuestHint(req: Request, res: Response): void {
 	try {
 		const { userId } = req
-		const chatData = req.body as ProcessedCareerQuestChatData
+		const chatData = req.body as ProcessedCareerQuestHintMessage
 
 		// Create a new stream and get streamId
 		const { streamId, abortController } = StreamManager.getInstance().createStream()
@@ -20,19 +20,19 @@ export default function sendCareerQuestMessage(req: Request, res: Response): voi
 		// Immediately respond with streamId so client can use it to stop if needed
 		res.status(200).json({ streamId } satisfies StartChatSuccess)
 
-		// Process LLM request with streaming via WebSocket (async)
-		void processLLMRequest(chatData, userId, streamId, abortController.signal)
+		// Process hint request with streaming via WebSocket (async)
+		void processHintRequest(chatData, userId, streamId, abortController.signal)
 	} catch (error) {
-		console.error("Chatbot endpoint error:", error)
+		console.error("Hint request endpoint error:", error)
 		res.status(500).json({
-			error: "Internal Server Error: Unable to process chatbot request"
+			error: "Internal Server Error: Unable to process hint request"
 		} satisfies ErrorResponse)
 	}
 }
 
 // eslint-disable-next-line max-lines-per-function, complexity
-async function processLLMRequest(
-	chatData: ProcessedCareerQuestChatData,
+async function processHintRequest(
+	chatData: ProcessedCareerQuestHintMessage,
 	userId: number,
 	streamId: string,
 	abortSignal: AbortSignal
@@ -42,18 +42,13 @@ async function processLLMRequest(
 	try {
 		if (abortSignal.aborted) return
 
-		await addCareerQuestMessage(
-			chatData.careerQuestChatId,
-			chatData.message,
-			MessageSender.USER
-		)
-
-		const messages = buildCqLLMContext(chatData)
-		const modelId = selectModel("generalQuestion")
+		const hintNumber = await getNextHintNumber(chatData.careerQuestChatId)
+		const messages = buildHintLLMContext(chatData, hintNumber)
+		const modelId = selectModel("hint")
 
 		socketManager.emitCqChatbotStart(userId, {
 			challengeId: chatData.careerQuestChallengeId,
-			interactionType: "generalQuestion"
+			interactionType: "hint"
 		})
 
 		if (abortSignal.aborted) return
@@ -66,44 +61,44 @@ async function processLLMRequest(
 				content: msg.content
 			})),
 			stream: true,
-			temperature: 0.5,
-			max_completion_tokens: 1800,
-			presence_penalty: 0.2,
-			frequency_penalty: 0.3,
+			temperature: 0.4,
+			max_completion_tokens: 1000,
+			presence_penalty: 0.3,
+			frequency_penalty: 0.2,
 		}, {
 			signal: abortSignal
 		})
 
-		let aiResponseContent = ""
+		let hintContent = ""
 
 		// Stream chunks back via WebSocket
 		for await (const chunk of stream) {
 			if (abortSignal.aborted) break
 
 			const content = chunk.choices[0]?.delta?.content
+
 			if (content) {
-				aiResponseContent += content
+				hintContent += content
 				socketManager.emitCqChatbotChunk(userId, content, chatData.careerQuestChallengeId)
 			}
 		}
 
-		// Only save and send completion if not aborted
-		if (!abortSignal.aborted && aiResponseContent.trim()) {
-			await addCareerQuestMessage(
-				chatData.careerQuestChatId,
-				aiResponseContent,
-				MessageSender.AI,
-				modelId
-			)
+		// Only save if not aborted and we have content
+		if (!abortSignal.aborted && hintContent.trim()) {
+			await addCareerQuestHint({
+				careerQuestChatId: chatData.careerQuestChatId,
+				hintText: hintContent,
+				modelUsed: modelId,
+				hintNumber
+			})
 
 			socketManager.emitCqChatbotComplete(userId, chatData.careerQuestChallengeId)
 		}
-
 	} catch (error) {
 		if (error instanceof Error && error.name === "AbortError") {
 			// Handle abort gracefully
 		} else {
-			console.error("LLM processing error:", error)
+			console.error("Hint processing error:", error)
 			if (!abortSignal.aborted) {
 				// Could emit error via WebSocket here if needed
 			}
