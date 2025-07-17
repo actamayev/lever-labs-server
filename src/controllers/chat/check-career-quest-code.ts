@@ -21,7 +21,7 @@ export default async function checkCareerQuestCode(req: Request, res: Response):
 			: getRandomIncorrectResponse(evaluation.score)
 
 		// Save the code submission to DB
-		await addCareerQuestCodeSubmission(chatData, evaluation.isCorrect, evaluation.score, feedback)
+		await addCareerQuestCodeSubmission(chatData, evaluation, feedback)
 
 		// Return simple response immediately
 		res.status(200).json({ isCorrect: evaluation.isCorrect, feedback } satisfies CheckCodeResponse)
@@ -33,7 +33,7 @@ export default async function checkCareerQuestCode(req: Request, res: Response):
 	}
 }
 
-async function evaluateCodeWithScore(chatData: ProcessedCareerQuestCheckCodeMessage): Promise<{ isCorrect: boolean; score: number }> {
+async function evaluateCodeWithScore(chatData: ProcessedCareerQuestCheckCodeMessage): Promise<CodeWithScore> {
 	const challengeData = findChallengeDataFromId(chatData.careerQuestChallengeId)
 	const openAiClient = await OpenAiClientClass.getOpenAiClient()
 

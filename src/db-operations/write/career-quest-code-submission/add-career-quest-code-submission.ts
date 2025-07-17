@@ -4,8 +4,7 @@ import findChallengeDataFromId from "../../../utils/llm/find-challenge-data-from
 
 export default async function addCareerQuestCodeSubmission(
 	chatData: ProcessedCareerQuestCheckCodeMessage,
-	isCorrect: boolean,
-	score: number,
+	codeWithScore: CodeWithScore,
 	feedback: string
 ): Promise<void> {
 	try {
@@ -16,8 +15,8 @@ export default async function addCareerQuestCodeSubmission(
 				career_quest_chat_id: chatData.careerQuestChatId,
 				user_code: chatData.userCode,
 				challenge_snapshot: findChallengeDataFromId(chatData.careerQuestChallengeId) as unknown as Prisma.InputJsonObject,
-				is_correct: isCorrect,
-				score,
+				is_correct: codeWithScore.isCorrect,
+				score: codeWithScore.score,
 				feedback
 			}
 		})

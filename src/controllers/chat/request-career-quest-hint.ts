@@ -1,4 +1,3 @@
-/* eslint-disable max-depth */
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Response, Request } from "express"
 import { ErrorResponse, StartChatSuccess } from "@bluedotrobots/common-ts"
@@ -41,28 +40,19 @@ async function processHintRequest(
 	const socketManager = BrowserSocketManager.getInstance()
 
 	try {
-		// Check if already aborted
 		if (abortSignal.aborted) return
 
-		// Get the next hint number for this chat
 		const hintNumber = await getNextHintNumber(chatData.careerQuestChatId)
-
-		// Build specialized LLM context for hints
 		const messages = buildHintLLMContext(chatData, hintNumber)
-
-		// Select model for hint generation
 		const modelId = selectModel("hint")
 
-		// Send start event
 		socketManager.emitCqChatbotStart(userId, {
 			challengeId: chatData.careerQuestChallengeId,
 			interactionType: "hint"
 		})
 
-		// Check abort before making OpenAI call
 		if (abortSignal.aborted) return
 
-		// Get OpenAI client and make streaming request
 		const openAiClient = await OpenAiClientClass.getOpenAiClient()
 		const stream = await openAiClient.chat.completions.create({
 			model: modelId,
@@ -71,47 +61,38 @@ async function processHintRequest(
 				content: msg.content
 			})),
 			stream: true,
-			temperature: 0.4,              // Slightly lower for more focused hints
-			max_completion_tokens: 1000,   // Shorter than general chat for concise hints
-			presence_penalty: 0.3,         // Encourage variety in hints
+			temperature: 0.4,
+			max_completion_tokens: 1000,
+			presence_penalty: 0.3,
 			frequency_penalty: 0.2,
 		}, {
 			signal: abortSignal
 		})
 
-		let hintContent = "" // Collect full hint response
+		let hintContent = ""
 
-		try {
-			// Stream chunks back via WebSocket
-			for await (const chunk of stream) {
-				if (abortSignal.aborted) break
+		// Stream chunks back via WebSocket
+		for await (const chunk of stream) {
+			if (abortSignal.aborted) break
 
-				const content = chunk.choices[0]?.delta?.content
+			const content = chunk.choices[0]?.delta?.content
 
-				if (content) {
-					hintContent += content
-					socketManager.emitCqChatbotChunk(userId, content, chatData.careerQuestChallengeId)
-				}
+			if (content) {
+				hintContent += content
+				socketManager.emitCqChatbotChunk(userId, content, chatData.careerQuestChallengeId)
 			}
+		}
 
-			// Only save if not aborted and we have content
-			if (!abortSignal.aborted && hintContent.trim()) {
-				// Save hint to database
-				await addCareerQuestHint({
-					careerQuestChatId: chatData.careerQuestChatId,
-					hintText: hintContent,
-					modelUsed: modelId,
-					hintNumber
-				})
+		// Only save if not aborted and we have content
+		if (!abortSignal.aborted && hintContent.trim()) {
+			await addCareerQuestHint({
+				careerQuestChatId: chatData.careerQuestChatId,
+				hintText: hintContent,
+				modelUsed: modelId,
+				hintNumber
+			})
 
-				socketManager.emitCqChatbotComplete(userId, chatData.careerQuestChallengeId)
-			}
-		} catch (error) {
-			if (error instanceof Error && error.name === "AbortError") {
-				// If aborted during streaming, don't save partial response
-			} else {
-				throw error
-			}
+			socketManager.emitCqChatbotComplete(userId, chatData.careerQuestChallengeId)
 		}
 	} catch (error) {
 		if (error instanceof Error && error.name === "AbortError") {

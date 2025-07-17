@@ -1,4 +1,3 @@
-/* eslint-disable max-depth */
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Response, Request } from "express"
 import { MessageSender } from "@prisma/client"
@@ -41,7 +40,6 @@ async function processLLMRequest(
 	const socketManager = BrowserSocketManager.getInstance()
 
 	try {
-		// Check if already aborted
 		if (abortSignal.aborted) return
 
 		await addCareerQuestMessage(
@@ -50,22 +48,16 @@ async function processLLMRequest(
 			MessageSender.USER
 		)
 
-		// Build LLM context
 		const messages = buildCqLLMContext(chatData)
-
-		// Select model based on interaction type
 		const modelId = selectModel("generalQuestion")
 
-		// Send start event with challengeId
 		socketManager.emitCqChatbotStart(userId, {
 			challengeId: chatData.careerQuestChallengeId,
 			interactionType: "generalQuestion"
 		})
 
-		// Check abort before making OpenAI call
 		if (abortSignal.aborted) return
 
-		// Get OpenAI client and make streaming request with abort signal
 		const openAiClient = await OpenAiClientClass.getOpenAiClient()
 		const stream = await openAiClient.chat.completions.create({
 			model: modelId,
@@ -74,47 +66,39 @@ async function processLLMRequest(
 				content: msg.content
 			})),
 			stream: true,
-			temperature: 0.5,              // Lower than sandbox (0.6) for more focused, goal-oriented responses
-			max_completion_tokens: 1800,   // Higher than sandbox for detailed code analysis
-			presence_penalty: 0.2,         // Lower - want to stay focused on challenge objectives
-			frequency_penalty: 0.3,        // Same as sandbox
+			temperature: 0.5,
+			max_completion_tokens: 1800,
+			presence_penalty: 0.2,
+			frequency_penalty: 0.3,
 		}, {
 			signal: abortSignal
 		})
 
-		let aiResponseContent = "" // Collect full AI response
+		let aiResponseContent = ""
 
-		try {
-			// Stream chunks back via WebSocket with challengeId
-			for await (const chunk of stream) {
-				if (abortSignal.aborted) break
+		// Stream chunks back via WebSocket
+		for await (const chunk of stream) {
+			if (abortSignal.aborted) break
 
-				const content = chunk.choices[0]?.delta?.content
-				if (content) {
-					aiResponseContent += content // Collect the content
-					socketManager.emitCqChatbotChunk(userId, content, chatData.careerQuestChallengeId)
-				}
-			}
-
-			// Only save and send completion if not aborted
-			if (!abortSignal.aborted && aiResponseContent.trim()) {
-				// Save AI response to database
-				await addCareerQuestMessage(
-					chatData.careerQuestChatId,
-					aiResponseContent,
-					MessageSender.AI,
-					modelId
-				)
-
-				socketManager.emitCqChatbotComplete(userId, chatData.careerQuestChallengeId)
-			}
-		} catch (error) {
-			if (error instanceof Error && error.name === "AbortError") {
-				// If aborted during streaming, don't save partial response
-			} else {
-				throw error
+			const content = chunk.choices[0]?.delta?.content
+			if (content) {
+				aiResponseContent += content
+				socketManager.emitCqChatbotChunk(userId, content, chatData.careerQuestChallengeId)
 			}
 		}
+
+		// Only save and send completion if not aborted
+		if (!abortSignal.aborted && aiResponseContent.trim()) {
+			await addCareerQuestMessage(
+				chatData.careerQuestChatId,
+				aiResponseContent,
+				MessageSender.AI,
+				modelId
+			)
+
+			socketManager.emitCqChatbotComplete(userId, chatData.careerQuestChallengeId)
+		}
+
 	} catch (error) {
 		if (error instanceof Error && error.name === "AbortError") {
 			// Handle abort gracefully

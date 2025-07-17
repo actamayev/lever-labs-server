@@ -20,6 +20,11 @@ declare global {
 		sandboxChatId: number
 		conversationHistory: SandboxChatMessage[]
 	}
+
+	interface CodeWithScore {
+		isCorrect: boolean
+		score: number
+	}
 }
 
 export {}
