@@ -132,6 +132,20 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
+	public changeVolume(
+		pipUUID: PipUUID,
+		volume: number
+	): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createSpeakerVolumeMessage(volume)
+
+			return this.sendBinaryMessage(pipUUID, buffer)
+		} catch (error: unknown) {
+			console.error("Volume command failed:", error)
+			throw new Error(`Volume command failed: ${error || "Unknown reason"}`)
+		}
+	}
+
 	public changeBalanceStatus(
 		pipUUID: PipUUID,
 		balanceStatus: boolean
