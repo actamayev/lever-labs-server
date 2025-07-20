@@ -9,7 +9,9 @@ import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
 	SandboxChatbotStreamStartOrCompleteEvent,
 	ProjectUUID,
 	StudentInviteJoinClass,
-	TeacherName} from "@bluedotrobots/common-ts"
+	TeacherName,
+	PlayFunSoundPayload
+} from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
@@ -39,6 +41,7 @@ export default class BrowserSocketManager extends Singleton {
 			this.setupMotorControlListener(socket)
 			this.setupNewLedColorListener(socket)
 			this.setupHeadlightListener(socket)
+			this.setupFunSoundsListener(socket)
 		})
 	}
 
@@ -81,6 +84,16 @@ export default class BrowserSocketManager extends Singleton {
 				await SendEsp32MessageManager.getInstance().transferHeadlightControlData(headlightControlData)
 			} catch (error) {
 				console.error("Headlight update Error:", error)
+			}
+		})
+	}
+
+	private setupFunSoundsListener(socket: Socket): void {
+		socket.on("play-fun-sound", async (funSoundsData: PlayFunSoundPayload) => {
+			try {
+				await SendEsp32MessageManager.getInstance().transferFunSoundsData(funSoundsData)
+			} catch (error) {
+				console.error("Fun sounds error:", error)
 			}
 		})
 	}
