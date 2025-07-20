@@ -5,7 +5,7 @@ import pipUUIDValidator from "../../joi/pip-uuid-validator"
 import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
 const validateTuneToPlaySchema = Joi.object({
-	tuneToPlay: Joi.string().valid("Breeze", "Chime", "Chirp", "Pop", "Splash").required(),
+	tuneToPlay: Joi.string().valid("Chime", "Chirp", "Drop", "Pop").required(),
 	pipUUID: pipUUIDValidator.required()
 }).required()
 
