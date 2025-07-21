@@ -146,7 +146,6 @@ export default class BrowserSocketManager extends Singleton {
 			)
 
 			if (pipToUpdate) {
-				console.info("Emitting battery monitor data to user:", connectionInfo.socketId)
 				this.io.to(connectionInfo.socketId).emit("battery-monitor-data", { pipUUID, batteryData })
 			}
 		})

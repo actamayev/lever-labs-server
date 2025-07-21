@@ -102,7 +102,6 @@ export default class Esp32SocketManager extends Singleton {
 				console.info("Bytecode status:", (payload as BytecodeMessage).message)
 				break
 			case "/battery-monitor-data-full":
-				console.info("Battery monitor data:", (payload as BatteryMonitorDataFull))
 				this.handleBatteryMonitorData(socketId, payload as BatteryMonitorDataFull)
 				break
 			default:
@@ -133,7 +132,6 @@ export default class Esp32SocketManager extends Singleton {
 		payload: BatteryMonitorDataFull
 	): void {
 		const pipUUID = this.socketToPip.get(socketId)
-		console.info("PIP UUID:", pipUUID)
 		if (!pipUUID) {
 			console.warn(`Received battery monitor data from unregistered connection: ${socketId}`)
 			return

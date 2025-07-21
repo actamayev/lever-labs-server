@@ -104,10 +104,7 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public playSound(
-		pipUUID: PipUUID,
-		tuneToPlay: TuneToPlay
-	): Promise<void> {
+	public playSound(pipUUID: PipUUID, tuneToPlay: TuneToPlay): Promise<void> {
 		try {
 			const soundType = tuneToSoundType[tuneToPlay]
 			const buffer = MessageBuilder.createSoundMessage(soundType)
@@ -119,10 +116,7 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public displayLights(
-		pipUUID: PipUUID,
-		lightAnimation: LightAnimation
-	): Promise<void> {
+	public displayLights(pipUUID: PipUUID, lightAnimation: LightAnimation): Promise<void> {
 		try {
 			const lightType = lightToLEDType[lightAnimation]
 			const buffer = MessageBuilder.createLightAnimationMessage(lightType)
@@ -134,10 +128,7 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public changeAudibleStatus(
-		pipUUID: PipUUID,
-		audibleStatus: boolean
-	): Promise<void> {
+	public changeAudibleStatus(pipUUID: PipUUID, audibleStatus: boolean): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createSpeakerMuteMessage(audibleStatus)
 
@@ -148,10 +139,7 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public changeVolume(
-		pipUUID: PipUUID,
-		volume: number
-	): Promise<void> {
+	public changeVolume(pipUUID: PipUUID, volume: number): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createSpeakerVolumeMessage(volume)
 
@@ -162,10 +150,7 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public changeBalanceStatus(
-		pipUUID: PipUUID,
-		balanceStatus: boolean
-	): Promise<void> {
+	public changeBalanceStatus(pipUUID: PipUUID, balanceStatus: boolean): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createBalanceMessage(balanceStatus)
 
@@ -187,10 +172,7 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public sendBytecodeToPip(
-		pipUUID: PipUUID,
-		bytecodeFloat32: Float32Array
-	): Promise<void> {
+	public sendBytecodeToPip(pipUUID: PipUUID, bytecodeFloat32: Float32Array): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createBytecodeMessage(bytecodeFloat32)
 			return this.sendBinaryMessage(pipUUID, buffer)
