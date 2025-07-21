@@ -4,14 +4,14 @@ import { Request, Response, NextFunction } from "express"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
 import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
-const validateTuneToPlaySchema = Joi.object({
-	tuneToPlay: Joi.string().valid("Chime", "Chirp", "Drop", "Pop").required(),
+const changeVolumeSchema = Joi.object({
+	volume: Joi.number().min(0).max(100).required(),
 	pipUUID: pipUUIDValidator.required()
 }).required()
 
-export default function validateTuneToPlay(req: Request, res: Response, next: NextFunction): void {
+export default function validateChangeVolume(req: Request, res: Response, next: NextFunction): void {
 	try {
-		const { error } = validateTuneToPlaySchema.validate(req.body)
+		const { error } = changeVolumeSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
 			res.status(400).json({ validationError: error.details[0].message } satisfies ValidationErrorResponse)
@@ -21,7 +21,7 @@ export default function validateTuneToPlay(req: Request, res: Response, next: Ne
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to Validate tune to play" } satisfies ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to Validate change volume" } satisfies ErrorResponse)
 		return
 	}
 }

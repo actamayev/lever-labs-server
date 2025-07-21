@@ -9,7 +9,10 @@ import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
 	SandboxChatbotStreamStartOrCompleteEvent,
 	ProjectUUID,
 	StudentInviteJoinClass,
-	TeacherName} from "@bluedotrobots/common-ts"
+	TeacherName,
+	PlayFunSoundPayload,
+	BatteryMonitorData
+} from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
@@ -39,6 +42,7 @@ export default class BrowserSocketManager extends Singleton {
 			this.setupMotorControlListener(socket)
 			this.setupNewLedColorListener(socket)
 			this.setupHeadlightListener(socket)
+			this.setupFunSoundsListener(socket)
 		})
 	}
 
@@ -85,6 +89,16 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
+	private setupFunSoundsListener(socket: Socket): void {
+		socket.on("play-fun-sound", async (funSoundsData: PlayFunSoundPayload) => {
+			try {
+				await SendEsp32MessageManager.getInstance().transferFunSoundsData(funSoundsData)
+			} catch (error) {
+				console.error("Fun sounds error:", error)
+			}
+		})
+	}
+
 	private addConnection(userId: number, info: BrowserSocketConnectionInfo): void {
 		this.connections.set(userId, info)
 	}
@@ -121,6 +135,18 @@ export default class BrowserSocketManager extends Singleton {
 				pipToUpdate.status = newConnectionStatus
 				// Emit event to this specific connection
 				this.io.to(connectionInfo.socketId).emit("pip-connection-status-update", { pipUUID, newConnectionStatus })
+			}
+		})
+	}
+
+	public emitPipBatteryData(pipUUID: PipUUID, batteryData: BatteryMonitorData): void {
+		this.connections.forEach((connectionInfo) => {
+			const pipToUpdate = connectionInfo.previouslyConnectedPipUUIDs.find(
+				(previousPip) => previousPip.pipUUID === pipUUID
+			)
+
+			if (pipToUpdate) {
+				this.io.to(connectionInfo.socketId).emit("battery-monitor-data", { pipUUID, batteryData })
 			}
 		})
 	}

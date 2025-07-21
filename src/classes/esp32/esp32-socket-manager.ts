@@ -5,7 +5,8 @@ import isPipUUID from "../../utils/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"
 import SingleESP32Connection from "./single-esp32-connection"
 import SendEsp32MessageManager from "./send-esp32-message-manager"
-import { BytecodeMessage, ESPConnectionStatus, ESPMessage, PipUUID, PipUUIDPayload, SensorPayload } from "@bluedotrobots/common-ts"
+import { BatteryMonitorDataFull, BytecodeMessage, ESPConnectionStatus,
+	ESPMessage, PipUUID, PipUUIDPayload, SensorPayload } from "@bluedotrobots/common-ts"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
@@ -100,6 +101,9 @@ export default class Esp32SocketManager extends Singleton {
 			case "/bytecode-status":
 				console.info("Bytecode status:", (payload as BytecodeMessage).message)
 				break
+			case "/battery-monitor-data-full":
+				this.handleBatteryMonitorData(socketId, payload as BatteryMonitorDataFull)
+				break
 			default:
 				console.warn(`Unknown route: ${route}`)
 				break
@@ -121,6 +125,19 @@ export default class Esp32SocketManager extends Singleton {
 
 		// Forward to lab demo data manager
 		BrowserSocketManager.getInstance().sendBrowserPipSensorData(pipUUID, payload)
+	}
+
+	private handleBatteryMonitorData(
+		socketId: string,
+		payload: BatteryMonitorDataFull
+	): void {
+		const pipUUID = this.socketToPip.get(socketId)
+		if (!pipUUID) {
+			console.warn(`Received battery monitor data from unregistered connection: ${socketId}`)
+			return
+		}
+
+		BrowserSocketManager.getInstance().emitPipBatteryData(pipUUID, payload.batteryData)
 	}
 
 	private registerConnection(
