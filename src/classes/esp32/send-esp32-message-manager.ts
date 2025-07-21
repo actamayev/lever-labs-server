@@ -202,6 +202,16 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
+	public requestBatteryMonitorData(pipUUID: PipUUID): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createRequestBatteryMonitorDataMessage()
+			return this.sendBinaryMessage(pipUUID, buffer)
+		} catch (error: unknown) {
+			console.error("Battery monitor data request failed:", error)
+			throw new Error(`Battery monitor data request failed: ${error || "Unknown reason"}`)
+		}
+	}
+
 	private sendBinaryMessage(pipUUID: PipUUID, buffer: ArrayBuffer): Promise<void> {
 		try {
 			const socket = this.getPipConnectionSocket(pipUUID)
