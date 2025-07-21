@@ -10,7 +10,8 @@ import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
 	ProjectUUID,
 	StudentInviteJoinClass,
 	TeacherName,
-	PlayFunSoundPayload
+	PlayFunSoundPayload,
+	BatteryMonitorData
 } from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
@@ -134,6 +135,19 @@ export default class BrowserSocketManager extends Singleton {
 				pipToUpdate.status = newConnectionStatus
 				// Emit event to this specific connection
 				this.io.to(connectionInfo.socketId).emit("pip-connection-status-update", { pipUUID, newConnectionStatus })
+			}
+		})
+	}
+
+	public emitPipBatteryData(pipUUID: PipUUID, batteryData: BatteryMonitorData): void {
+		this.connections.forEach((connectionInfo) => {
+			const pipToUpdate = connectionInfo.previouslyConnectedPipUUIDs.find(
+				(previousPip) => previousPip.pipUUID === pipUUID
+			)
+
+			if (pipToUpdate) {
+				console.info("Emitting battery monitor data to user:", connectionInfo.socketId)
+				this.io.to(connectionInfo.socketId).emit("battery-monitor-data", { pipUUID, batteryData })
 			}
 		})
 	}
