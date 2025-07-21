@@ -8,6 +8,7 @@ import { BalancePidsProps, LedControlData, LightAnimation,
 	MessageBuilder, MotorControlData, PipUUID, TuneToPlay,
 	HeadlightData,
 	PipUUIDPayload,
+	PlayFunSoundPayload,
 } from "@bluedotrobots/common-ts"
 
 export default class SendEsp32MessageManager extends Singleton {
@@ -88,10 +89,22 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public playSound(
-		pipUUID: PipUUID,
-		tuneToPlay: TuneToPlay
-	): Promise<void> {
+	public transferFunSoundsData(funSoundsData: PlayFunSoundPayload): Promise<void> {
+		try {
+			if (funSoundsData.sound === null) {
+				const buffer = MessageBuilder.createStopSoundMessage()
+				return this.sendBinaryMessage(funSoundsData.pipUUID, buffer)
+			}
+			const soundType = tuneToSoundType[funSoundsData.sound]
+			const buffer = MessageBuilder.createSoundMessage(soundType)
+			return this.sendBinaryMessage(funSoundsData.pipUUID, buffer)
+		} catch (error: unknown) {
+			console.error("Transfer failed:", error)
+			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
+		}
+	}
+
+	public playSound(pipUUID: PipUUID, tuneToPlay: TuneToPlay): Promise<void> {
 		try {
 			const soundType = tuneToSoundType[tuneToPlay]
 			const buffer = MessageBuilder.createSoundMessage(soundType)
@@ -103,10 +116,7 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public displayLights(
-		pipUUID: PipUUID,
-		lightAnimation: LightAnimation
-	): Promise<void> {
+	public displayLights(pipUUID: PipUUID, lightAnimation: LightAnimation): Promise<void> {
 		try {
 			const lightType = lightToLEDType[lightAnimation]
 			const buffer = MessageBuilder.createLightAnimationMessage(lightType)
@@ -118,10 +128,7 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public changeAudibleStatus(
-		pipUUID: PipUUID,
-		audibleStatus: boolean
-	): Promise<void> {
+	public changeAudibleStatus(pipUUID: PipUUID, audibleStatus: boolean): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createSpeakerMuteMessage(audibleStatus)
 
@@ -132,10 +139,18 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public changeBalanceStatus(
-		pipUUID: PipUUID,
-		balanceStatus: boolean
-	): Promise<void> {
+	public changeVolume(pipUUID: PipUUID, volume: number): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createSpeakerVolumeMessage(volume)
+
+			return this.sendBinaryMessage(pipUUID, buffer)
+		} catch (error: unknown) {
+			console.error("Volume command failed:", error)
+			throw new Error(`Volume command failed: ${error || "Unknown reason"}`)
+		}
+	}
+
+	public changeBalanceStatus(pipUUID: PipUUID, balanceStatus: boolean): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createBalanceMessage(balanceStatus)
 
@@ -157,10 +172,7 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public sendBytecodeToPip(
-		pipUUID: PipUUID,
-		bytecodeFloat32: Float32Array
-	): Promise<void> {
+	public sendBytecodeToPip(pipUUID: PipUUID, bytecodeFloat32: Float32Array): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createBytecodeMessage(bytecodeFloat32)
 			return this.sendBinaryMessage(pipUUID, buffer)
