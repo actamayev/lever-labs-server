@@ -179,9 +179,17 @@ export default class Esp32SocketManager extends Singleton {
 
 		console.info(`ESP32 disconnected: ${socketId} (PIP: ${pipUUID})`)
 
+		// Get the connection before deleting from map
+		const connectionInfo = this.connections.get(pipUUID)
+
 		// Clean up mappings
 		this.connections.delete(pipUUID)
 		this.socketToPip.delete(socketId)
+
+		// Dispose of the connection object to stop ping intervals and clean up
+		if (connectionInfo) {
+			connectionInfo.connection.dispose()
+		}
 
 		// Notify of status change
 		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "offline")
