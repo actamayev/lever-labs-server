@@ -104,6 +104,9 @@ export default class Esp32SocketManager extends Singleton {
 			case "/battery-monitor-data-full":
 				this.handleBatteryMonitorData(socketId, payload as BatteryMonitorDataFull)
 				break
+			case "/pip-turning-off":
+				this.handlePipTurningOff(socketId)
+				break
 			default:
 				console.warn(`Unknown route: ${route}`)
 				break
@@ -140,6 +143,15 @@ export default class Esp32SocketManager extends Singleton {
 		BrowserSocketManager.getInstance().emitPipBatteryData(pipUUID, payload.batteryData)
 	}
 
+	private handlePipTurningOff(socketId: string): void {
+		const pipUUID = this.socketToPip.get(socketId)
+		if (!pipUUID) {
+			console.warn(`Received pip turning off from unregistered connection: ${socketId}`)
+			return
+		}
+		this.handleDisconnection(socketId)
+	}
+
 	private registerConnection(
 		socketId: string,
 		pipUUID: PipUUID,
@@ -167,9 +179,17 @@ export default class Esp32SocketManager extends Singleton {
 
 		console.info(`ESP32 disconnected: ${socketId} (PIP: ${pipUUID})`)
 
+		// Get the connection before deleting from map
+		const connectionInfo = this.connections.get(pipUUID)
+
 		// Clean up mappings
 		this.connections.delete(pipUUID)
 		this.socketToPip.delete(socketId)
+
+		// Dispose of the connection object to stop ping intervals and clean up
+		if (connectionInfo) {
+			connectionInfo.connection.dispose()
+		}
 
 		// Notify of status change
 		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "offline")
