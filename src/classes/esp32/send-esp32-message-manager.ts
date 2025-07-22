@@ -118,7 +118,6 @@ export default class SendEsp32MessageManager extends Singleton {
 
 	public playSound(pipUUID: PipUUID, tuneToPlay: TuneToPlay): Promise<void> {
 		try {
-			console.log("Playing sound:", tuneToPlay)
 			const soundType = tuneToSoundType[tuneToPlay]
 			const buffer = MessageBuilder.createSoundMessage(soundType)
 

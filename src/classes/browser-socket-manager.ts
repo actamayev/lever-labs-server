@@ -73,7 +73,6 @@ export default class BrowserSocketManager extends Singleton {
 
 	private setupNewLedColorListener(socket: Socket): void {
 		socket.on("new-led-colors", async (ledControlData: LedControlData) => {
-			console.log("New LED Colors:", ledControlData)
 			try {
 				await SendEsp32MessageManager.getInstance().transferLedControlData(ledControlData)
 			} catch (error) {
