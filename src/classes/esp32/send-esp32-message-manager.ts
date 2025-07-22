@@ -9,6 +9,7 @@ import { BalancePidsProps, LedControlData, LightAnimation,
 	HeadlightData,
 	PipUUIDPayload,
 	PlayFunSoundPayload,
+	HornData,
 } from "@bluedotrobots/common-ts"
 
 export default class SendEsp32MessageManager extends Singleton {
@@ -89,6 +90,17 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
+	public transferHornSoundData(data: HornData): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createHornSoundMessage(data.hornStatus)
+
+			return this.sendBinaryMessage(data.pipUUID, buffer)
+		} catch (error: unknown) {
+			console.error("Transfer failed:", error)
+			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
+		}
+	}
+
 	public transferFunSoundsData(funSoundsData: PlayFunSoundPayload): Promise<void> {
 		try {
 			if (funSoundsData.sound === null) {
@@ -106,6 +118,7 @@ export default class SendEsp32MessageManager extends Singleton {
 
 	public playSound(pipUUID: PipUUID, tuneToPlay: TuneToPlay): Promise<void> {
 		try {
+			console.log("Playing sound:", tuneToPlay)
 			const soundType = tuneToSoundType[tuneToPlay]
 			const buffer = MessageBuilder.createSoundMessage(soundType)
 

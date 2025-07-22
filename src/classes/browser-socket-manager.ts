@@ -11,7 +11,8 @@ import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
 	StudentInviteJoinClass,
 	TeacherName,
 	PlayFunSoundPayload,
-	BatteryMonitorData
+	BatteryMonitorData,
+	HornData
 } from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
@@ -42,6 +43,7 @@ export default class BrowserSocketManager extends Singleton {
 			this.setupMotorControlListener(socket)
 			this.setupNewLedColorListener(socket)
 			this.setupHeadlightListener(socket)
+			this.setupHornListener(socket)
 			this.setupFunSoundsListener(socket)
 		})
 	}
@@ -71,6 +73,7 @@ export default class BrowserSocketManager extends Singleton {
 
 	private setupNewLedColorListener(socket: Socket): void {
 		socket.on("new-led-colors", async (ledControlData: LedControlData) => {
+			console.log("New LED Colors:", ledControlData)
 			try {
 				await SendEsp32MessageManager.getInstance().transferLedControlData(ledControlData)
 			} catch (error) {
@@ -85,6 +88,16 @@ export default class BrowserSocketManager extends Singleton {
 				await SendEsp32MessageManager.getInstance().transferHeadlightControlData(headlightControlData)
 			} catch (error) {
 				console.error("Headlight update Error:", error)
+			}
+		})
+	}
+
+	private setupHornListener(socket: Socket): void {
+		socket.on("horn-sound-update", async (hornControlData: HornData) => {
+			try {
+				await SendEsp32MessageManager.getInstance().transferHornSoundData(hornControlData)
+			} catch (error) {
+				console.error("Horn sound update Error:", error)
 			}
 		})
 	}
