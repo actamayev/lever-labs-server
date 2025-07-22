@@ -1,6 +1,6 @@
 import { WebSocket } from "ws"
-import ESP32Connection from "../classes/esp32/single-esp32-connection"
 import { ESPConnectionStatus } from "@bluedotrobots/common-ts"
+import ESP32Connection from "../classes/esp32/single-esp32-connection"
 
 declare global {
 	type ESP32SocketConnectionInfo = {

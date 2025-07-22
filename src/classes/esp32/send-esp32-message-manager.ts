@@ -9,6 +9,7 @@ import { BalancePidsProps, LedControlData, LightAnimation,
 	HeadlightData,
 	PipUUIDPayload,
 	PlayFunSoundPayload,
+	HornData,
 } from "@bluedotrobots/common-ts"
 
 export default class SendEsp32MessageManager extends Singleton {
@@ -81,6 +82,17 @@ export default class SendEsp32MessageManager extends Singleton {
 	public transferHeadlightControlData(data: HeadlightData): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createHeadlightMessage(data.areHeadlightsOn)
+
+			return this.sendBinaryMessage(data.pipUUID, buffer)
+		} catch (error: unknown) {
+			console.error("Transfer failed:", error)
+			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
+		}
+	}
+
+	public transferHornSoundData(data: HornData): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createHornSoundMessage(data.hornStatus)
 
 			return this.sendBinaryMessage(data.pipUUID, buffer)
 		} catch (error: unknown) {
@@ -199,6 +211,16 @@ export default class SendEsp32MessageManager extends Singleton {
 		} catch (error: unknown) {
 			console.error("Stop command failed:", error)
 			throw new Error(`Stop command failed: ${error || "Unknown reason"}`)
+		}
+	}
+
+	public requestBatteryMonitorData(pipUUID: PipUUID): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createRequestBatteryMonitorDataMessage()
+			return this.sendBinaryMessage(pipUUID, buffer)
+		} catch (error: unknown) {
+			console.error("Battery monitor data request failed:", error)
+			throw new Error(`Battery monitor data request failed: ${error || "Unknown reason"}`)
 		}
 	}
 
