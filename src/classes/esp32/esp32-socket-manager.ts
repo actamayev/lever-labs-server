@@ -104,6 +104,9 @@ export default class Esp32SocketManager extends Singleton {
 			case "/battery-monitor-data-full":
 				this.handleBatteryMonitorData(socketId, payload as BatteryMonitorDataFull)
 				break
+			case "/pip-turning-off":
+				this.handlePipTurningOff(socketId)
+				break
 			default:
 				console.warn(`Unknown route: ${route}`)
 				break
@@ -138,6 +141,15 @@ export default class Esp32SocketManager extends Singleton {
 		}
 
 		BrowserSocketManager.getInstance().emitPipBatteryData(pipUUID, payload.batteryData)
+	}
+
+	private handlePipTurningOff(socketId: string): void {
+		const pipUUID = this.socketToPip.get(socketId)
+		if (!pipUUID) {
+			console.warn(`Received pip turning off from unregistered connection: ${socketId}`)
+			return
+		}
+		this.handleDisconnection(socketId)
 	}
 
 	private registerConnection(
