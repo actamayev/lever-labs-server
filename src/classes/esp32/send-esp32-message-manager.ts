@@ -1,4 +1,4 @@
-import { isUndefined } from "lodash"
+import { isNull, isUndefined } from "lodash"
 import Singleton from "../singleton"
 import Esp32SocketManager from "./esp32-socket-manager"
 import EspLatestFirmwareManager from "./esp-latest-firmware-manager"
@@ -137,6 +137,19 @@ export default class SendEsp32MessageManager extends Singleton {
 		} catch (error: unknown) {
 			console.error("Light transfer failed:", error)
 			throw new Error(`Light transfer failed: ${error || "Unknown reason"}`)
+		}
+	}
+
+	public updateDisplay(pipUUID: PipUUID, buffer: Uint8Array): Promise<void> {
+		try {
+			const displayBufferMessage = MessageBuilder.createDisplayBufferMessage(buffer)
+			if (isNull(displayBufferMessage)) {
+				throw new Error("Display buffer message is null")
+			}
+			return this.sendBinaryMessage(pipUUID, displayBufferMessage)
+		} catch (error: unknown) {
+			console.error("Display update failed:", error)
+			throw new Error(`Display update failed: ${error || "Unknown reason"}`)
 		}
 	}
 
