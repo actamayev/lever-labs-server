@@ -1,7 +1,7 @@
-import { CareerQuestChatMessage } from "@bluedotrobots/common-ts"
+import { CqChallengeChatMessage } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function retrieveCqChatMessages(careerQuestChatId: number): Promise<CareerQuestChatMessage[]> {
+export default async function retrieveCqChatMessages(careerQuestChatId: number): Promise<CqChallengeChatMessage[]> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -25,7 +25,7 @@ export default async function retrieveCqChatMessages(careerQuestChatId: number):
 			role: msg.sender === "USER" ? "user" as const : "assistant" as const,
 			content: msg.message_text,
 			timestamp: new Date(msg.created_at),
-		} satisfies CareerQuestChatMessage))
+		} satisfies CqChallengeChatMessage))
 	} catch (error) {
 		console.error(error)
 		throw error

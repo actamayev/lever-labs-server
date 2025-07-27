@@ -5,7 +5,7 @@ import findChallengeDataFromId from "../find-challenge-data-from-id"
 
 // eslint-disable-next-line max-lines-per-function
 export default function buildCqLLMContext(chatData: ProcessedCareerQuestChatData): SimpleMessageData[] {
-	const challengeData = findChallengeDataFromId(chatData.careerQuestChallengeId)
+	const challengeData = findChallengeDataFromId(chatData.challengeId)
 
 	// Format challenge blocks hierarchically for better LLM understanding
 	const availableBlocksText = BlockFormatter.formatChallengeBlocksForCqLLMContext(challengeData.availableBlocks)

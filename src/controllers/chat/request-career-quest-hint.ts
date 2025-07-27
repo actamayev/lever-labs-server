@@ -47,7 +47,8 @@ async function processHintRequest(
 		const modelId = selectModel("hint")
 
 		socketManager.emitCqChatbotStart(userId, {
-			challengeId: chatData.careerQuestChallengeId,
+			careerId: chatData.careerId,
+			challengeId: chatData.challengeId,
 			interactionType: "hint"
 		})
 
@@ -79,7 +80,11 @@ async function processHintRequest(
 
 			if (content) {
 				hintContent += content
-				socketManager.emitCqChatbotChunk(userId, content, chatData.careerQuestChallengeId)
+				socketManager.emitCqChatbotChunk(userId, {
+					careerId: chatData.careerId,
+					challengeId: chatData.challengeId,
+					content
+				})
 			}
 		}
 
@@ -92,7 +97,10 @@ async function processHintRequest(
 				hintNumber
 			})
 
-			socketManager.emitCqChatbotComplete(userId, chatData.careerQuestChallengeId)
+			socketManager.emitCqChatbotComplete(userId, {
+				careerId: chatData.careerId,
+				challengeId: chatData.challengeId
+			})
 		}
 	} catch (error) {
 		if (error instanceof Error && error.name === "AbortError") {

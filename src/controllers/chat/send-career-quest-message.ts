@@ -52,7 +52,8 @@ async function processLLMRequest(
 		const modelId = selectModel("generalQuestion")
 
 		socketManager.emitCqChatbotStart(userId, {
-			challengeId: chatData.careerQuestChallengeId,
+			careerId: chatData.careerId,
+			challengeId: chatData.challengeId,
 			interactionType: "generalQuestion"
 		})
 
@@ -83,7 +84,11 @@ async function processLLMRequest(
 			const content = chunk.choices[0]?.delta?.content
 			if (content) {
 				aiResponseContent += content
-				socketManager.emitCqChatbotChunk(userId, content, chatData.careerQuestChallengeId)
+				socketManager.emitCqChatbotChunk(userId, {
+					careerId: chatData.careerId,
+					challengeId: chatData.challengeId,
+					content
+				})
 			}
 		}
 
@@ -96,7 +101,10 @@ async function processLLMRequest(
 				modelId
 			)
 
-			socketManager.emitCqChatbotComplete(userId, chatData.careerQuestChallengeId)
+			socketManager.emitCqChatbotComplete(userId, {
+				careerId: chatData.careerId,
+				challengeId: chatData.challengeId
+			})
 		}
 
 	} catch (error) {

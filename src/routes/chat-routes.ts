@@ -26,7 +26,7 @@ import deleteCareerQuestChatController from "../controllers/chat/delete-career-q
 const chatRoutes = express.Router()
 
 chatRoutes.post(
-	"/send-career-quest-message",
+	"/send-challenge-chat-message",
 	jwtVerifyAttachUserId,
 	validateSendCareerQuestMessage,
 	attachCareerQuestChatId,

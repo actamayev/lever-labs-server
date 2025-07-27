@@ -34,7 +34,7 @@ export default async function checkCareerQuestCode(req: Request, res: Response):
 }
 
 async function evaluateCodeWithScore(chatData: ProcessedCareerQuestCheckCodeMessage): Promise<CodeWithScore> {
-	const challengeData = findChallengeDataFromId(chatData.careerQuestChallengeId)
+	const challengeData = findChallengeDataFromId(chatData.challengeId)
 	const openAiClient = await OpenAiClientClass.getOpenAiClient()
 
 	// Build LLM context messages

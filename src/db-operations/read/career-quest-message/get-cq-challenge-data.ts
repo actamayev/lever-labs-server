@@ -1,9 +1,9 @@
 import { isNull } from "lodash"
-import { BlocklyJson, CareerQuestChatMessage } from "@bluedotrobots/common-ts"
+import { BlocklyJson, CqChallengeChatMessage } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 interface CQChallengeData {
-	messages: CareerQuestChatMessage[]
+	messages: CqChallengeChatMessage[]
 	sandboxJson: BlocklyJson
 }
 
@@ -18,7 +18,7 @@ export async function getCQChallengeData(
 		// Get chat messages from active career quest chat
 		const chat = await prismaClient.career_quest_chat.findFirst({
 			where: {
-				career_quest_id: challengeId,
+				challenge_id: challengeId,
 				user_id: userId,
 				is_active: true
 			},
@@ -59,9 +59,9 @@ export async function getCQChallengeData(
 		// Get sandbox data
 		const sandbox = await prismaClient.career_quest_sandbox.findUnique({
 			where: {
-				user_id_career_quest_id: {
+				user_id_challenge_id: {
 					user_id: userId,
-					career_quest_id: challengeId
+					challenge_id: challengeId
 				}
 			},
 			select: {
@@ -70,13 +70,13 @@ export async function getCQChallengeData(
 		})
 
 		// Process messages
-		const messages: CareerQuestChatMessage[] = isNull(chat)
+		const messages: CqChallengeChatMessage[] = isNull(chat)
 			? []
 			: [...chat.messages.map(msg => ({
 				content: msg.message_text,
 				role: msg.sender === "USER" ? "user" as const : "assistant" as const,
 				timestamp: new Date(msg.created_at)
-			} satisfies CareerQuestChatMessage)),
+			} satisfies CqChallengeChatMessage)),
 			...chat.code_submissions.map(submission => ({
 				content: "",
 				role: "user" as const,
@@ -88,13 +88,13 @@ export async function getCQChallengeData(
 						feedback: submission.feedback
 					}
 				}
-			} satisfies CareerQuestChatMessage)),
+			} satisfies CqChallengeChatMessage)),
 			...chat.career_quest_hints.map(hint => ({
 				content: hint.hint_text,
 				role: "assistant" as const,
 				timestamp: new Date(hint.created_at),
 				isHint: true
-			} satisfies CareerQuestChatMessage))
+			} satisfies CqChallengeChatMessage))
 			].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
 
 		// Process sandbox JSON

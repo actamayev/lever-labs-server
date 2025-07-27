@@ -1,7 +1,7 @@
-import { ChallengeData, CHALLENGES } from "@bluedotrobots/common-ts"
+import { CqChallengeData, CHALLENGES, ChallengeId } from "@bluedotrobots/common-ts"
 
-export default function findChallengeDataFromId(challengeId: string): ChallengeData {
-	const challenge = CHALLENGES.find(foundChallenge => foundChallenge.id === challengeId)
+export default function findChallengeDataFromId(challengeId: ChallengeId): CqChallengeData {
+	const challenge = CHALLENGES.find(foundChallenge => foundChallenge.challengeId === challengeId)
 
 	if (!challenge) {
 		throw new Error(`Challenge with id "${challengeId}" not found`)
@@ -17,8 +17,8 @@ interface ChallengeSnapshot {
 	solutionCode: string
 }
 
-export function findChallengeSnapshotFromId(challengeId: string): ChallengeSnapshot {
-	const challenge = CHALLENGES.find(foundChallenge => foundChallenge.id === challengeId)
+export function findChallengeSnapshotFromId(challengeId: ChallengeId): ChallengeSnapshot {
+	const challenge = CHALLENGES.find(foundChallenge => foundChallenge.challengeId === challengeId)
 
 	if (!challenge) {
 		throw new Error(`Challenge with id "${challengeId}" not found`)

@@ -14,7 +14,7 @@ export default async function addCareerQuestCodeSubmission(
 			data: {
 				career_quest_chat_id: chatData.careerQuestChatId,
 				user_code: chatData.userCode,
-				challenge_snapshot: findChallengeSnapshotFromId(chatData.careerQuestChallengeId) as unknown as Prisma.InputJsonObject,
+				challenge_snapshot: findChallengeSnapshotFromId(chatData.challengeId) as unknown as Prisma.InputJsonObject,
 				is_correct: codeWithScore.isCorrect,
 				score: codeWithScore.score,
 				feedback

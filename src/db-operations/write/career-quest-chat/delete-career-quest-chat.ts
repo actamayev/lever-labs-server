@@ -6,7 +6,7 @@ export default async function deleteCareerQuestChat(userId: number, challengeId:
 
 		await prismaClient.career_quest_chat.updateMany({
 			where: {
-				career_quest_id: challengeId,
+				challenge_id: challengeId,
 				user_id: userId,
 				is_active: true
 			},

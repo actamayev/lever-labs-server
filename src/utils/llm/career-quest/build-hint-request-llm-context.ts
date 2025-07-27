@@ -5,7 +5,7 @@ export default function buildHintLLMContext(
 	chatData: ProcessedCareerQuestHintMessage,
 	hintNumber: number
 ): SimpleMessageData[] {
-	const challengeData = findChallengeDataFromId(chatData.careerQuestChallengeId)
+	const challengeData = findChallengeDataFromId(chatData.challengeId)
 	const messages: SimpleMessageData[] = []
 
 	// System prompt for hint generation

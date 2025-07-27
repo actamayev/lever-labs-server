@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, OutgoingCareerQuestCheckCodeMessage,
-	OutgoingCareerQuestGeneralMessage, OutgoingCareerQuestHintMessage} from "@bluedotrobots/common-ts"
+import { ErrorResponse, OutgoingCqChallengeCheckCodeMessage,
+	OutgoingCqChallengeGeneralMessage, OutgoingCqChallengeHintMessage} from "@bluedotrobots/common-ts"
 import findOrCreateCareerQuestChat from "../../db-operations/write/career-quest-chat/find-or-create-career-quest-chat"
 
 export default async function attachCareerQuestChatId(
@@ -11,9 +11,9 @@ export default async function attachCareerQuestChatId(
 	try {
 		const { userId } = req
 		// eslint-disable-next-line max-len
-		const chatData = req.body as OutgoingCareerQuestGeneralMessage | OutgoingCareerQuestCheckCodeMessage | OutgoingCareerQuestHintMessage
+		const chatData = req.body as OutgoingCqChallengeGeneralMessage | OutgoingCqChallengeCheckCodeMessage | OutgoingCqChallengeHintMessage
 
-		const careerQuestChatId = await findOrCreateCareerQuestChat(userId, chatData.careerQuestChallengeId)
+		const careerQuestChatId = await findOrCreateCareerQuestChat(userId, chatData.challengeId)
 
 		req.body.careerQuestChatId = careerQuestChatId
 		next()

@@ -264,7 +264,7 @@ model profile_picture {
 
 model career_quest_chat {
 	career_quest_chat_id  										Int      @id @default(autoincrement())
-	career_quest_id       										String   // Your hardcoded challenge ID
+	challenge_id       											String
 	user_id               										Int
 
 	created_at            										DateTime @default(now())
@@ -277,7 +277,7 @@ model career_quest_chat {
 	career_quest_hints											career_quest_hint[]
 
 	@@index([user_id])
-	@@index([career_quest_id])
+	@@index([challenge_id])
 }
 
 model sandbox_chat {
@@ -332,7 +332,7 @@ model career_quest_code_submission {
 	submission_id                   							Int       @id @default(autoincrement())
 	career_quest_chat_id            							Int
 	user_code                       							String    // The code they submitted
-	challenge_snapshot              							Json      // { id, title, description, expectedBehavior, solutionCode }
+	challenge_snapshot              							Json      // { title, description, expectedBehavior, solutionCode }
 	is_correct                      							Boolean   // Quick access to the result
 	score                           							Float     // How close to correct (0.0 - 1.0, where 1.0 is correct)
 	feedback                        							String    // Short response like "Great job!" or "Not quite, try again"
@@ -364,7 +364,7 @@ model career_quest_sandbox {
 	career_quest_sandbox_id										Int       @id @default(autoincrement())
 	career_quest_sandbox_json									Json
 	user_id			       										Int
-	career_quest_id												String // Hardcoded Challenge Id
+	challenge_id												String // Hardcoded Challenge Id
 
 	created_at                                                  DateTime  @default(now())
 	updated_at                                                  DateTime @default(now()) @updatedAt
@@ -372,7 +372,7 @@ model career_quest_sandbox {
 	user                                                        credentials @relation(fields: [user_id], references: [user_id])
 
 	@@index([user_id], name: "career_quest_sandbox__user_id_idx")
-	@@unique([user_id, career_quest_id]) // One sandbox per user per challenge
+	@@unique([user_id, challenge_id]) // One sandbox per user per challenge
 }
 
 model classroom {
