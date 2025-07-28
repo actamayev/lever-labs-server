@@ -10,7 +10,7 @@ interface CQChallengeData {
 // eslint-disable-next-line max-lines-per-function
 export async function getCQChallengeData(
 	userId: number,
-	challengeId: string
+	challengeId: number
 ): Promise<CQChallengeData> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()

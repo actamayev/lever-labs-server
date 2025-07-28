@@ -1,6 +1,6 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function deleteCareerQuestChat(userId: number, challengeId: string): Promise<void> {
+export default async function deleteCareerQuestChat(userId: number, challengeId: number): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 

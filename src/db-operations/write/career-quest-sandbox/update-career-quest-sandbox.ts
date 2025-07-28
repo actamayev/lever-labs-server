@@ -1,9 +1,9 @@
-import { BlocklyJson, ChallengeId } from "@bluedotrobots/common-ts"
+import { BlocklyJson } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function updateCareerQuestSandboxProject(
 	userId: number,
-	challengeId: ChallengeId,
+	challengeId: number,
 	newBlocklyJson: BlocklyJson
 ): Promise<void> {
 	try {

@@ -4,8 +4,7 @@ import deleteCareerQuestChat from "../../db-operations/write/career-quest-chat/d
 
 export default async function deleteCareerQuestChatController(req: Request, res: Response): Promise<void> {
 	try {
-		const { userId } = req
-		const { challengeId } = req.params as { challengeId: string }
+		const { userId, challengeId } = req
 
 		await deleteCareerQuestChat(userId, challengeId)
 

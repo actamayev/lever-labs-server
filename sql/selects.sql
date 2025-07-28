@@ -20,3 +20,5 @@
 -- DELETE FROM sandbox_project;
 -- DELETE FROM credentials
 -- WHERE user_id IN (11, 17, 27, 60);
+
+SELECT * FROM challenge;

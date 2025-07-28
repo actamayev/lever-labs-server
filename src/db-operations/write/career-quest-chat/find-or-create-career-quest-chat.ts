@@ -1,7 +1,6 @@
-import { ChallengeId } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function findOrCreateCareerQuestChat(userId: number, challengeId: ChallengeId): Promise<number> {
+export default async function findOrCreateCareerQuestChat(userId: number, challengeId: number): Promise<number> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 

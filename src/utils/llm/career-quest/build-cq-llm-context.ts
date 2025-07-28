@@ -1,11 +1,15 @@
 /* eslint-disable max-len */
 import { isEmpty } from "lodash"
+import { ChallengeUUID } from "@bluedotrobots/common-ts"
 import { BlockFormatter } from "../../sandbox/block-formatter"
-import findChallengeDataFromId from "../find-challenge-data-from-id"
+import findChallengeDataFromUUID from "../find-challenge-data-from-uuid"
 
 // eslint-disable-next-line max-lines-per-function
-export default function buildCqLLMContext(chatData: ProcessedCareerQuestChatData): SimpleMessageData[] {
-	const challengeData = findChallengeDataFromId(chatData.challengeId)
+export default function buildCqLLMContext(
+	challengeUUID: ChallengeUUID,
+	chatData: ProcessedCareerQuestChatData
+): SimpleMessageData[] {
+	const challengeData = findChallengeDataFromUUID(challengeUUID)
 
 	// Format challenge blocks hierarchically for better LLM understanding
 	const availableBlocksText = BlockFormatter.formatChallengeBlocksForCqLLMContext(challengeData.availableBlocks)

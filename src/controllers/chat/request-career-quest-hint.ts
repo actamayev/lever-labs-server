@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Response, Request } from "express"
-import { ErrorResponse, StartChatSuccess } from "@bluedotrobots/common-ts"
+import { ChallengeUUID, ErrorResponse, StartChatSuccess } from "@bluedotrobots/common-ts"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
@@ -12,6 +12,7 @@ import addCareerQuestHint from "../../db-operations/write/career-quest-hint/add-
 export default function requestCareerQuestHint(req: Request, res: Response): void {
 	try {
 		const { userId } = req
+		const { challengeUUID } = req.params as { challengeUUID: ChallengeUUID }
 		const chatData = req.body as ProcessedCareerQuestHintMessage
 
 		// Create a new stream and get streamId
@@ -21,7 +22,7 @@ export default function requestCareerQuestHint(req: Request, res: Response): voi
 		res.status(200).json({ streamId } satisfies StartChatSuccess)
 
 		// Process hint request with streaming via WebSocket (async)
-		void processHintRequest(chatData, userId, streamId, abortController.signal)
+		void processHintRequest(challengeUUID, chatData, userId, streamId, abortController.signal)
 	} catch (error) {
 		console.error("Hint request endpoint error:", error)
 		res.status(500).json({
@@ -32,6 +33,7 @@ export default function requestCareerQuestHint(req: Request, res: Response): voi
 
 // eslint-disable-next-line max-lines-per-function, complexity
 async function processHintRequest(
+	challengeUUID: ChallengeUUID,
 	chatData: ProcessedCareerQuestHintMessage,
 	userId: number,
 	streamId: string,
@@ -43,12 +45,12 @@ async function processHintRequest(
 		if (abortSignal.aborted) return
 
 		const hintNumber = await getNextHintNumber(chatData.careerQuestChatId)
-		const messages = buildHintLLMContext(chatData, hintNumber)
+		const messages = buildHintLLMContext(challengeUUID, chatData, hintNumber)
 		const modelId = selectModel("hint")
 
 		socketManager.emitCqChatbotStart(userId, {
-			careerId: chatData.careerId,
-			challengeId: chatData.challengeId,
+			careerUUID: chatData.careerUUID,
+			challengeUUID,
 			interactionType: "hint"
 		})
 
@@ -81,8 +83,8 @@ async function processHintRequest(
 			if (content) {
 				hintContent += content
 				socketManager.emitCqChatbotChunk(userId, {
-					careerId: chatData.careerId,
-					challengeId: chatData.challengeId,
+					careerUUID: chatData.careerUUID,
+					challengeUUID,
 					content
 				})
 			}
@@ -98,8 +100,8 @@ async function processHintRequest(
 			})
 
 			socketManager.emitCqChatbotComplete(userId, {
-				careerId: chatData.careerId,
-				challengeId: chatData.challengeId
+				careerUUID: chatData.careerUUID,
+				challengeUUID
 			})
 		}
 	} catch (error) {

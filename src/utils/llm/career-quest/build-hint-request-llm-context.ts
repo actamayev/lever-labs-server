@@ -1,11 +1,13 @@
-import findChallengeDataFromId from "../find-challenge-data-from-id"
+import { ChallengeUUID } from "@bluedotrobots/common-ts"
+import findChallengeDataFromUUID from "../find-challenge-data-from-uuid"
 
 // eslint-disable-next-line max-lines-per-function
 export default function buildHintLLMContext(
+	challengeUUID: ChallengeUUID,
 	chatData: ProcessedCareerQuestHintMessage,
 	hintNumber: number
 ): SimpleMessageData[] {
-	const challengeData = findChallengeDataFromId(chatData.challengeId)
+	const challengeData = findChallengeDataFromUUID(challengeUUID)
 	const messages: SimpleMessageData[] = []
 
 	// System prompt for hint generation
