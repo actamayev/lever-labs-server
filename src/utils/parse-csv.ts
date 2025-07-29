@@ -54,6 +54,31 @@ function isReadingSectionData(data: unknown): data is ReadingSection {
 	)
 }
 
+function isCareerData(data: unknown): data is CareerData {
+	const d = data as CareerData
+	return (
+		typeof d === "object" &&
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        d !== null &&
+        typeof d.career_id === "number" &&
+        typeof d.career_name === "string" &&
+        typeof d.career_uuid === "string"
+	)
+}
+
+function isChallengeData(data: unknown): data is ChallengeData {
+	const d = data as ChallengeData
+	return (
+		typeof d === "object" &&
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        d !== null &&
+        typeof d.challenge_id === "number" &&
+        typeof d.challenge_name === "string" &&
+        typeof d.challenge_uuid === "string" &&
+        typeof d.career_id === "number"
+	)
+}
+
 function cleanObjectKeys<T extends { [K in keyof T]: unknown }>(
 	obj: Record<string, unknown>
 ): T {
@@ -114,6 +139,21 @@ export default function parseCSV(filePath: string): AllSeedData[] {
 				throw new Error(`Invalid reading section data at row ${index + 1}: ${JSON.stringify(row)}`)
 			}
 			return row as ReadingSection
+		})
+	}
+	else if (fileName === "career.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isCareerData(row)) {
+				throw new Error(`Invalid career data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as CareerData
+		})
+	} else if (fileName === "challenge.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isChallengeData(row)) {
+				throw new Error(`Invalid challenge data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as ChallengeData
 		})
 	}
 

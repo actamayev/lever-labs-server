@@ -135,6 +135,67 @@ async function seedReadingSections(): Promise<void> {
 				reading_block_name: readingSection.reading_block_name
 			}
 		})
+	}))
+}
+
+async function seedCareers(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const careers = parseCSV("../db-seed-data/career.csv") as CareerData[]
+
+	console.info("Seeding careers...")
+	await Promise.all(careers.map(career => {
+		if (
+			!career.career_id ||
+			!career.career_name ||
+			!career.career_uuid
+		) {
+			throw new Error(`Invalid career data: ${JSON.stringify(career)}`)
+		}
+		return prismaClient.career.upsert({
+			where: {
+				career_id: career.career_id
+			},
+			update: {
+				career_name: career.career_name
+			},
+			create: {
+				career_id: career.career_id,
+				career_name: career.career_name,
+				career_uuid: career.career_uuid
+			}
+		})
+	}))
+}
+
+async function seedChallenges(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const challenges = parseCSV("../db-seed-data/challenge.csv") as ChallengeData[]
+
+	console.info("Seeding challenges...")
+	await Promise.all(challenges.map(challenge => {
+		if (
+			!challenge.challenge_id ||
+			!challenge.challenge_name ||
+			!challenge.challenge_uuid ||
+			!challenge.career_id
+		) {
+			throw new Error(`Invalid challenge data: ${JSON.stringify(challenge)}`)
+		}
+		return prismaClient.challenge.upsert({
+			where: {
+				challenge_id: challenge.challenge_id
+			},
+			update: {
+				challenge_name: challenge.challenge_name,
+				career_id: challenge.career_id
+			},
+			create: {
+				challenge_id: challenge.challenge_id,
+				challenge_name: challenge.challenge_name,
+				challenge_uuid: challenge.challenge_uuid,
+				career_id: challenge.career_id
+			}
+		})
 	} ))
 }
 
@@ -147,6 +208,10 @@ async function main(): Promise<void> {
 		await seedAnswerChoices()
 
 		await seedReadingSections()
+
+		await seedCareers()
+
+		await seedChallenges()
 
 		console.info("Seeding completed successfully")
 	} catch (error) {

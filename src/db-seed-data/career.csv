@@ -1,0 +1,12 @@
+career_id,career_name,career_uuid
+1,Introduction to Robotics,3e5fd270-6265-4bd4-a7c9-f4fe0618332d
+2,Line Following,130fc585-33d5-4315-922a-6786a23adb7e
+3,Obstacle Avoidance,2c9600cb-087d-477f-ae96-eb7cbf445bcd
+4,Edge Detection,9d0525eb-df85-4620-8335-f8e696367edf
+5,Color Detection and Sorting,ca5f2d62-845d-4bdb-ba6a-33edca49bc86
+6,Races (Speed Optimization),d8f590de-6d5d-45c4-865f-66aae9a5a3df
+7,Maze Navigation,0bbe8a76-76f4-44ef-bd53-52826e0205d0
+8,Encoder-Based Precision Driving,3b4cd429-08c0-4616-820d-8eff89ff47b3
+9,Object Detection and Tracking,f89d932f-b41a-4c28-b43e-faaad609ec3a
+10,Theremin-Style Musical Instrument,fbbfd28b-8f41-4f33-88c5-e2e24bc93edd
+11,Cliff Avoidance,266b6ef1-da98-433d-9798-f0635a6858b0

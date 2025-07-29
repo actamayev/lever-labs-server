@@ -5,7 +5,7 @@ import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
 const validateStreamIdSchema = Joi.object({
 	streamId: Joi.string().required(),
-})
+}).required().unknown(false)
 
 export default function validateStreamId(req: Request, res: Response, next: NextFunction): void {
 	try {

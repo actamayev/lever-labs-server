@@ -1,19 +1,20 @@
 
 import { Response, Request } from "express"
-import { CheckCodeResponse, ErrorResponse } from "@bluedotrobots/common-ts"
+import { ChallengeUUID, CheckCodeResponse, ErrorResponse } from "@bluedotrobots/common-ts"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
-import findChallengeDataFromId from "../../utils/llm/find-challenge-data-from-id"
 import addCareerQuestCodeSubmission from "../../db-operations/write/career-quest-code-submission/add-career-quest-code-submission"
 import { getRandomCorrectResponse, getRandomIncorrectResponse } from "../../utils/career-quest-responses"
 import buildCheckCodeLLMContext, { checkCodeResponseFormat } from "../../utils/llm/career-quest/build-check-code-llm-context"
+import findChallengeDataFromUUID from "../../utils/llm/find-challenge-data-from-uuid"
 
 export default async function checkCareerQuestCode(req: Request, res: Response): Promise<void> {
 	try {
+		const { challengeUUID } = req.params as { challengeUUID: ChallengeUUID }
 		const chatData = req.body as ProcessedCareerQuestCheckCodeMessage
 
 		// Get evaluation with score
-		const evaluation = await evaluateCodeWithScore(chatData)
+		const evaluation = await evaluateCodeWithScore(challengeUUID, chatData)
 
 		// Get feedback message based on score
 		const feedback = evaluation.isCorrect
@@ -21,7 +22,7 @@ export default async function checkCareerQuestCode(req: Request, res: Response):
 			: getRandomIncorrectResponse(evaluation.score)
 
 		// Save the code submission to DB
-		await addCareerQuestCodeSubmission(chatData, evaluation, feedback)
+		await addCareerQuestCodeSubmission(challengeUUID, chatData, evaluation, feedback)
 
 		// Return simple response immediately
 		res.status(200).json({ isCorrect: evaluation.isCorrect, feedback } satisfies CheckCodeResponse)
@@ -33,8 +34,11 @@ export default async function checkCareerQuestCode(req: Request, res: Response):
 	}
 }
 
-async function evaluateCodeWithScore(chatData: ProcessedCareerQuestCheckCodeMessage): Promise<CodeWithScore> {
-	const challengeData = findChallengeDataFromId(chatData.careerQuestChallengeId)
+async function evaluateCodeWithScore(
+	challengeUUID: ChallengeUUID,
+	chatData: ProcessedCareerQuestCheckCodeMessage
+): Promise<CodeWithScore> {
+	const challengeData = findChallengeDataFromUUID(challengeUUID)
 	const openAiClient = await OpenAiClientClass.getOpenAiClient()
 
 	// Build LLM context messages

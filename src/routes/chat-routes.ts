@@ -8,7 +8,7 @@ import attachCQConversationHistory from "../middleware/attach/attach-cq-conversa
 import attachSandboxProjectIdFromUUID from "../middleware/attach/attach-sandbox-project-id-from-uuid"
 import attachSandboxConversationHistory from "../middleware/attach/attach-sandbox-conversation-history"
 import validateSendSandboxMessage from "../middleware/request-validation/chat/validate-send-sandbox-message"
-import validateChallengeIdInParams from "../middleware/request-validation/chat/validate-challenge-id-in-params"
+import attachChallengeIdFromUUID from "../middleware/attach/attach-challenge-id-from-uuid"
 import validateCheckCareerQuestCode from "../middleware/request-validation/chat/validate-check-career-quest-code"
 import validateProjectUUIDInParams from "../middleware/request-validation/sandbox/validate-project-uuid-in-params"
 import validateSendCareerQuestMessage from "../middleware/request-validation/chat/validate-send-career-quest-message"
@@ -26,26 +26,29 @@ import deleteCareerQuestChatController from "../controllers/chat/delete-career-q
 const chatRoutes = express.Router()
 
 chatRoutes.post(
-	"/send-career-quest-message",
+	"/send-challenge-chat-message/:challengeUUID",
 	jwtVerifyAttachUserId,
 	validateSendCareerQuestMessage,
+	attachChallengeIdFromUUID,
 	attachCareerQuestChatId,
 	attachCQConversationHistory,
 	sendCareerQuestMessage
 )
 
 chatRoutes.post(
-	"/check-career-quest-code",
+	"/check-career-quest-code/:challengeUUID",
 	jwtVerifyAttachUserId,
 	validateCheckCareerQuestCode,
+	attachChallengeIdFromUUID,
 	attachCareerQuestChatId,
 	checkCareerQuestCode
 )
 
 chatRoutes.post(
-	"/request-career-quest-hint",
+	"/request-career-quest-hint/:challengeUUID",
 	jwtVerifyAttachUserId,
 	validateRequestCareerQuestHint,
+	attachChallengeIdFromUUID,
 	attachCareerQuestChatId,
 	attachCQConversationHistory,
 	requestCareerQuestHint
@@ -79,8 +82,8 @@ chatRoutes.post(
 )
 
 chatRoutes.post(
-	"/delete-career-quest-chat/:challengeId",
-	validateChallengeIdInParams,
+	"/delete-career-quest-chat/:challengeUUID",
+	attachChallengeIdFromUUID,
 	jwtVerifyAttachUserId,
 	deleteCareerQuestChatController
 )

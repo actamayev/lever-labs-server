@@ -12,7 +12,7 @@ import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
 	TeacherName,
 	PlayFunSoundPayload,
 	BatteryMonitorData,
-	HornData
+	HornData,
 } from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
@@ -331,27 +331,20 @@ export default class BrowserSocketManager extends Singleton {
 		this.io.to(connectionInfo.socketId).emit("cq-chatbot-stream-start", event)
 	}
 
-	public emitCqChatbotChunk(userId: number, content: string, challengeId: string): void {
+	public emitCqChatbotChunk(userId: number, event: CqChatbotStreamChunkEvent): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) {
 			console.warn(`No connection found for userId: ${userId}`)
 			return
-		}
-		const event: CqChatbotStreamChunkEvent = {
-			challengeId,
-			content
 		}
 		this.io.to(connectionInfo.socketId).emit("cq-chatbot-stream-chunk", event)
 	}
 
-	public emitCqChatbotComplete(userId: number, challengeId: string): void {
+	public emitCqChatbotComplete(userId: number, event: CqChatbotStreamCompleteEvent): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) {
 			console.warn(`No connection found for userId: ${userId}`)
 			return
-		}
-		const event: CqChatbotStreamCompleteEvent = {
-			challengeId
 		}
 		this.io.to(connectionInfo.socketId).emit("cq-chatbot-stream-complete", event)
 	}

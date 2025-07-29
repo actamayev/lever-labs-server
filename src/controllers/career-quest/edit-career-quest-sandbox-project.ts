@@ -1,11 +1,10 @@
 import { Response, Request } from "express"
-import { BlocklyJson, ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
+import { BlocklyJson, 	ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
 import updateCareerQuestSandboxProject from "../../db-operations/write/career-quest-sandbox/update-career-quest-sandbox"
 
 export default async function editCareerQuestSandboxProject(req: Request, res: Response): Promise<void> {
 	try {
-		const { userId } = req
-		const { challengeId } = req.params
+		const { userId, challengeId } = req
 		const { newBlocklyJson } = req.body as { newBlocklyJson: BlocklyJson }
 
 		await updateCareerQuestSandboxProject(userId, challengeId, newBlocklyJson)

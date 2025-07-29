@@ -1,7 +1,7 @@
 import { Response, Request } from "express"
 import { ErrorResponse } from "@bluedotrobots/common-ts"
 
-// This is used for generating UUIDs when adding data to the reading_questions.csv and activities.csv
+// This is used for generating UUIDs when adding data to the reading_questions.csv and activities.csv, and career.csv
 export default function generateUUID(_req: Request, res: Response): void {
 	try {
 		const uuid = crypto.randomUUID()

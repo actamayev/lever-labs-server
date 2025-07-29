@@ -14,6 +14,7 @@ declare global {
 			classroomId: number
 			studentUserId: number
 			studentId: number
+			challengeId: number
 		}
 	}
 }

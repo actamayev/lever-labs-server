@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Response, Request } from "express"
 import { MessageSender } from "@prisma/client"
-import { ErrorResponse, StartChatSuccess } from "@bluedotrobots/common-ts"
+import { ChallengeUUID, ErrorResponse, StartChatSuccess } from "@bluedotrobots/common-ts"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
@@ -12,6 +12,7 @@ import addCareerQuestMessage from "../../db-operations/write/career-quest-messag
 export default function sendCareerQuestMessage(req: Request, res: Response): void {
 	try {
 		const { userId } = req
+		const { challengeUUID } = req.params as { challengeUUID: ChallengeUUID }
 		const chatData = req.body as ProcessedCareerQuestChatData
 
 		// Create a new stream and get streamId
@@ -21,7 +22,7 @@ export default function sendCareerQuestMessage(req: Request, res: Response): voi
 		res.status(200).json({ streamId } satisfies StartChatSuccess)
 
 		// Process LLM request with streaming via WebSocket (async)
-		void processLLMRequest(chatData, userId, streamId, abortController.signal)
+		void processLLMRequest(challengeUUID, chatData, userId, streamId, abortController.signal)
 	} catch (error) {
 		console.error("Chatbot endpoint error:", error)
 		res.status(500).json({
@@ -32,6 +33,7 @@ export default function sendCareerQuestMessage(req: Request, res: Response): voi
 
 // eslint-disable-next-line max-lines-per-function, complexity
 async function processLLMRequest(
+	challengeUUID: ChallengeUUID,
 	chatData: ProcessedCareerQuestChatData,
 	userId: number,
 	streamId: string,
@@ -48,11 +50,12 @@ async function processLLMRequest(
 			MessageSender.USER
 		)
 
-		const messages = buildCqLLMContext(chatData)
+		const messages = buildCqLLMContext(challengeUUID, chatData)
 		const modelId = selectModel("generalQuestion")
 
 		socketManager.emitCqChatbotStart(userId, {
-			challengeId: chatData.careerQuestChallengeId,
+			careerUUID: chatData.careerUUID,
+			challengeUUID,
 			interactionType: "generalQuestion"
 		})
 
@@ -83,7 +86,11 @@ async function processLLMRequest(
 			const content = chunk.choices[0]?.delta?.content
 			if (content) {
 				aiResponseContent += content
-				socketManager.emitCqChatbotChunk(userId, content, chatData.careerQuestChallengeId)
+				socketManager.emitCqChatbotChunk(userId, {
+					careerUUID: chatData.careerUUID,
+					challengeUUID,
+					content
+				})
 			}
 		}
 
@@ -96,7 +103,10 @@ async function processLLMRequest(
 				modelId
 			)
 
-			socketManager.emitCqChatbotComplete(userId, chatData.careerQuestChallengeId)
+			socketManager.emitCqChatbotComplete(userId, {
+				careerUUID: chatData.careerUUID,
+				challengeUUID
+			})
 		}
 
 	} catch (error) {
