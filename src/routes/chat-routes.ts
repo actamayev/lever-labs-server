@@ -36,7 +36,7 @@ chatRoutes.post(
 )
 
 chatRoutes.post(
-	"/check-career-quest-code",
+	"/check-career-quest-code/:challengeUUID",
 	jwtVerifyAttachUserId,
 	validateCheckCareerQuestCode,
 	attachChallengeIdFromUUID,
@@ -45,7 +45,7 @@ chatRoutes.post(
 )
 
 chatRoutes.post(
-	"/request-career-quest-hint",
+	"/request-career-quest-hint/:challengeUUID",
 	jwtVerifyAttachUserId,
 	validateRequestCareerQuestHint,
 	attachChallengeIdFromUUID,
