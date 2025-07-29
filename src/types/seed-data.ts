@@ -1,5 +1,5 @@
-import { ActivityUUID, QuestionUUID } from "@bluedotrobots/common-ts"
 import { ActivityTypes, LessonNames } from "@prisma/client"
+import { ActivityUUID, CareerUUID, ChallengeUUID, QuestionUUID } from "@bluedotrobots/common-ts"
 
 declare global {
 	interface SeededActivityData {
@@ -31,11 +31,26 @@ declare global {
 		reading_block_name: string
 	}
 
+	interface CareerData {
+		career_id: number
+		career_name: string
+		career_uuid: CareerUUID
+	}
+
+	interface ChallengeData {
+		challenge_id: number
+		challenge_name: string
+		challenge_uuid: ChallengeUUID
+		career_id: number
+	}
+
 	type AllSeedData =
 		| SeededActivityData
 		| ReadingQuestionData
 		| ReadingQuestionAnswerChoice
 		| ReadingSection
+		| CareerData
+		| ChallengeData
 }
 
 export {}

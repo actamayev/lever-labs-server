@@ -1,19 +1,19 @@
-import { OutgoingCareerQuestGeneralMessage, OutgoingSandboxChatData, SandboxChatMessage,
-	OutgoingCareerQuestCheckCodeMessage, OutgoingCareerQuestHintMessage, CareerQuestChatMessage } from "@bluedotrobots/common-ts"
+import { OutgoingCqChallengeGeneralMessage, OutgoingSandboxChatData, SandboxChatMessage,
+	OutgoingCqChallengeCheckCodeMessage, OutgoingCqChallengeHintMessage, CqChallengeChatMessage } from "@bluedotrobots/common-ts"
 
 declare global {
-	interface ProcessedCareerQuestChatData extends OutgoingCareerQuestGeneralMessage {
+	interface ProcessedCareerQuestChatData extends OutgoingCqChallengeGeneralMessage {
 		careerQuestChatId: number
-		conversationHistory: CareerQuestChatMessage[]
+		conversationHistory: CqChallengeChatMessage[]
 	}
 
-	interface ProcessedCareerQuestCheckCodeMessage extends OutgoingCareerQuestCheckCodeMessage {
+	interface ProcessedCareerQuestCheckCodeMessage extends OutgoingCqChallengeCheckCodeMessage {
 		careerQuestChatId: number
 	}
 
-	interface ProcessedCareerQuestHintMessage extends OutgoingCareerQuestHintMessage {
+	interface ProcessedCareerQuestHintMessage extends OutgoingCqChallengeHintMessage {
 		careerQuestChatId: number
-		conversationHistory: CareerQuestChatMessage[]
+		conversationHistory: CqChallengeChatMessage[]
 	}
 
 	interface ProcessedSandboxChatData extends OutgoingSandboxChatData {

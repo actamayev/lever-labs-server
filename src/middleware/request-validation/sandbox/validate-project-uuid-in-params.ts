@@ -5,7 +5,7 @@ import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
 const retrieveSingleSandboxProject = Joi.object({
 	projectUUID: Joi.string().guid({ version: ["uuidv4", "uuidv5"] }).required(),
-}).required()
+}).required().unknown(false)
 
 export default function validateProjectUUIDInParams(req: Request, res: Response, next: NextFunction): void {
 	try {

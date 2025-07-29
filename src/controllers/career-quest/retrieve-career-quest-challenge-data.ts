@@ -4,8 +4,7 @@ import { getCQChallengeData } from "../../db-operations/read/career-quest-messag
 
 export default async function retrieveCareerQuestChallengeData(req: Request, res: Response): Promise<void> {
 	try {
-		const { userId } = req
-		const { challengeId } = req.params
+		const { userId, challengeId } = req
 
 		const cqChallengeData = await getCQChallengeData(userId, challengeId)
 

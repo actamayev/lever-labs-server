@@ -1,8 +1,8 @@
-import { ChallengeData } from "@bluedotrobots/common-ts"
+import { CqChallengeData } from "@bluedotrobots/common-ts"
 import { ResponseFormatJSONSchema } from "openai/resources/shared"
 
 export default function buildCheckCodeLLMContext(
-	challengeData: ChallengeData,
+	challengeData: CqChallengeData,
 	userCode: string
 ): SimpleMessageData[] {
 	const messages: SimpleMessageData[] = []
