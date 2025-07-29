@@ -16,7 +16,7 @@ import addLoginHistoryRecord from "../../db-operations/write/login-history/add-l
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
 
 // eslint-disable-next-line max-lines-per-function
-export default async function googleLoginAuthCallback (req: Request, res: Response): Promise<void> {
+export default async function googleLoginAuthCallback(req: Request, res: Response): Promise<void> {
 	try {
 		const { idToken, siteTheme } = req.body
 		// TODO 6/9/25: Should we get the user's age when they login with Google?
