@@ -46,6 +46,8 @@ model credentials {
 	student														student[]
 	teacher														teacher?
 	profile_picture												profile_picture?
+	career_quest_code_submission								career_quest_code_submission[]
+	career_quest_hint											career_quest_hint[]
 }
 
 model login_history {
@@ -273,8 +275,6 @@ model career_quest_chat {
 
 	user                  										credentials @relation(fields: [user_id], references: [user_id])
 	messages              										career_quest_message[]
-	code_submissions      										career_quest_code_submission[]
-	career_quest_hints											career_quest_hint[]
 
 	@@index([user_id, challenge_id])
 	challenge													challenge @relation(fields: [challenge_id], references: [challenge_id])
@@ -302,12 +302,12 @@ model career_quest_message {
 	message_text              									String
 	sender                    									MessageSender
 	model_used                									String?       // Only for AI messages
-									
+
 	career_quest_chat_id      									Int
-									
+
 	created_at                									DateTime      @default(now())
 	updated_at                									DateTime      @default(now()) @updatedAt
-									
+
 	career_quest_chat         									career_quest_chat @relation(fields: [career_quest_chat_id], references: [career_quest_chat_id])
 
 	@@index([career_quest_chat_id, created_at])
@@ -315,7 +315,9 @@ model career_quest_message {
 
 model career_quest_hint {
 	career_quest_hint_id										Int       @id @default(autoincrement())
-	career_quest_chat_id										Int
+	challenge_id												Int
+	user_id														Int
+	
 	hint_text													String
 	model_used													String
 	hint_number													Int
@@ -323,25 +325,32 @@ model career_quest_hint {
 	created_at                                                  DateTime  @default(now())
 	updated_at                                                  DateTime @default(now()) @updatedAt
 
-	career_quest_chat               							career_quest_chat @relation(fields: [career_quest_chat_id], references: [career_quest_chat_id])
+	user                                                        credentials @relation(fields: [user_id], references: [user_id])
+	challenge													challenge @relation(fields: [challenge_id], references: [challenge_id])
 
-	@@index([career_quest_chat_id, created_at])
+	@@index([user_id])
+	@@index([challenge_id, user_id])
+	@@index([challenge_id, created_at])
 }
 
 model career_quest_code_submission {
 	submission_id                   							Int       @id @default(autoincrement())
-	career_quest_chat_id            							Int
+	challenge_id            									Int
+	user_id             										Int
 	user_code                       							String    // The code they submitted
-	challenge_snapshot              							Json      // { title, description, expectedBehavior, solutionCode }
 	is_correct                      							Boolean   // Quick access to the result
 	score                           							Float     // How close to correct (0.0 - 1.0, where 1.0 is correct)
 	feedback                        							String    // Short response like "Great job!" or "Not quite, try again"
 
 	created_at                      							DateTime  @default(now())
 	updated_at                      							DateTime  @default(now()) @updatedAt
-								
-	career_quest_chat               							career_quest_chat @relation(fields: [career_quest_chat_id], references: [career_quest_chat_id])
-	@@index([career_quest_chat_id, created_at])
+
+	user                                                        credentials @relation(fields: [user_id], references: [user_id])
+	challenge               									challenge @relation(fields: [challenge_id], references: [challenge_id])
+
+	@@index([user_id])
+	@@index([challenge_id, user_id])
+	@@index([challenge_id, created_at])
 }
 
 model sandbox_message {
@@ -400,6 +409,8 @@ model challenge {
 
 	career_quest_sandbox										career_quest_sandbox[]
 	career_quest_chat											career_quest_chat[]
+	career_quest_code_submission								career_quest_code_submission[]
+	career_quest_hint											career_quest_hint[]
 }
 
 model classroom {

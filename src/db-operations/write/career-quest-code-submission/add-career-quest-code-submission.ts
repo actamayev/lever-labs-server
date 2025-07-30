@@ -1,10 +1,8 @@
-import { Prisma } from "@prisma/client"
-import { ChallengeUUID } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
-import { findChallengeSnapshotFromUUID } from "../../../utils/llm/find-challenge-data-from-uuid"
 
 export default async function addCareerQuestCodeSubmission(
-	challengeUUID: ChallengeUUID,
+	challengeId: number,
+	userId: number,
 	chatData: ProcessedCareerQuestCheckCodeMessage,
 	codeWithScore: CodeWithScore,
 	feedback: string
@@ -14,9 +12,9 @@ export default async function addCareerQuestCodeSubmission(
 
 		await prismaClient.career_quest_code_submission.create({
 			data: {
-				career_quest_chat_id: chatData.careerQuestChatId,
+				challenge_id: challengeId,
+				user_id: userId,
 				user_code: chatData.userCode,
-				challenge_snapshot: findChallengeSnapshotFromUUID(challengeUUID) as unknown as Prisma.InputJsonObject,
 				is_correct: codeWithScore.isCorrect,
 				score: codeWithScore.score,
 				feedback

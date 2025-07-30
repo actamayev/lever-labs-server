@@ -49,7 +49,7 @@ export default [
 			}],
 			"no-trailing-spaces": "error",
 			"prefer-const": "error",
-			"max-len": ["error", {
+			"max-len": ["warn", {
 				code: 140,
 			}],
 			"@typescript-eslint/explicit-function-return-type": "warn",
