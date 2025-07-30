@@ -10,7 +10,7 @@
 -- SELECT * FROM student;
 -- DELETE FROM sandbox_message;
 
--- DELETE FROM career_quest_chat;
+-- DELETE FROM career_quest_chat;	
 -- DELETE FROM career_quest_message;
 -- DELETE FROM career_quest_code_submission;
 -- DELETE FROM career_quest_hint;
@@ -21,4 +21,4 @@
 -- DELETE FROM credentials
 -- WHERE user_id IN (11, 17, 27, 60);
 
-SELECT * FROM challenge;
+-- SELECT * FROM challenge;

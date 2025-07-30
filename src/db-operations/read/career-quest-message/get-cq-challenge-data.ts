@@ -1,17 +1,13 @@
 import { isNull } from "lodash"
-import { BlocklyJson, CqChallengeChatMessage } from "@bluedotrobots/common-ts"
+import { BlocklyJson, CareerQuestChallengeData, CqChallengeChatMessage,
+	CareerQuestHint, CareerQuestCodeSubmission } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
-
-interface CQChallengeData {
-	messages: CqChallengeChatMessage[]
-	sandboxJson: BlocklyJson
-}
 
 // eslint-disable-next-line max-lines-per-function
 export async function getCQChallengeData(
 	userId: number,
 	challengeId: number
-): Promise<CQChallengeData> {
+): Promise<CareerQuestChallengeData> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -23,6 +19,7 @@ export async function getCQChallengeData(
 				is_active: true
 			},
 			select: {
+				created_at: true,
 				messages: {
 					orderBy: {
 						created_at: "asc"
@@ -32,29 +29,47 @@ export async function getCQChallengeData(
 						sender: true,
 						created_at: true
 					}
-				},
-				code_submissions: {
-					orderBy: {
-						created_at: "asc"
-					},
-					select: {
-						user_code: true,
-						created_at: true,
-						feedback: true,
-						is_correct: true
-					}
-				},
-				career_quest_hints: {
-					orderBy: {
-						created_at: "asc"
-					},
-					select: {
-						hint_text: true,
-						created_at: true
-					}
 				}
 			}
 		})
+
+		// Get ALL code submissions for this challenge
+		const allSubmissions = await prismaClient.career_quest_code_submission.findMany({
+			where: {
+				challenge_id: challengeId,
+				user_id: userId
+			},
+			orderBy: {
+				created_at: "asc"
+			},
+			select: {
+				user_code: true,
+				created_at: true,
+				feedback: true,
+				is_correct: true,
+				score: true
+			}
+		})
+
+		// Get ALL hints for this challenge
+		const allHints = await prismaClient.career_quest_hint.findMany({
+			where: {
+				challenge_id: challengeId,
+				user_id: userId
+			},
+			orderBy: {
+				created_at: "asc"
+			},
+			select: {
+				hint_text: true,
+				created_at: true,
+				hint_number: true,
+				model_used: true
+			}
+		})
+
+		// Check if user has ever been correct
+		const hasEverBeenCorrect = allSubmissions.some(submission => submission.is_correct)
 
 		// Get sandbox data
 		const sandbox = await prismaClient.career_quest_sandbox.findUnique({
@@ -69,15 +84,27 @@ export async function getCQChallengeData(
 			}
 		})
 
-		// Process messages
-		const messages: CqChallengeChatMessage[] = isNull(chat)
-			? []
-			: [...chat.messages.map(msg => ({
+		// Process messages (only from active chat timeline)
+		let messages: CqChallengeChatMessage[] = []
+
+		if (!isNull(chat)) {
+			const chatCreatedAt = new Date(chat.created_at)
+
+			// Filter submissions and hints to only those during active chat period
+			const activeSubmissions = allSubmissions.filter(
+				submission => new Date(submission.created_at) >= chatCreatedAt
+			)
+			const activeHints = allHints.filter(
+				hint => new Date(hint.created_at) >= chatCreatedAt
+			)
+
+			const chatMessages = chat.messages.map(msg => ({
 				content: msg.message_text,
 				role: msg.sender === "USER" ? "user" as const : "assistant" as const,
 				timestamp: new Date(msg.created_at)
-			} satisfies CqChallengeChatMessage)),
-			...chat.code_submissions.map(submission => ({
+			} satisfies CqChallengeChatMessage))
+
+			const submissionMessages = activeSubmissions.map(submission => ({
 				content: "",
 				role: "user" as const,
 				timestamp: new Date(submission.created_at),
@@ -88,14 +115,19 @@ export async function getCQChallengeData(
 						feedback: submission.feedback
 					}
 				}
-			} satisfies CqChallengeChatMessage)),
-			...chat.career_quest_hints.map(hint => ({
+			} satisfies CqChallengeChatMessage))
+
+			const hintMessages = activeHints.map(hint => ({
 				content: hint.hint_text,
 				role: "assistant" as const,
 				timestamp: new Date(hint.created_at),
 				isHint: true
 			} satisfies CqChallengeChatMessage))
-			].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+
+			// Combine and sort all messages by timestamp
+			messages = [...chatMessages, ...submissionMessages, ...hintMessages]
+				.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+		}
 
 		// Process sandbox JSON
 		let sandboxJson: object = {}
@@ -108,9 +140,29 @@ export async function getCQChallengeData(
 			}
 		}
 
+		// Format all hints and submissions
+		// Format all hints and submissions with camelCase
+		const formattedHints: CareerQuestHint[] = allHints.map(hint => ({
+			hintText: hint.hint_text,
+			createdAt: new Date(hint.created_at),
+			hintNumber: hint.hint_number,
+			modelUsed: hint.model_used
+		}))
+
+		const formattedSubmissions: CareerQuestCodeSubmission[] = allSubmissions.map(submission => ({
+			userCode: submission.user_code,
+			isCorrect: submission.is_correct,
+			score: submission.score,
+			feedback: submission.feedback,
+			createdAt: new Date(submission.created_at)
+		}))
+
 		return {
 			messages,
-			sandboxJson
+			allHints: formattedHints,
+			allSubmissions: formattedSubmissions,
+			sandboxJson,
+			hasEverBeenCorrect
 		}
 	} catch (error) {
 		console.error(error)
