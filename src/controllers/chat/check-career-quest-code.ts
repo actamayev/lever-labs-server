@@ -10,6 +10,7 @@ import findChallengeDataFromUUID from "../../utils/llm/find-challenge-data-from-
 
 export default async function checkCareerQuestCode(req: Request, res: Response): Promise<void> {
 	try {
+		const { userId, challengeId } = req
 		const { challengeUUID } = req.params as { challengeUUID: ChallengeUUID }
 		const chatData = req.body as ProcessedCareerQuestCheckCodeMessage
 
@@ -22,7 +23,7 @@ export default async function checkCareerQuestCode(req: Request, res: Response):
 			: getRandomIncorrectResponse(evaluation.score)
 
 		// Save the code submission to DB
-		await addCareerQuestCodeSubmission(challengeUUID, chatData, evaluation, feedback)
+		await addCareerQuestCodeSubmission(challengeId, userId, chatData, evaluation, feedback)
 
 		// Return simple response immediately
 		res.status(200).json({ isCorrect: evaluation.isCorrect, feedback } satisfies CheckCodeResponse)

@@ -11,7 +11,7 @@ import addCareerQuestHint from "../../db-operations/write/career-quest-hint/add-
 
 export default function requestCareerQuestHint(req: Request, res: Response): void {
 	try {
-		const { userId } = req
+		const { userId, challengeId } = req
 		const { challengeUUID } = req.params as { challengeUUID: ChallengeUUID }
 		const chatData = req.body as ProcessedCareerQuestHintMessage
 
@@ -22,7 +22,7 @@ export default function requestCareerQuestHint(req: Request, res: Response): voi
 		res.status(200).json({ streamId } satisfies StartChatSuccess)
 
 		// Process hint request with streaming via WebSocket (async)
-		void processHintRequest(challengeUUID, chatData, userId, streamId, abortController.signal)
+		void processHintRequest(challengeId, challengeUUID, chatData, userId, streamId, abortController.signal)
 	} catch (error) {
 		console.error("Hint request endpoint error:", error)
 		res.status(500).json({
@@ -33,6 +33,7 @@ export default function requestCareerQuestHint(req: Request, res: Response): voi
 
 // eslint-disable-next-line max-lines-per-function, complexity
 async function processHintRequest(
+	challengeId: number,
 	challengeUUID: ChallengeUUID,
 	chatData: ProcessedCareerQuestHintMessage,
 	userId: number,
@@ -44,7 +45,7 @@ async function processHintRequest(
 	try {
 		if (abortSignal.aborted) return
 
-		const hintNumber = await getNextHintNumber(chatData.careerQuestChatId)
+		const hintNumber = await getNextHintNumber(challengeId, userId)
 		const messages = buildHintLLMContext(challengeUUID, chatData, hintNumber)
 		const modelId = selectModel("hint")
 
@@ -93,7 +94,8 @@ async function processHintRequest(
 		// Only save if not aborted and we have content
 		if (!abortSignal.aborted && hintContent.trim()) {
 			await addCareerQuestHint({
-				careerQuestChatId: chatData.careerQuestChatId,
+				challengeId,
+				userId,
 				hintText: hintContent,
 				modelUsed: modelId,
 				hintNumber
