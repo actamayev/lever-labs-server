@@ -2,6 +2,8 @@ import isNull from "lodash/isNull"
 import { Response, Request } from "express"
 import { ErrorResponse, MessageResponse, EmailUpdatesRequest, NewGoogleInfoRequest } from "@bluedotrobots/common-ts"
 import Encryptor from "../../classes/encryptor"
+import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
+import { setAuthCookie } from "../../middleware/cookie-helpers"
 import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"
 import setUsernameAndAge from "../../db-operations/write/credentials/set-username-and-age"
 
@@ -20,10 +22,18 @@ export default async function registerGoogleInfo(req: Request, res: Response): P
 		}
 
 		await setUsernameAndAge(user.user_id, googleData)
+		const newAccessToken = await signJWT({
+			userId: user.user_id,
+			username: googleData.username,  // Now has the username!
+			isActive: true
+		})
+
+		// ✅ ADD: Update the cookie with new JWT
+		setAuthCookie(res, newAccessToken)
+
 		const encryptor = new Encryptor()
 		const email = await encryptor.deterministicDecrypt(user.email__encrypted, "EMAIL_ENCRYPTION_KEY")
 
-		// We're returning the email in the response for the client to update their UI
 		res.status(200).json({ email } satisfies EmailUpdatesRequest)
 		return
 	} catch (error) {
