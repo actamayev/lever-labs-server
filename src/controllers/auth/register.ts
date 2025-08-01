@@ -34,7 +34,11 @@ export default async function register(req: Request, res: Response): Promise<voi
 
 		const userId = await addLocalUser(userData)
 
-		const accessToken = await signJWT({ userId, newUser: true })
+		const accessToken = await signJWT({
+			userId,
+			username: registerInformation.username,
+			isActive: true
+		})
 
 		setAuthCookie(res, accessToken)
 		res.status(200).json({ success: true } satisfies RegisterSuccess)

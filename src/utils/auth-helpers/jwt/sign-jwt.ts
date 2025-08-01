@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken"
+import { JwtPayload } from "@bluedotrobots/common-ts"
 import SecretsManager from "../../../classes/aws/secrets-manager"
 
 export default async function signJWT(payload: JwtPayload): Promise<string> {

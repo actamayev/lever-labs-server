@@ -51,10 +51,9 @@ export default async function googleLoginAuthCallback(req: Request, res: Respons
 			return
 		} else if (isNull(userId)) {
 			userId = await addGoogleUser(encryptedEmail, siteTheme as SiteThemes)
-			accessToken = await signJWT({ userId, newUser: true })
+			accessToken = await signJWT({ userId, username: null, isActive: true })
 			isNewUser = true
 		} else {
-			accessToken = await signJWT({ userId, newUser: false })
 			userPipData = await retrieveUserPipUUIDsDetails(userId)
 			const credentialsResult = await findUserById(userId)
 			if (isNull(credentialsResult)) {
@@ -62,6 +61,7 @@ export default async function googleLoginAuthCallback(req: Request, res: Respons
 				res.status(400).json({ message: `There is no Blue Dot Robots account associated with ${payload.email}. Please try again.` } satisfies MessageResponse)
 				return
 			}
+			accessToken = await signJWT({ userId, username: credentialsResult.username as string, isActive: true })
 			personalInfo = {
 				username: credentialsResult.username as string,
 				email: payload.email,

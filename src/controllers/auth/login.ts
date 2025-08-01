@@ -36,10 +36,13 @@ export default async function login(req: Request, res: Response): Promise<void> 
 			return
 		}
 
-		const accessToken = await signJWT({ userId: credentialsResult.user_id, newUser: false })
+		const accessToken = await signJWT({
+			userId: credentialsResult.user_id,
+			username: credentialsResult.username, // NEW: Add username to JWT
+			isActive: true // Optional: add user status
+		})
 
 		const userPipData = await retrieveUserPipUUIDsDetails(credentialsResult.user_id)
-
 		const encryptor = new Encryptor()
 		const email = await encryptor.deterministicDecrypt(credentialsResult.email__encrypted, "EMAIL_ENCRYPTION_KEY")
 		const studentClasses = await retrieveStudentClasses(credentialsResult.user_id)
