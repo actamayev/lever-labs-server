@@ -14,6 +14,7 @@ import retrieveUserIdByEmail from "../../db-operations/read/credentials/retrieve
 import retrieveStudentClasses from "../../db-operations/read/credentials/retrieve-student-classes"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
+import { setAuthCookie } from "../../middleware/cookie-helpers"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function googleLoginAuthCallback(req: Request, res: Response): Promise<void> {
@@ -50,10 +51,9 @@ export default async function googleLoginAuthCallback(req: Request, res: Respons
 			return
 		} else if (isNull(userId)) {
 			userId = await addGoogleUser(encryptedEmail, siteTheme as SiteThemes)
-			accessToken = await signJWT({ userId, newUser: true })
+			accessToken = await signJWT({ userId, username: null, isActive: true })
 			isNewUser = true
 		} else {
-			accessToken = await signJWT({ userId, newUser: false })
 			userPipData = await retrieveUserPipUUIDsDetails(userId)
 			const credentialsResult = await findUserById(userId)
 			if (isNull(credentialsResult)) {
@@ -61,6 +61,7 @@ export default async function googleLoginAuthCallback(req: Request, res: Respons
 				res.status(400).json({ message: `There is no Blue Dot Robots account associated with ${payload.email}. Please try again.` } satisfies MessageResponse)
 				return
 			}
+			accessToken = await signJWT({ userId, username: credentialsResult.username as string, isActive: true })
 			personalInfo = {
 				username: credentialsResult.username as string,
 				email: payload.email,
@@ -73,8 +74,9 @@ export default async function googleLoginAuthCallback(req: Request, res: Respons
 			studentClasses = await retrieveStudentClasses(userId)
 		}
 
+		setAuthCookie(res, accessToken)
+
 		res.status(200).json({
-			accessToken,
 			isNewUser,
 			personalInfo,
 			userPipData,

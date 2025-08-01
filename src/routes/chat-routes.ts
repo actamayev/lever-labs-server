@@ -83,8 +83,8 @@ chatRoutes.post(
 
 chatRoutes.post(
 	"/delete-career-quest-chat/:challengeUUID",
-	attachChallengeIdFromUUID,
 	jwtVerifyAttachUserId,
+	attachChallengeIdFromUUID,
 	deleteCareerQuestChatController
 )
 
