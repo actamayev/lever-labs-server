@@ -8,6 +8,7 @@ import doesEmailExist from "../../db-operations/read/does-x-exist/does-email-exi
 import doesUsernameExist from "../../db-operations/read/does-x-exist/does-username-exist"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import constructLocalUserFields from "../../utils/auth-helpers/register/construct-local-user-fields"
+import { setAuthCookie } from "../../middleware/cookie-helpers"
 
 export default async function register(req: Request, res: Response): Promise<void> {
 	try {
@@ -33,9 +34,14 @@ export default async function register(req: Request, res: Response): Promise<voi
 
 		const userId = await addLocalUser(userData)
 
-		const accessToken = await signJWT({ userId, newUser: true })
+		const accessToken = await signJWT({
+			userId,
+			username: registerInformation.username,
+			isActive: true
+		})
 
-		res.status(200).json({ accessToken } satisfies RegisterSuccess)
+		setAuthCookie(res, accessToken)
+		res.status(200).json({ success: true } satisfies RegisterSuccess)
 		void addLoginHistoryRecord(userId)
 		return
 	} catch (error) {

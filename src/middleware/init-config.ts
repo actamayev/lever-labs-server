@@ -16,9 +16,18 @@ export const corsOptions = {
 		return callback(new Error("CORS not allowed for this origin"))
 	},
 	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-	allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-	credentials: true,
+	allowedHeaders: [
+		"Content-Type",
+		"X-Requested-With",
+		"Accept",
+		"Origin"
+	],
+	exposedHeaders: [
+		"Set-Cookie" // Allow frontend to see Set-Cookie headers (though not needed for httpOnly)
+	],
+	credentials: true, // This is already correct - essential for cookies!
 }
+
 export function configureAppMiddleware(app: Express): void {
 	app.use(cors(corsOptions))
 	app.use(cookieParser())

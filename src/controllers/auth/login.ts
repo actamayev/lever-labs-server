@@ -10,6 +10,7 @@ import retrieveUserFromContact from "../../utils/auth-helpers/login/retrieve-use
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
 import retrieveStudentClasses from "../../db-operations/read/credentials/retrieve-student-classes"
+import { setAuthCookie } from "../../middleware/cookie-helpers"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function login(req: Request, res: Response): Promise<void> {
@@ -35,16 +36,20 @@ export default async function login(req: Request, res: Response): Promise<void> 
 			return
 		}
 
-		const accessToken = await signJWT({ userId: credentialsResult.user_id, newUser: false })
+		const accessToken = await signJWT({
+			userId: credentialsResult.user_id,
+			username: credentialsResult.username, // NEW: Add username to JWT
+			isActive: true // Optional: add user status
+		})
 
 		const userPipData = await retrieveUserPipUUIDsDetails(credentialsResult.user_id)
-
 		const encryptor = new Encryptor()
 		const email = await encryptor.deterministicDecrypt(credentialsResult.email__encrypted, "EMAIL_ENCRYPTION_KEY")
 		const studentClasses = await retrieveStudentClasses(credentialsResult.user_id)
 
+		setAuthCookie(res, accessToken)
+
 		res.status(200).json({
-			accessToken,
 			personalInfo: {
 				username: credentialsResult.username as string,
 				email,

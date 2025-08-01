@@ -1,10 +1,17 @@
 import { Socket } from "socket.io"
 import isUndefined from "lodash/isUndefined"
 import getDecodedId from "../../utils/auth-helpers/get-decoded-id"
+import { AUTH_COOKIE_NAME } from "../cookie-helpers"
 
 export default async function jwtVerifySocket(socket: Socket, next: (err?: Error) => void): Promise<void> {
 	try {
-		const accessToken = socket.handshake.auth.token as string
+		let accessToken: string | undefined
+
+		// Only get token from cookies (no fallback to auth.token)
+		if (socket.handshake.headers.cookie) {
+			const cookies = parseCookies(socket.handshake.headers.cookie)
+			accessToken = cookies[AUTH_COOKIE_NAME]
+		}
 
 		// Handle missing token
 		if (!accessToken) {
@@ -33,4 +40,19 @@ export default async function jwtVerifySocket(socket: Socket, next: (err?: Error
 		console.error("Socket authentication error:", error)
 		return next(new Error("Authentication failed"))
 	}
+}
+
+// Helper function to parse cookies from cookie header string
+function parseCookies(cookieHeader: string): Record<string, string> {
+	const cookies: Record<string, string> = {}
+
+	cookieHeader.split(";").forEach(cookie => {
+		const [name, ...rest] = cookie.split("=")
+		const value = rest.join("=").trim()
+		if (name && value) {
+			cookies[name.trim()] = decodeURIComponent(value)
+		}
+	})
+
+	return cookies
 }

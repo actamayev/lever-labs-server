@@ -1,11 +1,6 @@
 declare global {
 	type EmailOrUsername = "Email" | "Username"
 
-	interface JwtPayload {
-		userId: number
-		newUser: boolean
-	}
-
 	type DeterministicEncryptionKeys =
 		"EMAIL_ENCRYPTION_KEY"
 
