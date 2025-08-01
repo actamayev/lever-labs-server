@@ -11,16 +11,16 @@ const careerQuestRoutes = express.Router()
 
 careerQuestRoutes.post(
 	"/edit-career-quest-sandbox-project/:challengeUUID",
-	attachChallengeIdFromUUID,
 	validateEditSandboxProject,
 	jwtVerifyAttachUserId,
+	attachChallengeIdFromUUID,
 	editCareerQuestSandboxProject
 )
 
 careerQuestRoutes.get(
 	"/get-career-quest-challenge-data/:challengeUUID",
-	attachChallengeIdFromUUID,
 	jwtVerifyAttachUserId,
+	attachChallengeIdFromUUID,
 	retrieveCareerQuestChallengeData
 )
 
