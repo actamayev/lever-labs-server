@@ -15,6 +15,7 @@ declare global {
 			studentUserId: number
 			studentId: number
 			challengeId: number
+			careerId: number
 		}
 	}
 }

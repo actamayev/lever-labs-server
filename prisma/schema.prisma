@@ -48,6 +48,7 @@ model credentials {
 	profile_picture												profile_picture?
 	career_quest_code_submission								career_quest_code_submission[]
 	career_quest_hint											career_quest_hint[]
+	career_user_progress										career_user_progress[]
 }
 
 model login_history {
@@ -276,7 +277,7 @@ model career_quest_chat {
 	user                  										credentials @relation(fields: [user_id], references: [user_id])
 	messages              										career_quest_message[]
 
-	@@index([user_id, challenge_id])
+  	@@index([challenge_id, user_id, is_active], name: "career_quest_chat__challenge_user_active_idx")
 	challenge													challenge @relation(fields: [challenge_id], references: [challenge_id])
 }
 
@@ -383,6 +384,8 @@ model career_quest_sandbox {
 
 	@@index([user_id], name: "career_quest_sandbox__user_id_idx")
 	@@unique([user_id, challenge_id])
+	@@index([challenge_id, user_id], name: "career_quest_sandbox__challenge_user_idx")
+	@@index([challenge_id], name: "career_quest_sandbox__challenge_id_idx")
 }
 
 model career {
@@ -394,6 +397,7 @@ model career {
 	updated_at                                                  DateTime @default(now()) @updatedAt
 
 	challenges													challenge[]
+	career_user_progress										career_user_progress[]
 }
 
 model challenge {
@@ -411,6 +415,24 @@ model challenge {
 	career_quest_chat											career_quest_chat[]
 	career_quest_code_submission								career_quest_code_submission[]
 	career_quest_hint											career_quest_hint[]
+	@@index([career_id], name: "challenge__career_id_idx")
+	@@index([career_id, created_at], name: "challenge__career_id_created_at_idx")
+}
+
+model career_user_progress {
+	career_user_progress_id										Int       @id @default(autoincrement())
+	user_id														Int
+	career_id													Int
+	challenge_uuid_or_text_uuid									String
+
+	created_at                                                  DateTime  @default(now())
+	updated_at                                                  DateTime @default(now()) @updatedAt
+
+	user                                                        credentials @relation(fields: [user_id], references: [user_id])
+	career                                                    	career @relation(fields: [career_id], references: [career_id])
+
+	@@index([user_id, career_id, challenge_uuid_or_text_uuid])
+	@@unique([user_id, career_id, challenge_uuid_or_text_uuid])
 }
 
 model classroom {
