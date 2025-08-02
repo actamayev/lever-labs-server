@@ -424,6 +424,7 @@ model career_user_progress {
 	user_id														Int
 	career_id													Int
 	challenge_uuid_or_text_uuid									String
+	is_locked													Boolean @default(false)
 
 	created_at                                                  DateTime  @default(now())
 	updated_at                                                  DateTime @default(now()) @updatedAt
@@ -431,8 +432,8 @@ model career_user_progress {
 	user                                                        credentials @relation(fields: [user_id], references: [user_id])
 	career                                                    	career @relation(fields: [career_id], references: [career_id])
 
-	@@index([user_id, career_id, challenge_uuid_or_text_uuid])
-	@@unique([user_id, career_id, challenge_uuid_or_text_uuid])
+	@@index([user_id, career_id])
+	@@unique([user_id, career_id])
 }
 
 model classroom {

@@ -1,4 +1,4 @@
-import { isNil } from "lodash"
+import { isEmpty, isNil } from "lodash"
 import { BlocklyJson, CareerQuestChallengeData, CqChallengeChatMessage,
 	CareerQuestHint, CareerQuestCodeSubmission, CareerProgressData, ChallengeUUID } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
@@ -20,7 +20,8 @@ export default async function getCQCareerData(
 					career_id: careerId
 				},
 				select: {
-					challenge_id_or_text_id: true
+					challenge_uuid_or_text_uuid: true,
+					is_locked: true
 				},
 				orderBy: {
 					updated_at: "desc"
@@ -43,11 +44,12 @@ export default async function getCQCareerData(
 		])
 
 		const challengeIds = challenges.map(c => c.challenge_id)
-		const currentChallengeUuidOrTextUuid = currentProgress?.challenge_id_or_text_id || ""
-
-		if (challengeIds.length === 0) {
+		const currentChallengeUuidOrTextUuid = currentProgress?.challenge_uuid_or_text_uuid || ""
+		const isChallengeLocked = currentProgress?.is_locked || false
+		if (isEmpty(challengeIds)) {
 			return {
 				currentChallengeUuidOrTextUuid,
+				isChallengeLocked,
 				careerQuestChallengeData: []
 			}
 		}
@@ -238,6 +240,7 @@ export default async function getCQCareerData(
 
 		return {
 			currentChallengeUuidOrTextUuid,
+			isChallengeLocked,
 			careerQuestChallengeData: results
 		}
 	} catch (error) {
