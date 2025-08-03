@@ -1,0 +1,4 @@
+To check for no unused exports:
+	ts-unused-exports tsconfig.json
+To ensure no unused dependencies:
+	depcheck

@@ -12,7 +12,7 @@ export default async function getCQCareerData(
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
 		// Get current user progress and all challenges for this career
-		const [currentProgress, challenges] = await Promise.all([
+		const [currentProgress, challenges, seenChallenges] = await Promise.all([
 			// Get the most recent progress for this user/career
 			prismaClient.career_user_progress.findFirst({
 				where: {
@@ -20,8 +20,7 @@ export default async function getCQCareerData(
 					career_id: careerId
 				},
 				select: {
-					challenge_uuid_or_text_uuid: true,
-					is_locked: true
+					challenge_uuid_or_text_uuid: true
 				},
 				orderBy: {
 					updated_at: "desc"
@@ -40,16 +39,36 @@ export default async function getCQCareerData(
 				orderBy: {
 					created_at: "asc"
 				}
+			}),
+
+			// NEW: Get all challenges this user has seen for this career
+			prismaClient.user_seen_challenges.findMany({
+				where: {
+					user_id: userId,
+					challenge: {
+						career_id: careerId
+					}
+				},
+				select: {
+					challenge: {
+						select: {
+							challenge_uuid: true
+						}
+					}
+				}
 			})
 		])
 
 		const challengeIds = challenges.map(c => c.challenge_id)
 		const currentChallengeUuidOrTextUuid = currentProgress?.challenge_uuid_or_text_uuid || ""
-		const isChallengeLocked = currentProgress?.is_locked || false
+
+		// NEW: Extract seen challenge UUIDs
+		const seenChallengeUUIDs = seenChallenges.map(sc => sc.challenge.challenge_uuid) as ChallengeUUID[]
+
 		if (isEmpty(challengeIds)) {
 			return {
 				currentChallengeUuidOrTextUuid,
-				isChallengeLocked,
+				seenChallengeUUIDs,
 				careerQuestChallengeData: []
 			}
 		}
@@ -240,7 +259,7 @@ export default async function getCQCareerData(
 
 		return {
 			currentChallengeUuidOrTextUuid,
-			isChallengeLocked,
+			seenChallengeUUIDs,
 			careerQuestChallengeData: results
 		}
 	} catch (error) {

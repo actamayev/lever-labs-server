@@ -6,8 +6,7 @@ import findCareerIdFromUUID from "../../../db-operations/read/find/find-career-i
 
 const cqUUIDSchema = Joi.object({
 	currentId: Joi.string().required(), // challengeUUID or textId
-	careerUUID: Joi.string().uuid({ version: "uuidv4" }).required(),
-	isLocked: Joi.boolean().required()
+	careerUUID: Joi.string().uuid({ version: "uuidv4" }).required()
 }).required().unknown(false)
 
 export default async function validateUserProgress(req: Request, res: Response, next: NextFunction): Promise<void> {

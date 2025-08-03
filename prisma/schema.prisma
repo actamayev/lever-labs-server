@@ -49,6 +49,7 @@ model credentials {
 	career_quest_code_submission								career_quest_code_submission[]
 	career_quest_hint											career_quest_hint[]
 	career_user_progress										career_user_progress[]
+	user_seen_challenges										user_seen_challenges[]
 }
 
 model login_history {
@@ -415,6 +416,8 @@ model challenge {
 	career_quest_chat											career_quest_chat[]
 	career_quest_code_submission								career_quest_code_submission[]
 	career_quest_hint											career_quest_hint[]
+	user_seen_challenges										user_seen_challenges[]
+
 	@@index([career_id], name: "challenge__career_id_idx")
 	@@index([career_id, created_at], name: "challenge__career_id_created_at_idx")
 }
@@ -424,7 +427,6 @@ model career_user_progress {
 	user_id														Int
 	career_id													Int
 	challenge_uuid_or_text_uuid									String
-	is_locked													Boolean @default(false)
 
 	created_at                                                  DateTime  @default(now())
 	updated_at                                                  DateTime @default(now()) @updatedAt
@@ -434,6 +436,19 @@ model career_user_progress {
 
 	@@index([user_id, career_id])
 	@@unique([user_id, career_id])
+}
+
+model user_seen_challenges {
+	user_seen_challenge_id  									Int      @id @default(autoincrement())
+	user_id                 									Int
+	challenge_id            									Int
+	seen_at                 									DateTime @default(now())
+
+	user      													credentials @relation(fields: [user_id], references: [user_id])
+	challenge 													challenge @relation(fields: [challenge_id], references: [challenge_id])
+
+	@@unique([user_id, challenge_id])
+	@@index([user_id])
 }
 
 model classroom {

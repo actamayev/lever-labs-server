@@ -3,8 +3,7 @@ import PrismaClientClass from "../../../classes/prisma-client"
 export default async function updateCareerUserProgressDB(
 	userId: number,
 	careerId: number,
-	currentId: string,
-	isLocked: boolean
+	currentId: string
 ): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
@@ -18,13 +17,11 @@ export default async function updateCareerUserProgressDB(
 			},
 			update: {
 				challenge_uuid_or_text_uuid: currentId,
-				is_locked: isLocked
 			},
 			create: {
 				user_id: userId,
 				career_id: careerId,
 				challenge_uuid_or_text_uuid: currentId,
-				is_locked: isLocked
 			}
 		})
 	} catch (error) {

@@ -5,9 +5,9 @@ import updateCareerQuestUserProgressDB from "../../db-operations/write/career-qu
 export default async function updateCareerQuestUserProgress(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId, careerId } = req
-		const { currentId, isLocked } = req.body
+		const { currentId } = req.body
 
-		await updateCareerQuestUserProgressDB(userId, careerId, currentId, isLocked)
+		await updateCareerQuestUserProgressDB(userId, careerId, currentId)
 		res.status(200).json({ success: "Career quest user progress updated" } satisfies SuccessResponse)
 	} catch (error) {
 		console.error(error)
