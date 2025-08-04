@@ -2,7 +2,7 @@ import { Response, Request } from "express"
 import { CareerProgressData, ErrorResponse} from "@bluedotrobots/common-ts"
 import getCQChallengeData from "../../db-operations/read/career-quest-message/get-cq-challenge-data"
 
-export default async function retrieveCareerQuestChallengeData(req: Request, res: Response): Promise<void> {
+export default async function retrieveCareerChallengeData(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId, careerId } = req
 
