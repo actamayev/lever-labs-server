@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 
-export interface CookieOptions {
+interface CookieOptions {
 	maxAge?: number
 	expires?: Date
 	httpOnly?: boolean
@@ -13,7 +13,7 @@ export interface CookieOptions {
 export const AUTH_COOKIE_NAME = "auth_token"
 
 // Default cookie options for auth
-export const getAuthCookieOptions = (): CookieOptions => ({
+const getAuthCookieOptions = (): CookieOptions => ({
 	httpOnly: true,
 	secure: (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging"), // Only send over HTTPS in production
 	sameSite: "lax", // Allows cross-site navigation while preventing CSRF
