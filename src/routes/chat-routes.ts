@@ -3,6 +3,7 @@ import express from "express"
 import attachSandboxChatId from "../middleware/attach/attach-sandbox-chat-id"
 import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
 import attachChallengeChatId from "../middleware/attach/attach-challenge-chat-id"
+import attachCareerIdFromUUID from "../middleware/attach/attach-career-id-from-uuid"
 import validateStreamId from "../middleware/request-validation/chat/validate-stream-id"
 import attachChallengeIdFromUUID from "../middleware/attach/attach-challenge-id-from-uuid"
 import attachSandboxProjectIdFromUUID from "../middleware/attach/attach-sandbox-project-id-from-uuid"
@@ -24,9 +25,9 @@ import checkChallengeCode from "../controllers/chat/check-challenge-code"
 import attachCareerChatId from "../middleware/attach/attach-career-chat-id"
 import requestChallengeHint from "../controllers/chat/request-challenge-hint"
 import sendChallengeMessage from "../controllers/chat/send-challenge-message"
+import deleteCareerChatController from "../controllers/chat/delete-career-chat"
 import deleteSandboxChatController from "../controllers/chat/delete-sandbox-chat"
 import deleteChallengeChatController from "../controllers/chat/delete-challenge-chat"
-import attachCareerIdFromUUID from "../middleware/attach/attach-career-id-from-uuid"
 
 const chatRoutes = express.Router()
 
@@ -49,13 +50,6 @@ chatRoutes.post(
 )
 
 chatRoutes.post(
-	"/delete-challenge-chat/:challengeUUID",
-	jwtVerifyAttachUserId,
-	attachChallengeIdFromUUID,
-	deleteChallengeChatController
-)
-
-chatRoutes.post(
 	"/check-challenge-code/:challengeUUID",
 	jwtVerifyAttachUserId,
 	validateCheckCareerQuestCode,
@@ -75,6 +69,14 @@ chatRoutes.post(
 )
 
 chatRoutes.post(
+	"/delete-challenge-chat/:challengeUUID",
+	jwtVerifyAttachUserId,
+	attachChallengeIdFromUUID,
+	deleteChallengeChatController
+)
+
+// Career Chat Routes
+chatRoutes.post(
 	"/send-career-message/:careerUUID",
 	validateSendCareerMessage,
 	jwtVerifyAttachUserId,
@@ -82,6 +84,13 @@ chatRoutes.post(
 	attachCareerChatId,
 	attachCareerConversationHistory,
 	sendCareerMessage
+)
+
+chatRoutes.post(
+	"/delete-career-chat/:careerUUID",
+	jwtVerifyAttachUserId,
+	attachCareerIdFromUUID,
+	deleteCareerChatController
 )
 
 // Sandbox Chat Routes
