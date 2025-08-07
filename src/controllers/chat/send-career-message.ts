@@ -53,7 +53,7 @@ async function processLLMRequest(
 		const messages = buildCareerChatLLMContext(chatData)
 		const modelId = selectModel("generalQuestion")
 
-		socketManager.emitCareerChatbotStartOrComplete(userId, {
+		socketManager.emitCareerChatbotStart(userId, {
 			careerUUID,
 		})
 
@@ -100,7 +100,7 @@ async function processLLMRequest(
 				modelId
 			)
 
-			socketManager.emitCareerChatbotStartOrComplete(userId, {
+			socketManager.emitCareerChatbotComplete(userId, {
 				careerUUID,
 			})
 		}

@@ -351,7 +351,7 @@ export default class BrowserSocketManager extends Singleton {
 		this.io.to(connectionInfo.socketId).emit("challenge-chatbot-stream-complete", event)
 	}
 
-	public emitCareerChatbotStartOrComplete(userId: number, event: CareerChatbotStreamStartOrCompleteEvent): void {
+	public emitCareerChatbotStart(userId: number, event: CareerChatbotStreamStartOrCompleteEvent): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) {
 			console.warn(`No connection found for userId: ${userId}`)
@@ -367,6 +367,15 @@ export default class BrowserSocketManager extends Singleton {
 			return
 		}
 		this.io.to(connectionInfo.socketId).emit("career-chatbot-stream-chunk", event)
+	}
+
+	public emitCareerChatbotComplete(userId: number, event: CareerChatbotStreamStartOrCompleteEvent): void {
+		const connectionInfo = this.connections.get(userId)
+		if (!connectionInfo) {
+			console.warn(`No connection found for userId: ${userId}`)
+			return
+		}
+		this.io.to(connectionInfo.socketId).emit("career-chatbot-stream-complete", event)
 	}
 
 	public emitSandboxChatbotStart(userId: number, sandboxProjectUUID: ProjectUUID): void {
