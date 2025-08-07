@@ -2,7 +2,6 @@ import express from "express"
 
 
 import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
-import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
 import validateTuneToPlay from "../middleware/request-validation/workbench/validate-tune-to-play"
 import validateChangeVolume from "../middleware/request-validation/workbench/validate-change-volume"
 import validateUpdateBalancePids from "../middleware/request-validation/workbench/validate-update-balance-pids"
@@ -21,7 +20,6 @@ workbenchRoutes.post(
 	"/play-tune",
 	validateTuneToPlay,
 	confirmPipIsActive,
-	jwtVerifyAttachUserId,
 	playTune
 )
 
@@ -29,7 +27,6 @@ workbenchRoutes.post(
 	"/change-audible-status",
 	validateChangeAudibleStatus,
 	confirmPipIsActive,
-	jwtVerifyAttachUserId,
 	changeAudibleStatus
 )
 
@@ -37,7 +34,6 @@ workbenchRoutes.post(
 	"/change-volume",
 	validateChangeVolume,
 	confirmPipIsActive,
-	jwtVerifyAttachUserId,
 	changeVolume
 )
 
@@ -45,7 +41,6 @@ workbenchRoutes.post(
 	"/change-balance-status",
 	validateChangeBalanceStatus,
 	confirmPipIsActive,
-	jwtVerifyAttachUserId,
 	changeBalanceStatus
 )
 
@@ -53,7 +48,6 @@ workbenchRoutes.post(
 	"/update-balance-pids",
 	validateUpdateBalancePids,
 	confirmPipIsActive,
-	jwtVerifyAttachUserId,
 	updateBalancePids
 )
 

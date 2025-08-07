@@ -13,20 +13,21 @@ import careerQuestRoutes from "./routes/career-quest-routes"
 import personalInfoRoutes from "./routes/personal-info-routes"
 import checkHealth from "./controllers/health-checks/check-health"
 import labActivityTrackingRoutes from "./routes/lab-activity-tracking-routes"
+import jwtVerifyAttachUserId from "./middleware/jwt/jwt-verify-attach-user-id"
 
 export default function setupRoutes(app: Express): void {
 	app.use("/auth", authRoutes)
-	app.use("/career-quest", careerQuestRoutes)
-	app.use("/chat", chatRoutes)
-	app.use("/lab-activity-tracking", labActivityTrackingRoutes)
+	app.use("/career-quest", jwtVerifyAttachUserId, careerQuestRoutes)
+	app.use("/chat", jwtVerifyAttachUserId, chatRoutes)
+	app.use("/lab-activity-tracking", jwtVerifyAttachUserId, labActivityTrackingRoutes)
 	app.use("/misc", miscRoutes)
-	app.use("/garage", garageRoutes)
+	app.use("/garage", jwtVerifyAttachUserId, garageRoutes)
 	app.use("/personal-info", personalInfoRoutes)
 	app.use("/pip", pipRoutes)
-	app.use("/sandbox", sandboxRoutes)
-	app.use("/student", studentRoutes)
-	app.use("/teacher", teacherRoutes)
-	app.use("/workbench", workbenchRoutes)
+	app.use("/sandbox", jwtVerifyAttachUserId, sandboxRoutes)
+	app.use("/student", jwtVerifyAttachUserId, studentRoutes)
+	app.use("/teacher", jwtVerifyAttachUserId, teacherRoutes)
+	app.use("/workbench", jwtVerifyAttachUserId, workbenchRoutes)
 	app.use("/internal", internalRoutes)
 	app.use("/health", checkHealth)
 }

@@ -1,6 +1,5 @@
 import express from "express"
 
-import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
 import attachCareerIdFromUUID from "../middleware/attach/attach-career-id-from-uuid"
 import attachChallengeIdFromUUID from "../middleware/attach/attach-challenge-id-from-uuid"
 import validateCqUserProgress from "../middleware/request-validation/career-quest/validate-user-progress"
@@ -16,30 +15,14 @@ const careerQuestRoutes = express.Router()
 careerQuestRoutes.post(
 	"/edit-challenge-sandbox-project/:challengeUUID",
 	validateEditSandboxProject,
-	jwtVerifyAttachUserId,
 	attachChallengeIdFromUUID,
 	editChallengeSandboxProject
 )
 
-careerQuestRoutes.get(
-	"/get-career-challenge-data/:careerUUID",
-	jwtVerifyAttachUserId,
-	attachCareerIdFromUUID,
-	retrieveCareerChallengeData
-)
+careerQuestRoutes.get("/get-career-challenge-data/:careerUUID", attachCareerIdFromUUID, retrieveCareerChallengeData)
 
-careerQuestRoutes.post(
-	"/update-career-quest-user-progress",
-	jwtVerifyAttachUserId,
-	validateCqUserProgress,
-	updateCareerQuestUserProgress
-)
+careerQuestRoutes.post("/update-career-quest-user-progress", validateCqUserProgress, updateCareerQuestUserProgress)
 
-careerQuestRoutes.post(
-	"/mark-challenge-as-seen/:challengeUUID",
-	jwtVerifyAttachUserId,
-	attachChallengeIdFromUUID,
-	markChallengeAsSeen
-)
+careerQuestRoutes.post("/mark-challenge-as-seen/:challengeUUID", attachChallengeIdFromUUID, markChallengeAsSeen)
 
 export default careerQuestRoutes

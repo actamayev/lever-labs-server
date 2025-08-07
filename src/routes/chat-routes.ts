@@ -1,7 +1,6 @@
 import express from "express"
 
 import attachSandboxChatId from "../middleware/attach/attach-sandbox-chat-id"
-import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
 import attachChallengeChatId from "../middleware/attach/attach-challenge-chat-id"
 import attachCareerIdFromUUID from "../middleware/attach/attach-career-id-from-uuid"
 import validateStreamId from "../middleware/request-validation/chat/validate-stream-id"
@@ -32,8 +31,7 @@ import deleteChallengeChatController from "../controllers/chat/delete-challenge-
 const chatRoutes = express.Router()
 
 chatRoutes.post(
-	"/stop-chat-stream",
-	jwtVerifyAttachUserId,
+	"/stop-chat-stream/:streamId",
 	validateStreamId,
 	stopChatbotStream
 )
@@ -41,7 +39,6 @@ chatRoutes.post(
 // Career Quest Chat Routes
 chatRoutes.post(
 	"/send-challenge-message/:challengeUUID",
-	jwtVerifyAttachUserId,
 	validateSendChallengeMessage,
 	attachChallengeIdFromUUID,
 	attachChallengeChatId,
@@ -51,7 +48,6 @@ chatRoutes.post(
 
 chatRoutes.post(
 	"/check-challenge-code/:challengeUUID",
-	jwtVerifyAttachUserId,
 	validateCheckCareerQuestCode,
 	attachChallengeIdFromUUID,
 	attachChallengeChatId,
@@ -60,7 +56,6 @@ chatRoutes.post(
 
 chatRoutes.post(
 	"/request-challenge-hint/:challengeUUID",
-	jwtVerifyAttachUserId,
 	validateRequestCareerQuestHint,
 	attachChallengeIdFromUUID,
 	attachChallengeChatId,
@@ -70,7 +65,6 @@ chatRoutes.post(
 
 chatRoutes.post(
 	"/delete-challenge-chat/:challengeUUID",
-	jwtVerifyAttachUserId,
 	attachChallengeIdFromUUID,
 	deleteChallengeChatController
 )
@@ -79,7 +73,6 @@ chatRoutes.post(
 chatRoutes.post(
 	"/send-career-message/:careerUUID",
 	validateSendCareerMessage,
-	jwtVerifyAttachUserId,
 	attachCareerIdFromUUID,
 	attachCareerChatId,
 	attachCareerConversationHistory,
@@ -88,7 +81,6 @@ chatRoutes.post(
 
 chatRoutes.post(
 	"/delete-career-chat/:careerUUID",
-	jwtVerifyAttachUserId,
 	attachCareerIdFromUUID,
 	deleteCareerChatController
 )
@@ -97,7 +89,6 @@ chatRoutes.post(
 chatRoutes.post(
 	"/send-sandbox-message/:projectUUID",
 	validateProjectUUIDInParams,
-	jwtVerifyAttachUserId,
 	validateSendSandboxMessage,
 	attachSandboxProjectIdFromUUID,
 	attachSandboxChatId,
@@ -108,7 +99,6 @@ chatRoutes.post(
 chatRoutes.post(
 	"/delete-sandbox-chat/:projectUUID",
 	validateProjectUUIDInParams,
-	jwtVerifyAttachUserId,
 	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	deleteSandboxChatController

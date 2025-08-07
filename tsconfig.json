@@ -40,7 +40,6 @@
 		"noImplicitOverride": true,                 // Require explicit override keywords
 		"noImplicitReturns": true,                  // Ensure all code paths return a value
 		"noFallthroughCasesInSwitch": true,        // Prevent fallthrough in switch statements
-		"noUnusedLocals": true,                    // Report unused local variables
 		"noUnusedParameters": true,                // Report unused function parameters
 		"useUnknownInCatchVariables": true,        // Use unknown instead of any in catch variables
 		"allowUnusedLabels": false,                // Disallow unused labels
