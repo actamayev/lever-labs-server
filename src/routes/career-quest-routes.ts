@@ -8,17 +8,17 @@ import validateEditSandboxProject from "../middleware/request-validation/sandbox
 
 import markChallengeAsSeen from "../controllers/career-quest/mark-challenge-as-seen"
 import retrieveCareerChallengeData from "../controllers/career-quest/retrieve-career-challenge-data"
-import editCareerQuestSandboxProject from "../controllers/career-quest/edit-career-quest-sandbox-project"
+import editChallengeSandboxProject from "../controllers/career-quest/edit-challenge-sandbox-project"
 import updateCareerQuestUserProgress from "../controllers/career-quest/update-career-quest-user-progress"
 
 const careerQuestRoutes = express.Router()
 
 careerQuestRoutes.post(
-	"/edit-career-quest-sandbox-project/:challengeUUID",
+	"/edit-challenge-sandbox-project/:challengeUUID",
 	validateEditSandboxProject,
 	jwtVerifyAttachUserId,
 	attachChallengeIdFromUUID,
-	editCareerQuestSandboxProject
+	editChallengeSandboxProject
 )
 
 careerQuestRoutes.get(
