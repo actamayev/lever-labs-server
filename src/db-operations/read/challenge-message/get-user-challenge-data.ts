@@ -1,6 +1,14 @@
 import { isEmpty, isNil } from "lodash"
-import { BlocklyJson, CareerQuestChallengeData, ChallengeChatMessage,
-	CareerQuestHint, CareerQuestCodeSubmission, CareerProgressData, ChallengeUUID } from "@bluedotrobots/common-ts"
+import {
+	BlocklyJson,
+	CareerQuestChallengeData,
+	ChallengeChatMessage,
+	SandboxChatMessage,
+	CareerQuestHint,
+	CareerQuestCodeSubmission,
+	ChallengeUUID,
+	CareerProgressData
+} from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 // eslint-disable-next-line max-lines-per-function
@@ -11,8 +19,8 @@ export default async function getUserChallengeData(
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		// Get current user progress and all challenges for this career
-		const [currentProgress, challenges, seenChallenges] = await Promise.all([
+		// Get current user progress, all challenges, seen challenges, AND active career chat
+		const [currentProgress, challenges, seenChallenges, activeCareerChat] = await Promise.all([
 			// Get the most recent progress for this user/career
 			prismaClient.career_user_progress.findFirst({
 				where: {
@@ -41,7 +49,7 @@ export default async function getUserChallengeData(
 				}
 			}),
 
-			// NEW: Get all challenges this user has seen for this career
+			// Get all challenges this user has seen for this career
 			prismaClient.user_seen_challenges.findMany({
 				where: {
 					user_id: userId,
@@ -56,21 +64,52 @@ export default async function getUserChallengeData(
 						}
 					}
 				}
+			}),
+
+			// NEW: Get active career chat for this user/career
+			prismaClient.career_chat.findFirst({
+				where: {
+					user_id: userId,
+					career_id: careerId,
+					is_active: true
+				},
+				select: {
+					career_chat_id: true,
+					created_at: true,
+					messages: {
+						orderBy: {
+							created_at: "asc"
+						},
+						select: {
+							message_text: true,
+							sender: true,
+							created_at: true
+						}
+					}
+				}
 			})
 		])
 
 		const challengeIds = challenges.map(c => c.challenge_id)
 		const currentChallengeUuidOrTextUuid = currentProgress?.challenge_uuid_or_text_uuid || ""
 
-		// NEW: Extract seen challenge UUIDs
+		// Extract seen challenge UUIDs
 		const seenChallengeUUIDs = seenChallenges.map(sc => sc.challenge.challenge_uuid) as ChallengeUUID[]
+
+		// Process career chat messages
+		const careerChatMessages: SandboxChatMessage[] = activeCareerChat?.messages.map(msg => ({
+			content: msg.message_text,
+			role: msg.sender === "USER" ? "user" as const : "assistant" as const,
+			timestamp: new Date(msg.created_at)
+		})) || []
 
 		if (isEmpty(challengeIds)) {
 			return {
 				currentChallengeUuidOrTextUuid,
 				seenChallengeUUIDs,
-				careerQuestChallengeData: []
-			}
+				careerQuestChallengeData: [],
+				careerChatMessages
+			} satisfies CareerProgressData
 		}
 
 		// Batch fetch all related data for all challenges
@@ -260,8 +299,9 @@ export default async function getUserChallengeData(
 		return {
 			currentChallengeUuidOrTextUuid,
 			seenChallengeUUIDs,
-			careerQuestChallengeData: results
-		}
+			careerQuestChallengeData: results,
+			careerChatMessages
+		} satisfies CareerProgressData
 	} catch (error) {
 		console.error(error)
 		throw error

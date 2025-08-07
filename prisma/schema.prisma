@@ -284,7 +284,7 @@ model challenge_chat {
 }
 
 model career_chat {
-	career_chat_id  										Int      @id @default(autoincrement())
+	career_chat_id  											Int      @id @default(autoincrement())
 	career_id       											Int
 	user_id               										Int
 
@@ -334,21 +334,21 @@ model challenge_message {
 }
 
 model career_message {
-	career_message_id   									Int           @id @default(autoincrement())
+	career_message_id   										Int           @id @default(autoincrement())
 	message_text              									String
 	sender                    									MessageSender
 	model_used                									String?       // Only for AI messages
 
-	career_chat_id      									Int
+	career_chat_id      										Int
 
 	created_at                									DateTime      @default(now())
 	updated_at                									DateTime      @default(now()) @updatedAt
 
-	career_chat         									career_chat @relation(fields: [career_chat_id], references: [career_chat_id])
+	career_chat         										career_chat @relation(fields: [career_chat_id], references: [career_chat_id])
 }
 
 model challenge_hint {
-	challenge_hint_id										Int       @id @default(autoincrement())
+	challenge_hint_id											Int       @id @default(autoincrement())
 	challenge_id												Int
 	user_id														Int
 	

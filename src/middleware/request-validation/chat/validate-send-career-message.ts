@@ -4,7 +4,10 @@ import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
 const validateSendCareerMessageSchema = Joi.object({
-	message: Joi.string().required()
+	message: Joi.string().required(),
+	careerName: Joi.string().required(),
+	careerDescription: Joi.string().required(),
+	whatUserSees: Joi.string().required()
 }).required().unknown(false)
 
 export default function validateSendCareerMessage(req: Request, res: Response, next: NextFunction): void {
