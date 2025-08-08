@@ -4,7 +4,7 @@ import findChallengeDataFromUUID from "../find-challenge-data-from-uuid"
 // eslint-disable-next-line max-lines-per-function
 export default function buildHintLLMContext(
 	challengeUUID: ChallengeUUID,
-	chatData: ProcessedCareerQuestHintMessage,
+	chatData: ProcessedChallengeHintMessage,
 	hintNumber: number
 ): SimpleMessageData[] {
 	const challengeData = findChallengeDataFromUUID(challengeUUID)

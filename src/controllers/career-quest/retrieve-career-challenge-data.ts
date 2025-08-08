@@ -1,14 +1,14 @@
 import { Response, Request } from "express"
 import { CareerProgressData, ErrorResponse} from "@bluedotrobots/common-ts"
-import getCQChallengeData from "../../db-operations/read/career-quest-message/get-cq-challenge-data"
+import getUserChallengeData from "../../db-operations/read/challenge-message/get-user-challenge-data"
 
 export default async function retrieveCareerChallengeData(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId, careerId } = req
 
-		const cqChallengeData = await getCQChallengeData(userId, careerId)
+		const userChallengeData = await getUserChallengeData(userId, careerId)
 
-		res.status(200).json(cqChallengeData satisfies CareerProgressData)
+		res.status(200).json(userChallengeData satisfies CareerProgressData)
 		return
 	} catch (error) {
 		console.error(error)

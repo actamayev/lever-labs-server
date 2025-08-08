@@ -9,7 +9,7 @@ const validateStreamIdSchema = Joi.object({
 
 export default function validateStreamId(req: Request, res: Response, next: NextFunction): void {
 	try {
-		const { error } = validateStreamIdSchema.validate(req.body)
+		const { error } = validateStreamIdSchema.validate(req.params)
 
 		if (!isUndefined(error)) {
 			res.status(400).json({ validationError: error.details[0].message } satisfies ValidationErrorResponse)

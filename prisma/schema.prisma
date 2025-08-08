@@ -41,13 +41,14 @@ model credentials {
 	user_answer													user_answer[]
 	completed_reading_block										completed_reading_block[]
 	sandbox_project												sandbox_project[]
-	career_quest_chat											career_quest_chat[]
-	career_quest_sandbox										career_quest_sandbox[]
+	challenge_chat												challenge_chat[]
+	career_chat													career_chat[]	
+	challenge_sandbox											challenge_sandbox[]
 	student														student[]
 	teacher														teacher?
 	profile_picture												profile_picture?
-	career_quest_code_submission								career_quest_code_submission[]
-	career_quest_hint											career_quest_hint[]
+	challenge_code_submission									challenge_code_submission[]
+	challenge_hint												challenge_hint[]
 	career_user_progress										career_user_progress[]
 	user_seen_challenges										user_seen_challenges[]
 }
@@ -266,8 +267,8 @@ model profile_picture {
 	user                                                        credentials @relation(fields: [user_id], references: [user_id])
 }
 
-model career_quest_chat {
-	career_quest_chat_id  										Int      @id @default(autoincrement())
+model challenge_chat {
+	challenge_chat_id  											Int      @id @default(autoincrement())
 	challenge_id       											Int
 	user_id               										Int
 
@@ -276,10 +277,27 @@ model career_quest_chat {
 	is_active													Boolean @default(true)
 
 	user                  										credentials @relation(fields: [user_id], references: [user_id])
-	messages              										career_quest_message[]
-
-  	@@index([challenge_id, user_id, is_active], name: "career_quest_chat__challenge_user_active_idx")
 	challenge													challenge @relation(fields: [challenge_id], references: [challenge_id])
+	messages              										challenge_message[]
+
+  	@@index([challenge_id, user_id, is_active], name: "challenge_chat__challenge_user_active_idx")
+}
+
+model career_chat {
+	career_chat_id  											Int      @id @default(autoincrement())
+	career_id       											Int
+	user_id               										Int
+
+	created_at            										DateTime @default(now())
+	updated_at            										DateTime @default(now()) @updatedAt
+	is_active													Boolean @default(true)
+
+	user                  										credentials @relation(fields: [user_id], references: [user_id])
+	career														career @relation(fields: [career_id], references: [career_id])
+	messages              										career_message[]
+
+	@@index([career_id, user_id, is_active], name: "career_chat__career_user_active_idx")
+	@@index([career_id], name: "career_chat__career_id_idx")
 }
 
 model sandbox_chat {
@@ -299,24 +317,38 @@ enum MessageSender {
 	AI
 }
 
-model career_quest_message {
-	career_quest_message_id   									Int           @id @default(autoincrement())
+model challenge_message {
+	challenge_message_id   										Int           @id @default(autoincrement())
 	message_text              									String
 	sender                    									MessageSender
 	model_used                									String?       // Only for AI messages
 
-	career_quest_chat_id      									Int
+	challenge_chat_id      										Int
 
 	created_at                									DateTime      @default(now())
 	updated_at                									DateTime      @default(now()) @updatedAt
 
-	career_quest_chat         									career_quest_chat @relation(fields: [career_quest_chat_id], references: [career_quest_chat_id])
+	challenge_chat         										challenge_chat @relation(fields: [challenge_chat_id], references: [challenge_chat_id])
 
-	@@index([career_quest_chat_id, created_at])
+	@@index([challenge_chat_id, created_at])
 }
 
-model career_quest_hint {
-	career_quest_hint_id										Int       @id @default(autoincrement())
+model career_message {
+	career_message_id   										Int           @id @default(autoincrement())
+	message_text              									String
+	sender                    									MessageSender
+	model_used                									String?       // Only for AI messages
+
+	career_chat_id      										Int
+
+	created_at                									DateTime      @default(now())
+	updated_at                									DateTime      @default(now()) @updatedAt
+
+	career_chat         										career_chat @relation(fields: [career_chat_id], references: [career_chat_id])
+}
+
+model challenge_hint {
+	challenge_hint_id											Int       @id @default(autoincrement())
 	challenge_id												Int
 	user_id														Int
 	
@@ -335,7 +367,7 @@ model career_quest_hint {
 	@@index([challenge_id, created_at])
 }
 
-model career_quest_code_submission {
+model challenge_code_submission {
 	submission_id                   							Int       @id @default(autoincrement())
 	challenge_id            									Int
 	user_id             										Int
@@ -371,9 +403,9 @@ model sandbox_message {
 	@@index([sandbox_chat_id, created_at])
 }
 
-model career_quest_sandbox {
-	career_quest_sandbox_id										Int       @id @default(autoincrement())
-	career_quest_sandbox_json									Json
+model challenge_sandbox {
+	challenge_sandbox_id										Int       @id @default(autoincrement())
+	challenge_sandbox_json										Json
 	user_id			       										Int
 	challenge_id												Int
 
@@ -383,10 +415,10 @@ model career_quest_sandbox {
 	user                                                        credentials @relation(fields: [user_id], references: [user_id])
 	challenge													challenge @relation(fields: [challenge_id], references: [challenge_id])
 
-	@@index([user_id], name: "career_quest_sandbox__user_id_idx")
+	@@index([user_id], name: "challenge_sandbox__user_id_idx")
 	@@unique([user_id, challenge_id])
-	@@index([challenge_id, user_id], name: "career_quest_sandbox__challenge_user_idx")
-	@@index([challenge_id], name: "career_quest_sandbox__challenge_id_idx")
+	@@index([challenge_id, user_id], name: "challenge_sandbox__challenge_user_idx")
+	@@index([challenge_id], name: "challenge_sandbox__challenge_id_idx")
 }
 
 model career {
@@ -399,6 +431,7 @@ model career {
 
 	challenges													challenge[]
 	career_user_progress										career_user_progress[]
+	career_chat													career_chat[]
 }
 
 model challenge {
@@ -412,10 +445,10 @@ model challenge {
 	created_at                                                  DateTime  @default(now())
 	updated_at                                                  DateTime @default(now()) @updatedAt
 
-	career_quest_sandbox										career_quest_sandbox[]
-	career_quest_chat											career_quest_chat[]
-	career_quest_code_submission								career_quest_code_submission[]
-	career_quest_hint											career_quest_hint[]
+	challenge_sandbox											challenge_sandbox[]
+	challenge_chat												challenge_chat[]
+	challenge_code_submission									challenge_code_submission[]
+	challenge_hint												challenge_hint[]
 	user_seen_challenges										user_seen_challenges[]
 
 	@@index([career_id], name: "challenge__career_id_idx")
