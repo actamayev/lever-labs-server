@@ -10,7 +10,7 @@ export default async function updateDisplayEndpoint(req: Request, res: Response)
 		let buffer: Buffer
 		if (Buffer.isBuffer(rawBuffer)) {
 			buffer = rawBuffer
-		} else if (typeof rawBuffer === "object" && rawBuffer !== null) {
+		} else if (typeof rawBuffer === "object") {
 			// Convert Uint8Array-like object to Buffer
 			const bufferArray = new Array(1024)
 			for (let i = 0; i < 1024; i++) {
@@ -20,8 +20,6 @@ export default async function updateDisplayEndpoint(req: Request, res: Response)
 		} else {
 			throw new Error("Invalid buffer format")
 		}
-
-		console.log("buffer length:", buffer.length) // Should now be 1024
 
 		await SendEsp32MessageManager.getInstance().updateDisplay(pipUUID, buffer)
 
