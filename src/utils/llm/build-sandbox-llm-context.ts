@@ -88,7 +88,7 @@ ${chatData.userCode || "// Ready to start exploring! What would you like Pip to 
 	]
 
 	if (!isEmpty(chatData.conversationHistory)) {
-		const recentHistory = chatData.conversationHistory.slice(-50)
+		const recentHistory = chatData.conversationHistory.slice(-30)
 		messages.push(...recentHistory)
 	}
 

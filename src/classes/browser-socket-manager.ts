@@ -2,9 +2,11 @@ import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
 	PipUUID, SensorPayload,
-	CqChatbotStreamStartEvent,
-	CqChatbotStreamChunkEvent,
-	CqChatbotStreamCompleteEvent,
+	ChallengeChatbotStreamStartEvent,
+	ChallengeChatbotStreamChunkEvent,
+	ChallengeChatbotStreamCompleteEvent,
+	CareerChatbotStreamStartOrCompleteEvent,
+	CareerChatbotChunkEvent,
 	SandboxChatbotStreamChunkEvent,
 	SandboxChatbotStreamStartOrCompleteEvent,
 	ProjectUUID,
@@ -322,31 +324,58 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	public emitCqChatbotStart(userId: number, event: CqChatbotStreamStartEvent): void {
+	public emitChallengeChatbotStart(userId: number, event: ChallengeChatbotStreamStartEvent): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) {
 			console.warn(`No connection found for userId: ${userId}`)
 			return
 		}
-		this.io.to(connectionInfo.socketId).emit("cq-chatbot-stream-start", event)
+		this.io.to(connectionInfo.socketId).emit("challenge-chatbot-stream-start", event)
 	}
 
-	public emitCqChatbotChunk(userId: number, event: CqChatbotStreamChunkEvent): void {
+	public emitChallengeChatbotChunk(userId: number, event: ChallengeChatbotStreamChunkEvent): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) {
 			console.warn(`No connection found for userId: ${userId}`)
 			return
 		}
-		this.io.to(connectionInfo.socketId).emit("cq-chatbot-stream-chunk", event)
+		this.io.to(connectionInfo.socketId).emit("challenge-chatbot-stream-chunk", event)
 	}
 
-	public emitCqChatbotComplete(userId: number, event: CqChatbotStreamCompleteEvent): void {
+	public emitChallengeChatbotComplete(userId: number, event: ChallengeChatbotStreamCompleteEvent): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) {
 			console.warn(`No connection found for userId: ${userId}`)
 			return
 		}
-		this.io.to(connectionInfo.socketId).emit("cq-chatbot-stream-complete", event)
+		this.io.to(connectionInfo.socketId).emit("challenge-chatbot-stream-complete", event)
+	}
+
+	public emitCareerChatbotStart(userId: number, event: CareerChatbotStreamStartOrCompleteEvent): void {
+		const connectionInfo = this.connections.get(userId)
+		if (!connectionInfo) {
+			console.warn(`No connection found for userId: ${userId}`)
+			return
+		}
+		this.io.to(connectionInfo.socketId).emit("career-chatbot-stream-start", event)
+	}
+
+	public emitCareerChatbotChunk(userId: number, event: CareerChatbotChunkEvent): void {
+		const connectionInfo = this.connections.get(userId)
+		if (!connectionInfo) {
+			console.warn(`No connection found for userId: ${userId}`)
+			return
+		}
+		this.io.to(connectionInfo.socketId).emit("career-chatbot-stream-chunk", event)
+	}
+
+	public emitCareerChatbotComplete(userId: number, event: CareerChatbotStreamStartOrCompleteEvent): void {
+		const connectionInfo = this.connections.get(userId)
+		if (!connectionInfo) {
+			console.warn(`No connection found for userId: ${userId}`)
+			return
+		}
+		this.io.to(connectionInfo.socketId).emit("career-chatbot-stream-complete", event)
 	}
 
 	public emitSandboxChatbotStart(userId: number, sandboxProjectUUID: ProjectUUID): void {

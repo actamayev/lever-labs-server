@@ -14,7 +14,6 @@ import stopCurrentlyRunningSandboxCode from "../controllers/sandbox/stop-current
 
 import convertCppToBytecode from "../middleware/convert-cpp-to-bytecode"
 import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
-import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
 import validateCppCode from "../middleware/request-validation/sandbox/validate-cpp-code"
 import confirmUserConnectedToPip from "../middleware/confirm/confirm-user-connected-to-pip"
 import validatePipUUIDInBody from "../middleware/request-validation/pip/validate-pip-uuid-in-body"
@@ -29,13 +28,12 @@ import confirmSandboxProjectExistsAndValidUserId from "../middleware/confirm/con
 
 const sandboxRoutes = express.Router()
 
-sandboxRoutes.post("/create-sandbox-project", jwtVerifyAttachUserId, createSandboxProject)
+sandboxRoutes.post("/create-sandbox-project", createSandboxProject)
 
 sandboxRoutes.post(
 	"/edit-sandbox-project/:projectUUID",
 	validateProjectUUIDInParams,
 	validateEditSandboxProject,
-	jwtVerifyAttachUserId,
 	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	editSandboxProject
@@ -45,7 +43,6 @@ sandboxRoutes.post(
 	"/edit-sandbox-project-name/:projectUUID",
 	validateProjectUUIDInParams,
 	validateEditSandboxProjectName,
-	jwtVerifyAttachUserId,
 	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	editSandboxProjectName
@@ -55,7 +52,6 @@ sandboxRoutes.post(
 	"/edit-sandbox-project-notes/:projectUUID",
 	validateProjectUUIDInParams,
 	validateEditSandboxProjectNotes,
-	jwtVerifyAttachUserId,
 	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	editSandboxProjectNotes
@@ -65,7 +61,6 @@ sandboxRoutes.post(
 	"/star-sandbox-project/:projectUUID",
 	validateProjectUUIDInParams,
 	validateStarSandboxProject,
-	jwtVerifyAttachUserId,
 	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	starSandboxProject
@@ -74,18 +69,16 @@ sandboxRoutes.post(
 sandboxRoutes.post(
 	"/delete-sandbox-project/:projectUUID",
 	validateProjectUUIDInParams,
-	jwtVerifyAttachUserId,
 	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	deleteSandboxProject
 )
 
-sandboxRoutes.get("/retrieve-all-sandbox-projects", jwtVerifyAttachUserId, getAllSandboxProjects)
+sandboxRoutes.get("/retrieve-all-sandbox-projects", getAllSandboxProjects)
 
 sandboxRoutes.get(
 	"/retrieve-single-sandbox-project/:projectUUID",
 	validateProjectUUIDInParams,
-	jwtVerifyAttachUserId,
 	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	getSingleSandboxProject
@@ -95,7 +88,6 @@ sandboxRoutes.post(
 	"/send-sandbox-code-to-pip",
 	validateCppCode,
 	confirmPipIsActive,
-	jwtVerifyAttachUserId,
 	convertCppToBytecode,
 	confirmUserPreviouslyAddedUUID,
 	confirmUserConnectedToPip,
@@ -105,7 +97,6 @@ sandboxRoutes.post(
 sandboxRoutes.post(
 	"/stop-currently-running-code",
 	validatePipUUIDInBody,
-	jwtVerifyAttachUserId,
 	confirmUserPreviouslyAddedUUID,
 	stopCurrentlyRunningSandboxCode
 )
@@ -113,7 +104,6 @@ sandboxRoutes.post(
 sandboxRoutes.post(
 	"/poll-sensors",
 	validatePipUUIDInBody,
-	jwtVerifyAttachUserId,
 	confirmUserPreviouslyAddedUUID,
 	pollSensors
 )

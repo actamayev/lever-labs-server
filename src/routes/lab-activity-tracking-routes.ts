@@ -1,6 +1,5 @@
 import express from "express"
 
-import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
 import attachActivityIdFromUUID from "../middleware/attach/attach-activity-id-from-uuid"
 import attachReadingBlockIdFromReadingName from "../middleware/attach/attach-reading-block-id-from-reading-name"
 import validateSubmitQuizAnswer from "../middleware/request-validation/lab-lesson-tracking/validate-submit-quiz-answer"
@@ -17,12 +16,11 @@ import validateReadingUUIDInParams from "../middleware/request-validation/lab-le
 
 const labActivityTrackingRoutes = express.Router()
 
-labActivityTrackingRoutes.get("/retrieve-user-activity-progress", jwtVerifyAttachUserId, retrieveUserActivityProgress)
+labActivityTrackingRoutes.get("/retrieve-user-activity-progress", retrieveUserActivityProgress)
 
 labActivityTrackingRoutes.get(
 	"/retrieve-quiz-attempts/:activityUUID",
 	validateActivityUUIDInParams,
-	jwtVerifyAttachUserId,
 	attachActivityIdFromUUID,
 	retrieveQuizAttempts
 )
@@ -30,7 +28,6 @@ labActivityTrackingRoutes.get(
 labActivityTrackingRoutes.post(
 	"/mark-activity-complete/:activityUUID",
 	validateActivityUUIDInParams,
-	jwtVerifyAttachUserId,
 	attachActivityIdFromUUID,
 	markActivityComplete
 )
@@ -38,14 +35,12 @@ labActivityTrackingRoutes.post(
 labActivityTrackingRoutes.post(
 	"/submit-quiz-answer/:readingQuestionAnswerChoiceId",
 	validateSubmitQuizAnswer,
-	jwtVerifyAttachUserId,
 	submitQuizAnswer
 )
 
 labActivityTrackingRoutes.post(
 	"/mark-reading-block-complete/:readingBlockName",
 	validateReadingBlockNameInParams,
-	jwtVerifyAttachUserId,
 	attachReadingBlockIdFromReadingName,
 	markReadingBlockComplete
 )
@@ -53,7 +48,6 @@ labActivityTrackingRoutes.post(
 labActivityTrackingRoutes.get(
 	"/retrieve-completed-reading-blocks/:readingUUID",
 	validateReadingUUIDInParams,
-	jwtVerifyAttachUserId,
 	attachActivityIdFromUUID,
 	retrieveCompletedReadingBlocks
 )
