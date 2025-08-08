@@ -260,13 +260,13 @@ export default async function getUserChallengeData(
 			}
 
 			// Process sandbox JSON
-			let sandboxJson: object = {}
+			let sandboxJson: BlocklyJson | null = null
 			if (!isNil(sandbox) && sandbox.challenge_sandbox_json) {
 				try {
 					sandboxJson = sandbox.challenge_sandbox_json as BlocklyJson
 				} catch (parseError) {
 					console.error("Failed to parse career_quest_sandbox_json:", parseError)
-					sandboxJson = {}
+					sandboxJson = null
 				}
 			}
 
