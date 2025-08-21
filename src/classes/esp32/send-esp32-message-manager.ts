@@ -217,6 +217,16 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
+	public stopSensorPolling(pipUUID: PipUUID): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createStopSensorPollingMessage()
+			return this.sendBinaryMessage(pipUUID, buffer)
+		} catch (error: unknown) {
+			console.error("Stop command failed:", error)
+			throw new Error(`Stop command failed: ${error || "Unknown reason"}`)
+		}
+	}
+
 	public pollSensors(pipUUID: PipUUID): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createStartSensorPollingMessage()
