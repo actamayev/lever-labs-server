@@ -1,5 +1,6 @@
-import { IncomingMessage } from "http"
 import { Server as WSServer } from "ws"
+import { randomUUID } from "crypto"
+import { UUID } from "node:crypto"
 import Singleton from "../singleton"
 import isPipUUID from "../../utils/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"
@@ -12,7 +13,7 @@ export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
 
 	// This map is redundant, but it's faster to search this map for a uuid directly than finding from the connections map
-	private socketToPip = new Map<string, PipUUID>() // socketId--> PipUUID
+	private socketToPip = new Map<UUID, PipUUID>() // socketId--> PipUUID
 
 	private constructor(private readonly wss: WSServer) {
 		super()
@@ -30,14 +31,14 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	private initializeWSServer(): void {
-		this.wss.on("connection", (socket: ExtendedWebSocket, req: IncomingMessage) => {
-			const socketId = req.headers["sec-websocket-key"] as string
+		this.wss.on("connection", (socket: ExtendedWebSocket) => {
+			const socketId = randomUUID()
 			console.info(`ESP32 connected: ${socketId}`)
 
 			const connection = new SingleESP32Connection(
 				socketId,
 				socket,
-				(newSocketId) => this.handleDisconnection(newSocketId)
+				(newSocketId: UUID) => this.handleDisconnection(newSocketId)
 			)
 
 			// Wait for registration message first
@@ -51,7 +52,7 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	private handleRegistrationMessage(
-		socketId: string,
+		socketId: UUID,
 		message: string,
 		connection: SingleESP32Connection
 	): void {
@@ -78,7 +79,7 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	private setupOngoingMessageHandler(
-		socketId: string,
+		socketId: UUID,
 		socket: ExtendedWebSocket
 	): void {
 		socket.on("message", (message) => {
@@ -87,7 +88,7 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	private handleOngoingMessage(
-		socketId: string,
+		socketId: UUID,
 		message: string
 	): void {
 		try {
@@ -117,7 +118,7 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	private handleSensorData(
-		socketId: string,
+		socketId: UUID,
 		payload: SensorPayload
 	): void {
 		const pipUUID = this.socketToPip.get(socketId)
@@ -126,12 +127,11 @@ export default class Esp32SocketManager extends Singleton {
 			return
 		}
 
-		// Forward to lab demo data manager
 		BrowserSocketManager.getInstance().sendBrowserPipSensorData(pipUUID, payload)
 	}
 
 	private handleBatteryMonitorData(
-		socketId: string,
+		socketId: UUID,
 		payload: BatteryMonitorDataFull
 	): void {
 		const pipUUID = this.socketToPip.get(socketId)
@@ -143,7 +143,7 @@ export default class Esp32SocketManager extends Singleton {
 		BrowserSocketManager.getInstance().emitPipBatteryData(pipUUID, payload.batteryData)
 	}
 
-	private handlePipTurningOff(socketId: string): void {
+	private handlePipTurningOff(socketId: UUID): void {
 		const pipUUID = this.socketToPip.get(socketId)
 		if (!pipUUID) {
 			console.warn(`Received pip turning off from unregistered connection: ${socketId}`)
@@ -153,7 +153,7 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	private registerConnection(
-		socketId: string,
+		socketId: UUID,
 		pipUUID: PipUUID,
 		connection: SingleESP32Connection
 	): void {
@@ -173,7 +173,7 @@ export default class Esp32SocketManager extends Singleton {
 		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "online")
 	}
 
-	private handleDisconnection(socketId: string): void {
+	private handleDisconnection(socketId: UUID): void {
 		const pipUUID = this.socketToPip.get(socketId)
 		if (!pipUUID) return
 
@@ -206,5 +206,15 @@ export default class Esp32SocketManager extends Singleton {
 	public isPipUUIDConnected(pipUUID: PipUUID): boolean {
 		const connectionInfo = this.connections.get(pipUUID)
 		return connectionInfo?.status === "connected" || false
+	}
+
+	public getAllConnectedPipUUIDs(): PipUUID[] {
+		const connectedPipUUIDs: PipUUID[] = []
+		for (const [pipUUID, connectionInfo] of this.connections) {
+			if (connectionInfo.status === "connected") {
+				connectedPipUUIDs.push(pipUUID)
+			}
+		}
+		return connectedPipUUIDs
 	}
 }

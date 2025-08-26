@@ -1,3 +1,5 @@
+import { UUID } from "node:crypto"
+
 export default class SingleESP32Connection {
 	private _isAlive: boolean = true
 	private pingInterval?: NodeJS.Timeout
@@ -5,9 +7,9 @@ export default class SingleESP32Connection {
 	private isCleaningUp = false
 
 	constructor(
-		public readonly socketId: string,
+		public readonly socketId: UUID,
 		public readonly socket: ExtendedWebSocket,
-		private readonly onDisconnect: (socketId: string) => void
+		private readonly onDisconnect: (socketId: UUID) => void
 	) {
 		this.initializeSocket()
 	}

@@ -79,6 +79,25 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
+	public transferLedControlDataToAll(data: Omit<LedControlData, "pipUUID">): Promise<void[]> {
+		try {
+			const buffer = MessageBuilder.createLedMessage(data as LedControlData)
+			const esp32Manager = Esp32SocketManager.getInstance()
+			const connectedPipUUIDs = esp32Manager.getAllConnectedPipUUIDs()
+			const promises: Promise<void>[] = []
+
+			// Send to all connected ESP32 devices
+			for (const pipUUID of connectedPipUUIDs) {
+				promises.push(this.sendBinaryMessage(pipUUID, buffer))
+			}
+
+			return Promise.all(promises)
+		} catch (error: unknown) {
+			console.error("Transfer to all failed:", error)
+			throw new Error(`Transfer to all failed: ${error || "Unknown reason"}`)
+		}
+	}
+
 	public transferHeadlightControlData(data: HeadlightData): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createHeadlightMessage(data.areHeadlightsOn)
@@ -113,6 +132,27 @@ export default class SendEsp32MessageManager extends Singleton {
 		} catch (error: unknown) {
 			console.error("Transfer failed:", error)
 			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
+		}
+	}
+
+	public playSoundToAll(): Promise<void[]> {
+		const tuneToPlay = "Chime"
+		try {
+			const soundType = tuneToSoundType[tuneToPlay]
+			const buffer = MessageBuilder.createSoundMessage(soundType)
+			const esp32Manager = Esp32SocketManager.getInstance()
+			const connectedPipUUIDs = esp32Manager.getAllConnectedPipUUIDs()
+			const promises: Promise<void>[] = []
+
+			for (const pipUUID of connectedPipUUIDs) {
+				console.log("Playing sound to:", pipUUID)
+				promises.push(this.sendBinaryMessage(pipUUID, buffer))
+			}
+
+			return Promise.all(promises)
+		} catch (error: unknown) {
+			console.error("Sound transfer to all failed:", error)
+			throw new Error(`Sound transfer to all failed: ${error || "Unknown reason"}`)
 		}
 	}
 
