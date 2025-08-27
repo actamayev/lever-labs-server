@@ -287,6 +287,16 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
+	public sendIntroS1P7Command(pipUUID: PipUUID): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createIntroS1P7Message()
+			return this.sendBinaryMessage(pipUUID, buffer)
+		} catch (error: unknown) {
+			console.error("Intro S1 P7 command failed:", error)
+			throw new Error(`Intro S1 P7 command failed: ${error || "Unknown reason"}`)
+		}
+	}
+
 	private sendBinaryMessage(pipUUID: PipUUID, buffer: ArrayBuffer): Promise<void> {
 		try {
 			const socket = this.getPipConnectionSocket(pipUUID)

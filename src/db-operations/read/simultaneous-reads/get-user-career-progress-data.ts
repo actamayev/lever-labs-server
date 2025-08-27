@@ -12,7 +12,7 @@ import {
 import PrismaClientClass from "../../../classes/prisma-client"
 
 // eslint-disable-next-line max-lines-per-function
-export default async function getUserChallengeData(
+export default async function getUserCareerProgressData(
 	userId: number,
 	careerId: number
 ): Promise<CareerProgressData> {
@@ -28,7 +28,8 @@ export default async function getUserChallengeData(
 					career_id: careerId
 				},
 				select: {
-					challenge_uuid_or_text_uuid: true
+					current_challenge_uuid_or_text_uuid: true,
+					furthest_seen_challenge_uuid_or_text_uuid: true
 				},
 				orderBy: {
 					updated_at: "desc"
@@ -91,7 +92,8 @@ export default async function getUserChallengeData(
 		])
 
 		const challengeIds = challenges.map(c => c.challenge_id)
-		const currentChallengeUuidOrTextUuid = currentProgress?.challenge_uuid_or_text_uuid || ""
+		const currentChallengeUuidOrTextUuid = currentProgress?.current_challenge_uuid_or_text_uuid || ""
+		const furthestSeenChallengeUuidOrTextUuid = currentProgress?.furthest_seen_challenge_uuid_or_text_uuid || ""
 
 		// Extract seen challenge UUIDs
 		const seenChallengeUUIDs = seenChallenges.map(sc => sc.challenge.challenge_uuid) as ChallengeUUID[]
@@ -106,6 +108,7 @@ export default async function getUserChallengeData(
 		if (isEmpty(challengeIds)) {
 			return {
 				currentChallengeUuidOrTextUuid,
+				furthestSeenChallengeUuidOrTextUuid,
 				seenChallengeUUIDs,
 				careerQuestChallengeData: [],
 				careerChatMessages
@@ -298,6 +301,7 @@ export default async function getUserChallengeData(
 
 		return {
 			currentChallengeUuidOrTextUuid,
+			furthestSeenChallengeUuidOrTextUuid,
 			seenChallengeUUIDs,
 			careerQuestChallengeData: results,
 			careerChatMessages
