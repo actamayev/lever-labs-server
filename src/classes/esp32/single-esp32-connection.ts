@@ -1,4 +1,4 @@
-import { UUID } from "node:crypto"
+import { UUID } from "crypto"
 
 export default class SingleESP32Connection {
 	private _isAlive: boolean = true

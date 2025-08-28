@@ -1,6 +1,5 @@
 import { Server as WSServer } from "ws"
-import { randomUUID } from "crypto"
-import { UUID } from "node:crypto"
+import { randomUUID, UUID } from "crypto"
 import Singleton from "../singleton"
 import isPipUUID from "../../utils/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"
