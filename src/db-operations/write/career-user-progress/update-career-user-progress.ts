@@ -3,7 +3,8 @@ import PrismaClientClass from "../../../classes/prisma-client"
 export default async function updateCareerUserProgressDB(
 	userId: number,
 	careerId: number,
-	currentId: string
+	currentId: string,
+	isFurthestSeen: boolean
 ): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
@@ -16,12 +17,14 @@ export default async function updateCareerUserProgressDB(
 				}
 			},
 			update: {
-				challenge_uuid_or_text_uuid: currentId,
+				current_challenge_uuid_or_text_uuid: currentId,
+				furthest_seen_challenge_uuid_or_text_uuid: isFurthestSeen ? currentId : undefined
 			},
 			create: {
 				user_id: userId,
 				career_id: careerId,
-				challenge_uuid_or_text_uuid: currentId,
+				current_challenge_uuid_or_text_uuid: currentId,
+				furthest_seen_challenge_uuid_or_text_uuid: currentId
 			}
 		})
 	} catch (error) {

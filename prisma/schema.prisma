@@ -459,7 +459,8 @@ model career_user_progress {
 	career_user_progress_id										Int       @id @default(autoincrement())
 	user_id														Int
 	career_id													Int
-	challenge_uuid_or_text_uuid									String
+	current_challenge_uuid_or_text_uuid							String
+	furthest_seen_challenge_uuid_or_text_uuid					String
 
 	created_at                                                  DateTime  @default(now())
 	updated_at                                                  DateTime @default(now()) @updatedAt

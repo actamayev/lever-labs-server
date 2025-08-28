@@ -18,6 +18,7 @@ import retrievePipUUIDStatus from "../controllers/pip/retrieve-pip-uuid-status"
 import clientConnectToPipRequest from "../controllers/pip/client-connect-to-pip-request"
 import retrievePreviouslyAddedPips from "../controllers/pip/retrieve-previously-added-pips"
 import clientDisconnectFromPipRequest from "../controllers/pip/client-disconnect-from-pip-request"
+import stopSensorPolling from "../controllers/pip/stop-sensor-polling"
 
 const pipRoutes = express.Router()
 
@@ -60,5 +61,13 @@ pipRoutes.get(
 )
 
 pipRoutes.get("/firmware-update", streamFirmwareUpdate)
+
+pipRoutes.post(
+	"/stop-sensor-polling/:pipUUID",
+	validatePipUUID,
+	confirmPipIsActive,
+	jwtVerifyAttachUserId,
+	stopSensorPolling
+)
 
 export default pipRoutes
