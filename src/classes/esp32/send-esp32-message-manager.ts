@@ -79,6 +79,24 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
+	public transferLedControlDataToAll(data: Omit<LedControlData, "pipUUID">): Promise<void[]> {
+		try {
+			const buffer = MessageBuilder.createLedMessage(data as LedControlData)
+			const connectedPipUUIDs = Esp32SocketManager.getInstance().getAllConnectedPipUUIDs()
+			const promises: Promise<void>[] = []
+
+			// Send to all connected ESP32 devices
+			for (const pipUUID of connectedPipUUIDs) {
+				promises.push(this.sendBinaryMessage(pipUUID, buffer))
+			}
+
+			return Promise.all(promises)
+		} catch (error: unknown) {
+			console.error("Transfer to all failed:", error)
+			throw new Error(`Transfer to all failed: ${error || "Unknown reason"}`)
+		}
+	}
+
 	public transferHeadlightControlData(data: HeadlightData): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createHeadlightMessage(data.areHeadlightsOn)
@@ -113,6 +131,25 @@ export default class SendEsp32MessageManager extends Singleton {
 		} catch (error: unknown) {
 			console.error("Transfer failed:", error)
 			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
+		}
+	}
+
+	public playSoundToAll(): Promise<void[]> {
+		const tuneToPlay = "Chime"
+		try {
+			const soundType = tuneToSoundType[tuneToPlay]
+			const buffer = MessageBuilder.createSoundMessage(soundType)
+			const connectedPipUUIDs = Esp32SocketManager.getInstance().getAllConnectedPipUUIDs()
+			const promises: Promise<void>[] = []
+
+			for (const pipUUID of connectedPipUUIDs) {
+				promises.push(this.sendBinaryMessage(pipUUID, buffer))
+			}
+
+			return Promise.all(promises)
+		} catch (error: unknown) {
+			console.error("Sound transfer to all failed:", error)
+			throw new Error(`Sound transfer to all failed: ${error || "Unknown reason"}`)
 		}
 	}
 
@@ -217,6 +254,16 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
+	public stopSensorPolling(pipUUID: PipUUID): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createStopSensorPollingMessage()
+			return this.sendBinaryMessage(pipUUID, buffer)
+		} catch (error: unknown) {
+			console.error("Stop command failed:", error)
+			throw new Error(`Stop command failed: ${error || "Unknown reason"}`)
+		}
+	}
+
 	public pollSensors(pipUUID: PipUUID): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createStartSensorPollingMessage()
@@ -234,6 +281,16 @@ export default class SendEsp32MessageManager extends Singleton {
 		} catch (error: unknown) {
 			console.error("Battery monitor data request failed:", error)
 			throw new Error(`Battery monitor data request failed: ${error || "Unknown reason"}`)
+		}
+	}
+
+	public sendIntroS1P7Command(pipUUID: PipUUID): Promise<void> {
+		try {
+			const buffer = MessageBuilder.createIntroS1P7Message()
+			return this.sendBinaryMessage(pipUUID, buffer)
+		} catch (error: unknown) {
+			console.error("Intro S1 P7 command failed:", error)
+			throw new Error(`Intro S1 P7 command failed: ${error || "Unknown reason"}`)
 		}
 	}
 

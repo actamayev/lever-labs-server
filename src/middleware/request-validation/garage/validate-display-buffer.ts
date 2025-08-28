@@ -5,7 +5,10 @@ import pipUUIDValidator from "../../joi/pip-uuid-validator"
 import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
 
 const validateDisplayBufferSchema = Joi.object({
-	buffer: Joi.binary().length(1024).required(), // expects a 1024-byte buffer (Uint8Array)
+	buffer: Joi.alternatives().try(
+		Joi.binary().length(1024),
+		Joi.object().pattern(Joi.number().integer().min(0), Joi.number().integer().min(0).max(255))
+	).required(),
 	pipUUID: pipUUIDValidator.required()
 }).required()
 

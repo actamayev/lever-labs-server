@@ -1,10 +1,25 @@
 import { Response, Request } from "express"
-import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 import { PipUUID, ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
+import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 
 export default async function updateDisplayEndpoint(req: Request, res: Response): Promise<void> {
 	try {
-		const { pipUUID, buffer } = req.body as { pipUUID: PipUUID, buffer: Uint8Array }
+		const { pipUUID, buffer: rawBuffer } = req.body as { pipUUID: PipUUID, buffer: BufferLike }
+
+		// Convert buffer if it's a Uint8Array-like object
+		let buffer: Buffer
+		if (Buffer.isBuffer(rawBuffer)) {
+			buffer = rawBuffer
+		} else if (typeof rawBuffer === "object") {
+			// Convert Uint8Array-like object to Buffer
+			const bufferArray = new Array(1024)
+			for (let i = 0; i < 1024; i++) {
+				bufferArray[i] = rawBuffer[i]
+			}
+			buffer = Buffer.from(bufferArray)
+		} else {
+			throw new Error("Invalid buffer format")
+		}
 
 		await SendEsp32MessageManager.getInstance().updateDisplay(pipUUID, buffer)
 
