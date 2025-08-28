@@ -22,7 +22,12 @@ careerQuestRoutes.post(
 
 careerQuestRoutes.get("/get-career-progress-data/:careerUUID", attachCareerIdFromUUID, retrieveCareerChallengeData)
 
-careerQuestRoutes.post("/update-career-quest-user-progress", validateCqUserProgress, updateCareerQuestUserProgress)
+careerQuestRoutes.post(
+	"/update-career-quest-user-progress/:careerUUID",
+	attachCareerIdFromUUID,
+	validateCqUserProgress,
+	updateCareerQuestUserProgress
+)
 
 careerQuestRoutes.post("/mark-challenge-as-seen/:challengeUUID", attachChallengeIdFromUUID, markChallengeAsSeen)
 

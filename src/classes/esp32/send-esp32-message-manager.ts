@@ -82,8 +82,7 @@ export default class SendEsp32MessageManager extends Singleton {
 	public transferLedControlDataToAll(data: Omit<LedControlData, "pipUUID">): Promise<void[]> {
 		try {
 			const buffer = MessageBuilder.createLedMessage(data as LedControlData)
-			const esp32Manager = Esp32SocketManager.getInstance()
-			const connectedPipUUIDs = esp32Manager.getAllConnectedPipUUIDs()
+			const connectedPipUUIDs = Esp32SocketManager.getInstance().getAllConnectedPipUUIDs()
 			const promises: Promise<void>[] = []
 
 			// Send to all connected ESP32 devices
@@ -140,12 +139,10 @@ export default class SendEsp32MessageManager extends Singleton {
 		try {
 			const soundType = tuneToSoundType[tuneToPlay]
 			const buffer = MessageBuilder.createSoundMessage(soundType)
-			const esp32Manager = Esp32SocketManager.getInstance()
-			const connectedPipUUIDs = esp32Manager.getAllConnectedPipUUIDs()
+			const connectedPipUUIDs = Esp32SocketManager.getInstance().getAllConnectedPipUUIDs()
 			const promises: Promise<void>[] = []
 
 			for (const pipUUID of connectedPipUUIDs) {
-				console.log("Playing sound to:", pipUUID)
 				promises.push(this.sendBinaryMessage(pipUUID, buffer))
 			}
 
