@@ -1,11 +1,11 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { CareerType, ErrorResponse, ValidationErrorResponse, ValidTriggerMessageType} from "@bluedotrobots/common-ts"
+import { CareerType, ErrorResponse, ValidationErrorResponse } from "@bluedotrobots/common-ts"
 
 const triggerMessageSchema = Joi.object({
 	careerType: Joi.string().valid(...Object.values(CareerType)).required(),
-	triggerMessageType: Joi.string().valid(...Object.values((ValidTriggerMessageType as unknown as Record<string, unknown>))).required()
+	triggerMessageType: Joi.string().required()
 }).required()
 
 export default function validateCareerTrigger(req: Request, res: Response, next: NextFunction): void {
