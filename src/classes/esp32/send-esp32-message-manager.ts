@@ -10,6 +10,8 @@ import { BalancePidsProps, LedControlData, LightAnimation,
 	PipUUIDPayload,
 	PlayFunSoundPayload,
 	HornData,
+	CareerType,
+	ValidTriggerMessageType,
 } from "@bluedotrobots/common-ts"
 
 export default class SendEsp32MessageManager extends Singleton {
@@ -284,13 +286,17 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public sendIntroS1P7Command(pipUUID: PipUUID): Promise<void> {
+	public triggerCareerQuestMessage<T extends CareerType>(
+		careerType: T,
+		triggerMessageType: ValidTriggerMessageType<T>,
+		pipUUID: PipUUID
+	): Promise<void> {
 		try {
-			const buffer = MessageBuilder.createIntroS1P7Message()
+			const buffer = MessageBuilder.createTriggerMessage(careerType, triggerMessageType)
 			return this.sendBinaryMessage(pipUUID, buffer)
 		} catch (error: unknown) {
-			console.error("Intro S1 P7 command failed:", error)
-			throw new Error(`Intro S1 P7 command failed: ${error || "Unknown reason"}`)
+			console.error("Career quest message failed:", error)
+			throw new Error(`Career quest message failed: ${error || "Unknown reason"}`)
 		}
 	}
 
