@@ -1,11 +1,28 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { CareerType, ErrorResponse, ValidationErrorResponse } from "@bluedotrobots/common-ts"
+import { CareerType, ErrorResponse, ValidationErrorResponse, IntroductionTriggerType } from "@bluedotrobots/common-ts"
+
+function validateTriggerMessageType(careerType: CareerType, triggerMessageType: string): boolean {
+	switch (careerType) {
+	case CareerType.INTRODUCTION:
+		return Object.values(IntroductionTriggerType).includes(triggerMessageType)
+	default:
+		return false
+	}
+}
 
 const triggerMessageSchema = Joi.object({
 	careerType: Joi.string().valid(...Object.values(CareerType)).required(),
 	triggerMessageType: Joi.string().required()
+}).custom((value, helpers) => {
+	const { careerType, triggerMessageType } = value
+	if (!validateTriggerMessageType(careerType, triggerMessageType)) {
+		return helpers.error("any.custom", {
+			message: `Invalid triggerMessageType "${triggerMessageType}" for careerType "${careerType}"`
+		})
+	}
+	return value
 }).required()
 
 export default function validateCareerTrigger(req: Request, res: Response, next: NextFunction): void {
