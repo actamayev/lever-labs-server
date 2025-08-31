@@ -261,7 +261,7 @@ export default class BrowserSocketManager extends Singleton {
 			)
 
 			if (foundPip) {
-				this.emitToSocket(connectionInfo.socketId, "general-sensor-data", {sensorPayload })
+				this.emitToSocket(connectionInfo.socketId, "general-sensor-data", { sensorPayload })
 			}
 		})
 	}
