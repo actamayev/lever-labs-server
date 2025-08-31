@@ -91,7 +91,7 @@ export default class BrowserSocketManager extends Singleton {
 			if (pipToUpdate) {
 				pipToUpdate.status = newConnectionStatus
 				// Emit event to this specific connection
-				this.io.to(connectionInfo.socketId).emit("pip-connection-status-update", { pipUUID, newConnectionStatus })
+				this.emitToSocket(connectionInfo.socketId, "pip-connection-status-update", { pipUUID, newConnectionStatus })
 			}
 		})
 	}
@@ -103,7 +103,7 @@ export default class BrowserSocketManager extends Singleton {
 			)
 
 			if (pipToUpdate) {
-				this.io.to(connectionInfo.socketId).emit("battery-monitor-data", { pipUUID, batteryData })
+				this.emitToSocket(connectionInfo.socketId, "battery-monitor-data", { pipUUID, batteryData })
 			}
 		})
 	}
@@ -163,7 +163,7 @@ export default class BrowserSocketManager extends Singleton {
 	): void {
 		const connectionInfo = this.connections.get(userId)
 		if (isUndefined(connectionInfo)) return
-		this.io.to(connectionInfo.socketId).emit("pip-connection-status-update", {
+		this.emitToSocket(connectionInfo.socketId, "pip-connection-status-update", {
 			pipUUID,
 			newConnectionStatus: status
 		})
@@ -189,7 +189,7 @@ export default class BrowserSocketManager extends Singleton {
 				} else if (newStatus === "online") {
 					pipToUpdate.status = "online"
 				}
-				this.io.to(otherConnectionInfo.socketId).emit("pip-connection-status-update", {
+				this.emitToSocket(otherConnectionInfo.socketId, "pip-connection-status-update", {
 					pipUUID,
 					newConnectionStatus: pipToUpdate.status
 				})
@@ -256,13 +256,12 @@ export default class BrowserSocketManager extends Singleton {
 
 	public sendBrowserPipSensorData(pipUUID: PipUUID, sensorPayload: SensorPayload): void {
 		this.connections.forEach((connectionInfo) => {
-			// Check if the specified pipUUID exists in this connection's previouslyConnectedPipUUIDs
 			const foundPip = connectionInfo.previouslyConnectedPipUUIDs.find(
 				(pip) => pip.pipUUID === pipUUID
 			)
 
 			if (foundPip) {
-				this.io.to(connectionInfo.socketId).emit("sensor-data", { pipUUID, sensorPayload })
+				this.emitToSocket(connectionInfo.socketId, "sensor-data", { pipUUID, sensorPayload })
 			}
 		})
 	}
@@ -274,6 +273,14 @@ export default class BrowserSocketManager extends Singleton {
 	): void {
 		const connectionInfo = this.connections.get(userId)
 		if (!connectionInfo) return
-		this.io.to(connectionInfo.socketId).emit(event, payload)
+		this.emitToSocket(connectionInfo.socketId, event, payload)
+	}
+
+	private emitToSocket<E extends SocketEvents>(
+		socketId: string,
+		event: E,
+		payload: SocketEventPayloadMap[E]
+	): void {
+		this.io.to(socketId).emit(event, payload)
 	}
 }
