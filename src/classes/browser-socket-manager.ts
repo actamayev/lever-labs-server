@@ -1,23 +1,10 @@
 import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
-import { HeadlightData, LedControlData, MotorControlData, PipConnectionStatus,
-	PipUUID, SensorPayload,
-	ChallengeChatbotStreamStartEvent,
-	ChallengeChatbotStreamChunkEvent,
-	ChallengeChatbotStreamCompleteEvent,
-	CareerChatbotStreamStartOrCompleteEvent,
-	CareerChatbotChunkEvent,
-	SandboxChatbotStreamChunkEvent,
-	SandboxChatbotStreamStartOrCompleteEvent,
-	ProjectUUID,
-	StudentInviteJoinClass,
-	TeacherName,
-	PlayFunSoundPayload,
-	BatteryMonitorData,
-	HornData,
-} from "@bluedotrobots/common-ts"
+import { PipConnectionStatus, PipUUID, SensorPayload,
+	BatteryMonitorData, SocketEvents, SocketEventPayloadMap } from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
+import { listenersMap } from "../utils/constants/listeners-map"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
 
@@ -42,11 +29,7 @@ export default class BrowserSocketManager extends Singleton {
 	private initializeListeners(): void {
 		this.io.on("connection", async (socket: Socket) => {
 			await this.handleBrowserConnection(socket)
-			this.setupMotorControlListener(socket)
-			this.setupNewLedColorListener(socket)
-			this.setupHeadlightListener(socket)
-			this.setupHornListener(socket)
-			this.setupFunSoundsListener(socket)
+			this.setupAllListeners(socket)
 		})
 	}
 
@@ -63,52 +46,12 @@ export default class BrowserSocketManager extends Singleton {
 		socket.on("disconnect", () => this.handleDisconnection(socket.userId))
 	}
 
-	private setupMotorControlListener(socket: Socket): void {
-		socket.on("motor-control", async (motorControlData: MotorControlData) => {
+	private setupAllListeners(socket: Socket): void {
+		Object.entries(listenersMap).forEach(([event, handler]) => {
 			try {
-				await SendEsp32MessageManager.getInstance().transferMotorControlData(motorControlData)
+				socket.on(event, handler)
 			} catch (error) {
-				console.error("Motor control error:", error)
-			}
-		})
-	}
-
-	private setupNewLedColorListener(socket: Socket): void {
-		socket.on("new-led-colors", async (ledControlData: LedControlData) => {
-			try {
-				await SendEsp32MessageManager.getInstance().transferLedControlData(ledControlData)
-			} catch (error) {
-				console.error("New LED Colors Error:", error)
-			}
-		})
-	}
-
-	private setupHeadlightListener(socket: Socket): void {
-		socket.on("headlight-update", async (headlightControlData: HeadlightData) => {
-			try {
-				await SendEsp32MessageManager.getInstance().transferHeadlightControlData(headlightControlData)
-			} catch (error) {
-				console.error("Headlight update Error:", error)
-			}
-		})
-	}
-
-	private setupHornListener(socket: Socket): void {
-		socket.on("horn-sound-update", async (hornControlData: HornData) => {
-			try {
-				await SendEsp32MessageManager.getInstance().transferHornSoundData(hornControlData)
-			} catch (error) {
-				console.error("Horn sound update Error:", error)
-			}
-		})
-	}
-
-	private setupFunSoundsListener(socket: Socket): void {
-		socket.on("play-fun-sound", async (funSoundsData: PlayFunSoundPayload) => {
-			try {
-				await SendEsp32MessageManager.getInstance().transferFunSoundsData(funSoundsData)
-			} catch (error) {
-				console.error("Fun sounds error:", error)
+				console.error(`Error in ${event} listener:`, error)
 			}
 		})
 	}
@@ -324,108 +267,13 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	public emitChallengeChatbotStart(userId: number, event: ChallengeChatbotStreamStartEvent): void {
-		const connectionInfo = this.connections.get(userId)
-		if (!connectionInfo) {
-			console.warn(`No connection found for userId: ${userId}`)
-			return
-		}
-		this.io.to(connectionInfo.socketId).emit("challenge-chatbot-stream-start", event)
-	}
-
-	public emitChallengeChatbotChunk(userId: number, event: ChallengeChatbotStreamChunkEvent): void {
-		const connectionInfo = this.connections.get(userId)
-		if (!connectionInfo) {
-			console.warn(`No connection found for userId: ${userId}`)
-			return
-		}
-		this.io.to(connectionInfo.socketId).emit("challenge-chatbot-stream-chunk", event)
-	}
-
-	public emitChallengeChatbotComplete(userId: number, event: ChallengeChatbotStreamCompleteEvent): void {
-		const connectionInfo = this.connections.get(userId)
-		if (!connectionInfo) {
-			console.warn(`No connection found for userId: ${userId}`)
-			return
-		}
-		this.io.to(connectionInfo.socketId).emit("challenge-chatbot-stream-complete", event)
-	}
-
-	public emitCareerChatbotStart(userId: number, event: CareerChatbotStreamStartOrCompleteEvent): void {
-		const connectionInfo = this.connections.get(userId)
-		if (!connectionInfo) {
-			console.warn(`No connection found for userId: ${userId}`)
-			return
-		}
-		this.io.to(connectionInfo.socketId).emit("career-chatbot-stream-start", event)
-	}
-
-	public emitCareerChatbotChunk(userId: number, event: CareerChatbotChunkEvent): void {
-		const connectionInfo = this.connections.get(userId)
-		if (!connectionInfo) {
-			console.warn(`No connection found for userId: ${userId}`)
-			return
-		}
-		this.io.to(connectionInfo.socketId).emit("career-chatbot-stream-chunk", event)
-	}
-
-	public emitCareerChatbotComplete(userId: number, event: CareerChatbotStreamStartOrCompleteEvent): void {
-		const connectionInfo = this.connections.get(userId)
-		if (!connectionInfo) {
-			console.warn(`No connection found for userId: ${userId}`)
-			return
-		}
-		this.io.to(connectionInfo.socketId).emit("career-chatbot-stream-complete", event)
-	}
-
-	public emitSandboxChatbotStart(userId: number, sandboxProjectUUID: ProjectUUID): void {
-		const connectionInfo = this.connections.get(userId)
-		if (!connectionInfo) {
-			console.warn(`No connection found for userId: ${userId}`)
-			return
-		}
-		const event: SandboxChatbotStreamStartOrCompleteEvent = {
-			sandboxProjectUUID
-		}
-		this.io.to(connectionInfo.socketId).emit("sandbox-chatbot-stream-start", event)
-	}
-
-	public emitSandboxChatbotChunk(userId: number, content: string, sandboxProjectUUID: ProjectUUID): void {
-		const connectionInfo = this.connections.get(userId)
-		if (!connectionInfo) {
-			console.warn(`No connection found for userId: ${userId}`)
-			return
-		}
-		const event: SandboxChatbotStreamChunkEvent = {
-			sandboxProjectUUID,
-			content
-		}
-		this.io.to(connectionInfo.socketId).emit("sandbox-chatbot-stream-chunk", event)
-	}
-
-	public emitSandboxChatbotComplete(userId: number, sandboxProjectUUID: ProjectUUID): void {
-		const connectionInfo = this.connections.get(userId)
-		if (!connectionInfo) {
-			console.warn(`No connection found for userId: ${userId}`)
-			return
-		}
-		const event: SandboxChatbotStreamStartOrCompleteEvent = {
-			sandboxProjectUUID
-		}
-		this.io.to(connectionInfo.socketId).emit("sandbox-chatbot-stream-complete", event)
-	}
-
-	public emitStudentInviteJoinClass(
-		studentUserId: number,
-		teacherNameInfo: TeacherName,
-		classroomName: string
+	public emitToUser<E extends SocketEvents>(
+		userId: number,
+		event: E,
+		payload: SocketEventPayloadMap[E]
 	): void {
-		const connectionInfo = this.connections.get(studentUserId)
-		if (!connectionInfo) {
-			console.warn(`No connection found for userId: ${studentUserId}`)
-			return
-		}
-		const event: StudentInviteJoinClass = { teacherNameInfo, classroomName }
-		this.io.to(connectionInfo.socketId).emit("student-invite-join-class", event)
+		const connectionInfo = this.connections.get(userId)
+		if (!connectionInfo) return
+		this.io.to(connectionInfo.socketId).emit(event, payload)
 	}
 }

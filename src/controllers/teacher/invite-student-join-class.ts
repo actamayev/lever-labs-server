@@ -17,7 +17,11 @@ export default async function inviteStudentJoinClass(req: Request, res: Response
 			res.status(500).json({ error: "Unable to find teacher or classroom name" } satisfies ErrorResponse)
 			return
 		}
-		void BrowserSocketManager.getInstance().emitStudentInviteJoinClass(studentUserId, teacherName, classroomName)
+		void BrowserSocketManager.getInstance().emitToUser(
+			studentUserId,
+			"student-invite-join-class",
+			{ teacherNameInfo: teacherName, classroomName: classroomName }
+		)
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
