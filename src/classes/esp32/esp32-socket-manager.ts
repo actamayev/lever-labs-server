@@ -1,12 +1,12 @@
 import { Server as WSServer } from "ws"
 import { randomUUID, UUID } from "crypto"
+import { BatteryMonitorDataFull, ESPConnectionStatus,
+	ESPMessage, PipUUID, SensorPayload, SensorPayloadMZ } from "@bluedotrobots/common-ts"
 import Singleton from "../singleton"
 import isPipUUID from "../../utils/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"
 import SingleESP32Connection from "./single-esp32-connection"
 import SendEsp32MessageManager from "./send-esp32-message-manager"
-import { BatteryMonitorDataFull, BytecodeMessage, ESPConnectionStatus,
-	ESPMessage, PipUUID, PipUUIDPayload, SensorPayload, SensorPayloadMZ } from "@bluedotrobots/common-ts"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
@@ -60,13 +60,13 @@ export default class Esp32SocketManager extends Singleton {
 			const { route, payload } = parsed
 
 			if (route === "/register") {
-				if (!isPipUUID((payload as PipUUIDPayload).pipUUID)) {
+				if (!isPipUUID(payload.pipUUID)) {
 					console.warn(`Invalid registration from ${socketId}`)
 					connection.dispose()
 					return
 				}
-				this.registerConnection(socketId, (payload as PipUUIDPayload).pipUUID, connection)
-				void SendEsp32MessageManager.getInstance().transferUpdateAvailableMessage(payload as PipUUIDPayload)
+				this.registerConnection(socketId, (payload).pipUUID, connection)
+				void SendEsp32MessageManager.getInstance().transferUpdateAvailableMessage(payload)
 			} else {
 				console.warn(`Expected registration message, got: ${route}`)
 				connection.dispose()
@@ -96,16 +96,13 @@ export default class Esp32SocketManager extends Singleton {
 
 			switch (route) {
 			case "/sensor-data":
-				this.handleSensorData(socketId, payload as SensorPayload)
+				this.handleSensorData(socketId, payload)
 				break
 			case "/sensor-data-mz":
-				this.handleSensorDataMZ(socketId, payload as SensorPayloadMZ)
-				break
-			case "/bytecode-status":
-				console.info("Bytecode status:", (payload as BytecodeMessage).message)
+				this.handleSensorDataMZ(socketId, payload)
 				break
 			case "/battery-monitor-data-full":
-				this.handleBatteryMonitorData(socketId, payload as BatteryMonitorDataFull)
+				this.handleBatteryMonitorData(socketId, payload)
 				break
 			case "/pip-turning-off":
 				this.handlePipTurningOff(socketId)
