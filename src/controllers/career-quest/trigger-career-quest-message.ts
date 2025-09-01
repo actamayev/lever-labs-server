@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { CareerType, ErrorResponse, PipUUID, SuccessResponse, ValidTriggerMessageType } from "@bluedotrobots/common-ts"
+import { CareerType, ErrorResponse, PipUUID, SuccessResponse, ValidTriggerMessageType, MessageBuilder } from "@bluedotrobots/common-ts"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 
 export default async function triggerCareerQuestMessage (req: Request, res: Response): Promise<void> {
@@ -10,7 +10,10 @@ export default async function triggerCareerQuestMessage (req: Request, res: Resp
 			triggerMessageType: ValidTriggerMessageType<CareerType>
 		}
 
-		await SendEsp32MessageManager.getInstance().triggerCareerQuestMessage(careerType, triggerMessageType, pipUUID)
+		await SendEsp32MessageManager.getInstance().sendBinaryMessage(
+			pipUUID,
+			MessageBuilder.createTriggerMessage(careerType, triggerMessageType)
+		)
 
 		res.status(200).json({ success: "Career quest message triggered" } satisfies SuccessResponse)
 		return

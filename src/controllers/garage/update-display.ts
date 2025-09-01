@@ -1,8 +1,9 @@
+import isNull from "lodash/isNull"
 import { Response, Request } from "express"
-import { PipUUID, ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
+import { PipUUID, ErrorResponse, SuccessResponse, MessageBuilder} from "@bluedotrobots/common-ts"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 
-export default async function updateDisplayEndpoint(req: Request, res: Response): Promise<void> {
+export default function updateDisplayEndpoint(req: Request, res: Response): void {
 	try {
 		const { pipUUID, buffer: rawBuffer } = req.body as { pipUUID: PipUUID, buffer: BufferLike }
 
@@ -21,7 +22,11 @@ export default async function updateDisplayEndpoint(req: Request, res: Response)
 			throw new Error("Invalid buffer format")
 		}
 
-		await SendEsp32MessageManager.getInstance().updateDisplay(pipUUID, buffer)
+		const displayBufferMessage = MessageBuilder.createDisplayBufferMessage(buffer)
+		if (isNull(displayBufferMessage)) {
+			throw new Error("Display buffer message is null")
+		}
+		void SendEsp32MessageManager.getInstance().sendBinaryMessage(pipUUID, displayBufferMessage)
 
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return

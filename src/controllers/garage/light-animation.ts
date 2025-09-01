@@ -1,12 +1,15 @@
 import { Response, Request } from "express"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
-import { LightAnimation, PipUUID, ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
+import { LightAnimation, PipUUID, ErrorResponse, SuccessResponse, MessageBuilder, lightToLEDType} from "@bluedotrobots/common-ts"
 
-export default async function lightAnimationEndpoint(req: Request, res: Response): Promise<void> {
+export default function lightAnimationEndpoint(req: Request, res: Response): void {
 	try {
 		const { pipUUID, lightAnimation } = req.body as { pipUUID: PipUUID, lightAnimation: LightAnimation }
 
-		await SendEsp32MessageManager.getInstance().displayLights(pipUUID, lightAnimation)
+		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
+			pipUUID,
+			MessageBuilder.createLightAnimationMessage(lightToLEDType[lightAnimation])
+		)
 
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return

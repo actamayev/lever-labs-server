@@ -1,7 +1,7 @@
 import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import { PipConnectionStatus, PipUUID, SensorPayload,
-	BatteryMonitorData, SocketEvents, SocketEventPayloadMap, SensorPayloadMZ } from "@bluedotrobots/common-ts"
+	BatteryMonitorData, SocketEvents, SocketEventPayloadMap, SensorPayloadMZ, MessageBuilder } from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import { listenersMap } from "../utils/constants/listeners-map"
@@ -68,7 +68,10 @@ export default class BrowserSocketManager extends Singleton {
 			if (!isUndefined(previouslyConnectedPipUUIDs)) {
 				previouslyConnectedPipUUIDs.forEach((previousConnection) => {
 					if (previousConnection.status === "connected" || previousConnection.status === "online") {
-						void SendEsp32MessageManager.getInstance().stopCurrentlyRunningSandboxCode(previousConnection.pipUUID)
+						void SendEsp32MessageManager.getInstance().sendBinaryMessage(
+							previousConnection.pipUUID,
+							MessageBuilder.createStopSandboxCodeMessage()
+						)
 						if (previousConnection.status === "connected") {
 							this.emitPipStatusUpdate(previousConnection.pipUUID, "online")
 						}
