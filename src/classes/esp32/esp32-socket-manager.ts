@@ -65,7 +65,7 @@ export default class Esp32SocketManager extends Singleton {
 					connection.dispose()
 					return
 				}
-				this.registerConnection(socketId, (payload).pipUUID, connection)
+				this.registerConnection(socketId, payload.pipUUID, connection)
 				void SendEsp32MessageManager.getInstance().transferUpdateAvailableMessage(payload)
 			} else {
 				console.warn(`Expected registration message, got: ${route}`)
