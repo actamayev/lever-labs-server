@@ -1,13 +1,13 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { CareerType, ErrorResponse, ValidationErrorResponse, IntroductionTriggerType } from "@bluedotrobots/common-ts"
+import { CareerType, ErrorResponse, ValidationErrorResponse, MeetPipTriggerType } from "@bluedotrobots/common-ts"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
 
 function validateTriggerMessageType(careerType: CareerType, triggerMessageType: string): boolean {
 	switch (careerType) {
-	case CareerType.INTRODUCTION:
-		return Object.values(IntroductionTriggerType).includes(triggerMessageType)
+	case CareerType.MEET_PIP:
+		return Object.values(MeetPipTriggerType).includes(triggerMessageType)
 	default:
 		return false
 	}

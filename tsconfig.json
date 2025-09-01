@@ -56,11 +56,11 @@
 	},
 	"include": [
 		"src/**/*",
-		"./eslint.config.mjs",
 		"src/prisma/seed.ts"
 	],
 	"exclude": [
 		"node_modules",
-		"dist"
+		"dist",
+		"eslint.config.mjs",
 	]
 }

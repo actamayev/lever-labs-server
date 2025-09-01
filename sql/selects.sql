@@ -10,6 +10,7 @@
 -- SELECT * FROM teacher;
 -- SELECT * FROM student;
 -- DELETE FROM sandbox_message;
+SELECT * FROM career;
 
 -- DELETE FROM career_quest_message;
 -- DELETE FROM career_quest_chat;	
