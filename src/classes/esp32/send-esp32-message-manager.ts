@@ -2,14 +2,10 @@ import { isNull, isUndefined } from "lodash"
 import Singleton from "../singleton"
 import Esp32SocketManager from "./esp32-socket-manager"
 import EspLatestFirmwareManager from "./esp-latest-firmware-manager"
-import calculateMotorSpeeds from "../../utils/calculate-motor-speeds"
 import { BalancePidsProps, LedControlData, LightAnimation,
 	tuneToSoundType,lightToLEDType,
-	MessageBuilder, MotorControlData, PipUUID, TuneToPlay,
-	HeadlightData,
+	MessageBuilder, PipUUID, TuneToPlay,
 	PipUUIDPayload,
-	PlayFunSoundPayload,
-	HornData,
 	CareerType,
 	ValidTriggerMessageType,
 } from "@bluedotrobots/common-ts"
@@ -55,21 +51,6 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public transferMotorControlData(motorControlData: MotorControlData): Promise<void> {
-		try {
-			const speeds = calculateMotorSpeeds(motorControlData)
-			const buffer = MessageBuilder.createMotorControlMessage(
-				speeds.leftMotor,
-				speeds.rightMotor
-			)
-
-			return this.sendBinaryMessage(motorControlData.pipUUID, buffer)
-		} catch (error: unknown) {
-			console.error("Transfer failed:", error)
-			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
-		}
-	}
-
 	public transferLedControlData(data: LedControlData): Promise<void> {
 		try {
 			const buffer = MessageBuilder.createLedMessage(data)
@@ -96,43 +77,6 @@ export default class SendEsp32MessageManager extends Singleton {
 		} catch (error: unknown) {
 			console.error("Transfer to all failed:", error)
 			throw new Error(`Transfer to all failed: ${error || "Unknown reason"}`)
-		}
-	}
-
-	public transferHeadlightControlData(data: HeadlightData): Promise<void> {
-		try {
-			const buffer = MessageBuilder.createHeadlightMessage(data.areHeadlightsOn)
-
-			return this.sendBinaryMessage(data.pipUUID, buffer)
-		} catch (error: unknown) {
-			console.error("Transfer failed:", error)
-			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
-		}
-	}
-
-	public transferHornSoundData(data: HornData): Promise<void> {
-		try {
-			const buffer = MessageBuilder.createHornSoundMessage(data.hornStatus)
-
-			return this.sendBinaryMessage(data.pipUUID, buffer)
-		} catch (error: unknown) {
-			console.error("Transfer failed:", error)
-			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
-		}
-	}
-
-	public transferFunSoundsData(funSoundsData: PlayFunSoundPayload): Promise<void> {
-		try {
-			if (funSoundsData.sound === null) {
-				const buffer = MessageBuilder.createStopSoundMessage()
-				return this.sendBinaryMessage(funSoundsData.pipUUID, buffer)
-			}
-			const soundType = tuneToSoundType[funSoundsData.sound]
-			const buffer = MessageBuilder.createSoundMessage(soundType)
-			return this.sendBinaryMessage(funSoundsData.pipUUID, buffer)
-		} catch (error: unknown) {
-			console.error("Transfer failed:", error)
-			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)
 		}
 	}
 
@@ -300,7 +244,7 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	private sendBinaryMessage(pipUUID: PipUUID, buffer: ArrayBuffer): Promise<void> {
+	public sendBinaryMessage(pipUUID: PipUUID, buffer: ArrayBuffer): Promise<void> {
 		try {
 			const socket = this.getPipConnectionSocket(pipUUID)
 
