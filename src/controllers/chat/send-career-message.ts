@@ -53,7 +53,7 @@ async function processLLMRequest(
 		const messages = buildCareerChatLLMContext(chatData)
 		const modelId = selectModel("generalQuestion")
 
-		socketManager.emitCareerChatbotStart(userId, {
+		socketManager.emitToUser(userId, "career-chatbot-stream-start", {
 			careerUUID,
 		})
 
@@ -84,7 +84,7 @@ async function processLLMRequest(
 			const content = chunk.choices[0]?.delta?.content
 			if (content) {
 				aiResponseContent += content
-				socketManager.emitCareerChatbotChunk(userId, {
+				socketManager.emitToUser(userId, "career-chatbot-stream-chunk", {
 					careerUUID,
 					content
 				})
@@ -100,7 +100,7 @@ async function processLLMRequest(
 				modelId
 			)
 
-			socketManager.emitCareerChatbotComplete(userId, {
+			socketManager.emitToUser(userId, "career-chatbot-stream-complete", {
 				careerUUID,
 			})
 		}

@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { ErrorResponse, PipData } from "@bluedotrobots/common-ts"
+import { ErrorResponse, PipData, MessageBuilder } from "@bluedotrobots/common-ts"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
 
@@ -11,7 +11,10 @@ export default async function retrievePreviouslyAddedPips (req: Request, res: Re
 		// for each of the pips that is online, request battery monitor data
 		userPipData.forEach(pip => {
 			if (pip.pipConnectionStatus !== "offline") {
-				void SendEsp32MessageManager.getInstance().requestBatteryMonitorData(pip.pipUUID)
+				void SendEsp32MessageManager.getInstance().sendBinaryMessage(
+					pip.pipUUID,
+					MessageBuilder.createRequestBatteryMonitorDataMessage()
+				)
 			}
 		})
 

@@ -1,6 +1,5 @@
 import express from "express"
 
-import pollSensors from "../controllers/sandbox/poll-sensors"
 import starSandboxProject from "../controllers/sandbox/star-sandbox-project"
 import editSandboxProject from "../controllers/sandbox/edit-sandbox-project"
 import deleteSandboxProject from "../controllers/sandbox/delete-sandbox-project"
@@ -99,13 +98,6 @@ sandboxRoutes.post(
 	validatePipUUIDInBody,
 	confirmUserPreviouslyAddedUUID,
 	stopCurrentlyRunningSandboxCode
-)
-
-sandboxRoutes.post(
-	"/poll-sensors",
-	validatePipUUIDInBody,
-	confirmUserPreviouslyAddedUUID,
-	pollSensors
 )
 
 export default sandboxRoutes
