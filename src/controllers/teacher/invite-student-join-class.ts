@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import { isNull, isUndefined } from "lodash"
-import { ErrorResponse, SuccessResponse, StudentInviteJoinClass } from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts"
 import addStudent from "../../db-operations/write/student/add-student"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import getTeacherName from "../../db-operations/read/teacher/get-teacher-name"
@@ -20,7 +20,7 @@ export default async function inviteStudentJoinClass(req: Request, res: Response
 		void BrowserSocketManager.getInstance().emitToUser(
 			studentUserId,
 			"student-invite-join-class",
-			{ teacherNameInfo, classroomName } satisfies StudentInviteJoinClass
+			{ teacherNameInfo, classroomName }
 		)
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
