@@ -1,7 +1,7 @@
 import OpenAI from "openai"
 import isUndefined from "lodash/isUndefined"
 import SecretsManager from "./aws/secrets-manager"
-import { SITE_NAME, SITE_URL } from "../utils/constants"
+import { SITE_NAME, SITE_URL } from "../utils/constants/constants"
 
 export default class OpenAiClientClass {
 	private static openAiClient?: OpenAI

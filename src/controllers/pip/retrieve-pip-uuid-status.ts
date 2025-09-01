@@ -6,7 +6,7 @@ import { PipUUID, ErrorResponse, RetrieveIsPipUUIDValidResponse, MessageResponse
 
 export default async function retrievePipUUIDStatus(req: Request, res: Response): Promise<void> {
 	try {
-		const { pipUUID } = req.params as { pipUUID: PipUUID }
+		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
 		const pipUUIDData = await findPipUUID(pipUUID)
 

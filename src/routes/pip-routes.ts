@@ -3,7 +3,6 @@ import express from "express"
 import attachPipUUIDData from "../middleware/attach/attach-pip-uuid-data"
 import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
 import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
-import validatePipUUID from "../middleware/request-validation/pip/validate-pip-uuid"
 import checkIfUserConnectedToPip from "../middleware/check/check-if-user-connect-to-pip"
 import validatePipUUIDInBody
 	from "../middleware/request-validation/pip/validate-pip-uuid-in-body"
@@ -53,9 +52,9 @@ pipRoutes.post(
 
 pipRoutes.get("/retrieve-previously-added-pips", jwtVerifyAttachUserId, retrievePreviouslyAddedPips)
 
-pipRoutes.get(
-	"/retrieve-pip-uuid-status/:pipUUID",
-	validatePipUUID,
+pipRoutes.post(
+	"/retrieve-pip-uuid-status",
+	validatePipUUIDInBody,
 	jwtVerifyAttachUserId,
 	retrievePipUUIDStatus
 )
@@ -63,8 +62,8 @@ pipRoutes.get(
 pipRoutes.get("/firmware-update", streamFirmwareUpdate)
 
 pipRoutes.post(
-	"/stop-sensor-polling/:pipUUID",
-	validatePipUUID,
+	"/stop-sensor-polling",
+	validatePipUUIDInBody,
 	confirmPipIsActive,
 	jwtVerifyAttachUserId,
 	stopSensorPolling

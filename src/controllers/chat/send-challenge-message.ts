@@ -53,7 +53,7 @@ async function processLLMRequest(
 		const messages = buildChallengeLLMContext(challengeUUID, chatData)
 		const modelId = selectModel("generalQuestion")
 
-		socketManager.emitChallengeChatbotStart(userId, {
+		socketManager.emitToUser(userId, "challenge-chatbot-stream-start", {
 			careerUUID: chatData.careerUUID,
 			challengeUUID,
 			interactionType: "generalQuestion"
@@ -86,7 +86,7 @@ async function processLLMRequest(
 			const content = chunk.choices[0]?.delta?.content
 			if (content) {
 				aiResponseContent += content
-				socketManager.emitChallengeChatbotChunk(userId, {
+				socketManager.emitToUser(userId, "challenge-chatbot-stream-chunk", {
 					careerUUID: chatData.careerUUID,
 					challengeUUID,
 					content
@@ -103,7 +103,7 @@ async function processLLMRequest(
 				modelId
 			)
 
-			socketManager.emitChallengeChatbotComplete(userId, {
+			socketManager.emitToUser(userId, "challenge-chatbot-stream-complete", {
 				careerUUID: chatData.careerUUID,
 				challengeUUID
 			})

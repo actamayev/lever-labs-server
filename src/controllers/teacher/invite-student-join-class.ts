@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import { isNull, isUndefined } from "lodash"
-import { ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts"
 import addStudent from "../../db-operations/write/student/add-student"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import getTeacherName from "../../db-operations/read/teacher/get-teacher-name"
@@ -10,14 +10,18 @@ export default async function inviteStudentJoinClass(req: Request, res: Response
 	try {
 		const { teacherId, classroomId, studentUserId } = req
 		await addStudent(teacherId, classroomId, studentUserId)
-		const teacherName = await getTeacherName(teacherId)
+		const teacherNameInfo = await getTeacherName(teacherId)
 		const classroomName = await getClassroomName(classroomId)
 
-		if (isNull(teacherName) || isUndefined(classroomName)) {
+		if (isNull(teacherNameInfo) || isUndefined(classroomName)) {
 			res.status(500).json({ error: "Unable to find teacher or classroom name" } satisfies ErrorResponse)
 			return
 		}
-		void BrowserSocketManager.getInstance().emitStudentInviteJoinClass(studentUserId, teacherName, classroomName)
+		void BrowserSocketManager.getInstance().emitToUser(
+			studentUserId,
+			"student-invite-join-class",
+			{ teacherNameInfo, classroomName }
+		)
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
