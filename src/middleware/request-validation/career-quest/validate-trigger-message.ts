@@ -2,6 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import { CareerType, ErrorResponse, ValidationErrorResponse, IntroductionTriggerType } from "@bluedotrobots/common-ts"
+import pipUUIDValidator from "../../joi/pip-uuid-validator"
 
 function validateTriggerMessageType(careerType: CareerType, triggerMessageType: string): boolean {
 	switch (careerType) {
@@ -14,7 +15,8 @@ function validateTriggerMessageType(careerType: CareerType, triggerMessageType: 
 
 const triggerMessageSchema = Joi.object({
 	careerType: Joi.string().valid(...Object.values(CareerType)).required(),
-	triggerMessageType: Joi.string().required()
+	triggerMessageType: Joi.number().required(),
+	pipUUID: pipUUIDValidator.required()
 }).custom((value, helpers) => {
 	const { careerType, triggerMessageType } = value
 	if (!validateTriggerMessageType(careerType, triggerMessageType)) {

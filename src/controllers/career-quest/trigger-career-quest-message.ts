@@ -4,8 +4,8 @@ import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-mana
 
 export default async function triggerCareerQuestMessage (req: Request, res: Response): Promise<void> {
 	try {
-		const { pipUUID } = req.params as { pipUUID: PipUUID }
-		const { careerType, triggerMessageType } = req.body as {
+		const { careerType, triggerMessageType, pipUUID } = req.body as {
+			pipUUID: PipUUID
 			careerType: CareerType
 			triggerMessageType: ValidTriggerMessageType<CareerType>
 		}

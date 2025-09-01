@@ -2,7 +2,6 @@ import express from "express"
 
 import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
 import attachCareerIdFromUUID from "../middleware/attach/attach-career-id-from-uuid"
-import validatePipUUID from "../middleware/request-validation/pip/validate-pip-uuid"
 import attachChallengeIdFromUUID from "../middleware/attach/attach-challenge-id-from-uuid"
 import confirmUserPreviouslyAddedUUID from "../middleware/confirm/confirm-user-previously-added-uuid"
 import validateCqUserProgress from "../middleware/request-validation/career-quest/validate-user-progress"
@@ -36,8 +35,7 @@ careerQuestRoutes.post(
 careerQuestRoutes.post("/mark-challenge-as-seen/:challengeUUID", attachChallengeIdFromUUID, markChallengeAsSeen)
 
 careerQuestRoutes.post(
-	"/career-trigger/:pipUUID",
-	validatePipUUID,
+	"/career-trigger",
 	validateCareerTrigger,
 	confirmPipIsActive,
 	confirmUserPreviouslyAddedUUID,
