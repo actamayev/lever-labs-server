@@ -6,7 +6,7 @@ import BrowserSocketManager from "../browser-socket-manager"
 import SingleESP32Connection from "./single-esp32-connection"
 import SendEsp32MessageManager from "./send-esp32-message-manager"
 import { BatteryMonitorDataFull, BytecodeMessage, ESPConnectionStatus,
-	ESPMessage, PipUUID, PipUUIDPayload, SensorPayload } from "@bluedotrobots/common-ts"
+	ESPMessage, PipUUID, PipUUIDPayload, SensorPayload, SensorPayloadMZ } from "@bluedotrobots/common-ts"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
@@ -98,6 +98,9 @@ export default class Esp32SocketManager extends Singleton {
 			case "/sensor-data":
 				this.handleSensorData(socketId, payload as SensorPayload)
 				break
+			case "/sensor-data-mz":
+				this.handleSensorDataMZ(socketId, payload as SensorPayloadMZ)
+				break
 			case "/bytecode-status":
 				console.info("Bytecode status:", (payload as BytecodeMessage).message)
 				break
@@ -127,6 +130,19 @@ export default class Esp32SocketManager extends Singleton {
 		}
 
 		BrowserSocketManager.getInstance().sendBrowserPipSensorData(pipUUID, payload)
+	}
+
+	private handleSensorDataMZ(
+		socketId: UUID,
+		payload: SensorPayloadMZ
+	): void {
+		const pipUUID = this.socketToPip.get(socketId)
+		if (!pipUUID) {
+			console.warn(`Received sensor data from unregistered connection: ${socketId}`)
+			return
+		}
+
+		BrowserSocketManager.getInstance().sendBrowserPipSensorDataMZ(pipUUID, payload)
 	}
 
 	private handleBatteryMonitorData(

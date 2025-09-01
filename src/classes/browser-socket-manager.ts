@@ -1,7 +1,7 @@
 import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import { PipConnectionStatus, PipUUID, SensorPayload,
-	BatteryMonitorData, SocketEvents, SocketEventPayloadMap } from "@bluedotrobots/common-ts"
+	BatteryMonitorData, SocketEvents, SocketEventPayloadMap, SensorPayloadMZ } from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import { listenersMap } from "../utils/constants/listeners-map"
@@ -261,7 +261,18 @@ export default class BrowserSocketManager extends Singleton {
 			)
 
 			if (foundPip) {
-				this.emitToSocket(connectionInfo.socketId, "general-sensor-data", { sensorPayload })
+				this.emitToSocket(connectionInfo.socketId, "general-sensor-data", sensorPayload)
+			}
+		})
+	}
+
+	public sendBrowserPipSensorDataMZ(pipUUID: PipUUID, sensorPayload: SensorPayloadMZ): void {
+		this.connections.forEach((connectionInfo) => {
+			const foundPip = connectionInfo.previouslyConnectedPipUUIDs.find(
+				(pip) => pip.pipUUID === pipUUID
+			)
+			if (foundPip) {
+				this.emitToSocket(connectionInfo.socketId, "general-sensor-data-mz", sensorPayload)
 			}
 		})
 	}
