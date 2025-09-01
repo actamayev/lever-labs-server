@@ -4,7 +4,7 @@ import { ErrorResponse, PipUUID, SuccessResponse, MessageBuilder } from "@bluedo
 
 export default async function stopSensorPolling(req: Request, res: Response): Promise<void> {
 	try {
-		const { pipUUID } = req.params as { pipUUID: PipUUID }
+		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
 		await SendEsp32MessageManager.getInstance().sendBinaryMessage(
 			pipUUID,
