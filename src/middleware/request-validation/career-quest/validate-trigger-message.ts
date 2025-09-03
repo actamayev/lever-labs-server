@@ -4,11 +4,14 @@ import { Request, Response, NextFunction } from "express"
 import { CareerType, ErrorResponse, ValidationErrorResponse, MeetPipTriggerType } from "@bluedotrobots/common-ts"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
 
-function validateTriggerMessageType(careerType: CareerType, triggerMessageType: string): boolean {
+function validateTriggerMessageType(
+	careerType: CareerType,
+	triggerMessageType: number
+): boolean {
 	switch (careerType) {
-	case CareerType.MEET_PIP:
+	  case CareerType.MEET_PIP:
 		return Object.values(MeetPipTriggerType).includes(triggerMessageType)
-	default:
+	  default:
 		return false
 	}
 }
