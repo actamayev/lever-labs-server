@@ -111,6 +111,17 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
+	public emitPipDinoScore(pipUUID: PipUUID, score: number): void {
+		this.connections.forEach((connectionInfo) => {
+			const pipToUpdate = connectionInfo.previouslyConnectedPipUUIDs.find(
+				(previousPip) => previousPip.pipUUID === pipUUID
+			)
+			if (pipToUpdate) {
+				this.emitToSocket(connectionInfo.socketId, "dino-score-update", { pipUUID, score })
+			}
+		})
+	}
+
 	public addPipStatusToAccount(
 		userId: number,
 		pipUUID: PipUUID,
