@@ -79,7 +79,7 @@ teacherRoutes.post(
 )
 
 teacherRoutes.post(
-	"create-hub/:classCode",
+	"/create-hub/:classCode",
 	validateCreateHub,
 	attachTeacherId,
 	attachClassroomIdValidateClassCode,
@@ -95,6 +95,7 @@ teacherRoutes.post(
 	deleteHub
 )
 
+// TODO: Might not need this endpoint (should be hit directly from  update-career-quest-user-progress)
 teacherRoutes.post(
 	"/set-hub-new-slide-id/:classCode",
 	validateSetHubNewSlideId,
