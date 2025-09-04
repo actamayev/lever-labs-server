@@ -20,7 +20,7 @@ export default async function joinHub(req: Request, res: Response): Promise<void
 		}
 
 		const teacherIds = await getTeacherIdsFromClassroom(classroomId)
-		const data: StudentJoinedOrLeftHub = { classCode, hubId, studentUsername: username || "" }
+		const data: StudentJoinedOrLeftHub = { classCode, hubId, studentUsername: username || "", studentUserId: userId }
 		BrowserSocketManager.getInstance().emitStudentJoinedHub(teacherIds, data)
 		const studentViewHubData: StudentViewHubData = {
 			hubId,

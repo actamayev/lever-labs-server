@@ -16,7 +16,7 @@ export default async function leaveHub(req: Request, res: Response): Promise<voi
 		HubManager.getInstance().removeStudentFromHub(hubId, userId)
 
 		const teacherIds = await getTeacherIdsFromClassroom(classroomId)
-		const data: StudentJoinedOrLeftHub = { classCode, hubId, studentUsername: username || "" }
+		const data: StudentJoinedOrLeftHub = { classCode, hubId, studentUsername: username || "", studentUserId: userId }
 		BrowserSocketManager.getInstance().emitStudentLeftHub(teacherIds, data)
 
 		res.status(200).json({ success: "Student left hub" } satisfies SuccessResponse)
