@@ -119,6 +119,7 @@ export default class Esp32SocketManager extends Singleton {
 		}
 	}
 
+	// TODO: Create a re-usable method for sending this type of data (see handleSensorData, handleSensorDataMZ, etc.)
 	private handleSensorData(
 		socketId: UUID,
 		payload: SensorPayload
