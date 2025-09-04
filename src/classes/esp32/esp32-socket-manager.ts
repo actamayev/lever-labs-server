@@ -1,7 +1,7 @@
 import { Server as WSServer } from "ws"
 import { randomUUID, UUID } from "crypto"
 import { BatteryMonitorDataFull, ESPConnectionStatus,
-	ESPMessage, PipUUID, SensorPayload, SensorPayloadMZ } from "@bluedotrobots/common-ts"
+	ESPMessage, PipUUID, SensorPayload, SensorPayloadMZ, DinoScorePayload } from "@bluedotrobots/common-ts"
 import Singleton from "../singleton"
 import isPipUUID from "../../utils/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"
@@ -107,6 +107,9 @@ export default class Esp32SocketManager extends Singleton {
 			case "/pip-turning-off":
 				this.handlePipTurningOff(socketId)
 				break
+			case "/dino-score":
+				this.handleDinoScore(socketId, payload)
+				break
 			default:
 				console.warn(`Unknown route: ${route}`)
 				break
@@ -116,6 +119,7 @@ export default class Esp32SocketManager extends Singleton {
 		}
 	}
 
+	// TODO: Create a re-usable method for sending this type of data (see handleSensorData, handleSensorDataMZ, etc.)
 	private handleSensorData(
 		socketId: UUID,
 		payload: SensorPayload
@@ -162,6 +166,16 @@ export default class Esp32SocketManager extends Singleton {
 			return
 		}
 		this.handleDisconnection(socketId)
+	}
+
+	private handleDinoScore(socketId: UUID, payload: DinoScorePayload): void {
+		const pipUUID = this.socketToPip.get(socketId)
+		if (!pipUUID) {
+			console.warn(`Received dino score from unregistered connection: ${socketId}`)
+			return
+		}
+
+		BrowserSocketManager.getInstance().emitPipDinoScore(pipUUID, payload.score)
 	}
 
 	private registerConnection(

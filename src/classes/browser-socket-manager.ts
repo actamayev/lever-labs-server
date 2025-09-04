@@ -111,6 +111,17 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
+	public emitPipDinoScore(pipUUID: PipUUID, score: number): void {
+		this.connections.forEach((connectionInfo) => {
+			const pipToUpdate = connectionInfo.previouslyConnectedPipUUIDs.find(
+				(previousPip) => previousPip.pipUUID === pipUUID
+			)
+			if (pipToUpdate) {
+				this.emitToSocket(connectionInfo.socketId, "dino-score-update", { pipUUID, score })
+			}
+		})
+	}
+
 	public addPipStatusToAccount(
 		userId: number,
 		pipUUID: PipUUID,
@@ -269,6 +280,7 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
+	// TODO: Create re-usable method for sending this type of data (see sendBrowserPipSensorData, sendBrowserPipSensorDataMZ)
 	public sendBrowserPipSensorDataMZ(pipUUID: PipUUID, sensorPayload: SensorPayloadMZ): void {
 		this.connections.forEach((connectionInfo) => {
 			const foundPip = connectionInfo.previouslyConnectedPipUUIDs.find(
