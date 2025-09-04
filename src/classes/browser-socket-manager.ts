@@ -1,12 +1,13 @@
 import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import { PipConnectionStatus, PipUUID, SensorPayload,
-	BatteryMonitorData, SocketEvents, SocketEventPayloadMap, SensorPayloadMZ, MessageBuilder } from "@bluedotrobots/common-ts"
+	BatteryMonitorData, SocketEvents, SocketEventPayloadMap, SensorPayloadMZ, MessageBuilder, ClassCode } from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import { listenersMap } from "../utils/constants/listeners-map"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
+import retrieveUsername from "../db-operations/read/credentials/retrieve-username"
 
 export default class BrowserSocketManager extends Singleton {
 	private connections = new Map<number, BrowserSocketConnectionInfo>() // Maps UserID to BrowserSocketConnectionInfo
@@ -289,6 +290,20 @@ export default class BrowserSocketManager extends Singleton {
 			if (foundPip) {
 				this.emitToSocket(connectionInfo.socketId, "general-sensor-data-mz", sensorPayload)
 			}
+		})
+	}
+
+	public async emitStudentJoinedClassroom(teacherUserIds: number[], classCode: ClassCode, studentUserId: number): Promise<void> {
+		// 1. See if any of the teachers are connected. If none of them are connected, return. if at least one is connected, continue.
+		// For each that is connected, emit the event to the teacher.
+		const socketIds = teacherUserIds.map(teacherUserId => this.connections.get(teacherUserId)?.socketId)
+		if (socketIds.every(socketId => isUndefined(socketId))) return
+		const studentUsername = await retrieveUsername(studentUserId)
+		socketIds.forEach((socketId) => {
+			if (isUndefined(socketId)) return
+			teacherUserIds.forEach(() => {
+				this.emitToSocket(socketId, "student-joined-classroom", { classCode, studentUsername: studentUsername || "" })
+			})
 		})
 	}
 

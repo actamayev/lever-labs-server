@@ -9,7 +9,7 @@ const inviteResponseSchema = Joi.object({
 
 export default function validateInviteResponse(req: Request, res: Response, next: NextFunction): void {
 	try {
-		const { error } = inviteResponseSchema.validate(req.params)
+		const { error } = inviteResponseSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
 			res.status(400).json({ validationError: error.details[0].message } satisfies ValidationErrorResponse)

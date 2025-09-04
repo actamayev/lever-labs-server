@@ -17,6 +17,8 @@ import requestBecomeTeacher from "../controllers/teacher/request-become-teacher"
 import inviteStudentJoinClass from "../controllers/teacher/invite-student-join-class"
 import retrieveBasicClassroomInfo from "../controllers/teacher/retrieve-basic-classroom-info"
 import retrieveDetailedClassroomInfo from "../controllers/teacher/retrieve-detailed-classroom-info"
+import createHub from "../controllers/teacher/create-hub"
+import validateCreateHub from "../middleware/request-validation/teacher/validate-create-hub"
 
 const teacherRoutes = express.Router()
 
@@ -69,6 +71,14 @@ teacherRoutes.post(
 	attachTeacherId,
 	attachStudentUserId,
 	inviteStudentJoinClass
+)
+
+teacherRoutes.post(
+	"create-hub/:classCode",
+	validateCreateHub,
+	attachTeacherId,
+	attachClassroomIdValidateClassCode,
+	createHub
 )
 
 export default teacherRoutes

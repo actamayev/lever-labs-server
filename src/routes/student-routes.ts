@@ -21,8 +21,8 @@ studentRoutes.post(
 
 studentRoutes.post(
 	"/respond-to-classroom-invitation/:classCode",
-	attachClassroomIdValidateClassCode,
 	validateInviteResponse,
+	attachClassroomIdValidateClassCode,
 	attachStudentId,
 	confirmStudentInvitedToClass,
 	respondToClassroomInvite
