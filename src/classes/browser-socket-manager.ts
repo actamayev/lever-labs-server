@@ -1,10 +1,13 @@
 import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import { PipConnectionStatus, PipUUID, SensorPayload,
-	BatteryMonitorData, SocketEvents, SocketEventPayloadMap, SensorPayloadMZ, MessageBuilder, ClassCode } from "@bluedotrobots/common-ts"
+	BatteryMonitorData, SocketEvents, SocketEventPayloadMap,
+	SensorPayloadMZ, MessageBuilder, ClassCode, StudentViewHubData,
+	DeletedHub, UpdatedHubSlideId, StudentJoinedOrLeftHub } from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
+import HubManager from "./hub-manager"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
-import { listenersMap } from "../utils/constants/listeners-map"
+import listenersMap from "../utils/constants/listeners-map"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
 import retrieveUsername from "../db-operations/read/credentials/retrieve-username"
@@ -79,6 +82,7 @@ export default class BrowserSocketManager extends Singleton {
 					}
 				})
 			}
+			HubManager.getInstance().removeStudentFromAllHubs(userId)
 			this.connections.delete(userId)
 		} catch (error) {
 			console.error("Error during disconnection:", error)
@@ -303,6 +307,46 @@ export default class BrowserSocketManager extends Singleton {
 			if (isUndefined(socketId)) return
 			teacherUserIds.forEach(() => {
 				this.emitToSocket(socketId, "student-joined-classroom", { classCode, studentUsername: studentUsername || "" })
+			})
+		})
+	}
+
+	public emitStudentJoinedHub(teacherUserIds: number[], data: StudentJoinedOrLeftHub): void {
+		const socketIds = teacherUserIds.map(teacherUserId => this.connections.get(teacherUserId)?.socketId)
+		if (socketIds.every(socketId => isUndefined(socketId))) return
+		socketIds.forEach((socketId) => {
+			if (isUndefined(socketId)) return
+			teacherUserIds.forEach(() => {
+				this.emitToSocket(socketId, "student-joined-hub", data)
+			})
+		})
+	}
+
+	public emitNewHubToStudents(studentIds: number[], hubInfo: StudentViewHubData): void {
+		studentIds.forEach(studentId => {
+			this.emitToUser(studentId, "new-hub", hubInfo)
+		})
+	}
+
+	public emitDeletedHubToStudents(studentIds: number[], deletedHubInfo: DeletedHub): void {
+		studentIds.forEach(studentId => {
+			this.emitToUser(studentId, "deleted-hub", deletedHubInfo)
+		})
+	}
+
+	public emitUpdatedHubToStudents(studentIds: number[], updatedHubInfo: UpdatedHubSlideId): void {
+		studentIds.forEach(studentId => {
+			this.emitToUser(studentId, "updated-hub-slide-id", updatedHubInfo)
+		})
+	}
+
+	public emitStudentLeftHub(teacherUserIds: number[], data: StudentJoinedOrLeftHub): void {
+		const socketIds = teacherUserIds.map(teacherUserId => this.connections.get(teacherUserId)?.socketId)
+		if (socketIds.every(socketId => isUndefined(socketId))) return
+		socketIds.forEach((socketId) => {
+			if (isUndefined(socketId)) return
+			teacherUserIds.forEach(() => {
+				this.emitToSocket(socketId, "student-left-hub", data)
 			})
 		})
 	}

@@ -1,5 +1,6 @@
 import { InvitationStatus } from "@prisma/client"
 import { ClassCode, StudentClassroomData } from "@bluedotrobots/common-ts"
+import HubManager from "../../../classes/hub-manager"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function retrieveStudentClasses(userId: number): Promise<StudentClassroomData[]> {
@@ -35,7 +36,8 @@ export default async function retrieveStudentClasses(userId: number): Promise<St
 			invitationStatus: singleStudentData.invitation_status,
 			joinedClassroomAt: singleStudentData.joined_classroom_at,
 			classroomName: singleStudentData.classroom.classroom_name,
-			classCode: singleStudentData.classroom.class_code as ClassCode
+			classCode: singleStudentData.classroom.class_code as ClassCode,
+			activeHubs: HubManager.getInstance().getStudentHubs(userId)
 		}) satisfies StudentClassroomData) || []
 	} catch (error) {
 		console.error(error)

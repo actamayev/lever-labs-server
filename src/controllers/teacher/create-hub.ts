@@ -1,16 +1,23 @@
-import { Response, Request } from "express"
-import { SuccessResponse, ErrorResponse, ClassCode, CareerUUID } from "@bluedotrobots/common-ts"
-import HubManager from "../../classes/hub-manager"
 import { randomUUID } from "crypto"
+import { Response, Request } from "express"
+import { SuccessResponse, ErrorResponse, ClassCode, CareerUUID, StudentViewHubData } from "@bluedotrobots/common-ts"
+import HubManager from "../../classes/hub-manager"
+import BrowserSocketManager from "../../classes/browser-socket-manager"
+import getClassroomStudentIds from "../../db-operations/read/classroom/get-classroom-student-ids"
 
-export default function createHub(req: Request, res: Response): void {
+export default async function createHub(req: Request, res: Response): Promise<void> {
 	try {
-		const { teacherId } = req
-		const hubId = randomUUID()
+		const { teacherId, classroomId } = req
 		const { classCode } = req.params as { classCode: ClassCode }
 		const { hubName, careerUUID, slideId } = req.body as { hubName: string, careerUUID: CareerUUID, slideId: string }
+		const studentIds = await getClassroomStudentIds(classroomId)
 
-		HubManager.getInstance().createHub(hubId, { teacherId, hubName, classCode, careerUUID, slideId, studentsJoined: [] })
+		const hubId = randomUUID()
+		HubManager.getInstance().createHub(hubId, { teacherId, hubName, classCode, careerUUID, slideId, studentsJoined: [], hubId })
+
+		const hubInfo: StudentViewHubData = { hubId, classCode, careerUUID, slideId, hubName }
+		void BrowserSocketManager.getInstance().emitNewHubToStudents(studentIds, hubInfo)
+
 		res.status(200).json({ success: "Hub created" } satisfies SuccessResponse)
 		return
 	} catch (error) {

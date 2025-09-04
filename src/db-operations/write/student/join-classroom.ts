@@ -1,6 +1,7 @@
 import { InvitationMethod, InvitationStatus } from "@prisma/client"
 import { ClassCode, StudentClassroomData } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
+import HubManager from "../../../classes/hub-manager"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function joinClassroom(
@@ -39,7 +40,8 @@ export default async function joinClassroom(
 			invitationStatus: "ACCEPTED",
 			joinedClassroomAt: result.joined_classroom_at,
 			classroomName: result.classroom.classroom_name,
-			classCode: result.classroom.class_code as ClassCode
+			classCode: result.classroom.class_code as ClassCode,
+			activeHubs: HubManager.getInstance().getClassroomActiveHubs(result.classroom.class_code as ClassCode)
 		}
 	} catch (error) {
 		console.error(error)

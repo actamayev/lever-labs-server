@@ -4,7 +4,7 @@ import calculateMotorSpeeds from "../calculate-motor-speeds"
 
 type ListenerHandler<T> = (payload: T) => void
 
-export const listenersMap: {
+const listenersMap: {
 	[K in ClientSocketEvents]: ListenerHandler<ClientSocketEventPayloadMap[K]>
 } = {
 	"motor-control": (motorControlData) => {
@@ -41,3 +41,5 @@ export const listenersMap: {
 			MessageBuilder.createSoundMessage(tuneToSoundType[funSoundsData.sound]))
 	},
 }
+
+export default listenersMap
