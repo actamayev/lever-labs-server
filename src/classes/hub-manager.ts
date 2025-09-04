@@ -59,8 +59,8 @@ export default class HubManager extends Singleton {
 		return hub.teacherId === teacherId
 	}
 
-	public getStudentHubs(userId: number): StudentViewHubData[] {
-		return Array.from(this.hubs.values()).filter(hub => hub.studentsJoined.some(student => student.userId === userId)).map(hub => ({
+	public getStudentHubs(classCode: ClassCode): StudentViewHubData[] {
+		return Array.from(this.hubs.values()).filter(hub => hub.classCode === classCode).map(hub => ({
 			hubId: hub.hubId,
 			classCode: hub.classCode,
 			careerUUID: hub.careerUUID,

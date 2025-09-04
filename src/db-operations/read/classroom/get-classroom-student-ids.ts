@@ -10,11 +10,15 @@ export default async function getClassroomStudentIds(classroomId: number): Promi
 				classroom_id: classroomId
 			},
 			select: {
-				student_id: true
+				user: {
+					select: {
+						user_id: true
+					}
+				}
 			}
 		})
 
-		return studentIds.map(student => student.student_id)
+		return studentIds.map(student => student.user.user_id)
 	} catch (error) {
 		console.error(error)
 		throw error
