@@ -9,11 +9,19 @@ export default async function getTeacherIdsFromClassroom(classroomId: number): P
 				classroom_id: classroomId
 			},
 			select: {
-				teacher_id: true
+				teacher: {
+					select: {
+						user: {
+							select: {
+								user_id: true
+							}
+						}
+					}
+				}
 			}
 		})
 
-		return teacherIds.map(teacher => teacher.teacher_id)
+		return teacherIds.map(teacher => teacher.teacher.user.user_id)
 	} catch (error) {
 		console.error(error)
 		throw error
