@@ -280,6 +280,7 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
+	// TODO: Create re-usable method for sending this type of data (see sendBrowserPipSensorData, sendBrowserPipSensorDataMZ)
 	public sendBrowserPipSensorDataMZ(pipUUID: PipUUID, sensorPayload: SensorPayloadMZ): void {
 		this.connections.forEach((connectionInfo) => {
 			const foundPip = connectionInfo.previouslyConnectedPipUUIDs.find(
