@@ -56,7 +56,7 @@ studentRoutes.post(
 )
 
 studentRoutes.post(
-	"/send-dino-score/:classCode",
+	"/send-dino-score",
 	validateDinoScore,
 	sendDinoScore
 )
