@@ -1,11 +1,15 @@
 import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import { PipConnectionStatus, PipUUID, SensorPayload,
-	BatteryMonitorData, SocketEvents, SocketEventPayloadMap, SensorPayloadMZ, MessageBuilder } from "@bluedotrobots/common-ts"
+	BatteryMonitorData, SocketEvents, SocketEventPayloadMap,
+	SensorPayloadMZ, MessageBuilder, ClassCode, StudentViewHubData,
+	DeletedHub, UpdatedHubSlideId, StudentJoinedHub, StudentLeftHub } from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
+import listenersMap from "../utils/constants/listeners-map"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
-import { listenersMap } from "../utils/constants/listeners-map"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
+import handleDisconnectHubHelper from "../utils/handle-disconnect-hub-helper"
+import retrieveUsername from "../db-operations/read/credentials/retrieve-username"
 import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
 
 export default class BrowserSocketManager extends Singleton {
@@ -78,6 +82,7 @@ export default class BrowserSocketManager extends Singleton {
 					}
 				})
 			}
+			void handleDisconnectHubHelper(userId)
 			this.connections.delete(userId)
 		} catch (error) {
 			console.error("Error during disconnection:", error)
@@ -290,6 +295,46 @@ export default class BrowserSocketManager extends Singleton {
 				this.emitToSocket(connectionInfo.socketId, "general-sensor-data-mz", sensorPayload)
 			}
 		})
+	}
+
+	public async emitStudentJoinedClassroom(teacherUserId: number, classCode: ClassCode, studentUserId: number): Promise<void> {
+		// 1. See if any of the teachers are connected. If none of them are connected, return. if at least one is connected, continue.
+		// For each that is connected, emit the event to the teacher.
+		const socketId = this.connections.get(teacherUserId)?.socketId
+		if (isUndefined(socketId)) return
+		const studentUsername = await retrieveUsername(studentUserId)
+		if (isUndefined(socketId)) return
+		this.emitToSocket(socketId, "student-joined-classroom", { classCode, studentUsername: studentUsername || "" })
+	}
+
+	public emitStudentJoinedHub(teacherUserId: number, data: StudentJoinedHub): void {
+		const socketId = this.connections.get(teacherUserId)?.socketId
+		if (isUndefined(socketId)) return
+		this.emitToSocket(socketId, "student-joined-hub", data)
+	}
+
+	public emitNewHubToStudents(studentIds: number[], hubInfo: StudentViewHubData): void {
+		studentIds.forEach(studentId => {
+			this.emitToUser(studentId, "new-hub", hubInfo)
+		})
+	}
+
+	public emitDeletedHubToStudents(studentIds: number[], deletedHubInfo: DeletedHub): void {
+		studentIds.forEach(studentId => {
+			this.emitToUser(studentId, "deleted-hub", deletedHubInfo)
+		})
+	}
+
+	public emitUpdatedHubToStudents(studentIds: number[], updatedHubInfo: UpdatedHubSlideId): void {
+		studentIds.forEach(studentId => {
+			this.emitToUser(studentId, "updated-hub-slide-id", updatedHubInfo)
+		})
+	}
+
+	public emitStudentLeftHub(teacherUserId: number, data: StudentLeftHub): void {
+		const socketId = this.connections.get(teacherUserId)?.socketId
+		if (isUndefined(socketId)) return
+		this.emitToSocket(socketId, "student-left-hub", data)
 	}
 
 	public emitToUser<E extends SocketEvents>(

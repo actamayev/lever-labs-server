@@ -9,9 +9,16 @@ import validateClassroomName from "../middleware/request-validation/teacher/vali
 import validateInviteJoinClass from "../middleware/request-validation/teacher/validate-invite-join-class"
 import validateTeacherNameData from "../middleware/request-validation/teacher/validate-teacher-name-data"
 import attachClassroomIdValidateClassCode from "../middleware/confirm/attach-classroom-id-attach-class-code"
+import validateCreateHub from "../middleware/request-validation/teacher/validate-create-hub"
+import validateDeleteHub from "../middleware/request-validation/teacher/validate-delete-hub"
+import confirmHubBelongsToTeacher from "../middleware/confirm/confirm-hub-belongs-to-teacher"
+import validateSetHubNewSlideId from "../middleware/request-validation/teacher/validate-set-hub-new-slide-id"
 
+import createHub from "../controllers/teacher/create-hub"
+import deleteHub from "../controllers/teacher/delete-hub"
 import createClassroom from "../controllers/teacher/create-classroom"
 import editClassroomName from "../controllers/teacher/edit-classroom-name"
+import setHubNewSlideId from "../controllers/teacher/set-hub-new-slide-id"
 import editTeacherName from "../controllers/teacher/edit-teacher-name-data"
 import requestBecomeTeacher from "../controllers/teacher/request-become-teacher"
 import inviteStudentJoinClass from "../controllers/teacher/invite-student-join-class"
@@ -69,6 +76,33 @@ teacherRoutes.post(
 	attachTeacherId,
 	attachStudentUserId,
 	inviteStudentJoinClass
+)
+
+teacherRoutes.post(
+	"/create-hub/:classCode",
+	validateCreateHub,
+	attachTeacherId, // we are not using this teacherId, but we need to make sure the user is a teacher
+	attachClassroomIdValidateClassCode,
+	createHub
+)
+
+teacherRoutes.post(
+	"/delete-hub/:classCode",
+	validateDeleteHub,
+	attachTeacherId, // we are not using this teacherId, but we need to make sure the user is a teacher
+	attachClassroomIdValidateClassCode,
+	confirmHubBelongsToTeacher,
+	deleteHub
+)
+
+// TODO: Might not need this endpoint (should be hit directly from  update-career-quest-user-progress)
+teacherRoutes.post(
+	"/set-hub-new-slide-id/:classCode",
+	validateSetHubNewSlideId,
+	attachTeacherId, // we are not using this teacherId, but we need to make sure the user is a teacher
+	attachClassroomIdValidateClassCode,
+	confirmHubBelongsToTeacher,
+	setHubNewSlideId
 )
 
 export default teacherRoutes
