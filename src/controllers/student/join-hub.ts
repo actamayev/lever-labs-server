@@ -1,10 +1,11 @@
 import { UUID } from "crypto"
 import { Response, Request } from "express"
-import { ClassCode, ErrorResponse, StudentJoinedOrLeftHub, StudentViewHubData } from "@bluedotrobots/common-ts"
+import { ClassCode, ErrorResponse, StudentJoinedHub, StudentViewHubData } from "@bluedotrobots/common-ts"
 import HubManager from "../../classes/hub-manager"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import retrieveUsername from "../../db-operations/read/credentials/retrieve-username"
-import getTeacherIdsFromClassroom from "../../db-operations/read/classroom-teacher-map/get-teacher-ids-from-classroom"
+import getTeacherIdFromClassroom from "../../db-operations/read/classroom-teacher-map/get-teacher-id-from-classroom"
+import { isUndefined } from "lodash"
 
 export default async function joinHub(req: Request, res: Response): Promise<void> {
 	try {
@@ -19,9 +20,13 @@ export default async function joinHub(req: Request, res: Response): Promise<void
 			return
 		}
 
-		const teacherIds = await getTeacherIdsFromClassroom(classroomId)
-		const data: StudentJoinedOrLeftHub = { classCode, hubId, studentUsername: username || "", studentUserId: userId }
-		BrowserSocketManager.getInstance().emitStudentJoinedHub(teacherIds, data)
+		const teacherId = await getTeacherIdFromClassroom(classroomId)
+		if (isUndefined(teacherId)) {
+			res.status(400).json({ error: "Teacher not found" } satisfies ErrorResponse)
+			return
+		}
+		const data: StudentJoinedHub = { classCode, hubId, studentUsername: username || "", studentUserId: userId }
+		BrowserSocketManager.getInstance().emitStudentJoinedHub(teacherId, data)
 		const studentViewHubData: StudentViewHubData = {
 			hubId,
 			classCode,

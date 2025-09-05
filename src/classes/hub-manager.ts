@@ -95,4 +95,26 @@ export default class HubManager extends Singleton {
 		if (!hub) return false
 		return hub.studentsJoined.some(student => student.userId === userId)
 	}
+
+	public getStudentHubsByUserId(userId: number): { hubId: UUID, classCode: ClassCode, teacherId: number }[] {
+		return Array.from(this.hubs.values()).filter(hub => hub.studentsJoined.some(student => student.userId === userId)).map(hub => ({
+			hubId: hub.hubId,
+			classCode: hub.classCode,
+			teacherId: hub.teacherId
+		}))
+	}
+
+	public getTeacherIdsByStudentUserId(userId: number): number[] {
+		// eslint-disable-next-line max-len
+		return Array.from(this.hubs.values()).filter(hub => hub.studentsJoined.some(student => student.userId === userId)).map(hub => hub.teacherId)
+	}
+
+	public getTeacherHubsByUserId(userId: number): { hubId: UUID, classCode: ClassCode, studentUserIds: number[] }[] {
+		return Array.from(this.hubs.values()).filter(hub => hub.teacherId === userId).map(hub => ({
+			hubId: hub.hubId,
+			classCode: hub.classCode,
+			studentUserIds: hub.studentsJoined.map(student => student.userId)
+		}))
+	}
+
 }

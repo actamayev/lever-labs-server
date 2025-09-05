@@ -3,14 +3,14 @@ import { Server as SocketIOServer, Socket } from "socket.io"
 import { PipConnectionStatus, PipUUID, SensorPayload,
 	BatteryMonitorData, SocketEvents, SocketEventPayloadMap,
 	SensorPayloadMZ, MessageBuilder, ClassCode, StudentViewHubData,
-	DeletedHub, UpdatedHubSlideId, StudentJoinedOrLeftHub } from "@bluedotrobots/common-ts"
+	DeletedHub, UpdatedHubSlideId, StudentJoinedHub, StudentLeftHub } from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
-import HubManager from "./hub-manager"
-import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import listenersMap from "../utils/constants/listeners-map"
+import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
-import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
+import handleDisconnectHubHelper from "../utils/handle-disconnect-hub-helper"
 import retrieveUsername from "../db-operations/read/credentials/retrieve-username"
+import retrieveUserPipUUIDs from "../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids"
 
 export default class BrowserSocketManager extends Singleton {
 	private connections = new Map<number, BrowserSocketConnectionInfo>() // Maps UserID to BrowserSocketConnectionInfo
@@ -82,7 +82,7 @@ export default class BrowserSocketManager extends Singleton {
 					}
 				})
 			}
-			HubManager.getInstance().removeStudentFromAllHubs(userId)
+			void handleDisconnectHubHelper(userId)
 			this.connections.delete(userId)
 		} catch (error) {
 			console.error("Error during disconnection:", error)
@@ -297,29 +297,20 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	public async emitStudentJoinedClassroom(teacherUserIds: number[], classCode: ClassCode, studentUserId: number): Promise<void> {
+	public async emitStudentJoinedClassroom(teacherUserId: number, classCode: ClassCode, studentUserId: number): Promise<void> {
 		// 1. See if any of the teachers are connected. If none of them are connected, return. if at least one is connected, continue.
 		// For each that is connected, emit the event to the teacher.
-		const socketIds = teacherUserIds.map(teacherUserId => this.connections.get(teacherUserId)?.socketId)
-		if (socketIds.every(socketId => isUndefined(socketId))) return
+		const socketId = this.connections.get(teacherUserId)?.socketId
+		if (isUndefined(socketId)) return
 		const studentUsername = await retrieveUsername(studentUserId)
-		socketIds.forEach((socketId) => {
-			if (isUndefined(socketId)) return
-			teacherUserIds.forEach(() => {
-				this.emitToSocket(socketId, "student-joined-classroom", { classCode, studentUsername: studentUsername || "" })
-			})
-		})
+		if (isUndefined(socketId)) return
+		this.emitToSocket(socketId, "student-joined-classroom", { classCode, studentUsername: studentUsername || "" })
 	}
 
-	public emitStudentJoinedHub(teacherUserIds: number[], data: StudentJoinedOrLeftHub): void {
-		const socketIds = teacherUserIds.map(teacherUserId => this.connections.get(teacherUserId)?.socketId)
-		if (socketIds.every(socketId => isUndefined(socketId))) return
-		socketIds.forEach((socketId) => {
-			if (isUndefined(socketId)) return
-			teacherUserIds.forEach(() => {
-				this.emitToSocket(socketId, "student-joined-hub", data)
-			})
-		})
+	public emitStudentJoinedHub(teacherUserId: number, data: StudentJoinedHub): void {
+		const socketId = this.connections.get(teacherUserId)?.socketId
+		if (isUndefined(socketId)) return
+		this.emitToSocket(socketId, "student-joined-hub", data)
 	}
 
 	public emitNewHubToStudents(studentIds: number[], hubInfo: StudentViewHubData): void {
@@ -340,15 +331,10 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	public emitStudentLeftHub(teacherUserIds: number[], data: StudentJoinedOrLeftHub): void {
-		const socketIds = teacherUserIds.map(teacherUserId => this.connections.get(teacherUserId)?.socketId)
-		if (socketIds.every(socketId => isUndefined(socketId))) return
-		socketIds.forEach((socketId) => {
-			if (isUndefined(socketId)) return
-			teacherUserIds.forEach(() => {
-				this.emitToSocket(socketId, "student-left-hub", data)
-			})
-		})
+	public emitStudentLeftHub(teacherUserId: number, data: StudentLeftHub): void {
+		const socketId = this.connections.get(teacherUserId)?.socketId
+		if (isUndefined(socketId)) return
+		this.emitToSocket(socketId, "student-left-hub", data)
 	}
 
 	public emitToUser<E extends SocketEvents>(

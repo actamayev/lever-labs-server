@@ -7,13 +7,13 @@ import getClassroomStudentIds from "../../db-operations/read/classroom/get-class
 
 export default async function createHub(req: Request, res: Response): Promise<void> {
 	try {
-		const { teacherId, classroomId } = req
+		const { userId, classroomId } = req
 		const { classCode } = req.params as { classCode: ClassCode }
 		const { hubName, careerUUID, slideId } = req.body as { hubName: string, careerUUID: CareerUUID, slideId: string }
 		const studentIds = await getClassroomStudentIds(classroomId)
 
 		const hubId = randomUUID()
-		HubManager.getInstance().createHub(hubId, { teacherId, hubName, classCode, careerUUID, slideId, studentsJoined: [], hubId })
+		HubManager.getInstance().createHub(hubId, { teacherId: userId, hubName, classCode, careerUUID, slideId, studentsJoined: [], hubId })
 
 		const hubInfo: StudentViewHubData = { hubId, classCode, careerUUID, slideId, hubName }
 		void BrowserSocketManager.getInstance().emitNewHubToStudents(studentIds, hubInfo)

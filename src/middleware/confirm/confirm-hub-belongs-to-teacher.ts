@@ -9,10 +9,10 @@ export default function confirmHubBelongsToTeacher(
 	next: NextFunction
 ): void {
 	try {
-		const { teacherId } = req
+		const { userId } = req
 		const { hubId } = req.body as { hubId: UUID }
 
-		const doesClassBelongToTeacher = HubManager.getInstance().doesHubBelongToTeacher(hubId, teacherId)
+		const doesClassBelongToTeacher = HubManager.getInstance().doesHubBelongToTeacher(hubId, userId)
 
 		 if (doesClassBelongToTeacher === false) {
 			res.status(400).json({ message: "You are not a teacher for this hub"} satisfies MessageResponse)

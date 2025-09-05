@@ -81,7 +81,7 @@ teacherRoutes.post(
 teacherRoutes.post(
 	"/create-hub/:classCode",
 	validateCreateHub,
-	attachTeacherId,
+	attachTeacherId, // we are not using this teacherId, but we need to make sure the user is a teacher
 	attachClassroomIdValidateClassCode,
 	createHub
 )
@@ -89,8 +89,8 @@ teacherRoutes.post(
 teacherRoutes.post(
 	"/delete-hub/:classCode",
 	validateDeleteHub,
+	attachTeacherId, // we are not using this teacherId, but we need to make sure the user is a teacher
 	attachClassroomIdValidateClassCode,
-	attachTeacherId,
 	confirmHubBelongsToTeacher,
 	deleteHub
 )
@@ -99,8 +99,8 @@ teacherRoutes.post(
 teacherRoutes.post(
 	"/set-hub-new-slide-id/:classCode",
 	validateSetHubNewSlideId,
+	attachTeacherId, // we are not using this teacherId, but we need to make sure the user is a teacher
 	attachClassroomIdValidateClassCode,
-	attachTeacherId,
 	confirmHubBelongsToTeacher,
 	setHubNewSlideId
 )
