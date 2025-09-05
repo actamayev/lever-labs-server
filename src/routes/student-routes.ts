@@ -14,6 +14,8 @@ import joinHub from "../controllers/student/join-hub"
 import leaveHub from "../controllers/student/leave-hub"
 import confirmStudentInHub from "../middleware/confirm/confirm-student-in-hub"
 import confirmStudentNotInHub from "../middleware/confirm/confirm-student-not-in-hub"
+import sendDinoScore from "../controllers/student/send-dino-score"
+import validateDinoScore from "../middleware/request-validation/student/validate-dino-score"
 
 const studentRoutes = express.Router()
 
@@ -51,6 +53,12 @@ studentRoutes.post(
 	attachClassroomIdValidateClassCode,
 	attachStudentId,
 	leaveHub
+)
+
+studentRoutes.post(
+	"/send-dino-score/:classCode",
+	validateDinoScore,
+	sendDinoScore
 )
 
 export default studentRoutes

@@ -104,11 +104,6 @@ export default class HubManager extends Singleton {
 		}))
 	}
 
-	public getTeacherIdsByStudentUserId(userId: number): number[] {
-		// eslint-disable-next-line max-len
-		return Array.from(this.hubs.values()).filter(hub => hub.studentsJoined.some(student => student.userId === userId)).map(hub => hub.teacherId)
-	}
-
 	public getTeacherHubsByUserId(userId: number): { hubId: UUID, classCode: ClassCode, studentUserIds: number[] }[] {
 		return Array.from(this.hubs.values()).filter(hub => hub.teacherId === userId).map(hub => ({
 			hubId: hub.hubId,
@@ -117,4 +112,9 @@ export default class HubManager extends Singleton {
 		}))
 	}
 
+	public getStudentIdsByHubId(hubId: UUID): number[] {
+		const hub = this.hubs.get(hubId)
+		if (!hub) return []
+		return hub.studentsJoined.map(student => student.userId)
+	}
 }
