@@ -4,8 +4,8 @@ import getDetailedTeacherClassroomData from "../../db-operations/read/classroom-
 
 export default async function retrieveDetailedClassroomInfo(req: Request, res: Response): Promise<void> {
 	try {
-		const { teacherId } = req
-		const detailedClassroomInfo = await getDetailedTeacherClassroomData(teacherId)
+		const { teacherId, userId } = req
+		const detailedClassroomInfo = await getDetailedTeacherClassroomData(teacherId, userId)
 
 		res.status(200).json(detailedClassroomInfo satisfies DetailedClassroomData[])
 		return

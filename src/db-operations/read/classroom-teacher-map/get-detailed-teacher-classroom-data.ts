@@ -1,7 +1,12 @@
 import { ClassCode, DetailedClassroomData, StudentData } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
+import HubManager from "../../../classes/hub-manager"
 
-export default async function getDetailedTeacherClassroomData(teacherId: number): Promise<DetailedClassroomData[]> {
+// eslint-disable-next-line max-lines-per-function
+export default async function getDetailedTeacherClassroomData(
+	teacherId: number,
+	userId: number
+): Promise<DetailedClassroomData[]> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -16,7 +21,7 @@ export default async function getDetailedTeacherClassroomData(teacherId: number)
 						class_code: true,
 						student: {
 							select: {
-								joined_classroom_at: true,
+								invitation_status: true,
 								user: {
 									select: {
 										username: true
@@ -34,8 +39,9 @@ export default async function getDetailedTeacherClassroomData(teacherId: number)
 			classCode: item.classroom.class_code as ClassCode,
 			students: item.classroom.student.map(student => ({
 				username: student.user.username || "",
-				didAccept: student.joined_classroom_at !== null
-			}) satisfies StudentData)
+				inviteStatus: student.invitation_status
+			}) satisfies StudentData),
+			activeHubs: HubManager.getInstance().getTeacherHubs(userId)
 		}) satisfies DetailedClassroomData)
 	} catch (error) {
 		console.error(error)
