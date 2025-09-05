@@ -2,6 +2,7 @@ import { ClassCode, DetailedClassroomData, StudentData } from "@bluedotrobots/co
 import PrismaClientClass from "../../../classes/prisma-client"
 import HubManager from "../../../classes/hub-manager"
 
+// eslint-disable-next-line max-lines-per-function
 export default async function getDetailedTeacherClassroomData(
 	teacherId: number,
 	userId: number
