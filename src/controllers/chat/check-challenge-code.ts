@@ -34,7 +34,7 @@ export default async function checkChallengeCode(req: Request, res: Response): P
 	}
 }
 
-async function evaluateCodeWithScore(
+export async function evaluateCodeWithScore(
 	challengeUUID: ChallengeUUID,
 	chatData: ProcessedChallengeCheckCodeMessage
 ): Promise<CodeWithScore> {
