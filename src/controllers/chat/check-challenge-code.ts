@@ -54,7 +54,7 @@ async function evaluateCodeWithScore(
 		stream: false
 	})
 
-	const fallbackResult = "{\"isCorrect\": false, \"score\": 0.0}"
-	const result = JSON.parse(response.choices[0].message.content || fallbackResult)
+	const fallbackResult = { isCorrect: false, score: 0.0 }
+	const result = JSON.parse(response.choices[0].message.content || JSON.stringify(fallbackResult))
 	return { isCorrect: result.isCorrect, score: result.score }
 }
