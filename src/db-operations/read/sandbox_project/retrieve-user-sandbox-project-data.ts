@@ -1,4 +1,4 @@
-import { BlocklyJson, ProjectUUID, SandboxProject } from "@bluedotrobots/common-ts"
+import { BlocklyJson, SandboxProjectUUID, SandboxProject } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 import camelCaseSandboxProject from "../../../utils/sandbox/camel-case-sandbox-project"
 
@@ -43,7 +43,7 @@ export default async function retrieveUserSandboxProjectData(userId: number): Pr
 
 		return sandboxProjects.map(sandboxProject => camelCaseSandboxProject({
 			...sandboxProject,
-			project_uuid: sandboxProject.project_uuid as ProjectUUID,
+			project_uuid: sandboxProject.project_uuid as SandboxProjectUUID,
 			sandbox_json: sandboxProject.sandbox_json as BlocklyJson,
 			sandbox_chat: sandboxProject.sandbox_chat[0] || null
 		}) satisfies SandboxProject)

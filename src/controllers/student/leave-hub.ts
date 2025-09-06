@@ -1,7 +1,6 @@
 import { Response, Request } from "express"
-import { ClassCode, ErrorResponse, StudentLeftHub, SuccessResponse } from "@bluedotrobots/common-ts"
+import { ClassCode, ErrorResponse, HubUUID, StudentLeftHub, SuccessResponse } from "@bluedotrobots/common-ts"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
-import { UUID } from "crypto"
 import HubManager from "../../classes/hub-manager"
 import getTeacherIdFromClassroom from "../../db-operations/read/classroom-teacher-map/get-teacher-id-from-classroom"
 import { isUndefined } from "lodash"
@@ -9,7 +8,7 @@ import { isUndefined } from "lodash"
 export default async function leaveHub(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId, classroomId } = req
-		const { hubId } = req.body as { hubId: UUID }
+		const { hubId } = req.body as { hubId: HubUUID }
 		const { classCode } = req.params as { classCode: ClassCode }
 		HubManager.getInstance().removeStudentFromHub(hubId, userId)
 

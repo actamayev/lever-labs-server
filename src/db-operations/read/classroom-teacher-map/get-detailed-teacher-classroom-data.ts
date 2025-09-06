@@ -1,4 +1,4 @@
-import { ClassCode, DetailedClassroomData, StudentData } from "@bluedotrobots/common-ts"
+import { ClassCode, DetailedClassroomData } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 import HubManager from "../../../classes/hub-manager"
 
@@ -21,7 +21,6 @@ export default async function getDetailedTeacherClassroomData(
 						class_code: true,
 						student: {
 							select: {
-								invitation_status: true,
 								user: {
 									select: {
 										username: true
@@ -39,8 +38,7 @@ export default async function getDetailedTeacherClassroomData(
 			classCode: item.classroom.class_code as ClassCode,
 			students: item.classroom.student.map(student => ({
 				username: student.user.username || "",
-				inviteStatus: student.invitation_status
-			}) satisfies StudentData),
+			})),
 			activeHubs: HubManager.getInstance().getTeacherHubs(userId)
 		}) satisfies DetailedClassroomData)
 	} catch (error) {

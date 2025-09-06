@@ -1,5 +1,4 @@
-import { UUID } from "crypto"
-import { ClassCode, StudentViewHubData, TeacherViewHubData } from "@bluedotrobots/common-ts"
+import { ClassCode, HubUUID, StudentViewHubData, TeacherViewHubData } from "@bluedotrobots/common-ts"
 import Singleton from "./singleton"
 
 interface Hub extends TeacherViewHubData {
@@ -7,7 +6,7 @@ interface Hub extends TeacherViewHubData {
 }
 
 export default class HubManager extends Singleton {
-	private hubs: Map<UUID, Hub> = new Map()
+	private hubs: Map<HubUUID, Hub> = new Map()
 
 	private constructor() {
 		super()
@@ -20,28 +19,28 @@ export default class HubManager extends Singleton {
 		return HubManager.instance
 	}
 
-	public createHub(hubId: UUID, hub: Hub): void {
+	public createHub(hubId: HubUUID, hub: Hub): void {
 		this.hubs.set(hubId, hub)
 	}
 
-	public deleteHub(hubId: UUID): void {
+	public deleteHub(hubId: HubUUID): void {
 		this.hubs.delete(hubId)
 	}
 
-	public setSlideId(hubId: UUID, slideId: string): void {
+	public setSlideId(hubId: HubUUID, slideId: string): void {
 		const hub = this.hubs.get(hubId)
 		if (!hub) return
 		hub.slideId = slideId
 	}
 
-	public addStudentToHub(hubId: UUID, userId: number, username: string): Hub | null {
+	public addStudentToHub(hubId: HubUUID, userId: number, username: string): Hub | null {
 		const hub = this.hubs.get(hubId)
 		if (!hub) return null
 		hub.studentsJoined.push({ userId, username })
 		return hub
 	}
 
-	public removeStudentFromHub(hubId: UUID, userId: number): void {
+	public removeStudentFromHub(hubId: HubUUID, userId: number): void {
 		const hub = this.hubs.get(hubId)
 		if (!hub) return
 		hub.studentsJoined = hub.studentsJoined.filter(student => student.userId !== userId)
@@ -53,7 +52,7 @@ export default class HubManager extends Singleton {
 		})
 	}
 
-	public doesHubBelongToTeacher(hubId: UUID, teacherId: number): boolean {
+	public doesHubBelongToTeacher(hubId: HubUUID, teacherId: number): boolean {
 		const hub = this.hubs.get(hubId)
 		if (!hub) return false
 		return hub.teacherId === teacherId
@@ -90,13 +89,13 @@ export default class HubManager extends Singleton {
 		}))
 	}
 
-	public checkIfStudentInHub(hubId: UUID, userId: number): boolean {
+	public checkIfStudentInHub(hubId: HubUUID, userId: number): boolean {
 		const hub = this.hubs.get(hubId)
 		if (!hub) return false
 		return hub.studentsJoined.some(student => student.userId === userId)
 	}
 
-	public getStudentHubsByUserId(userId: number): { hubId: UUID, classCode: ClassCode, teacherId: number }[] {
+	public getStudentHubsByUserId(userId: number): { hubId: HubUUID, classCode: ClassCode, teacherId: number }[] {
 		return Array.from(this.hubs.values()).filter(hub => hub.studentsJoined.some(student => student.userId === userId)).map(hub => ({
 			hubId: hub.hubId,
 			classCode: hub.classCode,
@@ -104,15 +103,7 @@ export default class HubManager extends Singleton {
 		}))
 	}
 
-	public getTeacherHubsByUserId(userId: number): { hubId: UUID, classCode: ClassCode, studentUserIds: number[] }[] {
-		return Array.from(this.hubs.values()).filter(hub => hub.teacherId === userId).map(hub => ({
-			hubId: hub.hubId,
-			classCode: hub.classCode,
-			studentUserIds: hub.studentsJoined.map(student => student.userId)
-		}))
-	}
-
-	public getStudentIdsByHubId(hubId: UUID): number[] {
+	public getStudentIdsByHubId(hubId: HubUUID): number[] {
 		const hub = this.hubs.get(hubId)
 		if (!hub) return []
 		return hub.studentsJoined.map(student => student.userId)

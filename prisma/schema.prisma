@@ -516,7 +516,6 @@ model teacher {
 
     is_approved         										Boolean?
     classroom_teacher_map   									classroom_teacher_map[]
-    student_invited     										student[]
     school														school @relation(fields: [school_id], references: [school_id])
 
 	user                                                        credentials @relation(fields: [user_id], references: [user_id])
@@ -543,24 +542,10 @@ model classroom_teacher_map {
     @@index([classroom_id])
 }
 
-enum InvitationMethod {
-	TEACHER_INVITE
-	CLASS_CODE
-}
-
-enum InvitationStatus {
-    PENDING
-    ACCEPTED
-    DECLINED
-}
-
 model student {
     student_id              									Int       @id @default(autoincrement())
     user_id                 									Int
     classroom_id            									Int
-    teacher_id_invited      									Int?
-    invitation_method       									InvitationMethod
-    invitation_status       									InvitationStatus @default(PENDING)
     joined_classroom_at     									DateTime? // Only set when ACCEPTED
 
     created_at          										DateTime  @default(now())
@@ -568,7 +553,6 @@ model student {
 										
     user                										credentials @relation(fields: [user_id], references: [user_id])
     classroom           										classroom @relation(fields: [classroom_id], references: [classroom_id])
-    teacher_invited     										teacher? @relation(fields: [teacher_id_invited], references: [teacher_id])
 
     @@unique([user_id, classroom_id])
     @@index([classroom_id])

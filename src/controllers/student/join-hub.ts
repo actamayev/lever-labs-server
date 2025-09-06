@@ -1,6 +1,5 @@
-import { UUID } from "crypto"
 import { Response, Request } from "express"
-import { ClassCode, ErrorResponse, StudentJoinedHub, StudentViewHubData } from "@bluedotrobots/common-ts"
+import { ClassCode, ErrorResponse, HubUUID, StudentJoinedHub, StudentViewHubData } from "@bluedotrobots/common-ts"
 import HubManager from "../../classes/hub-manager"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import retrieveUsername from "../../db-operations/read/credentials/retrieve-username"
@@ -10,7 +9,7 @@ import { isUndefined } from "lodash"
 export default async function joinHub(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId, classroomId } = req
-		const { hubId } = req.body as { hubId: UUID }
+		const { hubId } = req.body as { hubId: HubUUID }
 		const { classCode } = req.params as { classCode: ClassCode }
 
 		const username = await retrieveUsername(userId)

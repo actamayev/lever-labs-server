@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
-import { UUID } from "crypto"
+import { ErrorResponse, MessageResponse, HubUUID } from "@bluedotrobots/common-ts"
 import HubManager from "../../classes/hub-manager"
 
 export default function confirmHubBelongsToTeacher(
@@ -10,7 +9,7 @@ export default function confirmHubBelongsToTeacher(
 ): void {
 	try {
 		const { userId } = req
-		const { hubId } = req.body as { hubId: UUID }
+		const { hubId } = req.body as { hubId: HubUUID }
 
 		const doesClassBelongToTeacher = HubManager.getInstance().doesHubBelongToTeacher(hubId, userId)
 

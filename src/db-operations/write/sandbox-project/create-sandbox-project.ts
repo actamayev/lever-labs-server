@@ -1,4 +1,4 @@
-import { BlocklyJson, SandboxProject } from "@bluedotrobots/common-ts"
+import { BlocklyJson, SandboxProject, SandboxProjectUUID } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 import camelCaseSandboxProject from "../../../utils/sandbox/camel-case-sandbox-project"
 
@@ -6,7 +6,7 @@ export default async function createSandboxProjectDB(userId: number): Promise<Sa
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		const uuid = crypto.randomUUID()
+		const uuid = crypto.randomUUID() as SandboxProjectUUID
 		const defaultSandboxJson: BlocklyJson = {}
 		const sandboxProjectWithoutChat = await prismaClient.sandbox_project.create({
 			data: {

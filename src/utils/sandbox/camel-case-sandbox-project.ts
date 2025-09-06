@@ -10,7 +10,7 @@ export default function camelCaseSandboxProject(sandboxProject: RetrievedSandbox
 
 		return {
 			sandboxJson: sandboxProject.sandbox_json,
-			projectUUID: sandboxProject.project_uuid,
+			sandboxProjectUUID: sandboxProject.project_uuid,
 			isStarred: sandboxProject.is_starred,
 			projectName: sandboxProject.project_name,
 			createdAt: new Date(sandboxProject.created_at),
