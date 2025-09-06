@@ -3,8 +3,6 @@ When making changes, change the name of the .env.local to .env so that prisma.sc
 Then, run the `npx prisma migrate dev --name [name_of_operation (ie add_login_history)]`
 If manual changes have been made to the Schema (non-migration), run `npx prisma generate`
 
-AFTER FINISHING THE CHANGES, CHANGE RENAME `.env` BACK TO `.env.local`
-
 Might have to restart TS server for the changes to take effect in VS code (ie. autocomplete new table names)
 
 To add data to the reference configuration tables (this is data that has to be in the table when it's first built (ie. lessons, questions, answers)):
