@@ -14,9 +14,6 @@
     "cloud-seed": "node dist/src/prisma/seed.js",
     "updateCommon": "sudo npm update @bluedotrobots/common-ts"
   },
-  "prisma": {
-    "seed": "ts-node --files src/prisma/seed.ts"
-  },
   "ts-node": {
     "files": true,
     "require": [

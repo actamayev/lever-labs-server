@@ -56,7 +56,8 @@
 	},
 	"include": [
 		"src/**/*",
-		"src/prisma/seed.ts"
+		"src/prisma/seed.ts",
+		"prisma.config.ts"
 	],
 	"exclude": [
 		"node_modules",

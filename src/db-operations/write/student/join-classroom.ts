@@ -1,4 +1,3 @@
-import { InvitationMethod } from "@prisma/client"
 import { ClassCode, StudentClassroomData } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 import HubManager from "../../../classes/hub-manager"
@@ -15,7 +14,6 @@ export default async function joinClassroom(
 			data: {
 				user_id: studentId,
 				classroom_id: classroomId,
-				invitation_method: InvitationMethod.CLASS_CODE,
 				joined_classroom_at: new Date()
 			},
 			include: {
