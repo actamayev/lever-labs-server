@@ -1,4 +1,4 @@
--- SELECT * FROM credentials where auth_method = 'google'; 
+SELECT * FROM credentials ORDER BY created_at;
 -- SELECT * FROM login_history;
 -- SELECT * FROM pip_uuid;
 -- SELECT * FROM user_pip_uuid_map;
@@ -12,12 +12,6 @@
 -- DELETE FROM sandbox_message;
 -- SELECT * FROM challenge_sandbox;
 -- UPDATE challenge_sandbox 
--- SET challenge_sandbox_json = replace(challenge_sandbox_json::text, 'esp32_led_control', 'control_all_leds')::jsonb
--- WHERE challenge_sandbox_json::text LIKE '%esp32_led_control%';
-
--- SELECT COUNT(*) FROM challenge_sandbox 
--- WHERE challenge_sandbox_json::text ~ '(esp32_led_control|controls_repeat_ext|esp32_delay|esp32_loop)';
-
 
 -- DELETE FROM career_quest_message;
 -- DELETE FROM career_quest_chat;	
