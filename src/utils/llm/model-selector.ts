@@ -1,6 +1,8 @@
 import { InteractionType } from "@bluedotrobots/common-ts"
 
-export default function selectModel(interactionType: InteractionType): string {
+type ExtendedInteractionType = InteractionType | "checkCode"
+
+export default function selectModel(interactionType: ExtendedInteractionType): string {
 	switch (interactionType) {
 	case "checkCode":
 		return "google/gemini-2.5-flash"
