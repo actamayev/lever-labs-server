@@ -1,7 +1,7 @@
 
 import { Response, Request } from "express"
 import { MessageSender } from "@prisma/client"
-import { ErrorResponse, ProjectUUID, StartChatSuccess } from "@bluedotrobots/common-ts"
+import { ErrorResponse, SandboxProjectUUID, StartChatSuccess } from "@bluedotrobots/common-ts"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
@@ -12,7 +12,7 @@ import addSandboxMessage from "../../db-operations/write/sandbox-message/add-san
 export default function sendSandboxMessage(req: Request, res: Response): void {
 	try {
 		const { userId } = req
-		const { projectUUID } = req.params as { projectUUID: ProjectUUID }
+		const { projectUUID } = req.params as { projectUUID: SandboxProjectUUID }
 		const chatData = req.body as ProcessedSandboxChatData
 
 		// Create a new stream and get streamId
@@ -41,7 +41,7 @@ async function processLLMRequest(
 	userId: number,
 	streamId: string,
 	abortSignal: AbortSignal,
-	sandboxProjectUUID: ProjectUUID
+	sandboxProjectUUID: SandboxProjectUUID
 ): Promise<void> {
 	const socketManager = BrowserSocketManager.getInstance()
 

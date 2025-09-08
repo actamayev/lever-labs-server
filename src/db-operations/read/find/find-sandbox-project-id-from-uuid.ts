@@ -1,7 +1,7 @@
-import { ProjectUUID } from "@bluedotrobots/common-ts"
+import { SandboxProjectUUID } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function findSandboxProjectIdFromUUID(projectUUID: ProjectUUID): Promise<number | undefined> {
+export default async function findSandboxProjectIdFromUUID(projectUUID: SandboxProjectUUID): Promise<number | undefined> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 

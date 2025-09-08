@@ -1,4 +1,3 @@
-import { InvitationStatus } from "@prisma/client"
 import { ClassCode, StudentClassroomData } from "@bluedotrobots/common-ts"
 import HubManager from "../../../classes/hub-manager"
 import PrismaClientClass from "../../../classes/prisma-client"
@@ -13,13 +12,7 @@ export default async function retrieveStudentClasses(userId: number): Promise<St
 			},
 			select: {
 				student: {
-					where: {
-						invitation_status: {
-							in: [InvitationStatus.ACCEPTED, InvitationStatus.PENDING]
-						}
-					},
 					select: {
-						invitation_status: true,
 						joined_classroom_at: true,
 						classroom: {
 							select: {
@@ -33,7 +26,6 @@ export default async function retrieveStudentClasses(userId: number): Promise<St
 		})
 
 		return studentData?.student.map(singleStudentData => ({
-			invitationStatus: singleStudentData.invitation_status,
 			joinedClassroomAt: singleStudentData.joined_classroom_at,
 			classroomName: singleStudentData.classroom.classroom_name,
 			classCode: singleStudentData.classroom.class_code as ClassCode,

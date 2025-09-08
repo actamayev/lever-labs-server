@@ -59,10 +59,4 @@ Other:
 - Update linux packages
 	sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
 
-To get into DB:
-	For Staging, access via PGAdmin
-	For production:
-		run: `ssh -i /Users/arieltamayev/Documents/bdr-production-ec2.pem -L 5433:new-bdr-prod-db.c18kkyek274l.us-east-1.rds.amazonaws.com:5432 ubuntu@54.81.65.153`
-		While that is open in one terminal, run: `psql -h localhost -p 5433 -U postgres -d bluedotrobots` in another
-
 Periodically locally run `depcheck` to see if any packages aren't being used

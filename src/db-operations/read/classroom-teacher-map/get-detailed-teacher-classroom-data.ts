@@ -1,18 +1,23 @@
-import { ClassCode, DetailedClassroomData, StudentData } from "@bluedotrobots/common-ts"
-import PrismaClientClass from "../../../classes/prisma-client"
+import { isNull } from "lodash"
+import { ClassCode, DetailedClassroomData } from "@bluedotrobots/common-ts"
 import HubManager from "../../../classes/hub-manager"
+import PrismaClientClass from "../../../classes/prisma-client"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function getDetailedTeacherClassroomData(
 	teacherId: number,
-	userId: number
-): Promise<DetailedClassroomData[]> {
+	userId: number,
+	classroomId: number
+): Promise<DetailedClassroomData | null> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		const classrooms = await prismaClient.classroom_teacher_map.findMany({
+		const classroom = await prismaClient.classroom_teacher_map.findUnique({
 			where: {
-				teacher_id: teacherId,
+				classroom_id_teacher_id: {
+					teacher_id: teacherId,
+					classroom_id: classroomId
+				}
 			},
 			select: {
 				classroom: {
@@ -21,7 +26,6 @@ export default async function getDetailedTeacherClassroomData(
 						class_code: true,
 						student: {
 							select: {
-								invitation_status: true,
 								user: {
 									select: {
 										username: true
@@ -34,15 +38,16 @@ export default async function getDetailedTeacherClassroomData(
 			}
 		})
 
-		return classrooms.map(item => ({
-			classroomName: item.classroom.classroom_name,
-			classCode: item.classroom.class_code as ClassCode,
-			students: item.classroom.student.map(student => ({
+		if (isNull(classroom)) return null
+
+		return {
+			classroomName: classroom.classroom.classroom_name,
+			classCode: classroom.classroom.class_code as ClassCode,
+			students: classroom.classroom.student.map(student => ({
 				username: student.user.username || "",
-				inviteStatus: student.invitation_status
-			}) satisfies StudentData),
+			})),
 			activeHubs: HubManager.getInstance().getTeacherHubs(userId)
-		}) satisfies DetailedClassroomData)
+		} satisfies DetailedClassroomData
 	} catch (error) {
 		console.error(error)
 		throw error

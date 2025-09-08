@@ -1,6 +1,5 @@
-import { UUID } from "crypto"
 import { Response, Request } from "express"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse, HubUUID, SuccessResponse } from "@bluedotrobots/common-ts"
 import HubManager from "../../classes/hub-manager"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import retrieveUsername from "../../db-operations/read/credentials/retrieve-username"
@@ -8,7 +7,7 @@ import retrieveUsername from "../../db-operations/read/credentials/retrieve-user
 export default async function sendDinoScore(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
-		const { score, hubId } = req.body as { score: number, hubId: UUID }
+		const { score, hubId } = req.body as { score: number, hubId: HubUUID }
 
 		let studentIds = HubManager.getInstance().getStudentIdsByHubId(hubId)
 		// filter out the userId

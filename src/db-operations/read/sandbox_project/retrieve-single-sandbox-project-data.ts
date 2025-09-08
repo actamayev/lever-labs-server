@@ -1,5 +1,5 @@
 import { isNull } from "lodash"
-import { BlocklyJson, ProjectUUID, SandboxProject } from "@bluedotrobots/common-ts"
+import { BlocklyJson, SandboxProjectUUID, SandboxProject } from "@bluedotrobots/common-ts"
 import PrismaClientClass from "../../../classes/prisma-client"
 import camelCaseSandboxProject from "../../../utils/sandbox/camel-case-sandbox-project"
 
@@ -46,7 +46,7 @@ export default async function retrieveSingleSandboxProjectData(sandboxProjectId:
 
 		return camelCaseSandboxProject({
 			...sandboxData,
-			project_uuid: sandboxData.project_uuid as ProjectUUID,
+			project_uuid: sandboxData.project_uuid as SandboxProjectUUID,
 			sandbox_json: sandboxData.sandbox_json as BlocklyJson,
 			sandbox_chat: sandboxData.sandbox_chat[0] || null
 		})

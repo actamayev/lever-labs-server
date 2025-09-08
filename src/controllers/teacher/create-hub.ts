@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto"
 import { Response, Request } from "express"
-import { ErrorResponse, ClassCode, CareerUUID, StudentViewHubData, CreateHubRequest } from "@bluedotrobots/common-ts"
+import { ErrorResponse, ClassCode, CareerUUID, StudentViewHubData, CreateHubRequest, HubUUID } from "@bluedotrobots/common-ts"
 import HubManager from "../../classes/hub-manager"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import getClassroomStudentIds from "../../db-operations/read/classroom/get-classroom-student-ids"
@@ -12,7 +12,7 @@ export default async function createHub(req: Request, res: Response): Promise<vo
 		const { hubName, careerUUID, slideId } = req.body as { hubName: string, careerUUID: CareerUUID, slideId: string }
 		const studentIds = await getClassroomStudentIds(classroomId)
 
-		const hubId = randomUUID()
+		const hubId = randomUUID() as HubUUID
 		HubManager.getInstance().createHub(hubId, { teacherId: userId, hubName, classCode, careerUUID, slideId, studentsJoined: [], hubId })
 
 		const hubInfo: StudentViewHubData = { hubId, classCode, careerUUID, slideId, hubName }
