@@ -1,6 +1,5 @@
-import { UUID } from "crypto"
 import { Response, Request } from "express"
-import { SuccessResponse, ErrorResponse, ClassCode, DeletedHub } from "@bluedotrobots/common-ts"
+import { SuccessResponse, ErrorResponse, ClassCode, DeletedHub, HubUUID } from "@bluedotrobots/common-ts"
 import HubManager from "../../classes/hub-manager"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import getClassroomStudentIds from "../../db-operations/read/classroom/get-classroom-student-ids"
@@ -8,7 +7,7 @@ import getClassroomStudentIds from "../../db-operations/read/classroom/get-class
 export default async function deleteHub(req: Request, res: Response): Promise<void> {
 	try {
 		const { classroomId } = req
-		const { hubId } = req.body as { hubId: UUID }
+		const { hubId } = req.body as { hubId: HubUUID }
 		const { classCode } = req.params as { classCode: ClassCode }
 
 		HubManager.getInstance().deleteHub(hubId)

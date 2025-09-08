@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Response, Request } from "express"
-import { ChallengeUUID, ErrorResponse, StartChatSuccess } from "@bluedotrobots/common-ts"
+import { ChallengeUUID, ErrorResponse, StartChatSuccess, CheckCodeResponse } from "@bluedotrobots/common-ts"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
@@ -8,13 +8,31 @@ import BrowserSocketManager from "../../classes/browser-socket-manager"
 import buildHintLLMContext from "../../utils/llm/career-quest/build-hint-request-llm-context"
 import getNextHintNumber from "../../db-operations/read/challenge-hint/get-next-hint-number"
 import addChallengeHint from "../../db-operations/write/challenge-hint/add-challenge-hint"
+import { getRandomCorrectResponse } from "../../utils/career-quest-responses"
+import addChallengeCodeSubmission from "../../db-operations/write/challenge-code-submission/add-challenge-code-submission"
+import { evaluateCodeWithScore } from "./check-challenge-code"
 
-export default function requestChallengeHint(req: Request, res: Response): void {
+export default async function requestChallengeHint(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId, challengeId } = req
 		const { challengeUUID } = req.params as { challengeUUID: ChallengeUUID }
 		const chatData = req.body as ProcessedChallengeHintMessage
 
+		// First, check if the user's code is already correct
+		const evaluation = await evaluateCodeWithScore(challengeUUID, chatData)
+
+		if (evaluation.isCorrect) {
+			// Code is correct - return check code response instead of hint
+			const feedback = getRandomCorrectResponse()
+			// Save the code submission to DB
+			await addChallengeCodeSubmission(challengeId, userId, chatData, evaluation, feedback)
+
+			// Return check code response
+			res.status(200).json({ isCorrect: true, feedback } satisfies CheckCodeResponse)
+			return
+		}
+
+		// Code is incorrect - proceed with hint request
 		// Create a new stream and get streamId
 		const { streamId, abortController } = StreamManager.getInstance().createStream()
 

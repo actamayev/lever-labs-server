@@ -146,8 +146,7 @@ async function seedCareers(): Promise<void> {
 	await Promise.all(careers.map(career => {
 		if (
 			!career.career_id ||
-			!career.career_name ||
-			!career.career_uuid
+			!career.career_name
 		) {
 			throw new Error(`Invalid career data: ${JSON.stringify(career)}`)
 		}
@@ -176,7 +175,6 @@ async function seedChallenges(): Promise<void> {
 		if (
 			!challenge.challenge_id ||
 			!challenge.challenge_name ||
-			!challenge.challenge_uuid ||
 			!challenge.career_id
 		) {
 			throw new Error(`Invalid challenge data: ${JSON.stringify(challenge)}`)
