@@ -77,11 +77,13 @@ export class BlockFormatter {
 		allBlocks.forEach(block => {
 			const blockDef = BLOCK_REGISTRY[block.type]
 
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!blockDef) return
 
 			if (blockDef.parentCategory) {
 				// This is a hierarchical block
 
+				// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 				if (!hierarchicalBlocks[blockDef.parentCategory][blockDef.category]) {
 					hierarchicalBlocks[blockDef.parentCategory][blockDef.category] = []
 				}
@@ -236,12 +238,14 @@ export class BlockFormatter {
 		return blocks.reduce((acc, block) => {
 			const blockDef = BLOCK_REGISTRY[block.type]
 
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (blockDef) {
 				const categoryKey = blockDef.parentCategory
 					? `${blockDef.parentCategory} > ${blockDef.category}`
 					: blockDef.category
 
 
+				// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 				if (!acc[categoryKey]) {
 					acc[categoryKey] = []
 				}
