@@ -1,9 +1,12 @@
 import isUndefined from "lodash/isUndefined"
 import { Server as SocketIOServer, Socket } from "socket.io"
-import { PipConnectionStatus, PipUUID, SensorPayload,
-	BatteryMonitorData, SocketEvents, SocketEventPayloadMap,
-	SensorPayloadMZ, MessageBuilder, ClassCode, StudentViewHubData,
-	DeletedHub, UpdatedHubSlideId, StudentJoinedHub, StudentLeftHub } from "@bluedotrobots/common-ts"
+import { StudentViewHubData } from "@bluedotrobots/common-ts/types/hub"
+import { PipConnectionStatus, SensorPayload,
+	BatteryMonitorData, SensorPayloadMZ } from "@bluedotrobots/common-ts/types/pip"
+import { PipUUID, ClassCode } from "@bluedotrobots/common-ts/types/utils"
+import { SocketEvents, SocketEventPayloadMap,
+	StudentJoinedHub, DeletedHub, UpdatedHubSlideId, StudentLeftHub } from "@bluedotrobots/common-ts/types/socket"
+import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
 import Singleton from "./singleton"
 import listenersMap from "../utils/constants/listeners-map"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"

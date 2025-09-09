@@ -1,5 +1,7 @@
 import { Response, Request } from "express"
-import { ErrorResponse, PipData, MessageBuilder } from "@bluedotrobots/common-ts"
+import { ErrorResponse } from "@bluedotrobots/common-ts/types/api"
+import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
+import { PipData } from "@bluedotrobots/common-ts/types/pip"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
 

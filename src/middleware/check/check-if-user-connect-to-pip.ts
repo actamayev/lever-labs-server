@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
-import { PipUUID, ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts/types/api"
+import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 
 export default function checkIfUserConnectedToPip(
 	req: Request,

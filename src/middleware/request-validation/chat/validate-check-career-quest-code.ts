@@ -1,7 +1,7 @@
 import Joi from "joi"
 import { isUndefined } from "lodash"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts/types/api"
 
 const validateCheckCareerQuestCodeSchema = Joi.object({
 	userCode: Joi.string().required()

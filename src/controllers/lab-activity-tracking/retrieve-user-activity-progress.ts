@@ -1,5 +1,6 @@
 import { Response, Request } from "express"
-import { UserActivityProgress, ErrorResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse } from "@bluedotrobots/common-ts/types/api"
+import { UserActivityProgress } from "@bluedotrobots/common-ts/types/lab"
 import retrieveUserActivityProgressDB from "../../db-operations/read/user-activity-progress/retrieve-user-activity-progress-db"
 
 export default async function retrieveUserActivityProgress(req: Request, res: Response): Promise<void> {

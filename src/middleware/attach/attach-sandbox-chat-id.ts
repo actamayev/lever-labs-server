@@ -1,4 +1,4 @@
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse } from "@bluedotrobots/common-ts/types/api"
 import { Request, Response, NextFunction } from "express"
 import findOrCreateSandboxChat from "../../db-operations/write/sandbox-chat/find-or-create-sandbox-chat"
 

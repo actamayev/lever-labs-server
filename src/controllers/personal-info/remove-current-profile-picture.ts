@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import markProfilePictureInactive from "../../db-operations/write/profile-picture/mark-profile-picture-inactive"
-import { ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts/types/api"
 
 export default async function removeCurrentProfilePicture (req: Request, res: Response): Promise<void> {
 	try {

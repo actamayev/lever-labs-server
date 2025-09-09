@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
 import deleteSandboxChat from "../../db-operations/write/sandbox-chat/delete-sandbox-chat"
 
 export default async function deleteSandboxChatController(req: Request, res: Response): Promise<void> {

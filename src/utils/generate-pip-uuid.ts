@@ -1,4 +1,4 @@
-import { PipUUID } from "@bluedotrobots/common-ts"
+import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 
 export default function generatePipUUID(): PipUUID {
 	try {

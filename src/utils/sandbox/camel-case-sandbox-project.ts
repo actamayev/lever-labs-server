@@ -1,4 +1,5 @@
-import { SandboxChatMessage, SandboxProject } from "@bluedotrobots/common-ts"
+import { SandboxChatMessage } from "@bluedotrobots/common-ts/types/chat"
+import { SandboxProject } from "@bluedotrobots/common-ts/types/sandbox"
 
 export default function camelCaseSandboxProject(sandboxProject: RetrievedSandboxData): SandboxProject {
 	try {

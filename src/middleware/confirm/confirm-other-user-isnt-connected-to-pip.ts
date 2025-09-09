@@ -1,7 +1,8 @@
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
-import { PipUUID, ErrorResponse, SuccessResponse, MessageResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse, MessageResponse} from "@bluedotrobots/common-ts/types/api"
+import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 
 export default function confirmOtherUserIsntConnectedToPip(
 	req: Request,

@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { ErrorResponse, MessageResponse, RegisterRequest, RegisterSuccess } from "@bluedotrobots/common-ts"
+import { ErrorResponse, MessageResponse, RegisterRequest, RegisterSuccess } from "@bluedotrobots/common-ts/types/api"
 import Hash from "../../classes/hash"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"

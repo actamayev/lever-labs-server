@@ -1,4 +1,4 @@
-import { IncomingTeacherRequestData } from "@bluedotrobots/common-ts"
+import { IncomingTeacherRequestData } from "@bluedotrobots/common-ts/types/api"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function addTeacher(

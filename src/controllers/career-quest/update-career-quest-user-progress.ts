@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
 import updateCareerUserProgress from "../../db-operations/write/career-user-progress/update-career-user-progress"
 
 export default async function updateCareerQuestUserProgress(req: Request, res: Response): Promise<void> {

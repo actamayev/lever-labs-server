@@ -3,7 +3,7 @@ import { isEmpty, isNull } from "lodash"
 import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3"
 import Singleton from "../singleton"
 import SecretsManager from "./secrets-manager"
-import { FirmwareData } from "@bluedotrobots/common-ts"
+import { FirmwareData } from "@bluedotrobots/common-ts/types/pip"
 
 export default class AwsS3 extends Singleton {
 	private s3: S3Client

@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import addEmailUpdateSubscriber from "../../db-operations/write/email-update-subscriber/add-email-update-subscriber"
-import { ErrorResponse, SuccessResponse, MessageResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse, MessageResponse } from "@bluedotrobots/common-ts/types/api"
 
 export default async function subscribeForEmailUpdates (req: Request, res: Response): Promise<void> {
 	try {

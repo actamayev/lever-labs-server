@@ -1,7 +1,8 @@
 
 import { Response, Request } from "express"
 import { MessageSender } from "@prisma/client"
-import { ErrorResponse, SandboxProjectUUID, StartChatSuccess } from "@bluedotrobots/common-ts"
+import { ErrorResponse, StartChatSuccess } from "@bluedotrobots/common-ts/types/api"
+import { SandboxProjectUUID } from "@bluedotrobots/common-ts/types/utils"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
