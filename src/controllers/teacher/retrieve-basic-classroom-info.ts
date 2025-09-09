@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { BasicTeacherClassroomData, ErrorResponse } from "@bluedotrobots/common-ts"
+import { BasicTeacherClassroomData, ErrorResponse } from "@bluedotrobots/common-ts/types/api"
 import getTeacherClassrooms from "../../db-operations/read/classroom-teacher-map/get-teacher-classrooms"
 
 export default async function retrieveBasicClassroomInfo(req: Request, res: Response): Promise<void> {

@@ -1,4 +1,4 @@
-import { RegisterRequest } from "@bluedotrobots/common-ts"
+import { RegisterRequest } from "@bluedotrobots/common-ts/types/api"
 import Encryptor from "../../../classes/encryptor"
 
 export default async function constructLocalUserFields(

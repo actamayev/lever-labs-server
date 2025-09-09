@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express"
-import { ClassCode, ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
+import { ClassCode } from "@bluedotrobots/common-ts/types/utils"
+import { ErrorResponse, MessageResponse } from "@bluedotrobots/common-ts/types/api"
 import getClassBelongsToTeacher from "../../db-operations/read/classroom/get-class-belongs-to-teacher"
 
 export default async function confirmClassBelongsToTeacher(

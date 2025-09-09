@@ -1,5 +1,6 @@
 import { Response, Request } from "express"
-import { ClassCode, ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
+import { ClassCode } from "@bluedotrobots/common-ts/types/utils"
 import updateClassroomName from "../../db-operations/write/classroom/update-classroom-name"
 
 export default async function editClassroomName(req: Request, res: Response): Promise<void> {

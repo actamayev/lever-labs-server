@@ -1,7 +1,8 @@
 import Joi from "joi"
 import { isNull, isUndefined } from "lodash"
 import { Request, Response, NextFunction } from "express"
-import { CareerUUID, ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts/types/api"
+import { CareerUUID } from "@bluedotrobots/common-ts/types/utils"
 import findCareerIdFromUUID from "../../db-operations/read/find/find-career-id-from-uuid"
 
 const attachCareerIdFromUUIDSchema = Joi.object({

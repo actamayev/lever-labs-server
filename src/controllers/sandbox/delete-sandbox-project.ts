@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import markSandboxProjectInactive from "../../db-operations/write/sandbox-project/mark-sandbox-project-inactive"
-import { ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts/types/api"
 
 export default async function deleteSandboxProject(req: Request, res: Response): Promise<void> {
 	try {

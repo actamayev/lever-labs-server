@@ -1,4 +1,4 @@
-import { ClassCode } from "@bluedotrobots/common-ts"
+import { ClassCode } from "@bluedotrobots/common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function getClassroomIdFromClassCode(classCode: ClassCode): Promise<number | undefined> {

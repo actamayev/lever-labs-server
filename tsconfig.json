@@ -51,7 +51,8 @@
 		/* Paths */
 		"paths": {
 			"@/*": ["*"],
-			"@types/*": ["types/*"]
+			"@types/*": ["types/*"],
+			"@bluedotrobots/common-ts/*": ["./node_modules/@bluedotrobots/common-ts/dist/src/*"]
 		}
 	},
 	"include": [

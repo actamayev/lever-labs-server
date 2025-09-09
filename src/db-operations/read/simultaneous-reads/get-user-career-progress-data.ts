@@ -1,14 +1,13 @@
 import { isEmpty, isNil } from "lodash"
 import {
-	BlocklyJson,
 	CareerQuestChallengeData,
-	ChallengeChatMessage,
-	SandboxChatMessage,
 	CareerQuestHint,
 	CareerQuestCodeSubmission,
-	ChallengeUUID,
 	CareerProgressData
-} from "@bluedotrobots/common-ts"
+} from "@bluedotrobots/common-ts/types/api"
+import { BlocklyJson } from "@bluedotrobots/common-ts/types/sandbox"
+import { ChallengeChatMessage, SandboxChatMessage } from "@bluedotrobots/common-ts/types/chat"
+import { ChallengeUUID } from "@bluedotrobots/common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 // eslint-disable-next-line max-lines-per-function

@@ -1,7 +1,8 @@
 import Joi from "joi"
 import { isNull, isUndefined } from "lodash"
 import { Request, Response, NextFunction } from "express"
-import { ChallengeUUID, ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
+import { ChallengeUUID } from "@bluedotrobots/common-ts/types/utils"
+import { ErrorResponse, ValidationErrorResponse } from "@bluedotrobots/common-ts/types/api"
 import findChallengeIdFromUUID from "../../db-operations/read/find/find-challenge-id-from-uuid"
 
 const attachChallengeIdFromUUIDSchema = Joi.object({

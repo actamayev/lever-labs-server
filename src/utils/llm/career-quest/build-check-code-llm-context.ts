@@ -1,4 +1,4 @@
-import { CqChallengeData } from "@bluedotrobots/common-ts"
+import { CqChallengeData } from "@bluedotrobots/common-ts/types/career-quest"
 import { ResponseFormatJSONSchema } from "openai/resources/shared"
 
 export default function buildCheckCodeLLMContext(

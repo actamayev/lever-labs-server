@@ -1,5 +1,6 @@
 import { Response, Request } from "express"
-import { ChallengeUUID, CheckCodeResponse, ErrorResponse } from "@bluedotrobots/common-ts"
+import { CheckCodeResponse, ErrorResponse } from "@bluedotrobots/common-ts/types/api"
+import { ChallengeUUID } from "@bluedotrobots/common-ts/types/utils"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
 import findChallengeDataFromUUID from "../../utils/llm/find-challenge-data-from-uuid"

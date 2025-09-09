@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Response, Request } from "express"
-import { ChallengeUUID, ErrorResponse, StartChatSuccess, CheckCodeResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse, StartChatSuccess, CheckCodeResponse } from "@bluedotrobots/common-ts/types/api"
+import { ChallengeUUID } from "@bluedotrobots/common-ts/types/utils"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"

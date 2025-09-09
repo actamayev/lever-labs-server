@@ -1,6 +1,8 @@
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
-import { ClientSocketEvents, ClientSocketEventPayloadMap, MessageBuilder, tuneToSoundType } from "@bluedotrobots/common-ts"
 import calculateMotorSpeeds from "../calculate-motor-speeds"
+import { ClientSocketEvents, ClientSocketEventPayloadMap } from "@bluedotrobots/common-ts/types/socket"
+import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
+import { tuneToSoundType } from "@bluedotrobots/common-ts/protocol"
 
 type ListenerHandler<T> = (payload: T) => void
 

@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
 import markChallengeAsSeenDB from "../../db-operations/write/user-seen-challenges/mark-challenge-as-seen"
 
 export default async function markChallengeAsSeen(req: Request, res: Response): Promise<void> {

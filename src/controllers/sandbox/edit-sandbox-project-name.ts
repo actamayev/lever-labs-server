@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import updateSandboxProjectName from "../../db-operations/write/sandbox-project/update-sandbox-project-name"
-import { ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts/types/api"
 
 export default async function editSandboxProjectName(req: Request, res: Response): Promise<void> {
 	try {

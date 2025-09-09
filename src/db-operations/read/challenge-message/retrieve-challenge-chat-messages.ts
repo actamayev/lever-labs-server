@@ -1,4 +1,4 @@
-import { ChallengeChatMessage } from "@bluedotrobots/common-ts"
+import { ChallengeChatMessage } from "@bluedotrobots/common-ts/types/chat"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function retrieveChallengeChatMessages(challengeChatId: number): Promise<ChallengeChatMessage[]> {

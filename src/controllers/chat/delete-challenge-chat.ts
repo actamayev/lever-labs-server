@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
 import deleteChallengeChat from "../../db-operations/write/challenge-chat/delete-challenge-chat"
 
 export default async function deleteChallengeChatController(req: Request, res: Response): Promise<void> {

@@ -1,6 +1,6 @@
 import isUndefined from "lodash/isUndefined"
 import { Response, Request } from "express"
-import { AddNewPipResponse, ErrorResponse } from "@bluedotrobots/common-ts"
+import { AddNewPipResponse, ErrorResponse } from "@bluedotrobots/common-ts/types/api"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import addUserPipUUIDMapRecord from "../../db-operations/write/user-pip-uuid-map/add-user-pip-uuid-map-record"
 

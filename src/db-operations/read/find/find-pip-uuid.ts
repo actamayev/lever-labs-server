@@ -1,6 +1,6 @@
 import { pip_uuid } from "@prisma/client"
 import PrismaClientClass from "../../../classes/prisma-client"
-import { PipUUID } from "@bluedotrobots/common-ts"
+import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 
 export default async function findPipUUID(pipUUID: PipUUID): Promise<pip_uuid | null> {
 	try {

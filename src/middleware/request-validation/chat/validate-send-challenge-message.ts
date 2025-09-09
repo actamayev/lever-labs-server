@@ -1,7 +1,7 @@
 import Joi from "joi"
 import { isUndefined } from "lodash"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts/types/api"
 
 const validateSendChallengeMessageSchema = Joi.object({
 	careerUUID: Joi.string().uuid({ version: "uuidv4" }).required(),

@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse } from "@bluedotrobots/common-ts/types/api"
 
 // This is used for generating UUIDs when adding data to the reading_questions.csv and activities.csv, career.csv, and challenge.csv
 export default function generateUUID(_req: Request, res: Response): void {

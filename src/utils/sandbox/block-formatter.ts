@@ -1,6 +1,8 @@
 import { groupBy, isNull } from "lodash"
-import { BlockNames, AvailableBlock, ParentCategoryName,
-	SensorCategoryName, LogicCategoryName, BLOCK_REGISTRY } from "@bluedotrobots/common-ts"
+import { AvailableBlock } from "@bluedotrobots/common-ts/types/career-quest"
+import { ParentCategoryName, SensorCategoryName, LogicCategoryName } from "@bluedotrobots/common-ts/types/blockly/block-categories"
+import { BlockNames} from "@bluedotrobots/common-ts/types/blockly/blockly"
+import { BLOCK_REGISTRY } from "@bluedotrobots/common-ts/types/utils/blockly-registry"
 
 interface CategorizedBlocks {
 	flatCategories: Record<string, AvailableBlock[]>
@@ -74,11 +76,13 @@ export class BlockFormatter {
 		// Categorize all blocks
 		allBlocks.forEach(block => {
 			const blockDef = BLOCK_REGISTRY[block.type]
+
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!blockDef) return
 
 			if (blockDef.parentCategory) {
 				// This is a hierarchical block
+
 				// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 				if (!hierarchicalBlocks[blockDef.parentCategory][blockDef.category]) {
 					hierarchicalBlocks[blockDef.parentCategory][blockDef.category] = []
@@ -233,11 +237,13 @@ export class BlockFormatter {
 	private static createChallengeCategories(blocks: AvailableBlock[]): Record<string, AvailableBlock[]> {
 		return blocks.reduce((acc, block) => {
 			const blockDef = BLOCK_REGISTRY[block.type]
+
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (blockDef) {
 				const categoryKey = blockDef.parentCategory
 					? `${blockDef.parentCategory} > ${blockDef.category}`
 					: blockDef.category
+
 
 				// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 				if (!acc[categoryKey]) {

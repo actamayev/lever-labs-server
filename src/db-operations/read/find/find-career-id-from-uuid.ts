@@ -1,4 +1,4 @@
-import { CareerUUID } from "@bluedotrobots/common-ts"
+import { CareerUUID } from "@bluedotrobots/common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function findCareerIdFromUUID(careerUUID: CareerUUID): Promise<number | null> {
