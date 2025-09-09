@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isNull from "lodash/isNull"
 import isUndefined from "lodash/isUndefined"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse } from "@bluedotrobots/common-ts/types/api"
 import { Request, Response, NextFunction } from "express"
 import { getAuthTokenFromCookies } from "../cookie-helpers"
 import getDecodedId from "../../utils/auth-helpers/get-decoded-id"

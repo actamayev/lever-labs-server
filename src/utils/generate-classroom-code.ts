@@ -1,4 +1,4 @@
-import { ClassCode } from "@bluedotrobots/common-ts"
+import { ClassCode } from "@bluedotrobots/common-ts/types/utils"
 
 export default function generateClassroomCode(): ClassCode {
 	try {

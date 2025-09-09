@@ -1,5 +1,5 @@
 import { isNull } from "lodash"
-import { TeacherData } from "@bluedotrobots/common-ts"
+import { TeacherData } from "@bluedotrobots/common-ts/types/api"
 
 export default function extractTeacherDataFromUserData(user: ExtendedCredentials): TeacherData | null {
 	return isNull(user.teacher) ? null : {

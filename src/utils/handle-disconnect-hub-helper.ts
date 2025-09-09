@@ -1,4 +1,4 @@
-import { StudentLeftHub } from "@bluedotrobots/common-ts"
+import { StudentLeftHub } from "@bluedotrobots/common-ts/types/socket"
 import HubManager from "../classes/hub-manager"
 import BrowserSocketManager from "../classes/browser-socket-manager"
 

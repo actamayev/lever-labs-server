@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express"
 import getDecodedId from "../../utils/auth-helpers/get-decoded-id"
-import { ErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse } from "@bluedotrobots/common-ts/types/api"
 import { getAuthTokenFromCookies } from "../cookie-helpers"
 
 export default async function jwtVerifyAttachUserId(req: Request, res: Response, next: NextFunction): Promise<void> {

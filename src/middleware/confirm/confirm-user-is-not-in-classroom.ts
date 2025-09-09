@@ -1,6 +1,6 @@
 import { isDate } from "lodash"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, MessageResponse } from "@bluedotrobots/common-ts/types/api"
 import retrieveStudentClassroomStatus from "../../db-operations/read/student/retrieve-student-classroom-status"
 
 export default async function confirmUserIsNotInClassroom(

@@ -2,7 +2,9 @@ import isNull from "lodash/isNull"
 import { Request, Response, NextFunction } from "express"
 import { validateExtendedPipUUID } from "../../utils/type-guards"
 import findPipUUID from "../../db-operations/read/find/find-pip-uuid"
-import { PipUUID, ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts"
+import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
+import { ErrorResponse, MessageResponse } from "@bluedotrobots/common-ts/types/api"
+
 
 export default async function attachPipUUIDData(
 	req: Request,
