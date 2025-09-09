@@ -1,7 +1,8 @@
 import { Server as WSServer } from "ws"
 import { randomUUID, UUID } from "crypto"
 import { BatteryMonitorDataFull, ESPConnectionStatus,
-	ESPMessage, PipUUID, SensorPayload, SensorPayloadMZ, DinoScorePayload } from "@bluedotrobots/common-ts"
+	ESPMessage, SensorPayload, SensorPayloadMZ, DinoScorePayload } from "@bluedotrobots/common-ts/types/pip"
+import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 import Singleton from "../singleton"
 import isPipUUID from "../../utils/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"

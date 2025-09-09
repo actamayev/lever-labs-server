@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import updateName from "../../db-operations/write/credentials/update-name"
-import { ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts/types/api"
 
 export default async function setName(req: Request, res: Response): Promise<void> {
 	try {

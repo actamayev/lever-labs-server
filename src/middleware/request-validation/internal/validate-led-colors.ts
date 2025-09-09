@@ -2,7 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
-import { ErrorResponse, ValidationErrorResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse, ValidationErrorResponse } from "@bluedotrobots/common-ts/types/api"
 
 const rgbColorSchema = Joi.object({
 	r: Joi.number().integer().min(0).max(255).required(),

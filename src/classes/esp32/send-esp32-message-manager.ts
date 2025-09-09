@@ -2,7 +2,11 @@ import { isUndefined } from "lodash"
 import Singleton from "../singleton"
 import Esp32SocketManager from "./esp32-socket-manager"
 import EspLatestFirmwareManager from "./esp-latest-firmware-manager"
-import { LedControlData, tuneToSoundType, MessageBuilder, PipUUID, PipUUIDPayload } from "@bluedotrobots/common-ts"
+import { PipUUIDPayload } from "@bluedotrobots/common-ts/types/pip"
+import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
+import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
+import { LedControlData } from "@bluedotrobots/common-ts/types/garage"
+import { tuneToSoundType } from "@bluedotrobots/common-ts/protocol"
 
 export default class SendEsp32MessageManager extends Singleton {
 	private constructor() {
@@ -66,8 +70,7 @@ export default class SendEsp32MessageManager extends Singleton {
 	public playSoundToAll(): Promise<void[]> {
 		const tuneToPlay = "Chime"
 		try {
-			const soundType = tuneToSoundType[tuneToPlay]
-			const buffer = MessageBuilder.createSoundMessage(soundType)
+			const buffer = MessageBuilder.createSoundMessage(tuneToSoundType[tuneToPlay])
 			const connectedPipUUIDs = Esp32SocketManager.getInstance().getAllConnectedPipUUIDs()
 			const promises: Promise<void>[] = []
 

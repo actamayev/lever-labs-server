@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, MessageResponse, HubUUID } from "@bluedotrobots/common-ts"
+import { ErrorResponse, MessageResponse } from "@bluedotrobots/common-ts/types/api"
+import { HubUUID } from "@bluedotrobots/common-ts/types/utils"
 import HubManager from "../../classes/hub-manager"
 
 export default function confirmHubBelongsToTeacher(

@@ -1,6 +1,8 @@
 import { Request, Response } from "express"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
-import { ErrorResponse, PipUUID, SuccessResponse, MessageBuilder } from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
+import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
+import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
 
 export default async function stopSensorPolling(req: Request, res: Response): Promise<void> {
 	try {

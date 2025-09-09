@@ -1,4 +1,4 @@
-import { PipUUID } from "@bluedotrobots/common-ts"
+import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function retrieveUserPipUUIDs(userId: number): Promise<PipUUID[]> {

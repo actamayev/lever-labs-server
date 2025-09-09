@@ -1,4 +1,5 @@
-import { ClassCode, HubUUID, StudentViewHubData, TeacherViewHubData } from "@bluedotrobots/common-ts"
+import { StudentViewHubData, TeacherViewHubData } from "@bluedotrobots/common-ts/types/hub"
+import { ClassCode, HubUUID } from "@bluedotrobots/common-ts/types/utils"
 import Singleton from "./singleton"
 
 interface Hub extends TeacherViewHubData {

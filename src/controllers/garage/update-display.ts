@@ -1,6 +1,8 @@
 import isNull from "lodash/isNull"
 import { Response, Request } from "express"
-import { PipUUID, ErrorResponse, SuccessResponse, MessageBuilder} from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
+import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
+import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 
 export default function updateDisplayEndpoint(req: Request, res: Response): void {

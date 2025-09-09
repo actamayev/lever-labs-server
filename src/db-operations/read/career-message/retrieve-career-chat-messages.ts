@@ -1,4 +1,4 @@
-import { SandboxChatMessage } from "@bluedotrobots/common-ts"
+import { SandboxChatMessage } from "@bluedotrobots/common-ts/types/chat"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function retrieveCareerChatMessages(careerChatId: number): Promise<SandboxChatMessage[]> {

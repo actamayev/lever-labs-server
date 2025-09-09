@@ -1,5 +1,6 @@
 import { Response, Request } from "express"
-import { ErrorResponse, HubUUID, SuccessResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
+import { HubUUID } from "@bluedotrobots/common-ts/types/utils"
 import HubManager from "../../classes/hub-manager"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import retrieveUsername from "../../db-operations/read/credentials/retrieve-username"

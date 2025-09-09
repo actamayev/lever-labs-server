@@ -1,5 +1,7 @@
 import { Response, Request } from "express"
-import { ClassCode, ErrorResponse, HubUUID, StudentLeftHub, SuccessResponse } from "@bluedotrobots/common-ts"
+import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
+import { ClassCode, HubUUID } from "@bluedotrobots/common-ts/types/utils"
+import { StudentLeftHub } from "@bluedotrobots/common-ts/types/socket"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import HubManager from "../../classes/hub-manager"
 import getTeacherIdFromClassroom from "../../db-operations/read/classroom-teacher-map/get-teacher-id-from-classroom"
