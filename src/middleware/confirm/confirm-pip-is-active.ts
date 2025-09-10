@@ -7,7 +7,6 @@ import BrowserSocketManager from "../../classes/browser-socket-manager"
 export default function confirmPipIsActive(confirmUserConnectedToPip: boolean) {
 	return (req: Request, res: Response, next: NextFunction): void => {
 		try {
-			const { userId } = req
 			const { pipUUID } = req.body as { pipUUID: PipUUID }
 
 			const isPipActive = Esp32SocketManager.getInstance().isPipUUIDConnected(pipUUID)
@@ -19,6 +18,7 @@ export default function confirmPipIsActive(confirmUserConnectedToPip: boolean) {
 			}
 
 			if (confirmUserConnectedToPip) {
+				const { userId } = req
 				const isUserConnectedToPip = BrowserSocketManager.getInstance().getIsUserConnectedToPip(userId, pipUUID)
 				if (!isUserConnectedToPip) {
 					res.status(400).json({

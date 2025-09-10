@@ -139,34 +139,16 @@ export default class BrowserSocketManager extends Singleton {
 
 			// Update the currentlyConnectedPip entry for this user
 			connectionInfo.currentlyConnectedPip = { pipUUID, status }
-
-			// Emit the updated status to the specified user and other users if necessary
-			this.emitPipStatusForUser(pipUUID, userId, status)
 		} catch (error) {
 			console.error(error)
 			throw error
 		}
 	}
 
-	// Helper function to emit pip status to the specified user
-	private emitPipStatusForUser(
-		pipUUID: PipUUID,
-		userId: number,
-		status: PipConnectionStatus
-	): void {
-		const connectionInfo = this.connections.get(userId)
-		if (isUndefined(connectionInfo)) return
-		this.emitToSocket(connectionInfo.socketId, "pip-connection-status-update", {
-			pipUUID,
-			newConnectionStatus: status
-		})
-	}
-
 	public whichUserConnectedToPipUUID(pipUUID: PipUUID): number | undefined {
-		// Iterate through the Map entries (key-value pairs)
 		for (const [userID, connectionInfo] of this.connections.entries()) {
 			// Check if the specified pipUUID with status "connected" exists
-			if (isNull(connectionInfo.currentlyConnectedPip)) return
+			if (isNull(connectionInfo.currentlyConnectedPip)) continue
 			const foundConnection =
 			connectionInfo.currentlyConnectedPip.pipUUID === pipUUID &&
 			connectionInfo.currentlyConnectedPip.status === "connected"

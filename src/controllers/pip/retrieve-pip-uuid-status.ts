@@ -3,6 +3,7 @@ import doesPipUUIDExist from "../../db-operations/read/does-x-exist/does-pip-uui
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 import { ErrorResponse, RetrieveIsPipUUIDValidResponse, MessageResponse} from "@bluedotrobots/common-ts/types/api"
+import BrowserSocketManager from "../../classes/browser-socket-manager"
 
 export default async function retrievePipUUIDStatus(req: Request, res: Response): Promise<void> {
 	try {
@@ -16,8 +17,9 @@ export default async function retrievePipUUIDStatus(req: Request, res: Response)
 		}
 
 		const pipConnectionStatus = Esp32SocketManager.getInstance().getESPStatus(pipUUID)
+		const isSomeoneConnectedToPip = Boolean(BrowserSocketManager.getInstance().whichUserConnectedToPipUUID(pipUUID))
 
-		res.status(200).json({ pipName: "Pip", pipConnectionStatus } satisfies RetrieveIsPipUUIDValidResponse)
+		res.status(200).json({ pipName: "Pip", pipConnectionStatus, isSomeoneConnectedToPip } satisfies RetrieveIsPipUUIDValidResponse)
 		return
 	} catch (error) {
 		console.error(error)

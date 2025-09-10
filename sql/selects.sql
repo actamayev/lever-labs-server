@@ -1,5 +1,5 @@
-SELECT * FROM credentials ORDER BY created_at;
--- SELECT * FROM login_history where user_id = 56;
+-- SELECT * FROM credentials ORDER BY created_at;
+SELECT * FROM login_history ORDER BY ;
 -- SELECT * FROM pip_uuid;
 -- SELECT * FROM user_pip_uuid_map;
 -- SELECT * FROM activity ORDER BY activity_id;
