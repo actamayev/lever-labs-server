@@ -1,24 +1,23 @@
-import isNull from "lodash/isNull"
 import { Response, Request } from "express"
-import findPipUUID from "../../db-operations/read/find/find-pip-uuid"
+import doesPipUUIDExist from "../../db-operations/read/does-x-exist/does-pip-uuid-exist"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
-import { ErrorResponse, RetrieveIsPipUUIDValidResponse, MessageResponse} from "@bluedotrobots/common-ts/types/api"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
+import { ErrorResponse, RetrieveIsPipUUIDValidResponse, MessageResponse} from "@bluedotrobots/common-ts/types/api"
 
 export default async function retrievePipUUIDStatus(req: Request, res: Response): Promise<void> {
 	try {
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		const pipUUIDData = await findPipUUID(pipUUID)
+		const isFound = await doesPipUUIDExist(pipUUID)
 
-		if (isNull(pipUUIDData)) {
-			res.status(400).json({ message: "Pip UUID doesn't exist"} satisfies MessageResponse)
+		if (!isFound) {
+			res.status(400).json({ message: "Pip UUID doesn't exist" } satisfies MessageResponse)
 			return
 		}
 
 		const pipConnectionStatus = Esp32SocketManager.getInstance().getESPStatus(pipUUID)
 
-		res.status(200).json({ pipName: pipUUIDData.pip_name, pipConnectionStatus } satisfies RetrieveIsPipUUIDValidResponse)
+		res.status(200).json({ pipName: "Pip", pipConnectionStatus } satisfies RetrieveIsPipUUIDValidResponse)
 		return
 	} catch (error) {
 		console.error(error)

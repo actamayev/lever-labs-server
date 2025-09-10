@@ -7,6 +7,9 @@ export default async function doesEmailExist(encryptedEmail: DeterministicEncryp
 		const user = await prismaClient.credentials.findFirst({
 			where: {
 				email__encrypted: encryptedEmail
+			},
+			select: {
+				user_id: true
 			}
 		})
 		return user !== null
