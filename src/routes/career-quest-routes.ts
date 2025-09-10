@@ -4,7 +4,6 @@ import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
 import attachCareerIdFromUUID from "../middleware/attach/attach-career-id-from-uuid"
 import attachChallengeIdFromUUID from "../middleware/attach/attach-challenge-id-from-uuid"
 import validatePipUUIDInBody from "../middleware/request-validation/pip/validate-pip-uuid-in-body"
-import confirmUserPreviouslyAddedUUID from "../middleware/confirm/confirm-user-previously-added-uuid"
 import validateCqUserProgress from "../middleware/request-validation/career-quest/validate-user-progress"
 import validateCareerTrigger from "../middleware/request-validation/career-quest/validate-trigger-message"
 import validateEditSandboxProject from "../middleware/request-validation/sandbox/validate-edit-sandbox-project"
@@ -39,16 +38,14 @@ careerQuestRoutes.post("/mark-challenge-as-seen/:challengeUUID", attachChallenge
 careerQuestRoutes.post(
 	"/career-trigger",
 	validateCareerTrigger,
-	confirmPipIsActive,
-	confirmUserPreviouslyAddedUUID,
+	confirmPipIsActive(true),
 	triggerCareerQuestMessage
 )
 
 careerQuestRoutes.post(
 	"/stop-career-trigger",
 	validatePipUUIDInBody,
-	confirmPipIsActive,
-	confirmUserPreviouslyAddedUUID,
+	confirmPipIsActive(true),
 	stopCareerTrigger
 )
 

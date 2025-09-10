@@ -8,7 +8,6 @@ import determineLoginContactType from "../../utils/auth-helpers/determine-contac
 import extractTeacherDataFromUserData from "../../utils/extract-teacher-data-from-user-data"
 import retrieveUserFromContact from "../../utils/auth-helpers/login/retrieve-user-from-contact"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
-import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
 import retrieveStudentClasses from "../../db-operations/read/credentials/retrieve-student-classes"
 import { setAuthCookie } from "../../middleware/cookie-helpers"
 
@@ -42,7 +41,6 @@ export default async function login(req: Request, res: Response): Promise<void> 
 			isActive: true // Optional: add user status
 		})
 
-		const userPipData = await retrieveUserPipUUIDsDetails(credentialsResult.user_id)
 		const encryptor = new Encryptor()
 		const email = await encryptor.deterministicDecrypt(credentialsResult.email__encrypted, "EMAIL_ENCRYPTION_KEY")
 		const studentClasses = await retrieveStudentClasses(credentialsResult.user_id)
@@ -59,7 +57,6 @@ export default async function login(req: Request, res: Response): Promise<void> 
 				name: credentialsResult.name,
 			},
 			teacherData: extractTeacherDataFromUserData(credentialsResult),
-			userPipData,
 			studentClasses
 		} satisfies LoginSuccess)
 		void addLoginHistoryRecord(credentialsResult.user_id)

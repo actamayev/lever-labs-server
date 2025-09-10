@@ -1,5 +1,4 @@
-import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
-import { credentials, pip_uuid } from "@prisma/client"
+import { credentials } from "@prisma/client"
 
 declare global {
 	type ExtendedCredentials = credentials & {
@@ -17,10 +16,6 @@ declare global {
 				school_name: string
 			}
 		} | null
-	}
-
-	type ExtendedPipUUID = pip_uuid & {
-		uuid: PipUUID
 	}
 }
 
