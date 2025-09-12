@@ -10,6 +10,9 @@ export default async function doesUsernameExist(username: string): Promise<boole
 					equals: username,
 					mode: "insensitive"
 				}
+			},
+			select: {
+				user_id: true
 			}
 		})
 

@@ -4,7 +4,11 @@ import { ChallengeUUID } from "@bluedotrobots/common-ts/types/utils"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
 import findChallengeDataFromUUID from "../../utils/llm/find-challenge-data-from-uuid"
-import { getRandomCorrectResponse, getRandomIncorrectResponse } from "../../utils/career-quest-responses"
+import {
+	getRandomCorrectResponse,
+	getRandomIncorrectResponse,
+	getRandomDefiniteSolutionIncorrectResponse
+} from "../../utils/career-quest-responses"
 import addChallengeCodeSubmission from "../../db-operations/write/challenge-code-submission/add-challenge-code-submission"
 import buildCheckCodeLLMContext, { checkCodeResponseFormat } from "../../utils/llm/career-quest/build-check-code-llm-context"
 
@@ -16,11 +20,17 @@ export default async function checkChallengeCode(req: Request, res: Response): P
 
 		// Get evaluation with score
 		const evaluation = await evaluateCodeWithScore(challengeUUID, chatData)
+		const challengeData = findChallengeDataFromUUID(challengeUUID)
 
-		// Get feedback message based on score
-		const feedback = evaluation.isCorrect
-			? getRandomCorrectResponse()
-			: getRandomIncorrectResponse(evaluation.score)
+		// Get feedback message based on solution type and correctness
+		let feedback: string
+		if (evaluation.isCorrect) {
+			feedback = getRandomCorrectResponse()
+		} else if (challengeData.isDefiniteSolution) {
+			feedback = getRandomDefiniteSolutionIncorrectResponse()
+		} else {
+			feedback = getRandomIncorrectResponse(evaluation.score)
+		}
 
 		// Save the code submission to DB
 		await addChallengeCodeSubmission(challengeId, userId, chatData, evaluation, feedback)
@@ -40,6 +50,16 @@ export async function evaluateCodeWithScore(
 	chatData: ProcessedChallengeCheckCodeMessage
 ): Promise<CodeWithScore> {
 	const challengeData = findChallengeDataFromUUID(challengeUUID)
+
+	// For definite solutions, compare directly without using LLM
+	if (challengeData.isDefiniteSolution) {
+		const normalizedSolutionCode = challengeData.solutionCode.trim().replace(/\s+/g, " ")
+		const normalizedUserCode = chatData.userCode.trim().replace(/\s+/g, " ")
+		const isCorrect = normalizedSolutionCode === normalizedUserCode
+		return { isCorrect, score: isCorrect ? 1.0 : 0.0 }
+	}
+
+	// For complex solutions, use LLM evaluation
 	const openAiClient = await OpenAiClientClass.getOpenAiClient()
 
 	// Build LLM context messages

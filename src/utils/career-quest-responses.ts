@@ -50,6 +50,19 @@ const almostThereResponses = [
 	"Almost! You're just about there!"
 ]
 
+const definiteSolutionIncorrectResponses = [
+	"Not quite right. Check your solution carefully!",
+	"That doesn't match the expected solution. Try again!",
+	"Incorrect. Review the requirements and try once more!",
+	"Not the right solution. Double-check your code!",
+	"That's not correct. Make sure you follow the instructions exactly!",
+	"Incorrect solution. Read the challenge description again!",
+	"Not quite. Make sure your code matches what's expected!",
+	"That doesn't look right. Try following the pattern more closely!",
+	"Incorrect. Check if you're missing or have extra steps!",
+	"Not the solution we're looking for. Try again!"
+]
+
 export function getRandomCorrectResponse(): string {
 	return correctResponses[Math.floor(Math.random() * correctResponses.length)]
 }
@@ -66,4 +79,8 @@ export function getRandomIncorrectResponse(score: number): string {
 	}
 
 	return responseArray[Math.floor(Math.random() * responseArray.length)]
+}
+
+export function getRandomDefiniteSolutionIncorrectResponse(): string {
+	return definiteSolutionIncorrectResponses[Math.floor(Math.random() * definiteSolutionIncorrectResponses.length)]
 }
