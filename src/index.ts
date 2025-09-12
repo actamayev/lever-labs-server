@@ -13,6 +13,7 @@ import setupRoutes from "./setup-routes"
 import BrowserSocketManager from "./classes/browser-socket-manager"
 import Esp32SocketManager from "./classes/esp32/esp32-socket-manager"
 import EspLatestFirmwareManager from "./classes/esp32/esp-latest-firmware-manager"
+import { isUndefined } from "lodash"
 
 process.on("unhandledRejection", (reason, promise) => {
 	console.error("🚨 Unhandled Promise Rejection at:", promise, "reason:", reason)
@@ -62,19 +63,21 @@ app.use("*", (_req, res) => {
 	res.status(404).json({ error: "Route not found" })
 })
 
-setInterval(() => {
-	const usage = process.memoryUsage()
-	const espConnections = Esp32SocketManager.getInstance().getAllConnectedPipUUIDs().length
+if (!isUndefined(process.env.NODE_ENV))  {
+	setInterval(() => {
+		const usage = process.memoryUsage()
+		const espConnections = Esp32SocketManager.getInstance().getAllConnectedPipUUIDs().length
 
-	// Add disk space monitoring
-	// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-explicit-any
-	require("child_process").exec("df -h /", (error: any, stdout: any) => {
-		if (!error) {
-			const diskUsage = stdout.split("\n")[1].split(/\s+/)[4]
-			console.info(`📊 Memory: ${Math.round(usage.heapUsed / 1024 / 1024)}MB | ESP32: ${espConnections} | Disk: ${diskUsage}`)
-		}
-	})
-}, 30000)
+		// Add disk space monitoring
+		// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-explicit-any
+		require("child_process").exec("df -h /", (error: any, stdout: any) => {
+			if (!error) {
+				const diskUsage = stdout.split("\n")[1].split(/\s+/)[4]
+				console.info(`📊 Memory: ${Math.round(usage.heapUsed / 1024 / 1024)}MB | ESP32: ${espConnections} | Disk: ${diskUsage}`)
+			}
+		})
+	}, 30000)
+}
 
 // Start the server
 const PORT = process.env.PORT || 8080
