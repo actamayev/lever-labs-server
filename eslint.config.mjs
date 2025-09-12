@@ -135,6 +135,22 @@ export default [
 		},
 	},
 	{
+		files: ["tests/**/*"],
+		rules: {
+			"max-lines-per-function": "off",
+			"max-len": "off",
+			"security/detect-unsafe-regex": "off",
+			"security/detect-non-literal-regexp": "off",
+			"security/detect-non-literal-require": "off",
+			"security/detect-non-literal-fs-filename": "off",
+			"security/detect-no-csrf-before-method-override": "off",
+			"security/detect-disable-mustache-escape": "off",
+			"security/detect-buffer-noassert": "off",
+			"security/detect-child-process": "off",
+			"security/detect-eval-with-expression": "off",
+		},
+	},
+	{
 		ignores: ["dist/*"]
 	}
 ]

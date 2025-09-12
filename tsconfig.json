@@ -57,7 +57,8 @@
 	"include": [
 		"src/**/*",
 		"src/prisma/seed.ts",
-		"prisma.config.ts"
+		"prisma.config.ts",
+		"tests/**/*"
 	],
 	"exclude": [
 		"node_modules",
