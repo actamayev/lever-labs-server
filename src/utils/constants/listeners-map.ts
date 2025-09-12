@@ -10,37 +10,57 @@ const listenersMap: {
 	[K in ClientSocketEvents]: ListenerHandler<ClientSocketEventPayloadMap[K]>
 } = {
 	"motor-control": (motorControlData) => {
-		const speeds = calculateMotorSpeeds(motorControlData)
-		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-			motorControlData.pipUUID,
-			MessageBuilder.createMotorControlMessage(
-				speeds.leftMotor,
-				speeds.rightMotor
-			))
-	},
-	"new-led-colors": (ledControlData) =>
-		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-			ledControlData.pipUUID,
-			MessageBuilder.createLedMessage(ledControlData))
-	,
-	"headlight-update": (headlightControlData) => {
-		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-			headlightControlData.pipUUID,
-			MessageBuilder.createHeadlightMessage(headlightControlData.areHeadlightsOn))
-	},
-	"horn-sound-update": (hornControlData) =>
-		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-			hornControlData.pipUUID,
-			MessageBuilder.createHornSoundMessage(hornControlData.hornStatus))
-	,
-	"play-fun-sound": (funSoundsData) => {
-		if (funSoundsData.sound === null) {
-			const buffer = MessageBuilder.createStopSoundMessage()
-			return void SendEsp32MessageManager.getInstance().sendBinaryMessage(funSoundsData.pipUUID, buffer)
+		try {
+			const speeds = calculateMotorSpeeds(motorControlData)
+			void SendEsp32MessageManager.getInstance().sendBinaryMessage(
+				motorControlData.pipUUID,
+				MessageBuilder.createMotorControlMessage(
+					speeds.leftMotor,
+					speeds.rightMotor
+				))
+		} catch (error) {
+			console.error(error)
 		}
-		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-			funSoundsData.pipUUID,
-			MessageBuilder.createSoundMessage(tuneToSoundType[funSoundsData.sound]))
+	},
+	"new-led-colors": (ledControlData) => {
+		try {
+			void SendEsp32MessageManager.getInstance().sendBinaryMessage(
+				ledControlData.pipUUID,
+				MessageBuilder.createLedMessage(ledControlData))
+		} catch (error) {
+			console.error(error)
+		}
+	},
+	"headlight-update": (headlightControlData) => {
+		try {
+			void SendEsp32MessageManager.getInstance().sendBinaryMessage(
+				headlightControlData.pipUUID,
+				MessageBuilder.createHeadlightMessage(headlightControlData.areHeadlightsOn))
+		} catch (error) {
+			console.error(error)
+		}
+	},
+	"horn-sound-update": (hornControlData) => {
+		try {
+			void SendEsp32MessageManager.getInstance().sendBinaryMessage(
+				hornControlData.pipUUID,
+				MessageBuilder.createHornSoundMessage(hornControlData.hornStatus))
+		} catch (error) {
+			console.error(error)
+		}
+	},
+	"play-fun-sound": (funSoundsData) => {
+		try {
+			if (funSoundsData.sound === null) {
+				const buffer = MessageBuilder.createStopSoundMessage()
+				return void SendEsp32MessageManager.getInstance().sendBinaryMessage(funSoundsData.pipUUID, buffer)
+			}
+			void SendEsp32MessageManager.getInstance().sendBinaryMessage(
+				funSoundsData.pipUUID,
+				MessageBuilder.createSoundMessage(tuneToSoundType[funSoundsData.sound]))
+		} catch (error) {
+			console.error(error)
+		}
 	},
 }
 
