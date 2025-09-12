@@ -16,7 +16,6 @@ import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
 import validateCppCode from "../middleware/request-validation/sandbox/validate-cpp-code"
 import confirmUserConnectedToPip from "../middleware/confirm/confirm-user-connected-to-pip"
 import validatePipUUIDInBody from "../middleware/request-validation/pip/validate-pip-uuid-in-body"
-import confirmUserPreviouslyAddedUUID from "../middleware/confirm/confirm-user-previously-added-uuid"
 import attachSandboxProjectIdFromUUID from "../middleware/attach/attach-sandbox-project-id-from-uuid"
 import validateEditSandboxProject from "../middleware/request-validation/sandbox/validate-edit-sandbox-project"
 import validateStarSandboxProject from "../middleware/request-validation/sandbox/validate-star-sandbox-project"
@@ -86,9 +85,8 @@ sandboxRoutes.get(
 sandboxRoutes.post(
 	"/send-sandbox-code-to-pip",
 	validateCppCode,
-	confirmPipIsActive,
+	confirmPipIsActive(true),
 	convertCppToBytecode,
-	confirmUserPreviouslyAddedUUID,
 	confirmUserConnectedToPip,
 	sendSandboxCodeToPip
 )
@@ -96,7 +94,7 @@ sandboxRoutes.post(
 sandboxRoutes.post(
 	"/stop-currently-running-code",
 	validatePipUUIDInBody,
-	confirmUserPreviouslyAddedUUID,
+	confirmPipIsActive(true),
 	stopCurrentlyRunningSandboxCode
 )
 

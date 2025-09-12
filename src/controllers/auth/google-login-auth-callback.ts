@@ -3,7 +3,6 @@ import { SiteThemes } from "@prisma/client"
 import { isNull, isUndefined } from "lodash"
 import { BasicPersonalInfoResponse, ErrorResponse, GoogleAuthSuccess, MessageResponse,
 	StudentClassroomData, TeacherData } from "@bluedotrobots/common-ts/types/api"
-import { PipData } from "@bluedotrobots/common-ts/types/pip"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import SecretsManager from "../../classes/aws/secrets-manager"
@@ -14,7 +13,6 @@ import extractTeacherDataFromUserData from "../../utils/extract-teacher-data-fro
 import retrieveUserIdByEmail from "../../db-operations/read/credentials/retrieve-user-id-by-email"
 import retrieveStudentClasses from "../../db-operations/read/credentials/retrieve-student-classes"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
-import retrieveUserPipUUIDsDetails from "../../db-operations/read/user-pip-uuid-map/retrieve-user-pip-uuids-details"
 import { setAuthCookie } from "../../middleware/cookie-helpers"
 
 // eslint-disable-next-line max-lines-per-function
@@ -43,7 +41,6 @@ export default async function googleLoginAuthCallback(req: Request, res: Respons
 		let userId = await retrieveUserIdByEmail(encryptedEmail)
 		let accessToken: string
 		let isNewUser = false
-		let userPipData: PipData[] = []
 		let personalInfo: BasicPersonalInfoResponse | undefined = undefined
 		let studentClasses: StudentClassroomData[] = []
 		let teacherData: TeacherData | null = null
@@ -55,7 +52,6 @@ export default async function googleLoginAuthCallback(req: Request, res: Respons
 			accessToken = await signJWT({ userId, username: null, isActive: true })
 			isNewUser = true
 		} else {
-			userPipData = await retrieveUserPipUUIDsDetails(userId)
 			const credentialsResult = await findUserById(userId)
 			if (isNull(credentialsResult)) {
 				// eslint-disable-next-line max-len
@@ -80,7 +76,6 @@ export default async function googleLoginAuthCallback(req: Request, res: Respons
 		res.status(200).json({
 			isNewUser,
 			personalInfo,
-			userPipData,
 			studentClasses,
 			teacherData
 		} satisfies GoogleAuthSuccess)

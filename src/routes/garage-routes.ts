@@ -12,14 +12,14 @@ const garageRoutes = express.Router()
 garageRoutes.post(
 	"/lights-animation",
 	validateLightAnimation,
-	confirmPipIsActive,
+	confirmPipIsActive(true),
 	lightAnimation
 )
 
 garageRoutes.post(
 	"/display-buffer",
 	validateDisplayBuffer,
-	confirmPipIsActive,
+	confirmPipIsActive(true),
 	updateDisplay
 )
 

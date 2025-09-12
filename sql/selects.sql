@@ -1,6 +1,6 @@
-SELECT * FROM credentials ORDER BY created_at;
--- SELECT * FROM login_history where user_id = 56;
--- SELECT * FROM pip_uuid;
+-- SELECT * FROM credentials ORDER BY created_at;
+-- SELECT * FROM login_history ORDER BY ;
+SELECT * FROM pip_uuid;
 -- SELECT * FROM user_pip_uuid_map;
 -- SELECT * FROM activity ORDER BY activity_id;
 -- SELECT * FROM reading_question ORDER BY reading_question_id;
@@ -9,7 +9,7 @@ SELECT * FROM credentials ORDER BY created_at;
 -- SELECT * FROM career_user_progress;
 -- SELECT * FROM teacher;
 -- SELECT * FROM student;
--- SELECT * FROM challenge_sandbox;
+-- SELECT * FROM challenge ORDER BY created_at;
 -- SELECT * FROM sandbox_project;
 
 -- DELETE FROM sandbox_message;

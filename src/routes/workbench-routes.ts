@@ -19,35 +19,35 @@ const workbenchRoutes = express.Router()
 workbenchRoutes.post(
 	"/play-tune",
 	validateTuneToPlay,
-	confirmPipIsActive,
+	confirmPipIsActive(true),
 	playTune
 )
 
 workbenchRoutes.post(
 	"/change-audible-status",
 	validateChangeAudibleStatus,
-	confirmPipIsActive,
+	confirmPipIsActive(true),
 	changeAudibleStatus
 )
 
 workbenchRoutes.post(
 	"/change-volume",
 	validateChangeVolume,
-	confirmPipIsActive,
+	confirmPipIsActive(true),
 	changeVolume
 )
 
 workbenchRoutes.post(
 	"/change-balance-status",
 	validateChangeBalanceStatus,
-	confirmPipIsActive,
+	confirmPipIsActive(true),
 	changeBalanceStatus
 )
 
 workbenchRoutes.post(
 	"/update-balance-pids",
 	validateUpdateBalancePids,
-	confirmPipIsActive,
+	confirmPipIsActive(true),
 	updateBalancePids
 )
 

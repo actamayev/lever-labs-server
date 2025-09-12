@@ -14,12 +14,11 @@ export default function buildCheckCodeLLMContext(
 EVALUATION CRITERIA:
 ✅ Does it achieve the expected behavior?
 ✅ Are the core logic and structure correct?
-✅ Does it follow safe robotics practices?
 
 ❌ Identify logical errors or missing functionality
 ❌ Note if it doesn't match the solution approach
 
-Be thorough but fair - focus on functional correctness for this challenge.`
+Focus on functional correctness for this challenge.`
 
 	messages.push({
 		role: "system",
