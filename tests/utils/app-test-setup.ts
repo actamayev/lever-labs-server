@@ -1,34 +1,34 @@
-import { beforeAll, beforeEach, jest } from "@jest/globals"
+import { beforeEach, jest } from "@jest/globals"
 import express, { Express } from "express"
 import jwt from "jsonwebtoken"
-import cookieParser from "cookie-parser"
 import setupRoutes from "../../src/utils/config/setup-routes"
 import { configureAppMiddleware } from "../../src/middleware/init-config"
 import { AUTH_COOKIE_NAME } from "../../src/middleware/cookie-helpers"
 
+// Create the app ONCE and reuse it
+let testApp: Express | null = null
+
 export function setupTestApp(): Express {
-	const app: Express = express()
+	if (!testApp) {
+		testApp = express()
 
-	beforeAll(() => {
-		// Ensure cookie parser is configured
-		app.use(cookieParser())
+		// Configure middleware
+		configureAppMiddleware(testApp)
 
-		// Setup Express app with middleware and routes
-		configureAppMiddleware(app)
-		setupRoutes(app)
+		// Setup routes
+		setupRoutes(testApp)
 
 		// Add 404 handler
-		app.use("*", (_req, res) => {
+		testApp.use("*", (_req, res) => {
 			res.status(404).json({ error: "Route not found" })
 		})
-	})
+	}
 
 	beforeEach(() => {
 		jest.clearAllMocks()
 	})
 
-	// Return app for type safety - will be undefined until beforeAll runs
-	return app
+	return testApp
 }
 
 export function mockAllExternalDependencies(): void {
@@ -84,7 +84,12 @@ export function createAuthenticatedRequest(user: TestUser): { token: string; coo
 	}
 }
 
-export function mockJWTAuthentication(): void {
-	// This function is no longer needed since we handle it in mockAllExternalDependencies
-	// Keep for backwards compatibility
+// Debug helper to verify JWT in tests
+export function debugJWT(token: string): void {
+	try {
+		const decoded = jwt.verify(token, "test-jwt-secret-key")
+		console.log("JWT decoded successfully:", decoded)
+	} catch (error) {
+		console.log("JWT decode failed:", error)
+	}
 }

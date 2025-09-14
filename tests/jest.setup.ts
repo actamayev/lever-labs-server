@@ -4,7 +4,8 @@ import { jest, beforeAll, beforeEach, afterEach } from "@jest/globals"
 jest.mock("../src/classes/aws/secrets-manager", () => ({
 	default: {
 		getInstance: jest.fn().mockReturnValue({
-			getSecret: jest.fn().mockImplementation((key: string) => {
+			getSecret: jest.fn().mockImplementation((...args: unknown[]) => {
+				const key = args[0] as string
 				const secrets: Record<string, string> = {
 					"JWT_KEY": "test-jwt-secret-key",
 					"EMAIL_ENCRYPTION_KEY": "dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcw==",
@@ -27,7 +28,7 @@ jest.mock("../src/utils/google/create-google-auth-client")
 // Global test setup
 beforeAll(() => {
 	// Set test environment variables
-	process.env.NODE_ENV = "test"
+	process.env.NODE_ENV = undefined
 	process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || "postgresql://test:test@localhost:5432/test_db"
 
 	// Mock console methods to reduce noise in tests
