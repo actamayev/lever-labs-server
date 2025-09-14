@@ -1,6 +1,7 @@
 // Updated career-trigger.test.ts
 import { jest } from "@jest/globals"
 
+// TODO: Will we need to do this for all tests?
 // Mock SecretsManager FIRST, before ANY other imports
 jest.mock("../../../../src/classes/aws/secrets-manager", () => ({
 	default: {
@@ -18,14 +19,7 @@ jest.mock("../../../../src/classes/aws/secrets-manager", () => ({
 	}
 }))
 
-// Mock other dependencies
-jest.mock("../../../../src/classes/prisma-client")
-jest.mock("../../../../src/classes/esp32/esp32-socket-manager")
-jest.mock("../../../../src/classes/browser-socket-manager")
-jest.mock("../../../../src/classes/openai-client")
-jest.mock("../../../../src/utils/google/create-google-auth-client")
-
-// Mock the getDecodedId function with manual mock
+// // Mock the getDecodedId function with manual mock
 jest.mock("../../../../src/utils/auth-helpers/get-decoded-id")
 
 // eslint-disable-next-line no-duplicate-imports
