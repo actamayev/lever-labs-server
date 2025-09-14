@@ -33,14 +33,22 @@ export function mockAllExternalDependencies(): void {
 	jest.mock("@/classes/aws/secrets-manager", () => ({
 		default: {
 			getInstance: jest.fn().mockReturnValue({
-				getSecret: jest.fn().mockImplementation((key: string) => {
+				getSecret: jest.fn().mockImplementation((key: unknown) => {
+					const secretKey = key as string
 					const secrets: Record<string, string> = {
 						"JWT_KEY": "test-jwt-secret-key",
-						"EMAIL_ENCRYPTION_KEY": "dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcw==",
 						"GOOGLE_CLIENT_ID": "test-google-client-id",
+						"GOOGLE_CLIENT_SECRET": "test-google-client-secret",
+						"EMAIL_ENCRYPTION_KEY": "dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcw==",
+						"BDR_S3_BUCKET": "test-bdr-s3-bucket",
+						"FIRMWARE_S3_BUCKET": "test-firmware-s3-bucket",
+						"DATABASE_URL": "test-database-url",
+						"AWS_ACCESS_KEY_ID": "test-aws-access-key-id",
+						"AWS_SECRET_ACCESS_KEY": "test-aws-secret-access-key",
+						"OPENROUTER_API_KEY": "test-openrouter-api-key",
 						"PIP_HARDWARE_VERSION": "1.0.0",
 					}
-					return Promise.resolve(secrets[key] || "mock-secret")
+					return Promise.resolve(secrets[secretKey] || "mock-secret")
 				})
 			})
 		}
@@ -48,13 +56,13 @@ export function mockAllExternalDependencies(): void {
 }
 
 // JWT Test Utilities
-export interface TestUser {
+interface TestUser {
 	userId: number
 	email?: string
 	username?: string
 }
 
-export function createTestJWT(user: TestUser): string {
+function createTestJWT(user: TestUser): string {
 	const testSecret = "test-jwt-secret-key"
 	return jwt.sign(
 		{ userId: user.userId },

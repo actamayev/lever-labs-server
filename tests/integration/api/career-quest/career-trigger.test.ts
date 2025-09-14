@@ -1,29 +1,4 @@
-// Updated career-trigger.test.ts
-import { jest } from "@jest/globals"
-
-// TODO: Will we need to do this for all tests?
-// Mock SecretsManager FIRST, before ANY other imports
-jest.mock("@/classes/aws/secrets-manager", () => ({
-	default: {
-		getInstance: jest.fn().mockReturnValue({
-			getSecret: jest.fn().mockImplementation((key: string) => {
-				const secrets: Record<string, string> = {
-					"JWT_KEY": "test-jwt-secret-key",
-					"EMAIL_ENCRYPTION_KEY": "dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcw==",
-					"GOOGLE_CLIENT_ID": "test-google-client-id",
-					"PIP_HARDWARE_VERSION": "1.0.0",
-				}
-				return Promise.resolve(secrets[key] || "mock-secret")
-			})
-		})
-	}
-}))
-
-// // Mock the getDecodedId function with manual mock
-jest.mock("@/utils/auth-helpers/get-decoded-id")
-
-// eslint-disable-next-line no-duplicate-imports
-import { describe, it, expect, beforeAll } from "@jest/globals"
+import { describe, it, expect, beforeAll, jest } from "@jest/globals"
 import request from "supertest"
 import { Express } from "express"
 import {
@@ -32,6 +7,9 @@ import {
 } from "../../../utils/app-test-setup"
 import { CareerType } from "@bluedotrobots/common-ts/protocol"
 
+// Mock the getDecodedId function
+jest.mock("@/utils/auth-helpers/get-decoded-id")
+
 describe("POST /career-quest/career-trigger", () => {
 	let testApp: Express
 
@@ -39,7 +17,7 @@ describe("POST /career-quest/career-trigger", () => {
 		// Create test app AFTER mocks are established
 		testApp = createTestApp()
 		// Verify our mocks are working
-		console.log("Test environment set up")
+		console.info("Test environment set up")
 	})
 
 	it("should reject unauthenticated requests", async () => {
@@ -58,9 +36,6 @@ describe("POST /career-quest/career-trigger", () => {
 		const testUser = { userId: 123 }
 		const auth = createAuthenticatedRequest(testUser)
 
-		// Debug the JWT token
-		console.log("Generated JWT:", auth.token)
-
 		const response = await request(testApp)
 			.post("/career-quest/career-trigger")
 			.set("Cookie", auth.cookie)
@@ -68,9 +43,6 @@ describe("POST /career-quest/career-trigger", () => {
 				careerType: CareerType.MEET_PIP,
 				triggerMessageType: 1
 			})
-
-		console.log("Response status:", response.status)
-		console.log("Response body:", response.body)
 
 		expect(response.status).toBe(400)
 		expect(response.body).toHaveProperty("validationError")
