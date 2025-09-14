@@ -1,7 +1,7 @@
 import { jest, beforeAll, afterAll, beforeEach, afterEach } from "@jest/globals"
 
 // Global test setup
-beforeAll(async () => {
+beforeAll(() => {
 	// Set test environment variables
 	process.env.NODE_ENV = "test" as "staging" | "production"
 	process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || "postgresql://test:test@localhost:5432/test_db"

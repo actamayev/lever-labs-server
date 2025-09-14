@@ -91,7 +91,7 @@ describe("ESP32 Socket Management", () => {
 
 		it("should handle pong responses correctly", () => {
 			// Arrange
-			const pongHandler = mockSocket.on.mock.calls.find((call: [string, Function]) => call[0] === "pong")?.[1]
+			const pongHandler = mockSocket.on.mock.calls.find((call: [string, () => void]) => call[0] === "pong")?.[1]
 
 			// Act - simulate pong response
 			pongHandler()
@@ -114,7 +114,7 @@ describe("ESP32 Socket Management", () => {
 
 		it("should handle socket close event", () => {
 			// Arrange
-			const closeHandler = mockSocket.on.mock.calls.find((call: [string, Function]) => call[0] === "close")?.[1]
+			const closeHandler = mockSocket.on.mock.calls.find((call: [string, () => void]) => call[0] === "close")?.[1]
 
 			// Act
 			closeHandler()
@@ -125,7 +125,7 @@ describe("ESP32 Socket Management", () => {
 
 		it("should handle socket error event", () => {
 			// Arrange
-			const errorHandler = mockSocket.on.mock.calls.find((call: [string, Function]) => call[0] === "error")?.[1]
+			const errorHandler = mockSocket.on.mock.calls.find((call: [string, (error: Error) => void]) => call[0] === "error")?.[1]
 			const mockError = new Error("Socket error")
 
 			// Act
@@ -138,7 +138,7 @@ describe("ESP32 Socket Management", () => {
 		it("should handle ping failures gracefully", () => {
 			// Arrange
 			const pingError = new Error("Ping failed")
-			mockSocket.ping.mockImplementation((callback: Function) => {
+			mockSocket.ping.mockImplementation((callback: (error?: Error) => void) => {
 				callback(pingError)
 			})
 
@@ -151,7 +151,7 @@ describe("ESP32 Socket Management", () => {
 
 		it("should prevent multiple cleanup calls", () => {
 			// Arrange
-			const closeHandler = mockSocket.on.mock.calls.find((call: [string, Function]) => call[0] === "close")?.[1]
+			const closeHandler = mockSocket.on.mock.calls.find((call: [string, () => void]) => call[0] === "close")?.[1]
 
 			// Act - trigger cleanup multiple times
 			closeHandler()

@@ -1,16 +1,13 @@
-import { ClassCode } from "@bluedotrobots/common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function getClassBelongsToTeacher(teacherId: number, classCode: ClassCode): Promise<boolean> {
+export default async function getClassBelongsToTeacher(teacherId: number, classroomId: number): Promise<boolean> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
 		const teacherClassroomMapping = await prismaClient.classroom_teacher_map.findFirst({
 			where: {
 				teacher_id: teacherId,
-				classroom: {
-					class_code: classCode
-				}
+				classroom_id: classroomId
 			}
 		})
 

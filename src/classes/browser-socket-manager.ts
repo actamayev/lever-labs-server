@@ -166,7 +166,6 @@ export default class BrowserSocketManager extends Singleton {
 		this.connections.forEach((connectionInfo) => {
 			if (isNull(connectionInfo.currentlyConnectedPip)) return
 			const foundPip = connectionInfo.currentlyConnectedPip.pipUUID === pipUUID
-
 			if (foundPip) {
 				this.emitToSocket(connectionInfo.socketId, "general-sensor-data", sensorPayload)
 			}
@@ -200,21 +199,21 @@ export default class BrowserSocketManager extends Singleton {
 		this.emitToSocket(socketId, "student-joined-hub", data)
 	}
 
-	public emitNewHubToStudents(studentIds: number[], hubInfo: StudentViewHubData): void {
-		studentIds.forEach(studentId => {
-			this.emitToUser(studentId, "new-hub", hubInfo)
+	public emitNewHubToStudents(studentUserIds: number[], hubInfo: StudentViewHubData): void {
+		studentUserIds.forEach(studentUserId => {
+			this.emitToUser(studentUserId, "new-hub", hubInfo)
 		})
 	}
 
-	public emitDeletedHubToStudents(studentIds: number[], deletedHubInfo: DeletedHub): void {
-		studentIds.forEach(studentId => {
-			this.emitToUser(studentId, "deleted-hub", deletedHubInfo)
+	public emitDeletedHubToStudents(studentUserIds: number[], deletedHubInfo: DeletedHub): void {
+		studentUserIds.forEach(studentUserId => {
+			this.emitToUser(studentUserId, "deleted-hub", deletedHubInfo)
 		})
 	}
 
-	public emitUpdatedHubToStudents(studentIds: number[], updatedHubInfo: UpdatedHubSlideId): void {
-		studentIds.forEach(studentId => {
-			this.emitToUser(studentId, "updated-hub-slide-id", updatedHubInfo)
+	public emitUpdatedHubToStudents(studentUserIds: number[], updatedHubInfo: UpdatedHubSlideId): void {
+		studentUserIds.forEach(studentUserId => {
+			this.emitToUser(studentUserId, "updated-hub-slide-id", updatedHubInfo)
 		})
 	}
 
@@ -247,5 +246,23 @@ export default class BrowserSocketManager extends Singleton {
 		if (isUndefined(connectionInfo)) return false
 		if (isNull(connectionInfo.currentlyConnectedPip)) return false
 		return connectionInfo.currentlyConnectedPip.pipUUID === pipUUID && connectionInfo.currentlyConnectedPip.status === "connected"
+	}
+
+	public emitGarageDrivingStatusUpdateToStudents(studentUserIds: number[], garageDrivingStatus: boolean): void {
+		studentUserIds.forEach(studentUserId => {
+			this.emitToUser(studentUserId, "garage-driving-status-update", { garageDrivingStatus })
+		})
+	}
+
+	public emitGarageSoundsStatusUpdateToStudents(studentUserIds: number[], garageSoundsStatus: boolean): void {
+		studentUserIds.forEach(studentUserId => {
+			this.emitToUser(studentUserId, "garage-sounds-status-update", { garageSoundsStatus })
+		})
+	}
+
+	public emitGarageLightsStatusUpdateToStudents(studentUserIds: number[], garageLightsStatus: boolean): void {
+		studentUserIds.forEach(studentUserId => {
+			this.emitToUser(studentUserId, "garage-lights-status-update", { garageLightsStatus })
+		})
 	}
 }

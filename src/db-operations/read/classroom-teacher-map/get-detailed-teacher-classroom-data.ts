@@ -27,6 +27,7 @@ export default async function getDetailedTeacherClassroomData(
 						class_code: true,
 						student: {
 							select: {
+								student_id: true,
 								user: {
 									select: {
 										username: true
@@ -45,6 +46,7 @@ export default async function getDetailedTeacherClassroomData(
 			classroomName: classroom.classroom.classroom_name,
 			classCode: classroom.classroom.class_code as ClassCode,
 			students: classroom.classroom.student.map(student => ({
+				studentId: student.student_id,
 				username: student.user.username || "",
 			})),
 			activeHubs: HubManager.getInstance().getTeacherHubs(userId)
