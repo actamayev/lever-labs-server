@@ -2,17 +2,16 @@
 import { describe, it, expect, beforeAll } from "@jest/globals"
 import request from "supertest"
 import {
-	setupTestApp,
+	createTestApp,
 	createAuthenticatedRequest,
 	mockAllExternalDependencies,
-	debugJWT
 } from "../../../utils/app-test-setup"
 
 // Mock dependencies BEFORE any imports
 mockAllExternalDependencies()
 
 describe("POST /career-quest/career-trigger", () => {
-	const testApp = setupTestApp()
+	const testApp = createTestApp()
 
 	beforeAll(() => {
 		// Verify our mocks are working
@@ -37,7 +36,6 @@ describe("POST /career-quest/career-trigger", () => {
 
 		// Debug the JWT token
 		console.log("Generated JWT:", auth.token)
-		debugJWT(auth.token)
 
 		const response = await request(testApp)
 			.post("/career-quest/career-trigger")
@@ -49,13 +47,8 @@ describe("POST /career-quest/career-trigger", () => {
 		console.log("Response status:", response.status)
 		console.log("Response body:", response.body)
 
-		// If we're still getting 401, let's check if it's the auth or validation
-		if (response.status === 401) {
-			console.log("❌ Authentication failed - JWT middleware issue")
-		} else {
-			expect(response.status).toBe(400)
-			expect(response.body).toHaveProperty("validationError")
-		}
+		expect(response.status).toBe(400)
+		expect(response.body).toHaveProperty("validationError")
 	})
 
 	it("should reject request with missing message", async () => {

@@ -1,34 +1,24 @@
-import { beforeEach, jest } from "@jest/globals"
+// tests/utils/express-app-factory.ts
+import { jest } from "@jest/globals"
 import express, { Express } from "express"
 import jwt from "jsonwebtoken"
-import setupRoutes from "../../src/utils/config/setup-routes"
 import { configureAppMiddleware } from "../../src/middleware/init-config"
+import setupRoutes from "../../src/utils/config/setup-routes"
 import { AUTH_COOKIE_NAME } from "../../src/middleware/cookie-helpers"
 
-// Create the app ONCE and reuse it
-let testApp: Express | null = null
+// Factory function to create a test Express app
+// Call this AFTER mocks are set up in your test file
+export function createTestApp(): Express {
+	const app = express()
+	configureAppMiddleware(app)
+	setupRoutes(app)
 
-export function setupTestApp(): Express {
-	if (!testApp) {
-		testApp = express()
-
-		// Configure middleware
-		configureAppMiddleware(testApp)
-
-		// Setup routes
-		setupRoutes(testApp)
-
-		// Add 404 handler
-		testApp.use("*", (_req, res) => {
-			res.status(404).json({ error: "Route not found" })
-		})
-	}
-
-	beforeEach(() => {
-		jest.clearAllMocks()
+	// Add 404 handler
+	app.use("*", (_req, res) => {
+		res.status(404).json({ error: "Route not found" })
 	})
 
-	return testApp
+	return app
 }
 
 export function mockAllExternalDependencies(): void {
@@ -73,7 +63,11 @@ export function createTestJWT(user: TestUser): string {
 	)
 }
 
-export function createAuthenticatedRequest(user: TestUser): { token: string; cookie: string; headers: { Cookie: string } } {
+export function createAuthenticatedRequest(user: TestUser): {
+	token: string
+	cookie: string
+	headers: { Cookie: string }
+} {
 	const token = createTestJWT(user)
 	return {
 		token,
@@ -81,15 +75,5 @@ export function createAuthenticatedRequest(user: TestUser): { token: string; coo
 		headers: {
 			Cookie: `${AUTH_COOKIE_NAME}=${token}`
 		}
-	}
-}
-
-// Debug helper to verify JWT in tests
-export function debugJWT(token: string): void {
-	try {
-		const decoded = jwt.verify(token, "test-jwt-secret-key")
-		console.log("JWT decoded successfully:", decoded)
-	} catch (error) {
-		console.log("JWT decode failed:", error)
 	}
 }

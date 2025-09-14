@@ -138,7 +138,7 @@ export default [
 		},
 	},
 	{
-		files: ["tests/**/*"],
+		files: ["tests/**/*", "jest.config.ts"],
 		languageOptions: {
 			parser: tsParser,
 			parserOptions: {

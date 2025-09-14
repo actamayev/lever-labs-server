@@ -1,12 +1,12 @@
 import { describe, it, expect } from "@jest/globals"
 import request from "supertest"
-import { mockAllExternalDependencies, setupTestApp } from "../../utils/app-test-setup"
+import { mockAllExternalDependencies, createTestApp } from "../../utils/app-test-setup"
 
 // Mock all external dependencies
 mockAllExternalDependencies()
 
 describe("Misc API Integration Tests", () => {
-	const testApp = setupTestApp()
+	const testApp = createTestApp()
 
 	describe("POST /misc/subscribe-for-email-updates", () => {
 		it("should reject request with missing email", async () => {
