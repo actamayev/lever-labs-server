@@ -11,6 +11,7 @@ beforeAll(() => {
 	// Set test environment variables
 	process.env.NODE_ENV = undefined
 	process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || "postgresql://test:test@localhost:5432/test_db"
+	process.env.JWT_KEY = "test-jwt-secret-key"
 
 	// Mock console methods to reduce noise in tests
 	global.console = {

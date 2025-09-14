@@ -1,19 +1,49 @@
 // Updated career-trigger.test.ts
+import { jest } from "@jest/globals"
+
+// Mock SecretsManager FIRST, before ANY other imports
+jest.mock("../../../../src/classes/aws/secrets-manager", () => ({
+	default: {
+		getInstance: jest.fn().mockReturnValue({
+			getSecret: jest.fn().mockImplementation((key: string) => {
+				const secrets: Record<string, string> = {
+					"JWT_KEY": "test-jwt-secret-key",
+					"EMAIL_ENCRYPTION_KEY": "dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcw==",
+					"GOOGLE_CLIENT_ID": "test-google-client-id",
+					"PIP_HARDWARE_VERSION": "1.0.0",
+				}
+				return Promise.resolve(secrets[key] || "mock-secret")
+			})
+		})
+	}
+}))
+
+// Mock other dependencies
+jest.mock("../../../../src/classes/prisma-client")
+jest.mock("../../../../src/classes/esp32/esp32-socket-manager")
+jest.mock("../../../../src/classes/browser-socket-manager")
+jest.mock("../../../../src/classes/openai-client")
+jest.mock("../../../../src/utils/google/create-google-auth-client")
+
+// Mock the getDecodedId function with manual mock
+jest.mock("../../../../src/utils/auth-helpers/get-decoded-id")
+
+// eslint-disable-next-line no-duplicate-imports
 import { describe, it, expect, beforeAll } from "@jest/globals"
 import request from "supertest"
+import { Express } from "express"
 import {
 	createTestApp,
 	createAuthenticatedRequest,
-	mockAllExternalDependencies,
 } from "../../../utils/app-test-setup"
-
-// Mock dependencies BEFORE any imports
-mockAllExternalDependencies()
+import { CareerType } from "@bluedotrobots/common-ts/protocol"
 
 describe("POST /career-quest/career-trigger", () => {
-	const testApp = createTestApp()
+	let testApp: Express
 
 	beforeAll(() => {
+		// Create test app AFTER mocks are established
+		testApp = createTestApp()
 		// Verify our mocks are working
 		console.log("Test environment set up")
 	})
@@ -39,9 +69,10 @@ describe("POST /career-quest/career-trigger", () => {
 
 		const response = await request(testApp)
 			.post("/career-quest/career-trigger")
-			.set("Cookie", auth.cookie) // Use set() instead of set(auth.headers)
+			.set("Cookie", auth.cookie)
 			.send({
-				message: "Test trigger message"
+				careerType: CareerType.MEET_PIP,
+				triggerMessageType: 1
 			})
 
 		console.log("Response status:", response.status)
@@ -51,7 +82,7 @@ describe("POST /career-quest/career-trigger", () => {
 		expect(response.body).toHaveProperty("validationError")
 	})
 
-	it("should reject request with missing message", async () => {
+	it("should reject request with missing careerType", async () => {
 		const testUser = { userId: 123 }
 		const auth = createAuthenticatedRequest(testUser)
 
@@ -59,7 +90,8 @@ describe("POST /career-quest/career-trigger", () => {
 			.post("/career-quest/career-trigger")
 			.set("Cookie", auth.cookie)
 			.send({
-				pipUUID: "test-pip-uuid"
+				pipUUID: "test-pip-uuid",
+				triggerMessageType: 1
 			})
 
 		expect(response.status).toBe(400)
@@ -75,14 +107,15 @@ describe("POST /career-quest/career-trigger", () => {
 			.set("Cookie", auth.cookie)
 			.send({
 				pipUUID: "",
-				message: "Test trigger message"
+				careerType: CareerType.MEET_PIP,
+				triggerMessageType: 1
 			})
 
 		expect(response.status).toBe(400)
 		expect(response.body).toHaveProperty("validationError")
 	})
 
-	it("should reject request with empty message", async () => {
+	it("should reject request with missing triggerMessageType", async () => {
 		const testUser = { userId: 123 }
 		const auth = createAuthenticatedRequest(testUser)
 
@@ -91,7 +124,7 @@ describe("POST /career-quest/career-trigger", () => {
 			.set("Cookie", auth.cookie)
 			.send({
 				pipUUID: "test-pip-uuid",
-				message: ""
+				careerType: CareerType.MEET_PIP
 			})
 
 		expect(response.status).toBe(400)
@@ -107,7 +140,8 @@ describe("POST /career-quest/career-trigger", () => {
 			.set("Cookie", auth.cookie)
 			.send({
 				pipUUID: 123, // Should be string
-				message: true // Should be string
+				careerType: CareerType.MEET_PIP,
+				triggerMessageType: "invalid" // Should be number
 			})
 
 		expect(response.status).toBe(400)
@@ -122,9 +156,13 @@ describe("POST /career-quest/career-trigger", () => {
 			.post("/career-quest/career-trigger")
 			.set("Cookie", auth.cookie)
 			.send({
-				pipUUID: "test-pip-uuid-123",
-				message: "Valid trigger message for career quest"
+				pipUUID: "abc12",
+				careerType: CareerType.MEET_PIP,
+				triggerMessageType: 0
 			})
+
+		console.log("Response status:", response.status)
+		console.log("Response body:", response.body)
 
 		// Should not be a validation error or unauthorized
 		expect(response.status).not.toBe(400)
@@ -157,8 +195,9 @@ describe("POST /career-quest/career-trigger", () => {
 			.post("/career-quest/career-trigger")
 			.set("Cookie", auth.cookie)
 			.send({
-				pipUUID: "debug-test-uuid",
-				message: "Debug message to test JWT"
+				pipUUID: "dbg99",
+				careerType: CareerType.MEET_PIP,
+				triggerMessageType: 1
 			})
 
 		console.log("Debug response status:", response.status)
