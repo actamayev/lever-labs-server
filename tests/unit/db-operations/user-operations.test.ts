@@ -198,7 +198,8 @@ describe("Database Operations - User Operations", () => {
 			const classCode = "ABC123" as ClassCode
 			const teacherId = 1
 
-			const mockTransaction = jest.fn().mockImplementation(async (callback: any) => {
+			const mockTransaction = jest.fn<(...args: unknown[]) => Promise<unknown>>().mockImplementation((...args: unknown[]) => {
+				const callback = args[0] as (prisma: MockPrismaClient) => Promise<unknown>
 				const mockPrisma = {
 					classroom: {
 						create: jest.fn().mockImplementation(() => Promise.resolve({ classroom_id: 1 })),
@@ -210,7 +211,7 @@ describe("Database Operations - User Operations", () => {
 				return callback(mockPrisma as unknown as MockPrismaClient)
 			})
 
-			mockPrismaClient.$transaction = mockTransaction as jest.MockedFunction<(...args: unknown[]) => Promise<unknown>>
+			mockPrismaClient.$transaction = mockTransaction
 
 			// Act
 			const result = await addClassroom(classroomName, classCode, teacherId)

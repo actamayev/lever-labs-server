@@ -19,19 +19,9 @@ type MockPrismaClient = {
   $transaction: jest.MockedFunction<(...args: unknown[]) => Promise<unknown>>;
 };
 
-// Type for mock SecretsManager
-type MockSecretsManagerInstance = {
-  getSecret: jest.MockedFunction<(key: DeterministicEncryptionKeys) => Promise<string>>;
-};
-
-type MockSecretsManager = {
-  getInstance: jest.MockedFunction<() => MockSecretsManagerInstance>;
-};
-
 describe("Database Operations - User Operations", () => {
 	let mockPrismaClient: MockPrismaClient
 	let mockGetPrismaClient: jest.MockedFunction<() => Promise<MockPrismaClient>>
-	let mockSecretsManager: MockSecretsManager
 
 	beforeEach(() => {
 		// Reset modules to ensure clean mocking
@@ -54,12 +44,6 @@ describe("Database Operations - User Operations", () => {
 		}
 
 		mockGetPrismaClient = jest.fn().mockImplementation(() => Promise.resolve(mockPrismaClient)) as jest.MockedFunction<() => Promise<MockPrismaClient>>
-
-		mockSecretsManager = {
-			getInstance: jest.fn().mockReturnValue({
-				getSecret: jest.fn().mockImplementation(() => Promise.resolve("dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcw==")),
-			}) as jest.MockedFunction<() => MockSecretsManagerInstance>,
-		}
 
 		// Mock the modules
 		jest.doMock("../../../src/classes/prisma-client", () => {

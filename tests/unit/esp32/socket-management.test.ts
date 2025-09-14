@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeEach, jest, afterEach } from "@jest/globals"
-import { EventEmitter } from "events"
 import { UUID } from "crypto"
 
 // Mock WebSocket and related modules
@@ -42,6 +41,7 @@ import SingleESP32Connection from "../../../src/classes/esp32/single-esp32-conne
 describe("ESP32 Socket Management", () => {
 	describe("SingleESP32Connection", () => {
 		let connection: SingleESP32Connection
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		let mockSocket: any
 		let mockOnDisconnect: jest.MockedFunction<(socketId: UUID) => void>
 		let mockSocketId: UUID

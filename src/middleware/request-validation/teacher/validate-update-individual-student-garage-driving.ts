@@ -20,7 +20,9 @@ export default function validateUpdateIndividualStudentGarageDriving(req: Reques
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate update individual student garage driving status" } satisfies ErrorResponse)
+		res.status(500).json({
+			error: "Internal Server Error: Unable to validate update individual student garage driving status"
+		} satisfies ErrorResponse)
 		return
 	}
 }
