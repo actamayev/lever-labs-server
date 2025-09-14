@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, jest } from "@jest/globals"
 import { Request, Response, NextFunction } from "express"
 
-import validateRegister from "../../../src/middleware/request-validation/auth/validate-register"
-import validateCppCode from "../../../src/middleware/request-validation/sandbox/validate-cpp-code"
-import { validateLedColorsDirectly } from "../../../src/middleware/request-validation/internal/validate-led-colors"
-import validateSendChallengeMessage from "../../../src/middleware/request-validation/chat/validate-send-challenge-message"
+import validateRegister from "@/middleware/request-validation/auth/validate-register"
+import validateCppCode from "@/middleware/request-validation/sandbox/validate-cpp-code"
+import { validateLedColorsDirectly } from "@/middleware/request-validation/internal/validate-led-colors"
+import validateSendChallengeMessage from "@/middleware/request-validation/chat/validate-send-challenge-message"
 
 describe("Request Validation Middleware", () => {
 	let mockRequest: Partial<Request>

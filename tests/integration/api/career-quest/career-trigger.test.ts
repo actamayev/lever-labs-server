@@ -3,7 +3,7 @@ import { jest } from "@jest/globals"
 
 // TODO: Will we need to do this for all tests?
 // Mock SecretsManager FIRST, before ANY other imports
-jest.mock("../../../../src/classes/aws/secrets-manager", () => ({
+jest.mock("@/classes/aws/secrets-manager", () => ({
 	default: {
 		getInstance: jest.fn().mockReturnValue({
 			getSecret: jest.fn().mockImplementation((key: string) => {
@@ -20,7 +20,7 @@ jest.mock("../../../../src/classes/aws/secrets-manager", () => ({
 }))
 
 // // Mock the getDecodedId function with manual mock
-jest.mock("../../../../src/utils/auth-helpers/get-decoded-id")
+jest.mock("@/utils/auth-helpers/get-decoded-id")
 
 // eslint-disable-next-line no-duplicate-imports
 import { describe, it, expect, beforeAll } from "@jest/globals"
@@ -155,9 +155,6 @@ describe("POST /career-quest/career-trigger", () => {
 				triggerMessageType: 0
 			})
 
-		console.log("Response status:", response.status)
-		console.log("Response body:", response.body)
-
 		// Should not be a validation error or unauthorized
 		expect(response.status).not.toBe(400)
 		expect(response.status).not.toBe(401)
@@ -174,33 +171,5 @@ describe("POST /career-quest/career-trigger", () => {
 			.send("{\"pipUUID\": invalid json}")
 
 		expect(response.status).toBe(400)
-	})
-
-	// Additional debug test to isolate the JWT issue
-	it("DEBUG: should verify JWT middleware is working", async () => {
-		const testUser = { userId: 999 }
-		const auth = createAuthenticatedRequest(testUser)
-
-		console.log("🔍 Debug test - checking if JWT middleware works at all")
-		console.log("Cookie being sent:", auth.cookie)
-
-		// Try a simple authenticated endpoint to see if the issue is specific to this route
-		const response = await request(testApp)
-			.post("/career-quest/career-trigger")
-			.set("Cookie", auth.cookie)
-			.send({
-				pipUUID: "dbg99",
-				careerType: CareerType.MEET_PIP,
-				triggerMessageType: 1
-			})
-
-		console.log("Debug response status:", response.status)
-		console.log("Debug response body:", response.body)
-
-		if (response.status === 401) {
-			console.log("❌ JWT middleware is not working")
-		} else {
-			console.log("✅ JWT middleware is working - issue is elsewhere")
-		}
 	})
 })

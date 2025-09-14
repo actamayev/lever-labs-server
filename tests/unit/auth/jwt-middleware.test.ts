@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, jest } from "@jest/globals"
 import { Request, Response, NextFunction } from "express"
 
 // Mock dependencies
-jest.mock("../../../src/classes/aws/secrets-manager", () => ({
+jest.mock("@/classes/aws/secrets-manager", () => ({
 	default: {
 		getInstance: jest.fn().mockReturnValue({
 			getSecret: jest.fn().mockImplementation(() => Promise.resolve("test-jwt-secret-key")),
@@ -14,23 +14,23 @@ const mockGetDecodedId = jest.fn() as jest.MockedFunction<(token: string) => Pro
 const mockFindUserById = jest.fn() as jest.MockedFunction<(userId: number) => Promise<ExtendedCredentials | null>>
 const mockGetAuthTokenFromCookies = jest.fn() as jest.MockedFunction<(req: Request) => string | null>
 
-jest.mock("../../../src/utils/auth-helpers/get-decoded-id", () => {
+jest.mock("@/utils/auth-helpers/get-decoded-id", () => {
 	return {
 		__esModule: true,
 		default: mockGetDecodedId,
 	}
 })
 
-jest.mock("../../../src/middleware/cookie-helpers", () => ({
+jest.mock("@/middleware/cookie-helpers", () => ({
 	getAuthTokenFromCookies: mockGetAuthTokenFromCookies,
 }))
 
-jest.mock("../../../src/db-operations/read/find/find-user", () => ({
+jest.mock("@/db-operations/read/find/find-user", () => ({
 	findUserById: mockFindUserById,
 }))
 
-import jwtVerifyAttachUserId from "../../../src/middleware/jwt/jwt-verify-attach-user-id"
-import jwtVerifyAttachUser from "../../../src/middleware/jwt/jwt-verify-attach-user"
+import jwtVerifyAttachUserId from "@/middleware/jwt/jwt-verify-attach-user-id"
+import jwtVerifyAttachUser from "@/middleware/jwt/jwt-verify-attach-user"
 import { AuthMethods, SiteThemes } from "@prisma/client"
 
 describe("JWT Middleware", () => {

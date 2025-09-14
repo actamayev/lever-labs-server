@@ -2,9 +2,9 @@
 import { jest } from "@jest/globals"
 import express, { Express } from "express"
 import jwt from "jsonwebtoken"
-import { configureAppMiddleware } from "../../src/middleware/init-config"
-import setupRoutes from "../../src/utils/config/setup-routes"
-import { AUTH_COOKIE_NAME } from "../../src/middleware/cookie-helpers"
+import { configureAppMiddleware } from "@/middleware/init-config"
+import setupRoutes from "@/utils/config/setup-routes"
+import { AUTH_COOKIE_NAME } from "@/middleware/cookie-helpers"
 
 // Factory function to create a test Express app
 // Call this AFTER mocks are set up in your test file
@@ -23,14 +23,14 @@ export function createTestApp(): Express {
 
 export function mockAllExternalDependencies(): void {
 	// Mock all external dependencies BEFORE any imports
-	jest.mock("../../src/classes/prisma-client")
-	jest.mock("../../src/classes/esp32/esp32-socket-manager")
-	jest.mock("../../src/classes/browser-socket-manager")
-	jest.mock("../../src/classes/openai-client")
-	jest.mock("../../src/utils/google/create-google-auth-client")
+	jest.mock("@/classes/prisma-client")
+	jest.mock("@/classes/esp32/esp32-socket-manager")
+	jest.mock("@/classes/browser-socket-manager")
+	jest.mock("@/classes/openai-client")
+	jest.mock("@/utils/google/create-google-auth-client")
 
 	// Mock SecretsManager with the correct JWT_KEY
-	jest.mock("../../src/classes/aws/secrets-manager", () => ({
+	jest.mock("@/classes/aws/secrets-manager", () => ({
 		default: {
 			getInstance: jest.fn().mockReturnValue({
 				getSecret: jest.fn().mockImplementation((key: string) => {

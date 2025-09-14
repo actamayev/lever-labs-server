@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { describe, it, expect, beforeEach, jest } from "@jest/globals"
-import Encryptor from "../../../src/classes/encryptor"
+import Encryptor from "@/classes/encryptor"
 
 describe("Encryption and Hashing Utilities", () => {
 	describe("Encryptor", () => {
@@ -11,7 +11,7 @@ describe("Encryption and Hashing Utilities", () => {
 			jest.resetModules()
 
 			// Mock SecretsManager
-			jest.doMock("../../../src/classes/aws/secrets-manager", () => {
+			jest.doMock("@/classes/aws/secrets-manager", () => {
 				return {
 					__esModule: true,
 					default: class MockSecretsManager {
@@ -24,7 +24,7 @@ describe("Encryption and Hashing Utilities", () => {
 			})
 
 			// Import after mocking
-			const { default: EncryptorClass } = await import("../../../src/classes/encryptor")
+			const { default: EncryptorClass } = await import("@/classes/encryptor")
 			encryptor = new EncryptorClass()
 			jest.clearAllMocks()
 		})
@@ -153,7 +153,7 @@ describe("Encryption and Hashing Utilities", () => {
 		describe("hashCredentials", () => {
 			it("should hash passwords with bcrypt", async () => {
 				// Arrange
-				const { default: Hash } = await import("../../../src/classes/hash")
+				const { default: Hash } = await import("@/classes/hash")
 				const password = "testPassword123!"
 
 				// Act
@@ -169,7 +169,7 @@ describe("Encryption and Hashing Utilities", () => {
 
 			it("should produce different hashes for same password (salt)", async () => {
 				// Arrange
-				const { default: Hash } = await import("../../../src/classes/hash")
+				const { default: Hash } = await import("@/classes/hash")
 				const password = "testPassword123!"
 
 				// Act
@@ -182,7 +182,7 @@ describe("Encryption and Hashing Utilities", () => {
 
 			it("should handle empty passwords", async () => {
 				// Arrange
-				const { default: Hash } = await import("../../../src/classes/hash")
+				const { default: Hash } = await import("@/classes/hash")
 				const password = ""
 
 				// Act
@@ -195,7 +195,7 @@ describe("Encryption and Hashing Utilities", () => {
 
 			it("should handle special characters in passwords", async () => {
 				// Arrange
-				const { default: Hash } = await import("../../../src/classes/hash")
+				const { default: Hash } = await import("@/classes/hash")
 				const password = "test@#$%^&*()_+{}|:\"<>?[];,./`~"
 
 				// Act
@@ -210,7 +210,7 @@ describe("Encryption and Hashing Utilities", () => {
 		describe("checkPassword", () => {
 			it("should validate correct passwords", async () => {
 				// Arrange
-				const { default: Hash } = await import("../../../src/classes/hash")
+				const { default: Hash } = await import("@/classes/hash")
 				const password = "testPassword123!"
 				const hashed = await Hash.hashCredentials(password)
 
@@ -223,7 +223,7 @@ describe("Encryption and Hashing Utilities", () => {
 
 			it("should reject incorrect passwords", async () => {
 				// Arrange
-				const { default: Hash } = await import("../../../src/classes/hash")
+				const { default: Hash } = await import("@/classes/hash")
 				const correctPassword = "testPassword123!"
 				const wrongPassword = "wrongPassword123!"
 				const hashed = await Hash.hashCredentials(correctPassword)
@@ -237,7 +237,7 @@ describe("Encryption and Hashing Utilities", () => {
 
 			it("should be case sensitive", async () => {
 				// Arrange
-				const { default: Hash } = await import("../../../src/classes/hash")
+				const { default: Hash } = await import("@/classes/hash")
 				const password = "testPassword123!"
 				const wrongCasePassword = "TestPassword123!"
 				const hashed = await Hash.hashCredentials(password)
@@ -251,7 +251,7 @@ describe("Encryption and Hashing Utilities", () => {
 
 			it("should handle empty password validation", async () => {
 				// Arrange
-				const { default: Hash } = await import("../../../src/classes/hash")
+				const { default: Hash } = await import("@/classes/hash")
 				const password = ""
 				const hashed = await Hash.hashCredentials(password)
 

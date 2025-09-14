@@ -23,11 +23,11 @@ jest.mock("ws", () => ({
 	Server: jest.fn().mockImplementation(() => mockWSServer),
 }))
 
-jest.mock("../../../src/utils/type-helpers/type-checks", () => ({
+jest.mock("@/utils/type-helpers/type-checks", () => ({
 	default: jest.fn().mockReturnValue(true), // isPipUUID
 }))
 
-jest.mock("../../../src/classes/browser-socket-manager", () => ({
+jest.mock("@/classes/browser-socket-manager", () => ({
 	default: {
 		getInstance: jest.fn().mockReturnValue({
 			sendSensorDataToUser: jest.fn(),
@@ -36,7 +36,7 @@ jest.mock("../../../src/classes/browser-socket-manager", () => ({
 	},
 }))
 
-import SingleESP32Connection from "../../../src/classes/esp32/single-esp32-connection"
+import SingleESP32Connection from "@/classes/esp32/single-esp32-connection"
 
 describe("ESP32 Socket Management", () => {
 	describe("SingleESP32Connection", () => {

@@ -46,7 +46,7 @@ describe("Database Operations - User Operations", () => {
 		mockGetPrismaClient = jest.fn().mockImplementation(() => Promise.resolve(mockPrismaClient)) as jest.MockedFunction<() => Promise<MockPrismaClient>>
 
 		// Mock the modules
-		jest.doMock("../../../src/classes/prisma-client", () => {
+		jest.doMock("@/classes/prisma-client", () => {
 			return {
 				__esModule: true,
 				default: class MockPrismaClientClass {
@@ -55,7 +55,7 @@ describe("Database Operations - User Operations", () => {
 			}
 		})
 
-		jest.doMock("../../../src/classes/aws/secrets-manager", () => {
+		jest.doMock("@/classes/aws/secrets-manager", () => {
 			return {
 				__esModule: true,
 				default: class MockSecretsManager {
@@ -70,7 +70,7 @@ describe("Database Operations - User Operations", () => {
 	describe("doesUsernameExist", () => {
 		it("should return true when username exists", async () => {
 			// Arrange
-			const { default: doesUsernameExist } = await import("../../../src/db-operations/read/does-x-exist/does-username-exist")
+			const { default: doesUsernameExist } = await import("@/db-operations/read/does-x-exist/does-username-exist")
 			const username = "testuser"
 			mockPrismaClient.credentials.findFirst.mockResolvedValue({ user_id: 1 })
 
@@ -94,7 +94,7 @@ describe("Database Operations - User Operations", () => {
 
 		it("should return false when username does not exist", async () => {
 			// Arrange
-			const { default: doesUsernameExist } = await import("../../../src/db-operations/read/does-x-exist/does-username-exist")
+			const { default: doesUsernameExist } = await import("@/db-operations/read/does-x-exist/does-username-exist")
 			const username = "nonexistentuser"
 			mockPrismaClient.credentials.findFirst.mockResolvedValue(null)
 
@@ -107,7 +107,7 @@ describe("Database Operations - User Operations", () => {
 
 		it("should handle database errors gracefully", async () => {
 			// Arrange
-			const { default: doesUsernameExist } = await import("../../../src/db-operations/read/does-x-exist/does-username-exist")
+			const { default: doesUsernameExist } = await import("@/db-operations/read/does-x-exist/does-username-exist")
 			const username = "testuser"
 			const dbError = new Error("Database connection failed")
 			mockPrismaClient.credentials.findFirst.mockRejectedValue(dbError)
@@ -120,7 +120,7 @@ describe("Database Operations - User Operations", () => {
 	describe("addPipUUIDRecord", () => {
 		it("should successfully add a new PIP UUID record", async () => {
 			// Arrange
-			const { default: addPipUUIDRecord } = await import("../../../src/db-operations/write/pip-uuid/add-pip-uuid-record")
+			const { default: addPipUUIDRecord } = await import("@/db-operations/write/pip-uuid/add-pip-uuid-record")
 			const uuid = "test-uuid-123" as PipUUID
 			mockPrismaClient.pip_uuid.create.mockResolvedValue({ uuid, hardware_version: "1.0.0" })
 
@@ -139,7 +139,7 @@ describe("Database Operations - User Operations", () => {
 
 		it("should return false on unique constraint violation (P2002)", async () => {
 			// Arrange
-			const { default: addPipUUIDRecord } = await import("../../../src/db-operations/write/pip-uuid/add-pip-uuid-record")
+			const { default: addPipUUIDRecord } = await import("@/db-operations/write/pip-uuid/add-pip-uuid-record")
 			const uuid = "duplicate-uuid-123" as PipUUID
 			const prismaError = new PrismaClientKnownRequestError("Unique constraint failed", {
 				code: "P2002",
@@ -157,7 +157,7 @@ describe("Database Operations - User Operations", () => {
 
 		it("should rethrow non-P2002 errors", async () => {
 			// Arrange
-			const { default: addPipUUIDRecord } = await import("../../../src/db-operations/write/pip-uuid/add-pip-uuid-record")
+			const { default: addPipUUIDRecord } = await import("@/db-operations/write/pip-uuid/add-pip-uuid-record")
 			const uuid = "test-uuid-123" as PipUUID
 			const otherError = new Error("Network error")
 			mockPrismaClient.pip_uuid.create.mockRejectedValue(otherError)

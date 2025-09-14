@@ -3,16 +3,16 @@ import request from "supertest"
 import express, { Express } from "express"
 
 // Mock all external dependencies
-jest.mock("../../../src/classes/prisma-client")
-jest.mock("../../../src/classes/aws/secrets-manager")
-jest.mock("../../../src/utils/google/create-google-auth-client")
-jest.mock("../../../src/classes/esp32/esp32-socket-manager")
-jest.mock("../../../src/classes/browser-socket-manager")
-jest.mock("../../../src/classes/openai-client")
+jest.mock("@/classes/prisma-client")
+jest.mock("@/classes/aws/secrets-manager")
+jest.mock("@/utils/google/create-google-auth-client")
+jest.mock("@/classes/esp32/esp32-socket-manager")
+jest.mock("@/classes/browser-socket-manager")
+jest.mock("@/classes/openai-client")
 
 // Import after mocking
-import setupRoutes from "../../../src/utils/config/setup-routes"
-import { configureAppMiddleware } from "../../../src/middleware/init-config"
+import setupRoutes from "@/utils/config/setup-routes"
+import { configureAppMiddleware } from "@/middleware/init-config"
 
 describe("Health API Integration Tests", () => {
 	let app: Express
