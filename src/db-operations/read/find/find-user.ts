@@ -1,6 +1,6 @@
 import isNull from "lodash/isNull"
 import PrismaClientClass from "../../../classes/prisma-client"
-import { validateExtendedCredentials } from "../../../utils/type-guards"
+import { validateExtendedCredentials } from "../../../utils/type-helpers/type-guards"
 
 // eslint-disable-next-line max-lines-per-function
 export async function findUserById(userId: number): Promise<ExtendedCredentials | null> {

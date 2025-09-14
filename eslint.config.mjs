@@ -139,6 +139,12 @@ export default [
 	},
 	{
 		files: ["tests/**/*"],
+		languageOptions: {
+			parser: tsParser,
+			parserOptions: {
+				project: ["./tsconfig.test.json"]
+			},
+		},
 		rules: {
 			"max-lines-per-function": "off",
 			"max-len": "off",

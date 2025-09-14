@@ -8,7 +8,7 @@ jest.mock("../../../src/classes/aws/secrets-manager")
 jest.mock("../../../src/utils/google/create-google-auth-client")
 
 // Import after mocking
-import setupRoutes from "../../../src/setup-routes"
+import setupRoutes from "../../../src/utils/config/setup-routes"
 import { configureAppMiddleware } from "../../../src/middleware/init-config"
 
 describe("Authentication API Integration Tests", () => {

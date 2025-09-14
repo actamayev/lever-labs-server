@@ -1,5 +1,5 @@
 import { describe, it, expect } from "@jest/globals"
-import { validateExtendedCredentials } from "../../../src/utils/type-guards"
+import { validateExtendedCredentials } from "../../../src/utils/type-helpers/type-guards"
 import { SiteThemes, AuthMethods } from "@prisma/client"
 
 describe("Utility Functions", () => {

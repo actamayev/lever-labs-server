@@ -1,8 +1,9 @@
 import { Response, Request } from "express"
 import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
-import updateIndividualStudentGarageLightsDB from "../../db-operations/write/student/update-individual-student-garage-lights-db"
-import getStudentUserId from "../../db-operations/read/student/get-student-user-id"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
+import getStudentUserId from "../../db-operations/read/student/get-student-user-id"
+import { turnOffStudentPipLeds } from "../../utils/teacher/turn-off-student-pip"
+import updateIndividualStudentGarageLightsDB from "../../db-operations/write/student/update-individual-student-garage-lights-db"
 
 export default async function updateIndividualStudentGarageLights(req: Request, res: Response): Promise<void> {
 	try {
@@ -12,14 +13,13 @@ export default async function updateIndividualStudentGarageLights(req: Request, 
 
 		// Emit WebSocket notification to the specific student
 		const studentUserId = await getStudentUserId(studentId)
-		if (studentUserId) {
-			BrowserSocketManager.getInstance().emitGarageLightsStatusUpdateToStudents([studentUserId], garageLightsStatus)
+		if (!studentUserId) {
+			res.status(200).json({ success: "Student user ID not found" } satisfies SuccessResponse)
+			return
 		}
 
-		// 9/13/2025 ASAP TODO: If the garagelights are being turned on, we need to turn on the lights for the student.
-		// Same for motors, and sounds (add a WS event on the ESP side to stop the sound)
-		// Alsdo do this for the endpoints where all of the students robots are being updated.
-
+		BrowserSocketManager.getInstance().emitGarageLightsStatusUpdateToStudents([studentUserId], garageLightsStatus)
+		turnOffStudentPipLeds(studentUserId)
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {

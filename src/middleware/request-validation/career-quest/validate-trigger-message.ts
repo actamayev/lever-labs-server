@@ -10,6 +10,7 @@ function validateTriggerMessageType(
 	triggerMessageType: number
 ): boolean {
 	switch (careerType) {
+	  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	  case CareerType.MEET_PIP:
 		return Object.values(MeetPipTriggerType).includes(triggerMessageType)
 	  default:

@@ -1,7 +1,7 @@
 import cors from "cors"
 import express, { Express } from "express"
 import cookieParser from "cookie-parser"
-import allowedOrigins from "../utils/get-allowed-origins"
+import allowedOrigins from "../utils/config/get-allowed-origins"
 
 export const corsOptions = {
 	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type

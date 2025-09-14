@@ -3,6 +3,7 @@ import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/a
 import updateIndividualStudentGarageSoundsDB from "../../db-operations/write/student/update-individual-student-garage-sounds-db"
 import getStudentUserId from "../../db-operations/read/student/get-student-user-id"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
+import { stopStudentPipSound } from "../../utils/teacher/turn-off-student-pip"
 
 export default async function updateIndividualStudentGarageSounds(req: Request, res: Response): Promise<void> {
 	try {
@@ -12,10 +13,12 @@ export default async function updateIndividualStudentGarageSounds(req: Request, 
 
 		// Emit WebSocket notification to the specific student
 		const studentUserId = await getStudentUserId(studentId)
-		if (studentUserId) {
-			BrowserSocketManager.getInstance().emitGarageSoundsStatusUpdateToStudents([studentUserId], garageSoundsStatus)
+		if (!studentUserId) {
+			res.status(200).json({ success: "Student user ID not found" } satisfies SuccessResponse)
+			return
 		}
-
+		BrowserSocketManager.getInstance().emitGarageSoundsStatusUpdateToStudents([studentUserId], garageSoundsStatus)
+		stopStudentPipSound(studentUserId)
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {

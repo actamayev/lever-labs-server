@@ -1,19 +1,19 @@
 import dotenv from "dotenv"
 import express from "express"
+import { isUndefined } from "lodash"
 import { Server as WSServer } from "ws"
 import { Server as HttpServer } from "http"
 import { Server as SocketIOServer } from "socket.io"
 
-import getEnvPath from "./utils/get-env-path"
+import getEnvPath from "./utils/config/get-env-path"
 import jwtVerifySocket from "./middleware/jwt/jwt-verify-socket"
 import { configureAppMiddleware, corsOptions } from "./middleware/init-config"
 
-import setupRoutes from "./setup-routes"
+import setupRoutes from "./utils/config/setup-routes"
 
 import BrowserSocketManager from "./classes/browser-socket-manager"
 import Esp32SocketManager from "./classes/esp32/esp32-socket-manager"
 import EspLatestFirmwareManager from "./classes/esp32/esp-latest-firmware-manager"
-import { isUndefined } from "lodash"
 
 process.on("unhandledRejection", (reason, promise) => {
 	console.error("🚨 Unhandled Promise Rejection at:", promise, "reason:", reason)

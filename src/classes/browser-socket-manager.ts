@@ -248,6 +248,15 @@ export default class BrowserSocketManager extends Singleton {
 		return connectionInfo.currentlyConnectedPip.pipUUID === pipUUID && connectionInfo.currentlyConnectedPip.status === "connected"
 	}
 
+	public getCurrentlyConnectedPip(userId: number): CurrentlyConnectedPip | undefined {
+		const connectionInfo = this.connections.get(userId)
+		if (
+			isUndefined(connectionInfo) ||
+			isNull(connectionInfo.currentlyConnectedPip)
+		) return undefined
+		return connectionInfo.currentlyConnectedPip
+	}
+
 	public emitGarageDrivingStatusUpdateToStudents(studentUserIds: number[], garageDrivingStatus: boolean): void {
 		studentUserIds.forEach(studentUserId => {
 			this.emitToUser(studentUserId, "garage-driving-status-update", { garageDrivingStatus })

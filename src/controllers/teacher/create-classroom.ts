@@ -1,7 +1,7 @@
 import { Response, Request } from "express"
 import { ClassCodeResponse, ErrorResponse } from "@bluedotrobots/common-ts/types/api"
 import { ClassCode } from "@bluedotrobots/common-ts/types/utils"
-import generateClassroomCode from "../../utils/generate-classroom-code"
+import generateClassroomCode from "../../utils/generate/generate-classroom-code"
 import addClassroom from "../../db-operations/write/simultaneous-writes/add-classroom"
 
 export default async function createClassroom(req: Request, res: Response): Promise<void> {

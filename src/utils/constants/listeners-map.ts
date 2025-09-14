@@ -3,13 +3,15 @@ import calculateMotorSpeeds from "../calculate-motor-speeds"
 import { ClientSocketEvents, ClientSocketEventPayloadMap } from "@bluedotrobots/common-ts/types/socket"
 import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
 import { tuneToSoundType } from "@bluedotrobots/common-ts/protocol"
+import { LedControlData, MotorControlData, HeadlightData, HornData } from "@bluedotrobots/common-ts/types/garage"
+import { PlayFunSoundPayload } from "@bluedotrobots/common-ts/types/pip"
 
 type ListenerHandler<T> = (payload: T) => void
 
 const listenersMap: {
 	[K in ClientSocketEvents]: ListenerHandler<ClientSocketEventPayloadMap[K]>
 } = {
-	"motor-control": (motorControlData) => {
+	"motor-control": (motorControlData: MotorControlData) => {
 		try {
 			const speeds = calculateMotorSpeeds(motorControlData)
 			void SendEsp32MessageManager.getInstance().sendBinaryMessage(
@@ -22,7 +24,7 @@ const listenersMap: {
 			console.error(error)
 		}
 	},
-	"new-led-colors": (ledControlData) => {
+	"new-led-colors": (ledControlData: LedControlData) => {
 		try {
 			void SendEsp32MessageManager.getInstance().sendBinaryMessage(
 				ledControlData.pipUUID,
@@ -31,7 +33,7 @@ const listenersMap: {
 			console.error(error)
 		}
 	},
-	"headlight-update": (headlightControlData) => {
+	"headlight-update": (headlightControlData: HeadlightData) => {
 		try {
 			void SendEsp32MessageManager.getInstance().sendBinaryMessage(
 				headlightControlData.pipUUID,
@@ -40,7 +42,7 @@ const listenersMap: {
 			console.error(error)
 		}
 	},
-	"horn-sound-update": (hornControlData) => {
+	"horn-sound-update": (hornControlData: HornData) => {
 		try {
 			void SendEsp32MessageManager.getInstance().sendBinaryMessage(
 				hornControlData.pipUUID,
@@ -49,7 +51,7 @@ const listenersMap: {
 			console.error(error)
 		}
 	},
-	"play-fun-sound": (funSoundsData) => {
+	"play-fun-sound": (funSoundsData: PlayFunSoundPayload) => {
 		try {
 			if (funSoundsData.sound === null) {
 				const buffer = MessageBuilder.createStopSoundMessage()

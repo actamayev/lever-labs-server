@@ -23,7 +23,7 @@ jest.mock("ws", () => ({
 	Server: jest.fn().mockImplementation(() => mockWSServer),
 }))
 
-jest.mock("../../../src/utils/type-checks", () => ({
+jest.mock("../../../src/utils/type-helpers/type-checks", () => ({
 	default: jest.fn().mockReturnValue(true), // isPipUUID
 }))
 

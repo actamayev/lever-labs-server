@@ -25,6 +25,10 @@ jest.mock("../../../src/middleware/cookie-helpers", () => ({
 	getAuthTokenFromCookies: mockGetAuthTokenFromCookies,
 }))
 
+jest.mock("../../../src/db-operations/read/find/find-user", () => ({
+	findUserById: mockFindUserById,
+}))
+
 import jwtVerifyAttachUserId from "../../../src/middleware/jwt/jwt-verify-attach-user-id"
 import jwtVerifyAttachUser from "../../../src/middleware/jwt/jwt-verify-attach-user"
 import { AuthMethods, SiteThemes } from "@prisma/client"
