@@ -1,9 +1,6 @@
 import { describe, it, expect } from "@jest/globals"
 import request from "supertest"
-import { mockAllExternalDependencies, createTestApp } from "../../utils/app-test-setup"
-
-// Mock all external dependencies
-mockAllExternalDependencies()
+import { createTestApp } from "../../utils/app-test-setup"
 
 describe("Misc API Integration Tests", () => {
 	const testApp = createTestApp()
