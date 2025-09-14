@@ -17,6 +17,7 @@ import { isUndefined } from "lodash"
 
 process.on("unhandledRejection", (reason, promise) => {
 	console.error("🚨 Unhandled Promise Rejection at:", promise, "reason:", reason)
+	console.error("Stack trace:", reason instanceof Error ? reason.stack : "No stack trace available")
 	// Log but don't crash - let PM2 handle restarts if needed
 })
 
@@ -40,7 +41,9 @@ const io = new SocketIOServer(httpServer, {
 	path: "/socketio",
 	cors: corsOptions
 })
-io.use(jwtVerifySocket)
+io.use((socket, next) => {
+	void jwtVerifySocket(socket, next)
+})
 BrowserSocketManager.getInstance(io) // Directly use getInstance with io
 
 // Initialize WebSocket server for ESP32 connections

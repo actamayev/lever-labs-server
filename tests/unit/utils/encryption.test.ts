@@ -16,6 +16,7 @@ describe("Encryption and Hashing Utilities", () => {
 					__esModule: true,
 					default: class MockSecretsManager {
 						static getInstance = jest.fn().mockReturnValue({
+							// eslint-disable-next-line @typescript-eslint/no-unused-vars
 							getSecret: jest.fn().mockImplementation((_key: unknown) => Promise.resolve("YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWE=")), // 32-byte base64 key
 						})
 					},

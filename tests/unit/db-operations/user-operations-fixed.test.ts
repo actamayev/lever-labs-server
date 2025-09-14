@@ -53,12 +53,12 @@ describe("Database Operations - User Operations", () => {
 			$transaction: jest.fn(),
 		}
 
-		mockGetPrismaClient = jest.fn().mockImplementation(() => Promise.resolve(mockPrismaClient))
+		mockGetPrismaClient = jest.fn().mockImplementation(() => Promise.resolve(mockPrismaClient)) as jest.MockedFunction<() => Promise<MockPrismaClient>>
 
 		mockSecretsManager = {
 			getInstance: jest.fn().mockReturnValue({
-				getSecret: jest.fn().mockImplementation((_key: DeterministicEncryptionKeys) => Promise.resolve("dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcw==")),
-			}),
+				getSecret: jest.fn().mockImplementation(() => Promise.resolve("dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcw==")),
+			}) as jest.MockedFunction<() => MockSecretsManagerInstance>,
 		}
 
 		// Mock the modules
@@ -76,7 +76,7 @@ describe("Database Operations - User Operations", () => {
 				__esModule: true,
 				default: class MockSecretsManager {
 					static getInstance = jest.fn().mockReturnValue({
-						getSecret: jest.fn().mockImplementation((_key: DeterministicEncryptionKeys) => Promise.resolve("dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcw==")),
+						getSecret: jest.fn().mockImplementation(() => Promise.resolve("dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcw==")),
 					})
 				},
 			}

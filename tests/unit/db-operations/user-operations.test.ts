@@ -43,7 +43,7 @@ describe("Database Operations - User Operations", () => {
 			$transaction: jest.fn(),
 		}
 
-		mockGetPrismaClient = jest.fn().mockImplementation(() => Promise.resolve(mockPrismaClient))
+		mockGetPrismaClient = jest.fn().mockImplementation(() => Promise.resolve(mockPrismaClient)) as jest.MockedFunction<() => Promise<MockPrismaClient>>
 
 		// Mock the modules
 		jest.doMock("../../../src/classes/prisma-client", () => {
@@ -60,7 +60,7 @@ describe("Database Operations - User Operations", () => {
 				__esModule: true,
 				default: class MockSecretsManager {
 					static getInstance = jest.fn().mockReturnValue({
-						getSecret: jest.fn().mockImplementation((_key: DeterministicEncryptionKeys) => Promise.resolve("dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcw==")),
+						getSecret: jest.fn().mockImplementation(() => Promise.resolve("dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcw==")),
 					})
 				},
 			}
@@ -198,7 +198,7 @@ describe("Database Operations - User Operations", () => {
 			const classCode = "ABC123" as ClassCode
 			const teacherId = 1
 
-			const mockTransaction = jest.fn().mockImplementation(async (callback: (prisma: MockPrismaClient) => Promise<unknown>) => {
+			const mockTransaction = jest.fn().mockImplementation(async (callback: any) => {
 				const mockPrisma = {
 					classroom: {
 						create: jest.fn().mockImplementation(() => Promise.resolve({ classroom_id: 1 })),
@@ -207,10 +207,10 @@ describe("Database Operations - User Operations", () => {
 						create: jest.fn().mockImplementation(() => Promise.resolve({})),
 					},
 				}
-				return callback(mockPrisma as MockPrismaClient)
+				return callback(mockPrisma as unknown as MockPrismaClient)
 			})
 
-			mockPrismaClient.$transaction = mockTransaction
+			mockPrismaClient.$transaction = mockTransaction as jest.MockedFunction<(...args: unknown[]) => Promise<unknown>>
 
 			// Act
 			const result = await addClassroom(classroomName, classCode, teacherId)

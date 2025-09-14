@@ -125,7 +125,10 @@ export default [
 		},
 		rules: {
 			"@typescript-eslint/no-unnecessary-condition": "warn",
-			"@typescript-eslint/no-floating-promises": "warn",
+			"@typescript-eslint/no-floating-promises": "error",
+			"@typescript-eslint/no-misused-promises": "error",
+			"@typescript-eslint/require-await": "error",
+			"@typescript-eslint/await-thenable": "error",
 		},
 	},
 	{

@@ -16,7 +16,7 @@ export default async function updateIndividualStudentGarageLights(req: Request, 
 			BrowserSocketManager.getInstance().emitGarageLightsStatusUpdateToStudents([studentUserId], garageLightsStatus)
 		}
 
-		// TODO: If the garagelights are being turned on, we need to turn on the lights for the student.
+		// 9/13/2025 ASAP TODO: If the garagelights are being turned on, we need to turn on the lights for the student.
 		// Same for motors, and sounds (add a WS event on the ESP side to stop the sound)
 		// Alsdo do this for the endpoints where all of the students robots are being updated.
 

@@ -42,7 +42,7 @@ import SingleESP32Connection from "../../../src/classes/esp32/single-esp32-conne
 describe("ESP32 Socket Management", () => {
 	describe("SingleESP32Connection", () => {
 		let connection: SingleESP32Connection
-		let mockSocket: ExtendedWebSocket
+		let mockSocket: any
 		let mockOnDisconnect: jest.MockedFunction<(socketId: UUID) => void>
 		let mockSocketId: UUID
 
@@ -54,12 +54,15 @@ describe("ESP32 Socket Management", () => {
 
 			mockSocket = {
 				...mockWebSocket,
-				on: jest.fn(),
+				on: jest.fn().mockReturnValue(mockSocket),
 				ping: jest.fn(),
 				terminate: jest.fn(),
 				CLOSED: 3,
 				isAlive: true,
-			} as ExtendedWebSocket
+			}
+			// Ensure methods have proper mock methods
+			mockSocket.on = jest.fn().mockReturnValue(mockSocket)
+			mockSocket.ping = jest.fn()
 
 			mockOnDisconnect = jest.fn()
 			mockSocketId = "test-socket-uuid" as UUID
@@ -69,9 +72,7 @@ describe("ESP32 Socket Management", () => {
 
 		afterEach(() => {
 			jest.useRealTimers()
-			if (connection) {
-				connection.dispose()
-			}
+			connection.dispose()
 		})
 
 		it("should initialize socket with event handlers", () => {
@@ -94,7 +95,7 @@ describe("ESP32 Socket Management", () => {
 			const pongHandler = mockSocket.on.mock.calls.find((call: [string, () => void]) => call[0] === "pong")?.[1]
 
 			// Act - simulate pong response
-			pongHandler()
+			if (pongHandler) pongHandler()
 			jest.advanceTimersByTime(1000)
 
 			// Assert - should not disconnect after pong
@@ -117,7 +118,7 @@ describe("ESP32 Socket Management", () => {
 			const closeHandler = mockSocket.on.mock.calls.find((call: [string, () => void]) => call[0] === "close")?.[1]
 
 			// Act
-			closeHandler()
+			if (closeHandler) closeHandler()
 
 			// Assert
 			expect(mockOnDisconnect).toHaveBeenCalledWith(mockSocketId)
@@ -129,7 +130,7 @@ describe("ESP32 Socket Management", () => {
 			const mockError = new Error("Socket error")
 
 			// Act
-			errorHandler(mockError)
+			if (errorHandler) errorHandler(mockError)
 
 			// Assert
 			expect(mockOnDisconnect).toHaveBeenCalledWith(mockSocketId)
@@ -154,8 +155,10 @@ describe("ESP32 Socket Management", () => {
 			const closeHandler = mockSocket.on.mock.calls.find((call: [string, () => void]) => call[0] === "close")?.[1]
 
 			// Act - trigger cleanup multiple times
-			closeHandler()
-			closeHandler()
+			if (closeHandler) {
+				closeHandler()
+				closeHandler()
+			}
 			connection.dispose()
 
 			// Assert - should only call onDisconnect once

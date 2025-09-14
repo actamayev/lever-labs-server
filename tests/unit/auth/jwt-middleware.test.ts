@@ -21,34 +21,29 @@ jest.mock("../../../src/utils/auth-helpers/get-decoded-id", () => {
 	}
 })
 
-jest.mock("../../../src/db-operations/read/find/find-user", () => ({
-	findUserById: mockFindUserById,
-}))
-
 jest.mock("../../../src/middleware/cookie-helpers", () => ({
 	getAuthTokenFromCookies: mockGetAuthTokenFromCookies,
 }))
 
 import jwtVerifyAttachUserId from "../../../src/middleware/jwt/jwt-verify-attach-user-id"
 import jwtVerifyAttachUser from "../../../src/middleware/jwt/jwt-verify-attach-user"
-import getDecodedId from "../../../src/utils/auth-helpers/get-decoded-id"
-import { findUserById } from "../../../src/db-operations/read/find/find-user"
-import { getAuthTokenFromCookies } from "../../../src/middleware/cookie-helpers"
+import { AuthMethods, SiteThemes } from "@prisma/client"
 
 describe("JWT Middleware", () => {
-	let mockRequest: Partial<Request> & { userId?: number; user?: unknown }
+	let mockRequest: Partial<Request> & { userId?: number; user?: unknown } & { cookies: Record<string, string> }
 	let mockResponse: Partial<Response>
 	let mockNext: NextFunction
 	let mockJson: jest.MockedFunction<(body: unknown) => Response>
-	let mockStatus: jest.MockedFunction<(code: number) => { json: jest.MockedFunction<(body: unknown) => Response> }>
+	let mockStatus: jest.MockedFunction<(code: number) => Response>
 
 	beforeEach(() => {
 		mockJson = jest.fn()
-		mockStatus = jest.fn().mockReturnValue({ json: mockJson })
+		mockStatus = jest.fn<(code: number) => Response>().mockReturnValue({ json: mockJson } as unknown as Response)
 
 		mockRequest = {
 			cookies: {},
 			headers: {},
+			signedCookies: {},
 		}
 
 		mockResponse = {
@@ -76,7 +71,7 @@ describe("JWT Middleware", () => {
 			await jwtVerifyAttachUserId(mockRequest as Request, mockResponse as Response, mockNext)
 
 			// Assert
-			expect(mockGetAuthTokenFromCookies).toHaveBeenCalledWith(mockRequest)
+			expect(mockGetAuthTokenFromCookies).toHaveBeenCalledWith(mockRequest as Request)
 			expect(mockGetDecodedId).toHaveBeenCalledWith(mockToken)
 			expect(mockRequest.userId).toBe(mockUserId)
 			expect(mockNext).toHaveBeenCalled()
@@ -140,9 +135,15 @@ describe("JWT Middleware", () => {
 				username: "testuser",
 				email__encrypted: "encrypted-email",
 				is_active: true,
-				default_site_theme: "light",
-				auth_method: "blue_dot",
-			}
+				default_site_theme: "light" as SiteThemes,
+				auth_method: "blue_dot" as AuthMethods,
+				name: "testuser",
+				age: 20,
+				password: "testpassword",
+				sandbox_notes_open: false,
+				created_at: new Date(),
+				updated_at: new Date(),
+			} as ExtendedCredentials
 
 			mockRequest.cookies = { auth_token: mockToken }
 			mockGetAuthTokenFromCookies.mockReturnValue(mockToken)
@@ -153,7 +154,7 @@ describe("JWT Middleware", () => {
 			await jwtVerifyAttachUser(mockRequest as Request, mockResponse as Response, mockNext)
 
 			// Assert
-			expect(mockGetAuthTokenFromCookies).toHaveBeenCalledWith(mockRequest)
+			expect(mockGetAuthTokenFromCookies).toHaveBeenCalledWith(mockRequest as Request)
 			expect(mockGetDecodedId).toHaveBeenCalledWith(mockToken)
 			expect(mockFindUserById).toHaveBeenCalledWith(mockUserId)
 			expect(mockRequest.user).toBe(mockUser)
