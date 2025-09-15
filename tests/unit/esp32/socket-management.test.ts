@@ -84,7 +84,7 @@ describe("ESP32 Socket Management", () => {
 
 		it("should start ping interval on initialization", () => {
 			// Act
-			jest.advanceTimersByTime(1500)
+			jest.advanceTimersByTime(750)
 
 			// Assert
 			expect(mockSocket.ping).toHaveBeenCalled()
@@ -96,7 +96,7 @@ describe("ESP32 Socket Management", () => {
 
 			// Act - simulate pong response
 			if (pongHandler) pongHandler()
-			jest.advanceTimersByTime(1500)
+			jest.advanceTimersByTime(750)
 
 			// Assert - should not disconnect after pong
 			expect(mockOnDisconnect).not.toHaveBeenCalled()
@@ -104,10 +104,10 @@ describe("ESP32 Socket Management", () => {
 
 		it("should disconnect on ping timeout", () => {
 			// Arrange - don't respond to ping
-			jest.advanceTimersByTime(1500) // First ping
+			jest.advanceTimersByTime(750) // First ping
 
 			// Act - advance time for second ping without pong response
-			jest.advanceTimersByTime(1500)
+			jest.advanceTimersByTime(750)
 
 			// Assert
 			expect(mockOnDisconnect).toHaveBeenCalledWith(mockSocketId)
@@ -144,7 +144,7 @@ describe("ESP32 Socket Management", () => {
 			})
 
 			// Act
-			jest.advanceTimersByTime(1500)
+			jest.advanceTimersByTime(750)
 
 			// Assert
 			expect(mockOnDisconnect).toHaveBeenCalledWith(mockSocketId)

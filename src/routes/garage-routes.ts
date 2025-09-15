@@ -23,5 +23,4 @@ garageRoutes.post(
 	updateDisplay
 )
 
-
 export default garageRoutes
