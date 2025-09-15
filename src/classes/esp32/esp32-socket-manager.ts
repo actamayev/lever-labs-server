@@ -103,6 +103,7 @@ export default class Esp32SocketManager extends Singleton {
 		try {
 			const parsed = JSON.parse(message) as ESPMessage
 			const { route, payload } = parsed
+			this.updateLastActivity(socketId)
 
 			switch (route) {
 			case "/sensor-data":
@@ -126,6 +127,17 @@ export default class Esp32SocketManager extends Singleton {
 			}
 		} catch (error) {
 			console.error(`Failed to process message from ${socketId}:`, error)
+		}
+	}
+
+	private updateLastActivity(socketId: UUID): void {
+		const pipUUID = this.socketToPip.get(socketId)
+		if (pipUUID) {
+			const connectionInfo = this.connections.get(pipUUID)
+			if (connectionInfo) {
+				// Reset the ping counter since we received data
+				connectionInfo.connection.resetPingCounter()
+			}
 		}
 	}
 
