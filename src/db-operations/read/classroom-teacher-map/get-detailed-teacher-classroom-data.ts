@@ -32,7 +32,10 @@ export default async function getDetailedTeacherClassroomData(
 									select: {
 										username: true
 									}
-								}
+								},
+								garage_driving_allowed: true,
+								garage_sounds_allowed: true,
+								garage_lights_allowed: true
 							}
 						}
 					},
@@ -48,6 +51,9 @@ export default async function getDetailedTeacherClassroomData(
 			students: classroom.classroom.student.map(student => ({
 				studentId: student.student_id,
 				username: student.user.username || "",
+				garageDrivingAllowed: student.garage_driving_allowed,
+				garageSoundsAllowed: student.garage_sounds_allowed,
+				garageLightsAllowed: student.garage_lights_allowed
 			})),
 			activeHubs: HubManager.getInstance().getTeacherHubs(userId)
 		} satisfies DetailedClassroomData

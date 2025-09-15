@@ -22,6 +22,7 @@ export default async function joinClassroom(
 		})
 
 		return {
+			studentId: result.student_id,
 			joinedClassroomAt: result.joined_classroom_at,
 			classroomName: result.classroom.classroom_name,
 			classCode: result.classroom.class_code as ClassCode,

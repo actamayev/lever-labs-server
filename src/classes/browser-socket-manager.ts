@@ -190,7 +190,8 @@ export default class BrowserSocketManager extends Singleton {
 		if (isUndefined(socketId)) return
 		const studentUsername = await retrieveUsername(studentUserId)
 		if (isUndefined(socketId)) return
-		this.emitToSocket(socketId, "student-joined-classroom", { classCode, studentUsername: studentUsername || "" })
+		this.emitToSocket(socketId, "student-joined-classroom", {
+			classCode, studentUsername: studentUsername || "", studentId: studentUserId })
 	}
 
 	public emitStudentJoinedHub(teacherUserId: number, data: StudentJoinedHub): void {

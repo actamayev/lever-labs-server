@@ -21,6 +21,7 @@ export default async function retrieveStudentClasses(userId: number): Promise<St
 								class_code: true
 							}
 						},
+						student_id: true,
 						garage_driving_allowed: true,
 						garage_sounds_allowed: true,
 						garage_lights_allowed: true
@@ -30,6 +31,7 @@ export default async function retrieveStudentClasses(userId: number): Promise<St
 		})
 
 		return studentData?.student.map(singleStudentData => ({
+			studentId: singleStudentData.student_id,
 			joinedClassroomAt: singleStudentData.joined_classroom_at,
 			classroomName: singleStudentData.classroom.classroom_name,
 			classCode: singleStudentData.classroom.class_code as ClassCode,
