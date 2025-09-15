@@ -264,6 +264,11 @@ export default class Esp32SocketManager extends Singleton {
 		return this.connections.get(pipUUID)?.connection
 	}
 
+	public isPipUUIDConnected(pipUUID: PipUUID): boolean {
+		const status = this.getESPStatus(pipUUID)
+		return status.online
+	}
+
 	public getAllConnectedPipUUIDs(): PipUUID[] {
 		const connectedPipUUIDs: PipUUID[] = []
 		for (const [pipUUID, connectionInfo] of this.connections) {
