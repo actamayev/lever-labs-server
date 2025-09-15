@@ -3,6 +3,7 @@ import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/a
 import updateIndividualStudentGarageDisplayDB from "../../db-operations/write/student/update-individual-student-garage-display-db"
 import getStudentUserId from "../../db-operations/read/student/get-student-user-id"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
+import { resetStudentPipDisplay } from "../../utils/teacher/turn-off-student-pip"
 
 export default async function updateIndividualStudentGarageDisplay(req: Request, res: Response): Promise<void> {
 	try {
@@ -17,6 +18,7 @@ export default async function updateIndividualStudentGarageDisplay(req: Request,
 			return
 		}
 		BrowserSocketManager.getInstance().emitGarageDisplayStatusUpdateToStudents([studentUserId], garageDisplayStatus)
+		resetStudentPipDisplay(studentUserId)
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {

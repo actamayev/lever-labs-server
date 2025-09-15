@@ -53,3 +53,18 @@ export function stopStudentPipSound(studentUserId: number): void {
 		throw error
 	}
 }
+
+export function resetStudentPipDisplay(studentUserId: number): void {
+	try {
+		const currentlyConnectedPip = BrowserSocketManager.getInstance().getCurrentlyConnectedPip(studentUserId)
+		if (!currentlyConnectedPip) return
+
+		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
+			currentlyConnectedPip.pipUUID, MessageBuilder.createShowDisplayStartScreenMessage()
+		)
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
+}
+
