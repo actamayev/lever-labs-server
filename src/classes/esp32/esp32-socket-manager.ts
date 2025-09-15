@@ -260,24 +260,8 @@ export default class Esp32SocketManager extends Singleton {
 		}
 	}
 
-
 	public getConnection(pipUUID: PipUUID): SingleESP32Connection | undefined {
 		return this.connections.get(pipUUID)?.connection
-	}
-
-	public isPipUUIDConnected(pipUUID: PipUUID): boolean {
-		const status = this.getESPStatus(pipUUID)
-		return status.online
-	}
-
-	public isPipUUIDConnectedToUser(pipUUID: PipUUID): boolean {
-		const status = this.getESPStatus(pipUUID)
-		return status.connectedToOnlineUser
-	}
-
-	public isPipUUIDConnectedToSerial(pipUUID: PipUUID): boolean {
-		const status = this.getESPStatus(pipUUID)
-		return status.connectedToSerial
 	}
 
 	public getAllConnectedPipUUIDs(): PipUUID[] {

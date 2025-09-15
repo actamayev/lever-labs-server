@@ -308,6 +308,7 @@ export default class BrowserSocketManager extends Singleton {
 
 	// Method to disconnect user from PIP when serial connection takes priority
 	public disconnectUserFromPip(pipUUID: PipUUID): void {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		for (const [userId, connectionInfo] of this.connections.entries()) {
 			if (connectionInfo.currentlyConnectedPip?.pipUUID === pipUUID &&
 				connectionInfo.currentlyConnectedPip.status.connectedToOnlineUser) {
