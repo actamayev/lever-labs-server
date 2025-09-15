@@ -1,0 +1,12 @@
+-- DELETE FROM sandbox_message;
+-- DELETE FROM sandbox_chat;
+-- DELETE FROM sandbox_project;
+
+-- DELETE FROM challenge_message;
+-- DELETE FROM career_message;
+-- DELETE FROM career_chat;	
+-- DELETE FROM challenge_code_submission;
+-- DELETE FROM challenge_hint;
+-- DELETE FROM challenge_sandbox;
+-- DELETE FROM career_user_progress;
+-- DELETE FROM user_seen_challenges;

@@ -1,6 +1,6 @@
 -- SELECT * FROM credentials ORDER BY created_at;
--- SELECT * FROM login_history ORDER BY ;
-SELECT * FROM pip_uuid;
+-- SELECT * FROM login_history;
+-- SELECT * FROM pip_uuid;
 -- SELECT * FROM user_pip_uuid_map;
 -- SELECT * FROM activity ORDER BY activity_id;
 -- SELECT * FROM reading_question ORDER BY reading_question_id;
@@ -12,19 +12,7 @@ SELECT * FROM pip_uuid;
 -- SELECT * FROM challenge ORDER BY created_at;
 -- SELECT * FROM sandbox_project;
 
--- DELETE FROM sandbox_message;
--- DELETE FROM sandbox_chat;
--- DELETE FROM sandbox_project;
-
--- DELETE FROM challenge_message;
--- DELETE FROM career_message;
--- DELETE FROM career_chat;	
--- DELETE FROM challenge_code_submission;
--- DELETE FROM challenge_hint;
--- DELETE FROM challenge_sandbox;
--- DELETE FROM career_user_progress;
--- DELETE FROM user_seen_challenges;
-
+SELECT * from profile_picture;
 -- SELECT * FROM challenge_sandbox;
 -- DELETE FROM activity;
 -- DELETE FROM sandbox_project;

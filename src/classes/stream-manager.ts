@@ -21,10 +21,10 @@ export default class StreamManager extends Singleton {
 
 		this.activeStreams.set(streamId, abortController)
 
-		// Auto-cleanup after 5 minutes
+		// Auto-cleanup after exit
 		setTimeout(() => {
 			this.cleanupStream(streamId)
-		}, 5 * 60 * 1000)
+		}, 30 * 1000)
 
 		return { streamId, abortController }
 	}

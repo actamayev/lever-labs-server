@@ -4,7 +4,7 @@ import { BatteryMonitorDataFull, ESPConnectionStatus,
 	ESPMessage, SensorPayload, SensorPayloadMZ, DinoScorePayload } from "@bluedotrobots/common-ts/types/pip"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 import Singleton from "../singleton"
-import isPipUUID from "../../utils/type-checks"
+import isPipUUID from "../../utils/type-helpers/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"
 import SingleESP32Connection from "./single-esp32-connection"
 import SendEsp32MessageManager from "./send-esp32-message-manager"

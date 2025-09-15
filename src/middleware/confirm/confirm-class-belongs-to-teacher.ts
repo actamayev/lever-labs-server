@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express"
-import { ClassCode } from "@bluedotrobots/common-ts/types/utils"
 import { ErrorResponse, MessageResponse } from "@bluedotrobots/common-ts/types/api"
 import getClassBelongsToTeacher from "../../db-operations/read/classroom/get-class-belongs-to-teacher"
 
@@ -9,10 +8,9 @@ export default async function confirmClassBelongsToTeacher(
 	next: NextFunction
 ): Promise<void> {
 	try {
-		const { teacherId } = req
-		const { classCode } = req.params as { classCode: ClassCode }
+		const { teacherId, classroomId } = req
 
-		const doesClassBelongToTeacher = await getClassBelongsToTeacher(teacherId, classCode)
+		const doesClassBelongToTeacher = await getClassBelongsToTeacher(teacherId, classroomId)
 
 		 if (doesClassBelongToTeacher === false) {
 			res.status(400).json({ message: "You are not a teacher for this class"} satisfies MessageResponse)

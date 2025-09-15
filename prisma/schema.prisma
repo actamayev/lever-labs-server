@@ -531,7 +531,12 @@ model student {
 
     created_at          										DateTime  @default(now())
     updated_at          										DateTime  @default(now()) @updatedAt
-										
+
+	garage_driving_allowed										Boolean @default(true)
+	garage_sounds_allowed										Boolean @default(true)
+	garage_lights_allowed										Boolean @default(true)
+	garage_display_allowed										Boolean @default(true)
+
     user                										credentials @relation(fields: [user_id], references: [user_id])
     classroom           										classroom @relation(fields: [classroom_id], references: [classroom_id])
 

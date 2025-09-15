@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import Encryptor from "../../classes/encryptor"
 import { ErrorResponse, PersonalInfoResponse } from "@bluedotrobots/common-ts/types/api"
-import extractTeacherDataFromUserData from "../../utils/extract-teacher-data-from-user-data"
+import extractTeacherDataFromUserData from "../../utils/teacher/extract-teacher-data-from-user-data"
 
 export default async function getPersonalInfo(req: Request, res: Response): Promise<void> {
 	try {
