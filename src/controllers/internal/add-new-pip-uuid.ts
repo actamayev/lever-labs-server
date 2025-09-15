@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import generatePipUUID from "../../utils/generate-pip-uuid"
+import generatePipUUID from "../../utils/generate/generate-pip-uuid"
 import addPipUUIDRecord from "../../db-operations/write/pip-uuid/add-pip-uuid-record"
 import { ErrorResponse } from "@bluedotrobots/common-ts/types/api"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"

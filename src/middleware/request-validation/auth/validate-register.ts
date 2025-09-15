@@ -9,7 +9,7 @@ import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts/
 const registerInformationSchema = Joi.object({
 	registerInformation: Joi.object({
 		age: Joi.number().integer().max(120).required(),
-		email: emailValidator.required(),
+		email: emailValidator.required().trim(),
 		username: usernameValidator.required().trim().min(3).max(100),
 		password: passwordValidatorSchema.required(),
 		siteTheme: Joi.string().required().trim().valid("light", "dark")
@@ -25,8 +25,6 @@ export default function validateRegister (req: Request, res: Response, next: Nex
 			return
 		}
 
-		const trimmedEmail = req.body.registerInformation.email.trimEnd()
-		req.body.registerInformation.email = trimmedEmail
 		next()
 	} catch (error) {
 		console.error(error)

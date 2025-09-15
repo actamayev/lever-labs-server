@@ -1,0 +1,33 @@
+We're using pm2 to run the server on the EC2 instance
+Important pm2 commands:
+1. pm2 list (shows pm2 instances)
+2. pm2 stop app_name_or_id (stops a running pm2 process)
+3. pm2 delete app_name_or_id (deletes a stopped pm2 process)
+4.
+	Staging: pm2 start ecosystem.config.js --env staging (must be done where the index.js file is)
+	Production: pm2 start ecosystem.config.js --env production (must be done where the index.js file is)
+5. pm2 logs app_name_or_id (shows logs for a process)
+6. pm2 monit (see detailed pm2 view)
+
+Helpful commands:
+1. See disk usage breakdown
+	`df -h`
+2. Find largest directories
+	`sudo du -h --max-depth=1 / | sort -hr`
+3. Check your application specifically
+	`du -h --max-depth=2 ~/`
+
+4. Check logs (common culprit)
+	`sudo du -h /var/log/`
+	`sudo journalctl --disk-usage`
+
+To clear space:
+	- `pm2 flush`
+	- `npm cache clean --force`
+	- `rm -rf ~/.cache/prisma`
+	- `sudo journalctl --vacuum-time=7d`
+	- `sudo apt clean`
+
+Enable automated security updates:
+	`sudo apt install unattended-upgrades`
+	`sudo dpkg-reconfigure -plow unattended-upgrades`

@@ -13,6 +13,7 @@ import listenersMap from "../utils/constants/listeners-map"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import handleDisconnectHubHelper from "../utils/handle-disconnect-hub-helper"
 import retrieveUsername from "../db-operations/read/credentials/retrieve-username"
+import { UserConnectedStatus } from "@bluedotrobots/common-ts/protocol"
 
 export default class BrowserSocketManager extends Singleton {
 	private connections = new Map<number, BrowserSocketConnectionInfo>() // Maps UserID to BrowserSocketConnectionInfo
@@ -74,7 +75,7 @@ export default class BrowserSocketManager extends Singleton {
 				if (currentlyConnectedPip.status === "connected" || currentlyConnectedPip.status === "online") {
 					void SendEsp32MessageManager.getInstance().sendBinaryMessage(
 						currentlyConnectedPip.pipUUID,
-						MessageBuilder.createStopSandboxCodeMessage()
+						MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.NOT_CONNECTED)
 					)
 					// eslint-disable-next-line max-depth
 					if (currentlyConnectedPip.status === "connected") {
@@ -128,20 +129,21 @@ export default class BrowserSocketManager extends Singleton {
 		userId: number,
 		pipUUID: PipUUID,
 		status: PipConnectionStatus
-	): void {
+	): boolean {
 		try {
 			const connectionInfo = this.connections.get(userId)
 
 			if (!connectionInfo) {
 				console.warn(`No connection found for userId: ${userId}`)
-				return
+				return false
 			}
 
 			// Update the currentlyConnectedPip entry for this user
 			connectionInfo.currentlyConnectedPip = { pipUUID, status }
+			return true
 		} catch (error) {
 			console.error(error)
-			throw error
+			return false
 		}
 	}
 
@@ -166,7 +168,6 @@ export default class BrowserSocketManager extends Singleton {
 		this.connections.forEach((connectionInfo) => {
 			if (isNull(connectionInfo.currentlyConnectedPip)) return
 			const foundPip = connectionInfo.currentlyConnectedPip.pipUUID === pipUUID
-
 			if (foundPip) {
 				this.emitToSocket(connectionInfo.socketId, "general-sensor-data", sensorPayload)
 			}
@@ -191,7 +192,8 @@ export default class BrowserSocketManager extends Singleton {
 		if (isUndefined(socketId)) return
 		const studentUsername = await retrieveUsername(studentUserId)
 		if (isUndefined(socketId)) return
-		this.emitToSocket(socketId, "student-joined-classroom", { classCode, studentUsername: studentUsername || "" })
+		this.emitToSocket(socketId, "student-joined-classroom", {
+			classCode, studentUsername: studentUsername || "", studentId: studentUserId })
 	}
 
 	public emitStudentJoinedHub(teacherUserId: number, data: StudentJoinedHub): void {
@@ -200,21 +202,21 @@ export default class BrowserSocketManager extends Singleton {
 		this.emitToSocket(socketId, "student-joined-hub", data)
 	}
 
-	public emitNewHubToStudents(studentIds: number[], hubInfo: StudentViewHubData): void {
-		studentIds.forEach(studentId => {
-			this.emitToUser(studentId, "new-hub", hubInfo)
+	public emitNewHubToStudents(studentUserIds: number[], hubInfo: StudentViewHubData): void {
+		studentUserIds.forEach(studentUserId => {
+			this.emitToUser(studentUserId, "new-hub", hubInfo)
 		})
 	}
 
-	public emitDeletedHubToStudents(studentIds: number[], deletedHubInfo: DeletedHub): void {
-		studentIds.forEach(studentId => {
-			this.emitToUser(studentId, "deleted-hub", deletedHubInfo)
+	public emitDeletedHubToStudents(studentUserIds: number[], deletedHubInfo: DeletedHub): void {
+		studentUserIds.forEach(studentUserId => {
+			this.emitToUser(studentUserId, "deleted-hub", deletedHubInfo)
 		})
 	}
 
-	public emitUpdatedHubToStudents(studentIds: number[], updatedHubInfo: UpdatedHubSlideId): void {
-		studentIds.forEach(studentId => {
-			this.emitToUser(studentId, "updated-hub-slide-id", updatedHubInfo)
+	public emitUpdatedHubToStudents(studentUserIds: number[], updatedHubInfo: UpdatedHubSlideId): void {
+		studentUserIds.forEach(studentUserId => {
+			this.emitToUser(studentUserId, "updated-hub-slide-id", updatedHubInfo)
 		})
 	}
 
@@ -247,5 +249,38 @@ export default class BrowserSocketManager extends Singleton {
 		if (isUndefined(connectionInfo)) return false
 		if (isNull(connectionInfo.currentlyConnectedPip)) return false
 		return connectionInfo.currentlyConnectedPip.pipUUID === pipUUID && connectionInfo.currentlyConnectedPip.status === "connected"
+	}
+
+	public getCurrentlyConnectedPip(userId: number): CurrentlyConnectedPip | undefined {
+		const connectionInfo = this.connections.get(userId)
+		if (
+			isUndefined(connectionInfo) ||
+			isNull(connectionInfo.currentlyConnectedPip)
+		) return undefined
+		return connectionInfo.currentlyConnectedPip
+	}
+
+	public emitGarageDrivingStatusUpdateToStudents(studentUserIds: number[], garageDrivingStatus: boolean): void {
+		studentUserIds.forEach(studentUserId => {
+			this.emitToUser(studentUserId, "garage-driving-status-update", { garageDrivingStatus })
+		})
+	}
+
+	public emitGarageSoundsStatusUpdateToStudents(studentUserIds: number[], garageSoundsStatus: boolean): void {
+		studentUserIds.forEach(studentUserId => {
+			this.emitToUser(studentUserId, "garage-sounds-status-update", { garageSoundsStatus })
+		})
+	}
+
+	public emitGarageLightsStatusUpdateToStudents(studentUserIds: number[], garageLightsStatus: boolean): void {
+		studentUserIds.forEach(studentUserId => {
+			this.emitToUser(studentUserId, "garage-lights-status-update", { garageLightsStatus })
+		})
+	}
+
+	public emitGarageDisplayStatusUpdateToStudents(studentUserIds: number[], garageDisplayStatus: boolean): void {
+		studentUserIds.forEach(studentUserId => {
+			this.emitToUser(studentUserId, "garage-display-status-update", { garageDisplayStatus })
+		})
 	}
 }

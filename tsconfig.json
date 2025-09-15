@@ -51,14 +51,14 @@
 		/* Paths */
 		"paths": {
 			"@/*": ["*"],
-			"@types/*": ["types/*"],
-			"@bluedotrobots/common-ts/*": ["./node_modules/@bluedotrobots/common-ts/dist/src/*"]
+			"@types/*": ["types/*"]
 		}
 	},
 	"include": [
 		"src/**/*",
 		"src/prisma/seed.ts",
-		"prisma.config.ts"
+		"prisma.config.ts",
+		"tests/**/*"
 	],
 	"exclude": [
 		"node_modules",

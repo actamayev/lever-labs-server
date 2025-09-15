@@ -125,13 +125,38 @@ export default [
 		},
 		rules: {
 			"@typescript-eslint/no-unnecessary-condition": "warn",
-			"@typescript-eslint/no-floating-promises": "warn",
+			"@typescript-eslint/no-floating-promises": "error",
+			"@typescript-eslint/no-misused-promises": "error",
+			"@typescript-eslint/require-await": "error",
+			"@typescript-eslint/await-thenable": "error",
 		},
 	},
 	{
 		files: ["eslint.config.mjs"],
 		rules: {
 			"@typescript-eslint/naming-convention": "off",
+		},
+	},
+	{
+		files: ["tests/**/*", "jest.config.ts"],
+		languageOptions: {
+			parser: tsParser,
+			parserOptions: {
+				project: ["./tsconfig.test.json"]
+			},
+		},
+		rules: {
+			"max-lines-per-function": "off",
+			"max-len": "off",
+			"security/detect-unsafe-regex": "off",
+			"security/detect-non-literal-regexp": "off",
+			"security/detect-non-literal-require": "off",
+			"security/detect-non-literal-fs-filename": "off",
+			"security/detect-no-csrf-before-method-override": "off",
+			"security/detect-disable-mustache-escape": "off",
+			"security/detect-buffer-noassert": "off",
+			"security/detect-child-process": "off",
+			"security/detect-eval-with-expression": "off",
 		},
 	},
 	{
