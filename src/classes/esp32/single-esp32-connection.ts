@@ -3,6 +3,8 @@ import { UUID } from "crypto"
 export default class SingleESP32Connection {
 	private _isAlive: boolean = true
 	private pingInterval?: NodeJS.Timeout
+	private _missedPingCount: number = 0
+	private readonly MAX_MISSED_PINGS = 2  // Allow 2 missed pings
 	private readonly PING_INTERVAL = 750
 	private isCleaningUp = false
 
@@ -29,10 +31,17 @@ export default class SingleESP32Connection {
 
 	private startPingInterval(): void {
 		this.pingInterval = setInterval(() => {
-			if (!this._isAlive) {
-				console.info(`Ping timeout for socket ${this.socketId}`)
+			if (this._missedPingCount >= this.MAX_MISSED_PINGS) {
+				console.info(`${this.MAX_MISSED_PINGS} consecutive pings missed for ${this.socketId}`)
 				this.cleanup("ping_timeout")
 				return
+			}
+
+			if (!this._isAlive) {
+				this._missedPingCount++
+				console.info(`Missed ping ${this._missedPingCount}/${this.MAX_MISSED_PINGS} for ${this.socketId}`)
+			} else {
+				this._missedPingCount = 0  // Reset on successful pong
 			}
 
 			this._isAlive = false
@@ -48,6 +57,7 @@ export default class SingleESP32Connection {
 
 	private handlePong(): void {
 		this._isAlive = true
+		this._missedPingCount = 0  // Reset counter on pong
 	}
 
 	private cleanup(reason: DisconnectReason): void {
@@ -70,6 +80,11 @@ export default class SingleESP32Connection {
 
 		// Notify manager of disconnection
 		this.onDisconnect(this.socketId)
+	}
+
+	public resetPingCounter(): void {
+		this._missedPingCount = 0
+		this._isAlive = true
 	}
 
 	public dispose(): void {

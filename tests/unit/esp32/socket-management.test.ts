@@ -55,14 +55,14 @@ describe("ESP32 Socket Management", () => {
 			mockSocket = {
 				...mockWebSocket,
 				on: jest.fn().mockReturnValue(mockSocket),
-				ping: jest.fn(),
+				ping: jest.fn((callback?: (err?: Error) => void) => {
+					// Simulate successful ping send (but no pong response)
+					if (callback) callback()
+				}),
 				terminate: jest.fn(),
 				CLOSED: 3,
 				isAlive: true,
 			}
-			// Ensure methods have proper mock methods
-			mockSocket.on = jest.fn().mockReturnValue(mockSocket)
-			mockSocket.ping = jest.fn()
 
 			mockOnDisconnect = jest.fn()
 			mockSocketId = "test-socket-uuid" as UUID
@@ -103,11 +103,11 @@ describe("ESP32 Socket Management", () => {
 		})
 
 		it("should disconnect on ping timeout", () => {
-			// Arrange - don't respond to ping
-			jest.advanceTimersByTime(750) // First ping
-
-			// Act - advance time for second ping without pong response
-			jest.advanceTimersByTime(750)
+			// Act - advance through ping intervals to trigger disconnect
+			jest.advanceTimersByTime(750) // First ping - sets _isAlive = false
+			jest.advanceTimersByTime(750) // Second ping - _missedPingCount = 1
+			jest.advanceTimersByTime(750) // Third ping - _missedPingCount = 2
+			jest.advanceTimersByTime(750) // Fourth ping - _missedPingCount >= MAX_MISSED_PINGS (2), triggers disconnect
 
 			// Assert
 			expect(mockOnDisconnect).toHaveBeenCalledWith(mockSocketId)
