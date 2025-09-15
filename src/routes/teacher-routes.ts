@@ -36,6 +36,11 @@ import updateIndividualStudentGarageSounds from "../controllers/teacher/update-i
 import validateUpdateIndividualStudentGarageLights
 	from "../middleware/request-validation/teacher/validate-update-individual-student-garage-lights"
 import updateIndividualStudentGarageLights from "../controllers/teacher/update-individual-student-garage-lights"
+import validateUpdateGarageDisplay from "../middleware/request-validation/teacher/validate-update-garage-display"
+import updateGarageDisplay from "../controllers/teacher/update-garage-display"
+import validateUpdateIndividualStudentGarageDisplay
+	from "../middleware/request-validation/teacher/validate-update-individual-student-garage-display"
+import updateIndividualStudentGarageDisplay from "../controllers/teacher/update-individual-student-garage-display"
 
 const teacherRoutes = express.Router()
 
@@ -164,6 +169,24 @@ teacherRoutes.post(
 	attachClassroomIdValidateClassCode,
 	confirmClassBelongsToTeacher,
 	updateIndividualStudentGarageLights
+)
+
+teacherRoutes.post(
+	"/update-garage-display-all-students/:classCode",
+	validateUpdateGarageDisplay,
+	attachTeacherId,
+	attachClassroomIdValidateClassCode,
+	confirmClassBelongsToTeacher,
+	updateGarageDisplay
+)
+
+teacherRoutes.post(
+	"/update-individual-student-garage-display/:classCode",
+	validateUpdateIndividualStudentGarageDisplay,
+	attachTeacherId,
+	attachClassroomIdValidateClassCode,
+	confirmClassBelongsToTeacher,
+	updateIndividualStudentGarageDisplay
 )
 
 export default teacherRoutes

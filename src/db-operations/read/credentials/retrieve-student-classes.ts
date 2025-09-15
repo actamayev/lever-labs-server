@@ -3,6 +3,7 @@ import { ClassCode } from "@bluedotrobots/common-ts/types/utils"
 import HubManager from "../../../classes/hub-manager"
 import PrismaClientClass from "../../../classes/prisma-client"
 
+// eslint-disable-next-line max-lines-per-function
 export default async function retrieveStudentClasses(userId: number): Promise<StudentClassroomData[]> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
@@ -24,7 +25,8 @@ export default async function retrieveStudentClasses(userId: number): Promise<St
 						student_id: true,
 						garage_driving_allowed: true,
 						garage_sounds_allowed: true,
-						garage_lights_allowed: true
+						garage_lights_allowed: true,
+						garage_display_allowed: true
 					}
 				}
 			}
@@ -38,7 +40,8 @@ export default async function retrieveStudentClasses(userId: number): Promise<St
 			activeHubs: HubManager.getInstance().getStudentHubs(singleStudentData.classroom.class_code as ClassCode),
 			garageDrivingAllowed: singleStudentData.garage_driving_allowed,
 			garageSoundsAllowed: singleStudentData.garage_sounds_allowed,
-			garageLightsAllowed: singleStudentData.garage_lights_allowed
+			garageLightsAllowed: singleStudentData.garage_lights_allowed,
+			garageDisplayAllowed: singleStudentData.garage_display_allowed
 		}) satisfies StudentClassroomData) || []
 	} catch (error) {
 		console.error(error)

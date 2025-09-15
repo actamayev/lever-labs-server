@@ -35,7 +35,8 @@ export default async function getDetailedTeacherClassroomData(
 								},
 								garage_driving_allowed: true,
 								garage_sounds_allowed: true,
-								garage_lights_allowed: true
+								garage_lights_allowed: true,
+								garage_display_allowed: true
 							}
 						}
 					},
@@ -53,7 +54,8 @@ export default async function getDetailedTeacherClassroomData(
 				username: student.user.username || "",
 				garageDrivingAllowed: student.garage_driving_allowed,
 				garageSoundsAllowed: student.garage_sounds_allowed,
-				garageLightsAllowed: student.garage_lights_allowed
+				garageLightsAllowed: student.garage_lights_allowed,
+				garageDisplayAllowed: student.garage_display_allowed
 			})),
 			activeHubs: HubManager.getInstance().getTeacherHubs(userId)
 		} satisfies DetailedClassroomData

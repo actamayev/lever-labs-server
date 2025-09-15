@@ -275,4 +275,10 @@ export default class BrowserSocketManager extends Singleton {
 			this.emitToUser(studentUserId, "garage-lights-status-update", { garageLightsStatus })
 		})
 	}
+
+	public emitGarageDisplayStatusUpdateToStudents(studentUserIds: number[], garageDisplayStatus: boolean): void {
+		studentUserIds.forEach(studentUserId => {
+			this.emitToUser(studentUserId, "garage-display-status-update", { garageDisplayStatus })
+		})
+	}
 }

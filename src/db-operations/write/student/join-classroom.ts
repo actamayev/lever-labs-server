@@ -29,7 +29,8 @@ export default async function joinClassroom(
 			activeHubs: HubManager.getInstance().getClassroomActiveHubs(result.classroom.class_code as ClassCode),
 			garageDrivingAllowed: result.garage_driving_allowed,
 			garageSoundsAllowed: result.garage_sounds_allowed,
-			garageLightsAllowed: result.garage_lights_allowed
+			garageLightsAllowed: result.garage_lights_allowed,
+			garageDisplayAllowed: result.garage_display_allowed
 		}
 	} catch (error) {
 		console.error(error)
