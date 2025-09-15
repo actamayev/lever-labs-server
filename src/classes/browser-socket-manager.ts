@@ -13,6 +13,7 @@ import listenersMap from "../utils/constants/listeners-map"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import handleDisconnectHubHelper from "../utils/handle-disconnect-hub-helper"
 import retrieveUsername from "../db-operations/read/credentials/retrieve-username"
+import { UserConnectedStatus } from "@bluedotrobots/common-ts/protocol"
 
 export default class BrowserSocketManager extends Singleton {
 	private connections = new Map<number, BrowserSocketConnectionInfo>() // Maps UserID to BrowserSocketConnectionInfo
@@ -74,7 +75,7 @@ export default class BrowserSocketManager extends Singleton {
 				if (currentlyConnectedPip.status === "connected" || currentlyConnectedPip.status === "online") {
 					void SendEsp32MessageManager.getInstance().sendBinaryMessage(
 						currentlyConnectedPip.pipUUID,
-						MessageBuilder.createStopSandboxCodeMessage()
+						MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.NOT_CONNECTED)
 					)
 					// eslint-disable-next-line max-depth
 					if (currentlyConnectedPip.status === "connected") {
@@ -128,20 +129,21 @@ export default class BrowserSocketManager extends Singleton {
 		userId: number,
 		pipUUID: PipUUID,
 		status: PipConnectionStatus
-	): void {
+	): boolean {
 		try {
 			const connectionInfo = this.connections.get(userId)
 
 			if (!connectionInfo) {
 				console.warn(`No connection found for userId: ${userId}`)
-				return
+				return false
 			}
 
 			// Update the currentlyConnectedPip entry for this user
 			connectionInfo.currentlyConnectedPip = { pipUUID, status }
+			return true
 		} catch (error) {
 			console.error(error)
-			throw error
+			return false
 		}
 	}
 
