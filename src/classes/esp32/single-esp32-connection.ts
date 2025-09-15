@@ -3,7 +3,7 @@ import { UUID } from "crypto"
 export default class SingleESP32Connection {
 	private _isAlive: boolean = true
 	private pingInterval?: NodeJS.Timeout
-	private readonly PING_INTERVAL = 1000
+	private readonly PING_INTERVAL = 1500
 	private isCleaningUp = false
 
 	constructor(
