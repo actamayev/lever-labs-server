@@ -1,6 +1,6 @@
 import { Server as WSServer } from "ws"
 import { randomUUID, UUID } from "crypto"
-import { BatteryMonitorDataFull, ESPConnectionStatus,
+import { BatteryMonitorDataFull,
 	ESPMessage, SensorPayload, SensorPayloadMZ, DinoScorePayload } from "@bluedotrobots/common-ts/types/pip"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 import Singleton from "../singleton"
@@ -28,6 +28,15 @@ export default class Esp32SocketManager extends Singleton {
 			Esp32SocketManager.instance = new Esp32SocketManager(wss)
 		}
 		return Esp32SocketManager.instance
+	}
+
+	// Helper method to create initial status when ESP connects
+	private createInitialStatus(): ESPConnectionState {
+		return {
+			online: true,
+			connectedToOnlineUser: false,
+			connectedToSerial: false
+		}
 	}
 
 	private initializeWSServer(): void {
@@ -188,16 +197,17 @@ export default class Esp32SocketManager extends Singleton {
 		const existing = this.connections.get(pipUUID)
 		if (existing) existing.connection.dispose()
 
-		// Set up new connection
+		// Set up new connection with initial status
+		const initialStatus = this.createInitialStatus()
 		this.connections.set(pipUUID, {
 			socketId,
-			status: "connected",
+			status: initialStatus,
 			connection
 		})
 		this.socketToPip.set(socketId, pipUUID)
 
 		// Notify of status change
-		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "online")
+		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, initialStatus)
 	}
 
 	private handleDisconnection(socketId: UUID): void {
@@ -209,39 +219,168 @@ export default class Esp32SocketManager extends Singleton {
 		// Get the connection before deleting from map
 		const connectionInfo = this.connections.get(pipUUID)
 
-		// Clean up mappings
-		this.connections.delete(pipUUID)
-		this.socketToPip.delete(socketId)
-
-		// Dispose of the connection object to stop ping intervals and clean up
+		// Update status to offline but preserve serial connection if it exists
 		if (connectionInfo) {
+			const updatedStatus: ESPConnectionState = {
+				online: false,
+				connectedToOnlineUser: false,
+				connectedToSerial: connectionInfo.status.connectedToSerial
+			}
+
+			// If still connected to serial, keep the connection info but mark as offline
+			if (updatedStatus.connectedToSerial) {
+				this.connections.set(pipUUID, {
+					...connectionInfo,
+					status: updatedStatus
+				})
+			} else {
+				// No serial connection, completely remove
+				this.connections.delete(pipUUID)
+			}
+
+			// Dispose of the connection object to stop ping intervals and clean up
 			connectionInfo.connection.dispose()
+
+			// Notify of status change
+			BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, updatedStatus)
+		} else {
+			// Clean up mappings if no connection info found
+			this.connections.delete(pipUUID)
 		}
 
-		// Notify of status change
-		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, "offline")
+		// Always clean up socket mapping
+		this.socketToPip.delete(socketId)
 	}
 
-	public getESPStatus(pipUUID: PipUUID): ESPConnectionStatus {
-		return this.connections.get(pipUUID)?.status || "offline"
+	public getESPStatus(pipUUID: PipUUID): ESPConnectionState {
+		return this.connections.get(pipUUID)?.status || {
+			online: false,
+			connectedToOnlineUser: false,
+			connectedToSerial: false
+		}
 	}
+
 
 	public getConnection(pipUUID: PipUUID): SingleESP32Connection | undefined {
 		return this.connections.get(pipUUID)?.connection
 	}
 
 	public isPipUUIDConnected(pipUUID: PipUUID): boolean {
-		const connectionInfo = this.connections.get(pipUUID)
-		return connectionInfo?.status === "connected" || false
+		const status = this.getESPStatus(pipUUID)
+		return status.online
+	}
+
+	public isPipUUIDConnectedToUser(pipUUID: PipUUID): boolean {
+		const status = this.getESPStatus(pipUUID)
+		return status.connectedToOnlineUser
+	}
+
+	public isPipUUIDConnectedToSerial(pipUUID: PipUUID): boolean {
+		const status = this.getESPStatus(pipUUID)
+		return status.connectedToSerial
 	}
 
 	public getAllConnectedPipUUIDs(): PipUUID[] {
 		const connectedPipUUIDs: PipUUID[] = []
 		for (const [pipUUID, connectionInfo] of this.connections) {
-			if (connectionInfo.status === "connected") {
+			if (connectionInfo.status.online) {
 				connectedPipUUIDs.push(pipUUID)
 			}
 		}
 		return connectedPipUUIDs
+	}
+
+	// New methods for managing connection states
+	private handleSerialConnect(pipUUID: PipUUID, connectionInfo?: ESP32SocketConnectionInfo): void {
+		if (!connectionInfo) {
+			// Create connection info for offline + serial case
+			this.connections.set(pipUUID, {
+				socketId: "", // No socket for serial-only connection
+				status: {
+					online: false,
+					connectedToOnlineUser: false,
+					connectedToSerial: true
+				},
+				connection: null as unknown as SingleESP32Connection
+			})
+		} else {
+			// Serial connection trumps online user connection
+			const wasConnectedToUser = connectionInfo.status.connectedToOnlineUser
+			const updatedStatus: ESPConnectionState = {
+				...connectionInfo.status,
+				connectedToSerial: true,
+				connectedToOnlineUser: false // Serial trumps user connection
+			}
+
+			this.connections.set(pipUUID, {
+				...connectionInfo,
+				status: updatedStatus
+			})
+
+			// If user was connected, disconnect them from browser side
+			if (wasConnectedToUser) {
+				BrowserSocketManager.getInstance().disconnectUserFromPip(pipUUID)
+			}
+		}
+	}
+
+	private handleSerialDisconnect(pipUUID: PipUUID, connectionInfo?: ESP32SocketConnectionInfo): void {
+		if (connectionInfo) {
+			const updatedStatus: ESPConnectionState = {
+				...connectionInfo.status,
+				connectedToSerial: false
+			}
+
+			// If not online and not connected to serial, remove completely
+			if (!updatedStatus.online && !updatedStatus.connectedToSerial) {
+				this.connections.delete(pipUUID)
+			} else {
+				this.connections.set(pipUUID, {
+					...connectionInfo,
+					status: updatedStatus
+				})
+			}
+		}
+	}
+
+	public setUserConnection(pipUUID: PipUUID, connected: boolean): boolean {
+		const connectionInfo = this.connections.get(pipUUID)
+		if (!connectionInfo) return false
+
+		// Serial connection trumps user connection - can't connect user if serial is active
+		if (connected && connectionInfo.status.connectedToSerial) {
+			console.warn(`Cannot connect user to ${pipUUID}: serial connection is active`)
+			return false
+		}
+
+		const updatedStatus: ESPConnectionState = {
+			...connectionInfo.status,
+			connectedToOnlineUser: connected
+		}
+
+		this.connections.set(pipUUID, {
+			...connectionInfo,
+			status: updatedStatus
+		})
+
+		// Notify of status change
+		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, updatedStatus)
+		return true
+	}
+
+	public setSerialConnection(pipUUID: PipUUID, connected: boolean): boolean {
+		const connectionInfo = this.connections.get(pipUUID)
+
+		if (connected) {
+			// Serial connection trumps user connection - always allow serial to connect
+			this.handleSerialConnect(pipUUID, connectionInfo)
+		} else {
+			this.handleSerialDisconnect(pipUUID, connectionInfo)
+		}
+
+		// Notify of status change
+		const status = this.getESPStatus(pipUUID)
+		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, status)
+		return true
 	}
 }
