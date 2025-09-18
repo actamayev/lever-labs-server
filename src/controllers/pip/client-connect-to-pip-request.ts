@@ -23,7 +23,11 @@ export default function clientConnectToPipRequest (req: Request, res: Response):
 
 		// Update ESP32 manager with user connection
 		if (isAdded) {
-			Esp32SocketManager.getInstance().setUserConnection(pipUUID, true)
+			const success = Esp32SocketManager.getInstance().setUserConnection(pipUUID, true)
+			if (!success) {
+				res.status(400).json({ message: "Unable to connect to Pip" } satisfies MessageResponse)
+				return
+			}
 		}
 		if (!isAdded) {
 			res.status(400).json({ message: "Unable to connect to Pip" } satisfies MessageResponse)

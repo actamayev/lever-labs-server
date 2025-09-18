@@ -207,7 +207,12 @@ export default class Esp32SocketManager extends Singleton {
 	): void {
 		// Clean up any existing connection for this PIP
 		const existing = this.connections.get(pipUUID)
-		if (existing) existing.connection.dispose()
+		if (existing && existing.status.connectedToSerial) {
+			existing.status.connectedToOnlineUser = true
+			return
+		} else if (existing && existing.status.connectedToOnlineUser) {
+			existing.connection.dispose()
+		}
 
 		// Set up new connection with initial status
 		const initialStatus = this.createInitialStatus()
@@ -309,8 +314,7 @@ export default class Esp32SocketManager extends Singleton {
 			const wasConnectedToUser = connectionInfo.status.connectedToOnlineUser
 			const updatedStatus: ESPConnectionState = {
 				...connectionInfo.status,
-				connectedToSerial: true,
-				connectedToOnlineUser: false // Serial trumps user connection
+				connectedToSerial: true
 			}
 
 			this.connections.set(pipUUID, {
@@ -325,22 +329,20 @@ export default class Esp32SocketManager extends Singleton {
 		}
 	}
 
-	private handleSerialDisconnect(pipUUID: PipUUID, connectionInfo?: ESP32SocketConnectionInfo): void {
-		if (connectionInfo) {
-			const updatedStatus: ESPConnectionState = {
-				...connectionInfo.status,
-				connectedToSerial: false
-			}
+	private handleSerialDisconnect(pipUUID: PipUUID, connectionInfo: ESP32SocketConnectionInfo): void {
+		const updatedStatus: ESPConnectionState = {
+			...connectionInfo.status,
+			connectedToSerial: false
+		}
 
-			// If not online and not connected to serial, remove completely
-			if (!updatedStatus.online && !updatedStatus.connectedToSerial) {
-				this.connections.delete(pipUUID)
-			} else {
-				this.connections.set(pipUUID, {
-					...connectionInfo,
-					status: updatedStatus
-				})
-			}
+		// If not online and not connected to serial, remove completely
+		if (!updatedStatus.online && !updatedStatus.connectedToSerial) {
+			this.connections.delete(pipUUID)
+		} else {
+			this.connections.set(pipUUID, {
+				...connectionInfo,
+				status: updatedStatus
+			})
 		}
 	}
 
@@ -376,6 +378,7 @@ export default class Esp32SocketManager extends Singleton {
 			// Serial connection trumps user connection - always allow serial to connect
 			this.handleSerialConnect(pipUUID, connectionInfo)
 		} else {
+			if (!connectionInfo) return false
 			this.handleSerialDisconnect(pipUUID, connectionInfo)
 		}
 
