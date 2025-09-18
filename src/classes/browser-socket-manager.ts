@@ -14,6 +14,7 @@ import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import handleDisconnectHubHelper from "../utils/handle-disconnect-hub-helper"
 import retrieveUsername from "../db-operations/read/credentials/retrieve-username"
 import { UserConnectedStatus } from "@bluedotrobots/common-ts/protocol"
+import Esp32SocketManager from "./esp32/esp32-socket-manager"
 
 export default class BrowserSocketManager extends Singleton {
 	private connections = new Map<number, BrowserSocketConnectionInfo>()
@@ -101,7 +102,9 @@ export default class BrowserSocketManager extends Singleton {
 							...currentlyConnectedPip.status,
 							connectedToOnlineUser: false
 						}
+						currentlyConnectedPip.status = updatedStatus
 						this.emitPipStatusUpdate(currentlyConnectedPip.pipUUID, updatedStatus)
+						Esp32SocketManager.getInstance().setUserConnection(currentlyConnectedPip.pipUUID, false)
 					}
 				}
 			}
