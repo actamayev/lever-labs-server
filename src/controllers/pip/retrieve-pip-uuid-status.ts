@@ -14,7 +14,9 @@ export default async function retrievePipUUIDStatus(req: Request, res: Response)
 		const isFound = await doesPipUUIDExist(pipUUID)
 
 		if (!isFound) {
-			res.status(400).json({ message: "Pip UUID doesn't exist" } satisfies MessageResponse)
+			res.status(400).json({
+				message: "Looks like that Pip ID doesn't exist. Could you please check your Pip ID and try again?"
+			} satisfies MessageResponse)
 			return
 		}
 
