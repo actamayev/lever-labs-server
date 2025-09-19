@@ -132,13 +132,11 @@ export default class Esp32SocketManager extends Singleton {
 
 	private updateLastActivity(socketId: UUID): void {
 		const pipUUID = this.socketToPip.get(socketId)
-		if (pipUUID) {
-			const connectionInfo = this.connections.get(pipUUID)
-			if (connectionInfo) {
-				// Reset the ping counter since we received data
-				connectionInfo.connection.resetPingCounter()
-			}
-		}
+		if (!pipUUID) return
+		const connectionInfo = this.connections.get(pipUUID)
+		if (!connectionInfo) return
+		// Reset the ping counter since we received data
+		connectionInfo.connection.resetPingCounter()
 	}
 
 	// TODO: Create a re-usable method for sending this type of data (see handleSensorData, handleSensorDataMZ, etc.)
@@ -207,7 +205,24 @@ export default class Esp32SocketManager extends Singleton {
 	): void {
 		// Clean up any existing connection for this PIP
 		const existing = this.connections.get(pipUUID)
-		if (existing) existing.connection.dispose()
+		if (existing) {
+			if (existing.status.connectedToSerial) {
+				this.connections.set(pipUUID, {
+					...existing,
+					socketId,
+					status: {
+						...existing.status,
+						online: true
+					},
+					connection
+				})
+				this.socketToPip.set(socketId, pipUUID)
+				const newConnection = this.connections.get(pipUUID)
+				if (!newConnection) return
+				BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, newConnection.status)
+			}
+			return
+		}
 
 		// Set up new connection with initial status
 		const initialStatus = this.createInitialStatus()
@@ -309,8 +324,7 @@ export default class Esp32SocketManager extends Singleton {
 			const wasConnectedToUser = connectionInfo.status.connectedToOnlineUser
 			const updatedStatus: ESPConnectionState = {
 				...connectionInfo.status,
-				connectedToSerial: true,
-				connectedToOnlineUser: false // Serial trumps user connection
+				connectedToSerial: true
 			}
 
 			this.connections.set(pipUUID, {
@@ -325,23 +339,20 @@ export default class Esp32SocketManager extends Singleton {
 		}
 	}
 
-	private handleSerialDisconnect(pipUUID: PipUUID, connectionInfo?: ESP32SocketConnectionInfo): void {
-		if (connectionInfo) {
-			const updatedStatus: ESPConnectionState = {
-				...connectionInfo.status,
-				connectedToSerial: false
-			}
-
-			// If not online and not connected to serial, remove completely
-			if (!updatedStatus.online && !updatedStatus.connectedToSerial) {
-				this.connections.delete(pipUUID)
-			} else {
-				this.connections.set(pipUUID, {
-					...connectionInfo,
-					status: updatedStatus
-				})
-			}
+	private handleSerialDisconnect(pipUUID: PipUUID, connectionInfo: ESP32SocketConnectionInfo): void {
+		// If not online, remove completely
+		if (!connectionInfo.status.online) {
+			this.connections.delete(pipUUID)
+			return
 		}
+		const updatedStatus: ESPConnectionState = {
+			...connectionInfo.status,
+			connectedToSerial: false
+		}
+		this.connections.set(pipUUID, {
+			...connectionInfo,
+			status: updatedStatus
+		})
 	}
 
 	public setUserConnection(pipUUID: PipUUID, connected: boolean): boolean {
@@ -375,13 +386,18 @@ export default class Esp32SocketManager extends Singleton {
 		if (connected) {
 			// Serial connection trumps user connection - always allow serial to connect
 			this.handleSerialConnect(pipUUID, connectionInfo)
+			const status = this.getESPStatus(pipUUID)
+			if (status.connectedToOnlineUser) {
+				BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, status)
+			}
 		} else {
+			if (!connectionInfo) return false
 			this.handleSerialDisconnect(pipUUID, connectionInfo)
+			const status = this.getESPStatus(pipUUID)
+			if (status.connectedToOnlineUser) {
+				BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, status)
+			}
 		}
-
-		// Notify of status change
-		const status = this.getESPStatus(pipUUID)
-		BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, status)
 		return true
 	}
 }
