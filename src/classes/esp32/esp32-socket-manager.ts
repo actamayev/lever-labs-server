@@ -217,9 +217,7 @@ export default class Esp32SocketManager extends Singleton {
 					connection
 				})
 				this.socketToPip.set(socketId, pipUUID)
-				console.log("this.connections", this.connections)
 				const newConnection = this.connections.get(pipUUID)
-				console.log("newConnection", newConnection)
 				if (!newConnection) return
 				BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, newConnection.status)
 			}
@@ -384,7 +382,6 @@ export default class Esp32SocketManager extends Singleton {
 
 	public setSerialConnection(pipUUID: PipUUID, connected: boolean): boolean {
 		const connectionInfo = this.connections.get(pipUUID)
-		console.log("connectionInfo", connectionInfo?.status, pipUUID, connected)
 
 		if (connected) {
 			// Serial connection trumps user connection - always allow serial to connect
@@ -400,7 +397,6 @@ export default class Esp32SocketManager extends Singleton {
 			if (status.connectedToOnlineUser) {
 				BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, status)
 			}
-			// if that esp was connected to another user online, we need to give control back to that user.
 		}
 		return true
 	}

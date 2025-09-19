@@ -72,7 +72,6 @@ export default class BrowserSocketManager extends Singleton {
 		try {
 			if (isUndefined(userId) || !this.connections.has(userId)) return
 			const currentlyConnectedPip = this.connections.get(userId)?.currentlyConnectedPip
-			console.log("currentlyConnectedPip", currentlyConnectedPip)
 
 			if (!isNil(currentlyConnectedPip)) {
 				if (currentlyConnectedPip.status.connectedToOnlineUser || currentlyConnectedPip.status.online) {
