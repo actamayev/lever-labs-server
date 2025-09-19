@@ -132,13 +132,11 @@ export default class Esp32SocketManager extends Singleton {
 
 	private updateLastActivity(socketId: UUID): void {
 		const pipUUID = this.socketToPip.get(socketId)
-		if (pipUUID) {
-			const connectionInfo = this.connections.get(pipUUID)
-			if (connectionInfo) {
-				// Reset the ping counter since we received data
-				connectionInfo.connection.resetPingCounter()
-			}
-		}
+		if (!pipUUID) return
+		const connectionInfo = this.connections.get(pipUUID)
+		if (!connectionInfo) return
+		// Reset the ping counter since we received data
+		connectionInfo.connection.resetPingCounter()
 	}
 
 	// TODO: Create a re-usable method for sending this type of data (see handleSensorData, handleSensorDataMZ, etc.)
@@ -207,7 +205,26 @@ export default class Esp32SocketManager extends Singleton {
 	): void {
 		// Clean up any existing connection for this PIP
 		const existing = this.connections.get(pipUUID)
-		if (existing) return
+		if (existing) {
+			if (existing.status.connectedToSerial) {
+				this.connections.set(pipUUID, {
+					...existing,
+					socketId,
+					status: {
+						...existing.status,
+						online: true
+					},
+					connection
+				})
+				this.socketToPip.set(socketId, pipUUID)
+				console.log("this.connections", this.connections)
+				const newConnection = this.connections.get(pipUUID)
+				console.log("newConnection", newConnection)
+				if (!newConnection) return
+				BrowserSocketManager.getInstance().emitPipStatusUpdate(pipUUID, newConnection.status)
+			}
+			return
+		}
 
 		// Set up new connection with initial status
 		const initialStatus = this.createInitialStatus()

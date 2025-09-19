@@ -165,7 +165,6 @@ export default class BrowserSocketManager extends Singleton {
 
 	public whichUserConnectedToPipUUID(pipUUID: PipUUID): number | undefined {
 		for (const [userID, connectionInfo] of this.connections.entries()) {
-			console.log("connectionInfo", userID, connectionInfo)
 			// Check if the specified pipUUID with status "connectedToOnlineUser" exists
 			if (isNull(connectionInfo.currentlyConnectedPip)) continue
 			const foundConnection =
