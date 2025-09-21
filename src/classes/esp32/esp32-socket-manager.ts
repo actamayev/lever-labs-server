@@ -129,11 +129,11 @@ export default class Esp32SocketManager extends Singleton {
 			},
 			connection
 		})
-		// if (!existing.status.lastOnlineConnectedUser) return
-		// BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(existing.status.lastOnlineConnectedUser.userId, pipId)
-		// BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
-		// 	existing.status.lastOnlineConnectedUser.userId, pipId, "connected online to you"
-		// )
+		if (!existing.status.lastOnlineConnectedUser) return
+		BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(existing.status.lastOnlineConnectedUser.userId, pipId)
+		BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
+			existing.status.lastOnlineConnectedUser.userId, pipId, "connected online to you"
+		)
 	}
 
 	private handleDisconnection(pipId: PipUUID): void {
@@ -144,29 +144,22 @@ export default class Esp32SocketManager extends Singleton {
 
 		// Update status to offline but preserve serial connection if it exists
 		if (!connectionInfo) return
-		const updatedStatus: ESPConnectionState = {
-			...connectionInfo.status,
-			online: false,
-			connectedToOnlineUserId: null
-		}
-
 		this.connections.set(pipId, {
 			...connectionInfo,
-			status: updatedStatus
+			status: {
+				...connectionInfo.status,
+				online: false,
+				connectedToOnlineUserId: null,
+				connectedToSerialUserId: null
+			}
 		})
 
 		// Dispose of the connection object to stop ping intervals and clean up
 		connectionInfo.connection.dispose()
 		const userConnectedToOnlineBeforeDisconnection = connectionInfo.status.connectedToOnlineUserId
-		if (userConnectedToOnlineBeforeDisconnection) {
-			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(userConnectedToOnlineBeforeDisconnection, pipId, "offline")
-		}
-		const userConnectedToSerialBeforeDisconnection = connectionInfo.status.connectedToSerialUserId
-		if (userConnectedToSerialBeforeDisconnection) {
-			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
-				userConnectedToSerialBeforeDisconnection, pipId, "connected to serial to you"
-			)
-		}
+		if (!userConnectedToOnlineBeforeDisconnection) return
+		BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(userConnectedToOnlineBeforeDisconnection, pipId, "offline")
+		BrowserSocketManager.getInstance().removePipConnection(userConnectedToOnlineBeforeDisconnection, pipId)
 	}
 
 	public getESPStatus(pipId: PipUUID): ESPConnectionState | undefined {
