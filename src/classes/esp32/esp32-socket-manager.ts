@@ -1,3 +1,4 @@
+import { isNull } from "lodash"
 import { Server as WSServer } from "ws"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 import { ESPToServerMessage } from "@bluedotrobots/common-ts/types/pip"
@@ -302,5 +303,19 @@ export default class Esp32SocketManager extends Singleton {
 			connectedToSerialUserId: null,
 			lastOnlineConnectedUser: null
 		}
+	}
+
+	public checkIfLastConnectedUserIdIsCurrentUser(userId: number): PipUUID | null {
+		for (const [pipId, connectionInfo] of this.connections) {
+			if (isNull(connectionInfo.status.lastOnlineConnectedUser)) continue
+			if (
+				isNull(connectionInfo.status.connectedToOnlineUserId) &&
+				connectionInfo.status.lastOnlineConnectedUser.userId === userId &&
+				connectionInfo.status.online
+			) {
+				return pipId
+			}
+		}
+		return null
 	}
 }
