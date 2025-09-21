@@ -247,7 +247,7 @@ export default class Esp32SocketManager extends Singleton {
 				connectedToOnlineUserId: userId,
 				lastOnlineConnectedUser: {
 					userId,
-					connectedAt: new Date()
+					lastActivityAt: new Date()
 				}
 			}
 		})
@@ -310,12 +310,31 @@ export default class Esp32SocketManager extends Singleton {
 		}
 	}
 
+	public updateLastActivityForUser(pipId: PipUUID, userId: number): void {
+		const connectionInfo = this.connections.get(pipId)
+		if (!connectionInfo) return
+
+		// Only update if this user is the current connected user
+		if (connectionInfo.status.connectedToOnlineUserId === userId) {
+			this.connections.set(pipId, {
+				...connectionInfo,
+				status: {
+					...connectionInfo.status,
+					lastOnlineConnectedUser: {
+						userId,
+						lastActivityAt: new Date()
+					}
+				}
+			})
+		}
+	}
+
 	public checkIfLastConnectedUserIdIsCurrentUser(userId: number): PipUUID | null {
 		for (const [pipId, connectionInfo] of this.connections) {
 			if (isNull(connectionInfo.status.lastOnlineConnectedUser)) continue
 
 			// Check if the last connection was more than 90 minutes ago
-			const timeSinceLastConnection = Date.now() - connectionInfo.status.lastOnlineConnectedUser.connectedAt.getTime()
+			const timeSinceLastConnection = Date.now() - connectionInfo.status.lastOnlineConnectedUser.lastActivityAt.getTime()
 			if (timeSinceLastConnection > this.NINETY_MINUTES_MS) {
 				this.connections.set(pipId, {
 					...connectionInfo,

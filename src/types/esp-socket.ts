@@ -20,7 +20,7 @@ declare global {
 		connectedToSerialUserId: number | null      // UserId of the user currently connected to the PIP via USB/serial
 		lastOnlineConnectedUser: {
 			userId: number
-			connectedAt: Date
+			lastActivityAt: Date
 		} | null
 	}
 }

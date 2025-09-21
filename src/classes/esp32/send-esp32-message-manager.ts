@@ -97,6 +97,12 @@ export default class SendEsp32MessageManager extends Singleton {
 					if (error) {
 						reject(new Error(`Failed to send data: ${error.message}`))
 					} else {
+						// Update last activity for the currently connected user
+						const espManager = Esp32SocketManager.getInstance()
+						const status = espManager.getESPStatus(pipUUID)
+						if (status?.connectedToOnlineUserId) {
+							espManager.updateLastActivityForUser(pipUUID, status.connectedToOnlineUserId)
+						}
 						resolve()
 					}
 				})
