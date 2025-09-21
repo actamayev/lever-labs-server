@@ -14,6 +14,7 @@ import retrieveUserIdByEmail from "../../db-operations/read/credentials/retrieve
 import retrieveStudentClasses from "../../db-operations/read/credentials/retrieve-student-classes"
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import { setAuthCookie } from "../../middleware/cookie-helpers"
+import autoConnectToPip from "../../utils/pip/auto-connect-to-pip"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function googleLoginAuthCallback(req: Request, res: Response): Promise<void> {
@@ -72,12 +73,14 @@ export default async function googleLoginAuthCallback(req: Request, res: Respons
 		}
 
 		setAuthCookie(res, accessToken)
+		const autoConnectToPipResult = autoConnectToPip(userId)
 
 		res.status(200).json({
 			isNewUser,
 			personalInfo,
 			studentClasses,
-			teacherData
+			teacherData,
+			autoConnectedPipUUID: autoConnectToPipResult.pipUUID
 		} satisfies GoogleAuthSuccess)
 		void addLoginHistoryRecord(userId)
 		return

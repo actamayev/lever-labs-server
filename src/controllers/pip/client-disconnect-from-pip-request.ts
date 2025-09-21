@@ -11,7 +11,7 @@ export default function clientDisconnectFromPipRequest (req: Request, res: Respo
 		const { userId } = req
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		const success = Esp32SocketManager.getInstance().setOnlineUserDisconnected(pipUUID, userId)
+		const success = Esp32SocketManager.getInstance().setOnlineUserDisconnected(pipUUID, userId, true)
 		if (!success) {
 			res.status(400).json({ message: "Unable to disconnect from Pip" } satisfies MessageResponse)
 			return

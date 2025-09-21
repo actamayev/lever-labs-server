@@ -91,7 +91,7 @@ export default class BrowserSocketManager extends Singleton {
 						currentlyConnectedPipUUID,
 						MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.NOT_CONNECTED)
 					)
-					Esp32SocketManager.getInstance().setOnlineUserDisconnected(currentlyConnectedPipUUID, userId)
+					Esp32SocketManager.getInstance().setOnlineUserDisconnected(currentlyConnectedPipUUID, userId, false)
 					espStatus.connectedToOnlineUserId = null
 				// this.emitPipStatusUpdate(currentlyConnectedPipUUID, espStatus)
 				}

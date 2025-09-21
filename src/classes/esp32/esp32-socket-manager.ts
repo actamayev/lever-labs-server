@@ -255,12 +255,16 @@ export default class Esp32SocketManager extends Singleton {
 		return true
 	}
 
-	public setOnlineUserDisconnected(pipId: PipUUID, userId: number): boolean {
+	public setOnlineUserDisconnected(pipId: PipUUID, userId: number, preventAutoReconnect: boolean): boolean {
 		const connectionInfo = this.connections.get(pipId)
 		if (!connectionInfo) return false
 		this.connections.set(pipId, {
 			...connectionInfo,
-			status: { ...connectionInfo.status, connectedToOnlineUserId: null }
+			status: {
+				...connectionInfo.status,
+				connectedToOnlineUserId: null,
+				lastOnlineConnectedUser: preventAutoReconnect ? null : connectionInfo.status.lastOnlineConnectedUser
+			}
 		})
 		BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(userId, null)
 		return true

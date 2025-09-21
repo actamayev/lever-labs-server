@@ -13,7 +13,7 @@ import retrievePipUUIDStatus from "../controllers/pip/retrieve-pip-uuid-status"
 import clientConnectToPipRequest from "../controllers/pip/client-connect-to-pip-request"
 import setSerialConnectionStatus from "../controllers/pip/set-serial-connection-status"
 import clientDisconnectFromPipRequest from "../controllers/pip/client-disconnect-from-pip-request"
-import retrieveActivePipConnection from "../controllers/pip/retrieve-active-pip-connection"
+import attemptPipAutoConnect from "../controllers/pip/attempt-pip-auto-connect"
 
 const pipRoutes = express.Router()
 
@@ -60,9 +60,9 @@ pipRoutes.post(
 )
 
 pipRoutes.get(
-	"/retrieve-active-pip-connection",
+	"/attempt-pip-auto-connect",
 	jwtVerifyAttachUserId,
-	retrieveActivePipConnection,
+	attemptPipAutoConnect,
 )
 
 export default pipRoutes
