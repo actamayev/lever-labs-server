@@ -120,10 +120,20 @@ export default class Esp32SocketManager extends Singleton {
 				status: { ...existing.status, online: true },
 				connection
 			})
-		} else {
-			const initialStatus = this.createInitialStatus()
-			this.connections.set(pipId, { status: initialStatus, connection })
+			return
 		}
+		this.connections.set(pipId, {
+			status: {
+				...existing.status,
+				online: true
+			},
+			connection
+		})
+		// if (!existing.status.lastOnlineConnectedUser) return
+		// BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(existing.status.lastOnlineConnectedUser.userId, pipId)
+		// BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
+		// 	existing.status.lastOnlineConnectedUser.userId, pipId, "connected online to you"
+		// )
 	}
 
 	private handleDisconnection(pipId: PipUUID): void {
@@ -190,7 +200,7 @@ export default class Esp32SocketManager extends Singleton {
 				status: {
 					online: false,
 					connectedToOnlineUserId: null,
-					lastOnlineConnectedUserId: null,
+					lastOnlineConnectedUser: null,
 					connectedToSerialUserId: userId
 				},
 				connection: null as unknown as SingleESP32Connection
@@ -240,7 +250,10 @@ export default class Esp32SocketManager extends Singleton {
 			status: {
 				...connectionInfo.status,
 				connectedToOnlineUserId: userId,
-				lastOnlineConnectedUserId: userId
+				lastOnlineConnectedUser: {
+					userId,
+					connectedAt: new Date()
+				}
 			}
 		})
 
@@ -279,9 +292,9 @@ export default class Esp32SocketManager extends Singleton {
 		this.handleSerialDisconnect(pipId, connectionInfo)
 		const status = this.getESPStatus(pipId)
 		if (!status) return false
-		if (status.connectedToSerialUserId && status.lastOnlineConnectedUserId !== userId && status.lastOnlineConnectedUserId) {
+		if (status.connectedToSerialUserId && status.lastOnlineConnectedUser?.userId !== userId && status.lastOnlineConnectedUser) {
 			// Auto-reconnect after other user disconnects serial
-			this.setOnlineUserConnected(pipId, status.lastOnlineConnectedUserId)
+			this.setOnlineUserConnected(pipId, status.lastOnlineConnectedUser.userId)
 			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
 				status.connectedToSerialUserId, pipId, "connected online to you"
 			)
@@ -294,7 +307,7 @@ export default class Esp32SocketManager extends Singleton {
 			online: true,
 			connectedToOnlineUserId: null,
 			connectedToSerialUserId: null,
-			lastOnlineConnectedUserId: null
+			lastOnlineConnectedUser: null
 		}
 	}
 }

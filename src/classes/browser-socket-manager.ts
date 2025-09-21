@@ -79,25 +79,22 @@ export default class BrowserSocketManager extends Singleton {
 			if (isUndefined(connectionInfo)) return
 			const currentlyConnectedPipUUID = connectionInfo.currentlyConnectedPipUUID
 
-			if (isNull(currentlyConnectedPipUUID)) {
-				void handleDisconnectHubHelper(userId)
-				this.connections.delete(userId)
-				return
-			}
-			const espStatus = Esp32SocketManager.getInstance().getESPStatus(currentlyConnectedPipUUID)
-			if (isUndefined(espStatus)) return
-			if (espStatus.connectedToSerialUserId === userId) {
-				Esp32SocketManager.getInstance().setSerialDisconnection(currentlyConnectedPipUUID, userId)
-				espStatus.connectedToSerialUserId = null
+			if (!isNull(currentlyConnectedPipUUID)) {
+				const espStatus = Esp32SocketManager.getInstance().getESPStatus(currentlyConnectedPipUUID)
+				if (isUndefined(espStatus)) return
+				if (espStatus.connectedToSerialUserId === userId) {
+					Esp32SocketManager.getInstance().setSerialDisconnection(currentlyConnectedPipUUID, userId)
+					espStatus.connectedToSerialUserId = null
 				// this.emitPipStatusUpdate(currentlyConnectedPipUUID, espStatus)
-			} else if (espStatus.connectedToOnlineUserId === userId) {
-				void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-					currentlyConnectedPipUUID,
-					MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.NOT_CONNECTED)
-				)
-				Esp32SocketManager.getInstance().setOnlineUserDisconnected(currentlyConnectedPipUUID, userId)
-				espStatus.connectedToOnlineUserId = null
+				} else if (espStatus.connectedToOnlineUserId === userId) {
+					void SendEsp32MessageManager.getInstance().sendBinaryMessage(
+						currentlyConnectedPipUUID,
+						MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.NOT_CONNECTED)
+					)
+					Esp32SocketManager.getInstance().setOnlineUserDisconnected(currentlyConnectedPipUUID, userId)
+					espStatus.connectedToOnlineUserId = null
 				// this.emitPipStatusUpdate(currentlyConnectedPipUUID, espStatus)
+				}
 			}
 			void handleDisconnectHubHelper(userId)
 			this.connections.delete(userId)
