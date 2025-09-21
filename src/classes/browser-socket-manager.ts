@@ -87,7 +87,7 @@ export default class BrowserSocketManager extends Singleton {
 			const espStatus = Esp32SocketManager.getInstance().getESPStatus(currentlyConnectedPipUUID)
 			if (isUndefined(espStatus)) return
 			if (espStatus.connectedToSerialUserId === userId) {
-				Esp32SocketManager.getInstance().setSerialConnection(currentlyConnectedPipUUID, false, userId)
+				Esp32SocketManager.getInstance().setSerialDisconnection(currentlyConnectedPipUUID, userId)
 				espStatus.connectedToSerialUserId = null
 				// this.emitPipStatusUpdate(currentlyConnectedPipUUID, espStatus)
 			} else if (espStatus.connectedToOnlineUserId === userId) {
@@ -95,7 +95,7 @@ export default class BrowserSocketManager extends Singleton {
 					currentlyConnectedPipUUID,
 					MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.NOT_CONNECTED)
 				)
-				Esp32SocketManager.getInstance().setOnlineUserDisconnected(currentlyConnectedPipUUID)
+				Esp32SocketManager.getInstance().setOnlineUserDisconnected(currentlyConnectedPipUUID, userId)
 				espStatus.connectedToOnlineUserId = null
 				// this.emitPipStatusUpdate(currentlyConnectedPipUUID, espStatus)
 			}
@@ -296,5 +296,11 @@ export default class BrowserSocketManager extends Singleton {
 
 		// Emit status update to the browser
 		this.emitPipStatusUpdateToUser(onlineConnectedUserId, pipUUID, "connected to serial to another user")
+	}
+
+	public updateCurrentlyConnectedPip(userId: number, pipUUID: PipUUID | null): void {
+		const connectionInfo = this.connections.get(userId)
+		if (isUndefined(connectionInfo)) return
+		connectionInfo.currentlyConnectedPipUUID = pipUUID
 	}
 }

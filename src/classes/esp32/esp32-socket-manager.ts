@@ -244,46 +244,47 @@ export default class Esp32SocketManager extends Singleton {
 			}
 		})
 
-		BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(userId, pipId, "connected online to you")
+		BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(userId, pipId)
 		return true
 	}
 
-	public setOnlineUserDisconnected(pipId: PipUUID): boolean {
+	public setOnlineUserDisconnected(pipId: PipUUID, userId: number): boolean {
 		const connectionInfo = this.connections.get(pipId)
 		if (!connectionInfo) return false
 		this.connections.set(pipId, {
 			...connectionInfo,
 			status: { ...connectionInfo.status, connectedToOnlineUserId: null }
 		})
+		BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(userId, null)
 		return true
 	}
 
-	// eslint-disable-next-line complexity
-	public setSerialConnection(pipId: PipUUID, connected: boolean, userId: number): boolean {
+	public setSerialConnection(pipId: PipUUID, userId: number): boolean {
 		const connectionInfo = this.connections.get(pipId)
+		// Serial connection trumps user connection - always allow serial to connect
+		this.handleSerialConnect(pipId, userId, connectionInfo)
+		const status = this.getESPStatus(pipId)
+		if (!status) return false
+		if (status.connectedToOnlineUserId && status.connectedToOnlineUserId !== userId) {
+			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
+				status.connectedToOnlineUserId, pipId, "connected to serial to another user"
+			)
+		}
+		return true
+	}
 
-		if (connected) {
-			// Serial connection trumps user connection - always allow serial to connect
-			this.handleSerialConnect(pipId, userId, connectionInfo)
-			const status = this.getESPStatus(pipId)
-			if (!status) return false
-			if (status.connectedToOnlineUserId && status.connectedToOnlineUserId !== userId) {
-				BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
-					status.connectedToOnlineUserId, pipId, "connected to serial to another user"
-				)
-			}
-		} else {
-			if (!connectionInfo) return false
-			this.handleSerialDisconnect(pipId, connectionInfo)
-			const status = this.getESPStatus(pipId)
-			if (!status) return false
-			if (status.connectedToSerialUserId && status.lastOnlineConnectedUserId !== userId && status.lastOnlineConnectedUserId) {
-				// Auto-reconnect after other user disconnects serial
-				this.setOnlineUserConnected(pipId, status.lastOnlineConnectedUserId)
-				BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
-					status.connectedToSerialUserId, pipId, "connected online to you"
-				)
-			}
+	public setSerialDisconnection(pipId: PipUUID, userId: number): boolean {
+		const connectionInfo = this.connections.get(pipId)
+		if (!connectionInfo) return false
+		this.handleSerialDisconnect(pipId, connectionInfo)
+		const status = this.getESPStatus(pipId)
+		if (!status) return false
+		if (status.connectedToSerialUserId && status.lastOnlineConnectedUserId !== userId && status.lastOnlineConnectedUserId) {
+			// Auto-reconnect after other user disconnects serial
+			this.setOnlineUserConnected(pipId, status.lastOnlineConnectedUserId)
+			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
+				status.connectedToSerialUserId, pipId, "connected online to you"
+			)
 		}
 		return true
 	}

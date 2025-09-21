@@ -22,7 +22,7 @@ export default function confirmPipIsActive(confirmUserConnectedToPip: boolean) {
 				const isUserConnectedToPip = BrowserSocketManager.getInstance().getIsUserConnectedToOnlinePip(userId, pipUUID)
 				if (!isUserConnectedToPip) {
 					res.status(400).json({
-						message: "This Pip is not active/connected to the internet"
+						message: "This Pip is not active/connected to this user"
 					} satisfies MessageResponse)
 					return
 				}

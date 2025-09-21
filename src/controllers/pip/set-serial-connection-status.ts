@@ -8,7 +8,12 @@ export default function setSerialConnectionStatus(req: Request, res: Response): 
 		const { userId } = req
 		const { pipUUID, connected } = req.body as { pipUUID: PipUUID; connected: boolean }
 
-		const success = Esp32SocketManager.getInstance().setSerialConnection(pipUUID, connected, userId)
+		let success: boolean
+		if (connected) {
+			success = Esp32SocketManager.getInstance().setSerialConnection(pipUUID, userId)
+		} else {
+			success = Esp32SocketManager.getInstance().setSerialDisconnection(pipUUID, userId)
+		}
 
 		if (!success) {
 			const action = connected ? "connect to" : "disconnect from"
