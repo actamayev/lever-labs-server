@@ -5,9 +5,10 @@ import { ErrorResponse, MessageResponse, SuccessResponse } from "@bluedotrobots/
 
 export default function setSerialConnectionStatus(req: Request, res: Response): void {
 	try {
+		const { userId } = req
 		const { pipUUID, connected } = req.body as { pipUUID: PipUUID; connected: boolean }
 
-		const success = Esp32SocketManager.getInstance().setSerialConnection(pipUUID, connected)
+		const success = Esp32SocketManager.getInstance().setSerialConnection(pipUUID, connected, userId)
 
 		if (!success) {
 			const action = connected ? "connect to" : "disconnect from"

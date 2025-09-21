@@ -1,18 +1,22 @@
-import { UUID } from "crypto"
+import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 
 export default class SingleESP32Connection {
 	private _isAlive: boolean = true
 	private pingInterval?: NodeJS.Timeout
 	private _missedPingCount: number = 0
-	private readonly MAX_MISSED_PINGS = 2  // Allow 2 missed pings
+	private readonly MAX_MISSED_PINGS = 2
 	private readonly PING_INTERVAL = 750
 	private isCleaningUp = false
 
 	constructor(
-		public readonly socketId: UUID,
-		public readonly socket: ExtendedWebSocket,
-		private readonly onDisconnect: (socketId: UUID) => void
+		private readonly pipId: PipUUID,
+		public readonly socket: ExtendedWebSocket, // Uses minimal interface
+		private readonly onDisconnect: (pipId: PipUUID) => void
 	) {
+		// Verify pipId matches what's in the socket
+		if (socket.pipId !== pipId) {
+			console.warn(`PipId mismatch: constructor=${pipId}, socket=${socket.pipId}`)
+		}
 		this.initializeSocket()
 	}
 
@@ -21,7 +25,7 @@ export default class SingleESP32Connection {
 		this.socket.on("pong", () => this.handlePong())
 		this.socket.on("close", () => this.cleanup("socket_closed"))
 		this.socket.on("error", (error) => {
-			console.error(`Socket error for ${this.socketId}:`, error)
+			console.error(`Socket error for ${this.pipId}:`, error)
 			this.cleanup("socket_error")
 		})
 
@@ -32,23 +36,22 @@ export default class SingleESP32Connection {
 	private startPingInterval(): void {
 		this.pingInterval = setInterval(() => {
 			if (this._missedPingCount >= this.MAX_MISSED_PINGS) {
-				console.info(`${this.MAX_MISSED_PINGS} consecutive pings missed for ${this.socketId}`)
+				console.info(`${this.MAX_MISSED_PINGS} consecutive pings missed for ${this.pipId}`)
 				this.cleanup("ping_timeout")
 				return
 			}
 
 			if (!this._isAlive) {
 				this._missedPingCount++
-				console.info(`Missed ping ${this._missedPingCount}/${this.MAX_MISSED_PINGS} for ${this.socketId}`)
+				console.info(`Missed ping ${this._missedPingCount}/${this.MAX_MISSED_PINGS} for ${this.pipId}`)
 			} else {
-				this._missedPingCount = 0  // Reset on successful pong
+				this._missedPingCount = 0
 			}
 
 			this._isAlive = false
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			this.socket.ping((err: any) => {
+			this.socket.ping((err: unknown) => {
 				if (err) {
-					console.error(`Failed to send ping to ${this.socketId}:`, err)
+					console.error(`Failed to send ping to ${this.pipId}:`, err)
 					this.cleanup("ping_failed")
 				}
 			})
@@ -57,29 +60,34 @@ export default class SingleESP32Connection {
 
 	private handlePong(): void {
 		this._isAlive = true
-		this._missedPingCount = 0  // Reset counter on pong
+		this._missedPingCount = 0
 	}
 
 	private cleanup(reason: DisconnectReason): void {
-		// Prevent multiple cleanups
 		if (this.isCleaningUp) return
 		this.isCleaningUp = true
 
-		console.info(`Cleaning up connection ${this.socketId}, reason: ${reason}`)
+		console.info(`Cleaning up connection ${this.pipId}, reason: ${reason}`)
 
-		// Clear ping interval
 		if (this.pingInterval) {
 			clearInterval(this.pingInterval)
 			this.pingInterval = undefined
 		}
 
-		// Close socket if it's still open
 		if (this.socket.readyState !== this.socket.CLOSED) {
 			this.socket.terminate()
 		}
 
-		// Notify manager of disconnection
-		this.onDisconnect(this.socketId)
+		this.onDisconnect(this.pipId)
+	}
+
+	// ✅ Public methods for checking connection status
+	public isConnected(): boolean {
+		return this.socket.readyState === this.socket.OPEN && this._isAlive
+	}
+
+	public isAlive(): boolean {
+		return this._isAlive
 	}
 
 	public resetPingCounter(): void {

@@ -1,15 +1,15 @@
 import { WebSocket } from "ws"
-import ESP32Connection from "../classes/esp32/single-esp32-connection"
+import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
+import SingleESP32Connection from "../classes/esp32/single-esp32-connection"
 
 declare global {
-	type ESP32SocketConnectionInfo = {
-		socketId: string
+	interface ESP32SocketConnectionInfo {
 		status: ESPConnectionState
-		connection: ESP32Connection
+		connection: SingleESP32Connection
 	}
 
 	interface ExtendedWebSocket extends WebSocket {
-		isAlive: boolean
+		pipId: PipUUID
 	}
 
 	type DisconnectReason = "ping_timeout" | "ping_failed" | "socket_closed" | "socket_error" | "disposed"

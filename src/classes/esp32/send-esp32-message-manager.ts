@@ -2,7 +2,7 @@ import { isUndefined } from "lodash"
 import Singleton from "../singleton"
 import Esp32SocketManager from "./esp32-socket-manager"
 import EspLatestFirmwareManager from "./esp-latest-firmware-manager"
-import { PipUUIDPayload } from "@bluedotrobots/common-ts/types/pip"
+import { DeviceInitialDataPayload } from "@bluedotrobots/common-ts/types/pip"
 import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 import { LedControlData } from "@bluedotrobots/common-ts/types/garage"
@@ -34,15 +34,18 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public transferUpdateAvailableMessage(pipUUIDPayload: PipUUIDPayload): Promise<void> {
+	public transferUpdateAvailableMessage(
+		pipUUID: PipUUID,
+		deviceInitialDataPayload: DeviceInitialDataPayload
+	): Promise<void> {
 		try {
 			if (isUndefined(process.env.NODE_ENV)) return Promise.resolve()
 			const latestFirmwareVersion = EspLatestFirmwareManager.getInstance().latestFirmwareVersion
-			if (pipUUIDPayload.firmwareVersion >= latestFirmwareVersion) return Promise.resolve()
+			if (deviceInitialDataPayload.firmwareVersion >= latestFirmwareVersion) return Promise.resolve()
 
 			const buffer = MessageBuilder.createUpdateAvailableMessage(latestFirmwareVersion)
 
-			return this.sendBinaryMessage(pipUUIDPayload.pipUUID, buffer)
+			return this.sendBinaryMessage(pipUUID, buffer)
 		} catch (error: unknown) {
 			console.error("Transfer failed:", error)
 			throw new Error(`Transfer failed: ${error || "Unknown reason"}`)

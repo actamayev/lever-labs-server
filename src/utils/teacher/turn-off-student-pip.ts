@@ -4,11 +4,11 @@ import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
 
 export function turnOffStudentPipLeds(studentUserId: number): void {
 	try {
-		const currentlyConnectedPip = BrowserSocketManager.getInstance().getCurrentlyConnectedPip(studentUserId)
-		if (!currentlyConnectedPip) return
+		const currentlyConnectedPipUUID = BrowserSocketManager.getInstance().getCurrentlyConnectedPip(studentUserId)
+		if (!currentlyConnectedPipUUID) return
 
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-			currentlyConnectedPip.pipUUID, MessageBuilder.createLedMessage({
+			currentlyConnectedPipUUID, MessageBuilder.createLedMessage({
 				topLeftColor: { r: 0, g: 0, b: 0 },
 				topRightColor: { r: 0, g: 0, b: 0 },
 				middleLeftColor: { r: 0, g: 0, b: 0 },
@@ -18,7 +18,7 @@ export function turnOffStudentPipLeds(studentUserId: number): void {
 			})
 		)
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-			currentlyConnectedPip.pipUUID, MessageBuilder.createHeadlightMessage(false)
+			currentlyConnectedPipUUID, MessageBuilder.createHeadlightMessage(false)
 		)
 	} catch (error) {
 		console.error(error)
@@ -28,11 +28,11 @@ export function turnOffStudentPipLeds(studentUserId: number): void {
 
 export function brakeStudentPip(studentUserId: number): void {
 	try {
-		const currentlyConnectedPip = BrowserSocketManager.getInstance().getCurrentlyConnectedPip(studentUserId)
-		if (!currentlyConnectedPip) return
+		const currentlyConnectedPipUUID = BrowserSocketManager.getInstance().getCurrentlyConnectedPip(studentUserId)
+		if (!currentlyConnectedPipUUID) return
 
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-			currentlyConnectedPip.pipUUID, MessageBuilder.createMotorControlMessage(0, 0)
+			currentlyConnectedPipUUID, MessageBuilder.createMotorControlMessage(0, 0)
 		)
 	} catch (error) {
 		console.error(error)
@@ -42,11 +42,11 @@ export function brakeStudentPip(studentUserId: number): void {
 
 export function stopStudentPipSound(studentUserId: number): void {
 	try {
-		const currentlyConnectedPip = BrowserSocketManager.getInstance().getCurrentlyConnectedPip(studentUserId)
-		if (!currentlyConnectedPip) return
+		const currentlyConnectedPipUUID = BrowserSocketManager.getInstance().getCurrentlyConnectedPip(studentUserId)
+		if (!currentlyConnectedPipUUID) return
 
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-			currentlyConnectedPip.pipUUID, MessageBuilder.createStopSoundMessage()
+			currentlyConnectedPipUUID, MessageBuilder.createStopSoundMessage()
 		)
 	} catch (error) {
 		console.error(error)
@@ -56,11 +56,11 @@ export function stopStudentPipSound(studentUserId: number): void {
 
 export function resetStudentPipDisplay(studentUserId: number): void {
 	try {
-		const currentlyConnectedPip = BrowserSocketManager.getInstance().getCurrentlyConnectedPip(studentUserId)
-		if (!currentlyConnectedPip) return
+		const currentlyConnectedPipUUID = BrowserSocketManager.getInstance().getCurrentlyConnectedPip(studentUserId)
+		if (!currentlyConnectedPipUUID) return
 
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-			currentlyConnectedPip.pipUUID, MessageBuilder.createShowDisplayStartScreenMessage()
+			currentlyConnectedPipUUID, MessageBuilder.createShowDisplayStartScreenMessage()
 		)
 	} catch (error) {
 		console.error(error)
