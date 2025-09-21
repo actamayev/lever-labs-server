@@ -10,6 +10,7 @@ import SendEsp32MessageManager from "./send-esp32-message-manager"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
+	private readonly NINETY_MINUTES_MS = 90 * 60 * 1000 // 90 minutes in milliseconds
 
 	private constructor(private readonly wss: WSServer) {
 		super()
@@ -312,6 +313,20 @@ export default class Esp32SocketManager extends Singleton {
 	public checkIfLastConnectedUserIdIsCurrentUser(userId: number): PipUUID | null {
 		for (const [pipId, connectionInfo] of this.connections) {
 			if (isNull(connectionInfo.status.lastOnlineConnectedUser)) continue
+
+			// Check if the last connection was more than 90 minutes ago
+			const timeSinceLastConnection = Date.now() - connectionInfo.status.lastOnlineConnectedUser.connectedAt.getTime()
+			if (timeSinceLastConnection > this.NINETY_MINUTES_MS) {
+				this.connections.set(pipId, {
+					...connectionInfo,
+					status: {
+						...connectionInfo.status,
+						lastOnlineConnectedUser: null
+					}
+				})
+				continue
+			}
+
 			if (
 				isNull(connectionInfo.status.connectedToOnlineUserId) &&
 				connectionInfo.status.lastOnlineConnectedUser.userId === userId &&
