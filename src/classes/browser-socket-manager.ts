@@ -113,6 +113,15 @@ export default class BrowserSocketManager extends Singleton {
 		this.emitToSocket(connectionInfo.socketId, "pip-connection-status-update", { pipUUID, newConnectionStatus })
 	}
 
+	public updateCurrentlyConnectedPip(userId: number, pipUUID: PipUUID | null): void {
+		const connectionInfo = this.getConnectionInfo(userId)
+		if (isUndefined(connectionInfo)) return
+		this.connections.set(userId, {
+			...connectionInfo,
+			currentlyConnectedPipUUID: pipUUID
+		})
+	}
+
 	public removePipConnection(userId: number): void {
 		const connectionInfo = this.getConnectionInfo(userId)
 		if (isUndefined(connectionInfo)) return
@@ -240,15 +249,6 @@ export default class BrowserSocketManager extends Singleton {
 	public emitGarageDisplayStatusUpdateToStudents(studentUserIds: number[], garageDisplayStatus: boolean): void {
 		studentUserIds.forEach(studentUserId => {
 			this.emitToUser(studentUserId, "garage-display-status-update", { garageDisplayStatus })
-		})
-	}
-
-	public updateCurrentlyConnectedPip(userId: number, pipUUID: PipUUID | null): void {
-		const connectionInfo = this.getConnectionInfo(userId)
-		if (isUndefined(connectionInfo)) return
-		this.connections.set(userId, {
-			...connectionInfo,
-			currentlyConnectedPipUUID: pipUUID
 		})
 	}
 }

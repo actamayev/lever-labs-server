@@ -13,6 +13,7 @@ export default function autoConnectToLastOnlineUser(pipId: PipUUID, preventAutoR
 			lastOnlineConnectedUserId === preventAutoReconnectUserId
 		) return
 		Esp32SocketManager.getInstance().setOnlineUserConnected(pipId, lastOnlineConnectedUserId)
+		BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(lastOnlineConnectedUserId, pipId)
 		BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(lastOnlineConnectedUserId, pipId, "connected online to you")
 	} catch (error) {
 		console.error(error)

@@ -1,3 +1,4 @@
+import { isNumber } from "lodash"
 import { Response, Request } from "express"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 import { UserConnectedStatus } from "@bluedotrobots/common-ts/protocol"
@@ -5,17 +6,22 @@ import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
 import { ErrorResponse, SuccessResponse, MessageResponse} from "@bluedotrobots/common-ts/types/api"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
+import BrowserSocketManager from "../../classes/browser-socket-manager"
 
 export default function clientConnectToPipRequest (req: Request, res: Response): void {
 	try {
 		const { userId } = req
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		const success = Esp32SocketManager.getInstance().setOnlineUserConnected(pipUUID, userId)
-		if (!success) {
+		const result = Esp32SocketManager.getInstance().setOnlineUserConnected(pipUUID, userId)
+		if (result === false) {
 			res.status(400).json({ message: "Unable to connect to Pip" } satisfies MessageResponse)
 			return
+		} else if (isNumber(result)) {
+			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(result, pipUUID, "offline")
+			BrowserSocketManager.getInstance().removePipConnection(result)
 		}
+		BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(userId, pipUUID)
 
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
 			pipUUID,
