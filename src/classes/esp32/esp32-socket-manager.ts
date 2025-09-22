@@ -207,8 +207,7 @@ export default class Esp32SocketManager extends Singleton {
 			...connectionInfo,
 			status: {
 				...connectionInfo.status,
-				connectedToSerialUserId: userId,
-				connectedToOnlineUserId: null
+				connectedToSerialUserId: userId
 			}
 		})
 
@@ -222,14 +221,15 @@ export default class Esp32SocketManager extends Singleton {
 		BrowserSocketManager.getInstance().disconnectOnlineUserFromPip(pipId, onlineConnectedUserId)
 	}
 
-	private handleSerialDisconnect(pipId: PipUUID, connectionInfo: ESP32SocketConnectionInfo): void {
-		const updatedStatus: ESPConnectionState = {
-			...connectionInfo.status,
-			connectedToSerialUserId: null
-		}
+	public handleSerialDisconnect(pipId: PipUUID): void {
+		const connectionInfo = this.connections.get(pipId)
+		if (!connectionInfo) return
 		this.connections.set(pipId, {
 			...connectionInfo,
-			status: updatedStatus
+			status: {
+				...connectionInfo.status,
+				connectedToSerialUserId: null
+			}
 		})
 	}
 
@@ -256,7 +256,7 @@ export default class Esp32SocketManager extends Singleton {
 		return true
 	}
 
-	public setOnlineUserDisconnected(pipId: PipUUID, userId: number, preventAutoReconnect: boolean): boolean {
+	public setOnlineUserDisconnected(pipId: PipUUID, preventAutoReconnect: boolean): boolean {
 		const connectionInfo = this.connections.get(pipId)
 		if (!connectionInfo) return false
 		this.connections.set(pipId, {
@@ -267,7 +267,6 @@ export default class Esp32SocketManager extends Singleton {
 				lastOnlineConnectedUser: preventAutoReconnect ? null : connectionInfo.status.lastOnlineConnectedUser
 			}
 		})
-		BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(userId, null)
 		return true
 	}
 
@@ -280,22 +279,6 @@ export default class Esp32SocketManager extends Singleton {
 		if (status.connectedToOnlineUserId && status.connectedToOnlineUserId !== userId) {
 			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
 				status.connectedToOnlineUserId, pipId, "connected to serial to another user"
-			)
-		}
-		return true
-	}
-
-	public setSerialDisconnection(pipId: PipUUID, userId: number): boolean {
-		const connectionInfo = this.connections.get(pipId)
-		if (!connectionInfo) return false
-		this.handleSerialDisconnect(pipId, connectionInfo)
-		const status = this.getESPStatus(pipId)
-		if (!status) return false
-		if (status.connectedToSerialUserId && status.lastOnlineConnectedUser?.userId !== userId && status.lastOnlineConnectedUser) {
-			// Auto-reconnect after other user disconnects serial
-			this.setOnlineUserConnected(pipId, status.lastOnlineConnectedUser.userId)
-			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
-				status.connectedToSerialUserId, pipId, "connected online to you"
 			)
 		}
 		return true
@@ -315,18 +298,17 @@ export default class Esp32SocketManager extends Singleton {
 		if (!connectionInfo) return
 
 		// Only update if this user is the current connected user
-		if (connectionInfo.status.connectedToOnlineUserId === userId) {
-			this.connections.set(pipId, {
-				...connectionInfo,
-				status: {
-					...connectionInfo.status,
-					lastOnlineConnectedUser: {
-						userId,
-						lastActivityAt: new Date()
-					}
+		if (connectionInfo.status.connectedToOnlineUserId !== userId) return
+		this.connections.set(pipId, {
+			...connectionInfo,
+			status: {
+				...connectionInfo.status,
+				lastOnlineConnectedUser: {
+					userId,
+					lastActivityAt: new Date()
 				}
-			})
-		}
+			}
+		})
 	}
 
 	public checkIfLastConnectedUserIdIsCurrentUser(userId: number): PipUUID | null {
@@ -355,5 +337,19 @@ export default class Esp32SocketManager extends Singleton {
 			}
 		}
 		return null
+	}
+
+	public getUserIdConnectedToOnlinePip(pipId: PipUUID): number | undefined {
+		const connectionInfo = this.connections.get(pipId)
+		if (!connectionInfo) return undefined
+		if (isNull(connectionInfo.status.connectedToOnlineUserId)) return undefined
+		return connectionInfo.status.connectedToOnlineUserId
+	}
+
+	public getIsUserIdConnectedToOnlinePip(pipId: PipUUID, userId: number): boolean {
+		const connectionInfo = this.connections.get(pipId)
+		if (!connectionInfo) return false
+		if (isNull(connectionInfo.status.connectedToOnlineUserId)) return false
+		return connectionInfo.status.connectedToOnlineUserId === userId
 	}
 }

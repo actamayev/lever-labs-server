@@ -1,10 +1,10 @@
-import BrowserSocketManager from "../../classes/browser-socket-manager"
+import getCurrentlyConnectedPipUUID from "../pip/get-currently-connected-pip-uuid"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
 
 export function turnOffStudentPipLeds(studentUserId: number): void {
 	try {
-		const currentlyConnectedPipUUID = BrowserSocketManager.getInstance().getCurrentlyConnectedPip(studentUserId)
+		const currentlyConnectedPipUUID = getCurrentlyConnectedPipUUID(studentUserId)
 		if (!currentlyConnectedPipUUID) return
 
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
@@ -28,7 +28,7 @@ export function turnOffStudentPipLeds(studentUserId: number): void {
 
 export function brakeStudentPip(studentUserId: number): void {
 	try {
-		const currentlyConnectedPipUUID = BrowserSocketManager.getInstance().getCurrentlyConnectedPip(studentUserId)
+		const currentlyConnectedPipUUID = getCurrentlyConnectedPipUUID(studentUserId)
 		if (!currentlyConnectedPipUUID) return
 
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
@@ -42,7 +42,7 @@ export function brakeStudentPip(studentUserId: number): void {
 
 export function stopStudentPipSound(studentUserId: number): void {
 	try {
-		const currentlyConnectedPipUUID = BrowserSocketManager.getInstance().getCurrentlyConnectedPip(studentUserId)
+		const currentlyConnectedPipUUID = getCurrentlyConnectedPipUUID(studentUserId)
 		if (!currentlyConnectedPipUUID) return
 
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
@@ -56,7 +56,7 @@ export function stopStudentPipSound(studentUserId: number): void {
 
 export function resetStudentPipDisplay(studentUserId: number): void {
 	try {
-		const currentlyConnectedPipUUID = BrowserSocketManager.getInstance().getCurrentlyConnectedPip(studentUserId)
+		const currentlyConnectedPipUUID = getCurrentlyConnectedPipUUID(studentUserId)
 		if (!currentlyConnectedPipUUID) return
 
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(

@@ -1,6 +1,6 @@
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import BrowserSocketManager from "../../classes/browser-socket-manager"
+import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import { ErrorResponse, SuccessResponse, MessageResponse} from "@bluedotrobots/common-ts/types/api"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 
@@ -13,7 +13,7 @@ export default function confirmOtherUserIsntConnectedToPip(
 		const { userId } = req
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		const userIdConnectToPip = BrowserSocketManager.getInstance().whichUserConnectedToPipUUID(pipUUID)
+		const userIdConnectToPip = Esp32SocketManager.getInstance().getUserIdConnectedToOnlinePip(pipUUID)
 
 		if (userIdConnectToPip === userId) {
 			res.status(200).json({ success: "You are already connected to this Pip" } satisfies SuccessResponse)

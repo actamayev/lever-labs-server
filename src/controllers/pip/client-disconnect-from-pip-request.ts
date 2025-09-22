@@ -5,13 +5,15 @@ import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 import { UserConnectedStatus } from "@bluedotrobots/common-ts/protocol"
 import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
+import BrowserSocketManager from "../../classes/browser-socket-manager"
 
 export default function clientDisconnectFromPipRequest (req: Request, res: Response): void {
 	try {
 		const { userId } = req
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		const success = Esp32SocketManager.getInstance().setOnlineUserDisconnected(pipUUID, userId, true)
+		const success = Esp32SocketManager.getInstance().setOnlineUserDisconnected(pipUUID, true)
+		BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(userId, null)
 		if (!success) {
 			res.status(400).json({ message: "Unable to disconnect from Pip" } satisfies MessageResponse)
 			return

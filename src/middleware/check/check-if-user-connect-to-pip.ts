@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express"
-import BrowserSocketManager from "../../classes/browser-socket-manager"
-import { ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts/types/api"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
+import { ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts/types/api"
+import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
+import { isUndefined } from "lodash"
 
 export default function checkIfUserConnectedToPip(
 	req: Request,
@@ -12,7 +13,12 @@ export default function checkIfUserConnectedToPip(
 		const { userId } = req
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		const connectedUserId = BrowserSocketManager.getInstance().whichUserConnectedToPipUUID(pipUUID)
+		const connectedUserId = Esp32SocketManager.getInstance().getUserIdConnectedToOnlinePip(pipUUID)
+
+		if (isUndefined(connectedUserId)) {
+			res.status(400).json({ message: "No user is connected to this Pip" } satisfies MessageResponse)
+			return
+		}
 
 		if (connectedUserId !== userId) {
 			res.status(400).json({ message: "Another user is connected to this Pip" } satisfies MessageResponse)
