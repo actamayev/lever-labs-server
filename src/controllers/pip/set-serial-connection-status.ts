@@ -14,8 +14,9 @@ export default function setSerialConnectionStatus(req: Request, res: Response): 
 			const onlineConnectedUserId = Esp32SocketManager.getInstance().handleSerialConnect(pipUUID, userId)
 			if (onlineConnectedUserId) {
 				BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
-					onlineConnectedUserId, pipUUID, "connected to serial to another user"
+					onlineConnectedUserId, pipUUID, "offline"
 				)
+				BrowserSocketManager.getInstance().removePipConnection(onlineConnectedUserId)
 			}
 		} else {
 			Esp32SocketManager.getInstance().handleSerialDisconnect(pipUUID)
