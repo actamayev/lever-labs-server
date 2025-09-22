@@ -17,8 +17,11 @@ export default async function updateIndividualStudentGarageDisplay(req: Request,
 			res.status(200).json({ success: "Student user ID not found" } satisfies SuccessResponse)
 			return
 		}
+
 		BrowserSocketManager.getInstance().emitGarageDisplayStatusUpdateToStudents([studentUserId], garageDisplayStatus)
-		resetStudentPipDisplay(studentUserId)
+		if (!garageDisplayStatus) {
+			resetStudentPipDisplay(studentUserId)
+		}
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {

@@ -169,7 +169,12 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	public async emitStudentJoinedClassroom(teacherUserId: number, classCode: ClassCode, studentUserId: number): Promise<void> {
+	public async emitStudentJoinedClassroom(
+		teacherUserId: number,
+		classCode: ClassCode,
+		studentUserId: number,
+		studentId: number
+	): Promise<void> {
 		// 1. See if any of the teachers are connected. If none of them are connected, return. if at least one is connected, continue.
 		// For each that is connected, emit the event to the teacher.
 		const socketId = this.getConnectionInfo(teacherUserId)?.socketId
@@ -177,7 +182,7 @@ export default class BrowserSocketManager extends Singleton {
 		const studentUsername = await retrieveUsername(studentUserId)
 		if (isUndefined(socketId)) return
 		this.emitToSocket(socketId, "student-joined-classroom", {
-			classCode, studentUsername: studentUsername || "", studentId: studentUserId })
+			classCode, studentUsername: studentUsername || "", studentId })
 	}
 
 	public emitStudentJoinedHub(teacherUserId: number, data: StudentJoinedHub): void {

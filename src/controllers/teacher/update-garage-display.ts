@@ -21,7 +21,11 @@ export default async function updateGarageDisplayAllStudents(req: Request, res: 
 			res.status(200).json({ success: "No students found in classroom" } satisfies SuccessResponse)
 			return
 		}
-		studentUserIds.forEach(studentUserId => resetStudentPipDisplay(studentUserId))
+		if (!garageDisplayStatus) {
+			studentUserIds.forEach(studentUserId => {
+				resetStudentPipDisplay(studentUserId)
+			})
+		}
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
