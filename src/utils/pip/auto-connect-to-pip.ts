@@ -21,9 +21,9 @@ export default function autoConnectToPip(userId: number): AutoConnectToPipResult
 		const pipUUID = Esp32SocketManager.getInstance().checkIfLastConnectedUserIdIsCurrentUser(userId)
 		if (!pipUUID) return { result: AutoConnectToPipResultEnum.NO_PIP_FOUND, pipUUID: null }
 
-		BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(userId, pipUUID)
 		const success = Esp32SocketManager.getInstance().setOnlineUserConnected(pipUUID, userId)
 		if (!success) return { result: AutoConnectToPipResultEnum.ERROR, pipUUID: null }
+		BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(userId, pipUUID)
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
 			pipUUID,
 			MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.CONNECTED)

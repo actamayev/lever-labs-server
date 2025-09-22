@@ -1,30 +1,26 @@
 import { Response, Request } from "express"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
-import { ErrorResponse, MessageResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
 import autoConnectToLastOnlineUser from "../../utils/pip/auto-connect-to-last-online-user"
+import BrowserSocketManager from "../../classes/browser-socket-manager"
 
 export default function setSerialConnectionStatus(req: Request, res: Response): void {
 	try {
 		const { userId } = req
 		const { pipUUID, connected } = req.body as { pipUUID: PipUUID; connected: boolean }
 
-		let success: boolean
 		if (connected) {
-			success = Esp32SocketManager.getInstance().setSerialConnection(pipUUID, userId)
+			const onlineConnectedUserId = Esp32SocketManager.getInstance().handleSerialConnect(pipUUID, userId)
+			if (onlineConnectedUserId) {
+				BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
+					onlineConnectedUserId, pipUUID, "connected to serial to another user"
+				)
+			}
 		} else {
 			Esp32SocketManager.getInstance().handleSerialDisconnect(pipUUID)
 			// We don't pass the userId since the user that disconnected serial from pip may be same user as the online user
 			autoConnectToLastOnlineUser(pipUUID)
-			success = true
-		}
-
-		if (!success) {
-			const action = connected ? "connect to" : "disconnect from"
-			res.status(400).json({
-				message: `Unable to ${action} serial. Check if PIP is available and not connected to a user.`
-			} satisfies MessageResponse)
-			return
 		}
 
 		const action = connected ? "connected to" : "disconnected from"

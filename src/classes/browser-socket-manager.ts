@@ -113,10 +113,9 @@ export default class BrowserSocketManager extends Singleton {
 		this.emitToSocket(connectionInfo.socketId, "pip-connection-status-update", { pipUUID, newConnectionStatus })
 	}
 
-	public removePipConnection(userId: number, pipUUID: PipUUID): void {
+	public removePipConnection(userId: number): void {
 		const connectionInfo = this.getConnectionInfo(userId)
 		if (isUndefined(connectionInfo)) return
-		if (connectionInfo.currentlyConnectedPipUUID !== pipUUID) return
 		this.connections.set(userId, {
 			...connectionInfo,
 			currentlyConnectedPipUUID: null
@@ -242,23 +241,6 @@ export default class BrowserSocketManager extends Singleton {
 		studentUserIds.forEach(studentUserId => {
 			this.emitToUser(studentUserId, "garage-display-status-update", { garageDisplayStatus })
 		})
-	}
-
-	// Method to disconnect user from PIP when serial connection takes priority
-	public disconnectOnlineUserFromPip(pipUUID: PipUUID, onlineConnectedUserId: number): void {
-		const connectionInfo = this.getConnectionInfo(onlineConnectedUserId)
-		if (
-			isUndefined(connectionInfo) ||
-			connectionInfo.currentlyConnectedPipUUID !== pipUUID
-		) return
-
-		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-			pipUUID,
-			MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.NOT_CONNECTED)
-		)
-
-		// Emit status update to the browser
-		this.emitPipStatusUpdateToUser(onlineConnectedUserId, pipUUID, "connected to serial to another user")
 	}
 
 	public updateCurrentlyConnectedPip(userId: number, pipUUID: PipUUID | null): void {
