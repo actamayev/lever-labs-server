@@ -124,7 +124,7 @@ export default class Esp32SocketManager extends Singleton {
 				this.connections.set(pipId, { status: initialStatus, connection })
 				return
 			}
-			console.info(`ESP32 ${pipId} reconnecting, modifying existing connection`)
+			console.info(`ESP32 ${pipId} connecting online, modifying existing connection`)
 			existing.connection?.dispose()
 
 			if (existing.status.connectedToSerialUserId) {
