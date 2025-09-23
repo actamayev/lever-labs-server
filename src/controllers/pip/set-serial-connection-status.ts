@@ -10,7 +10,11 @@ export default function setSerialConnectionStatus(req: Request, res: Response): 
 		const { userId } = req
 		const { pipUUID, connected } = req.body as { pipUUID: PipUUID; connected: boolean }
 
-		if (connected) {
+		if (!connected) {
+			Esp32SocketManager.getInstance().handleSerialDisconnect(pipUUID)
+			// We don't pass the userId since the user that disconnected serial from pip may be same user as the online user
+			autoConnectToLastOnlineUser(pipUUID)
+		} else {
 			const onlineConnectedUserId = Esp32SocketManager.getInstance().handleSerialConnect(pipUUID, userId)
 			if (onlineConnectedUserId) {
 				BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
@@ -18,10 +22,6 @@ export default function setSerialConnectionStatus(req: Request, res: Response): 
 				)
 				BrowserSocketManager.getInstance().removePipConnection(onlineConnectedUserId)
 			}
-		} else {
-			Esp32SocketManager.getInstance().handleSerialDisconnect(pipUUID)
-			// We don't pass the userId since the user that disconnected serial from pip may be same user as the online user
-			autoConnectToLastOnlineUser(pipUUID)
 		}
 
 		const action = connected ? "connected to" : "disconnected from"

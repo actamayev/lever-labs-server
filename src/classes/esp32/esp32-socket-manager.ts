@@ -109,9 +109,10 @@ export default class Esp32SocketManager extends Singleton {
 		const connectionInfo = this.connections.get(pipId)
 		if (!connectionInfo) return
 		// Reset the ping counter since we received data
-		connectionInfo.connection.resetPingCounter()
+		connectionInfo.connection?.resetPingCounter()
 	}
 
+	// eslint-disable-next-line max-lines-per-function
 	private registerConnection(pipId: PipUUID, connection: SingleESP32Connection): void {
 		try {
 			const existing = this.connections.get(pipId)
@@ -123,11 +124,19 @@ export default class Esp32SocketManager extends Singleton {
 				return
 			}
 			console.info(`ESP32 ${pipId} reconnecting, replacing existing connection`)
-			existing.connection.dispose()
+			existing.connection?.dispose()
 
 			if (existing.status.connectedToSerialUserId) {
 				this.connections.set(pipId, {
-					status: { ...existing.status, online: true },
+					status: {
+						...existing.status,
+						online: true,
+						connectedToOnlineUserId: existing.status.connectedToSerialUserId,
+						lastOnlineConnectedUser: {
+							userId: existing.status.connectedToSerialUserId,
+							lastActivityAt: new Date()
+						}
+					},
 					connection
 				})
 				return
@@ -169,7 +178,7 @@ export default class Esp32SocketManager extends Singleton {
 			})
 
 			// Dispose of the connection object to stop ping intervals and clean up
-			connectionInfo.connection.dispose()
+			connectionInfo.connection?.dispose()
 			const userConnectedToOnlineBeforeDisconnection = connectionInfo.status.connectedToOnlineUserId
 			if (!userConnectedToOnlineBeforeDisconnection) return
 			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(userConnectedToOnlineBeforeDisconnection, pipId, "offline")
@@ -183,7 +192,7 @@ export default class Esp32SocketManager extends Singleton {
 		return this.connections.get(pipId)?.status
 	}
 
-	public getConnection(pipId: PipUUID): SingleESP32Connection | undefined {
+	public getConnection(pipId: PipUUID): SingleESP32Connection | null | undefined {
 		return this.connections.get(pipId)?.connection
 	}
 
@@ -203,11 +212,7 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	// Updated methods for managing connection states
-
-	public handleSerialConnect(
-		pipId: PipUUID,
-		userId: number
-	): number | null {
+	public handleSerialConnect(pipId: PipUUID, userId: number): number | null {
 		try {
 			const connectionInfo = this.connections.get(pipId)
 			if (!connectionInfo) {
@@ -219,7 +224,7 @@ export default class Esp32SocketManager extends Singleton {
 						lastOnlineConnectedUser: null,
 						connectedToSerialUserId: userId
 					},
-					connection: null as unknown as SingleESP32Connection
+					connection: null
 				})
 				return null
 			}
@@ -271,7 +276,7 @@ export default class Esp32SocketManager extends Singleton {
 			return false
 		}
 		let result: boolean | number = true
-		if (connectionInfo.status.connectedToOnlineUserId) {
+		if (connectionInfo.status.connectedToOnlineUserId && connectionInfo.status.connectedToOnlineUserId !== userId) {
 			console.info(`Kicking user ${connectionInfo.status.connectedToOnlineUserId} from ${pipId}`)
 			result = connectionInfo.status.connectedToOnlineUserId
 		}
