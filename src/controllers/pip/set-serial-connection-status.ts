@@ -16,7 +16,7 @@ export default function setSerialConnectionStatus(req: Request, res: Response): 
 			autoConnectToLastOnlineUser(pipUUID)
 		} else {
 			const onlineConnectedUserId = Esp32SocketManager.getInstance().handleSerialConnect(pipUUID, userId)
-			if (onlineConnectedUserId) {
+			if (onlineConnectedUserId && onlineConnectedUserId !== userId) {
 				BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
 					onlineConnectedUserId, pipUUID, "offline"
 				)

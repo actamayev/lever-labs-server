@@ -217,6 +217,7 @@ export default class Esp32SocketManager extends Singleton {
 			const connectionInfo = this.connections.get(pipId)
 			if (!connectionInfo) {
 				// Create connection info for offline + serial case
+				// If there's never been a connection to this pip before, we need to create a new connection info
 				this.connections.set(pipId, {
 					status: {
 						online: false,
@@ -229,6 +230,7 @@ export default class Esp32SocketManager extends Singleton {
 				return null
 			}
 			let lastOnlineConnectedUser: LastOnlineConnectedUser | null = null
+			// If the pip is online, we need to update the last online connected user
 			if (connectionInfo.status.online) {
 				lastOnlineConnectedUser = {
 					userId,
