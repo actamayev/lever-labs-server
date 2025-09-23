@@ -15,7 +15,7 @@ export default function clientConnectToPipRequest (req: Request, res: Response):
 
 		const result = Esp32SocketManager.getInstance().setOnlineUserConnected(pipUUID, userId)
 		if (result === false) {
-			res.status(400).json({ message: "Unable to connect to Pip" } satisfies MessageResponse)
+			res.status(400).json({ message: "Unable to connect to Pip, serial connection is active" } satisfies MessageResponse)
 			return
 		} else if (isNumber(result)) {
 			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(result, pipUUID, "offline")
