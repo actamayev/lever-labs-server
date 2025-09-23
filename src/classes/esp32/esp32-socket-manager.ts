@@ -91,6 +91,7 @@ export default class Esp32SocketManager extends Singleton {
 				BrowserSocketManager.getInstance().emitPipBatteryData(pipId, payload.batteryData)
 				break
 			case "/pip-turning-off":
+				console.info(`ESP32 ${pipId} turning off, disconnecting`)
 				this.handleDisconnection(pipId)
 				break
 			case "/dino-score":
@@ -123,7 +124,7 @@ export default class Esp32SocketManager extends Singleton {
 				this.connections.set(pipId, { status: initialStatus, connection })
 				return
 			}
-			console.info(`ESP32 ${pipId} reconnecting, replacing existing connection`)
+			console.info(`ESP32 ${pipId} reconnecting, modifying existing connection`)
 			existing.connection?.dispose()
 
 			if (existing.status.connectedToSerialUserId) {
@@ -158,14 +159,13 @@ export default class Esp32SocketManager extends Singleton {
 		}
 	}
 
-	private handleDisconnection(pipId: PipUUID): void {
+	public handleDisconnection(pipId: PipUUID): void {
 		try {
 			console.info(`ESP32 disconnected: ${pipId}`)
 
 			// Get the connection before updating
 			const connectionInfo = this.connections.get(pipId)
 
-			// Update status to offline but preserve serial connection if it exists
 			if (!connectionInfo) return
 			this.connections.set(pipId, {
 				...connectionInfo,
