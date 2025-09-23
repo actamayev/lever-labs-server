@@ -152,7 +152,6 @@ export default class Esp32SocketManager extends Singleton {
 				return
 			}
 			this.connections.set(pipId, {
-				...existing,
 				status: {
 					...existing.status,
 					online: true,
@@ -161,7 +160,8 @@ export default class Esp32SocketManager extends Singleton {
 						userId: existing.status.lastOnlineConnectedUser.userId,
 						lastActivityAt: new Date()
 					}
-				}
+				},
+				connection
 			})
 			BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(existing.status.lastOnlineConnectedUser.userId, pipId)
 			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
@@ -197,7 +197,6 @@ export default class Esp32SocketManager extends Singleton {
 			// Dispose of the connection object to stop ping intervals and clean up
 			connectionInfo.connection?.dispose(true)
 			const userConnectedToOnlineBeforeDisconnection = connectionInfo.status.connectedToOnlineUserId
-			console.log("userConnectedToOnlineBeforeDisconnection", userConnectedToOnlineBeforeDisconnection)
 			if (!userConnectedToOnlineBeforeDisconnection) return
 			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(userConnectedToOnlineBeforeDisconnection, pipId, "offline")
 			BrowserSocketManager.getInstance().removePipConnection(userConnectedToOnlineBeforeDisconnection)
