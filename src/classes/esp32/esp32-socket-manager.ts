@@ -7,6 +7,8 @@ import isPipUUID from "../../utils/type-helpers/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"
 import SingleESP32Connection from "./single-esp32-connection"
 import SendEsp32MessageManager from "./send-esp32-message-manager"
+import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
+import { UserConnectedStatus } from "@bluedotrobots/common-ts/protocol"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
@@ -66,10 +68,7 @@ export default class Esp32SocketManager extends Singleton {
 		})
 	}
 
-	private handleOngoingMessage(
-		pipId: PipUUID,
-		message: string
-	): void {
+	private handleOngoingMessage(pipId: PipUUID, message: string): void {
 		try {
 			const parsed = JSON.parse(message) as ESPToServerMessage
 			const { route, payload } = parsed
@@ -142,17 +141,35 @@ export default class Esp32SocketManager extends Singleton {
 				})
 				return
 			}
+			if (!existing.status.lastOnlineConnectedUser) {
+				this.connections.set(pipId, {
+					status: {
+						...existing.status,
+						online: true
+					},
+					connection
+				})
+				return
+			}
 			this.connections.set(pipId, {
+				...existing,
 				status: {
 					...existing.status,
-					online: true
-				},
-				connection
+					online: true,
+					connectedToOnlineUserId: existing.status.lastOnlineConnectedUser.userId,
+					lastOnlineConnectedUser: {
+						userId: existing.status.lastOnlineConnectedUser.userId,
+						lastActivityAt: new Date()
+					}
+				}
 			})
-			if (!existing.status.lastOnlineConnectedUser) return
 			BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(existing.status.lastOnlineConnectedUser.userId, pipId)
 			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
 				existing.status.lastOnlineConnectedUser.userId, pipId, "connected online to you"
+			)
+			void SendEsp32MessageManager.getInstance().sendBinaryMessage(
+				pipId,
+				MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.CONNECTED)
 			)
 		} catch (error) {
 			console.error(`Failed to register connection for ${pipId}:`, error)
@@ -178,8 +195,9 @@ export default class Esp32SocketManager extends Singleton {
 			})
 
 			// Dispose of the connection object to stop ping intervals and clean up
-			connectionInfo.connection?.dispose()
+			connectionInfo.connection?.dispose(true)
 			const userConnectedToOnlineBeforeDisconnection = connectionInfo.status.connectedToOnlineUserId
+			console.log("userConnectedToOnlineBeforeDisconnection", userConnectedToOnlineBeforeDisconnection)
 			if (!userConnectedToOnlineBeforeDisconnection) return
 			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(userConnectedToOnlineBeforeDisconnection, pipId, "offline")
 			BrowserSocketManager.getInstance().removePipConnection(userConnectedToOnlineBeforeDisconnection)

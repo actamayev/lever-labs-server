@@ -63,7 +63,7 @@ export default class SingleESP32Connection {
 		this._missedPingCount = 0
 	}
 
-	private cleanup(reason: DisconnectReason): void {
+	private cleanup(reason: DisconnectReason, skipCallback: boolean = false): void {
 		if (this.isCleaningUp) return
 		this.isCleaningUp = true
 
@@ -78,7 +78,9 @@ export default class SingleESP32Connection {
 			this.socket.terminate()
 		}
 
-		this.onDisconnect(this.pipId)
+		if (!skipCallback) {
+			this.onDisconnect(this.pipId)
+		}
 	}
 
 	// ✅ Public methods for checking connection status
@@ -95,7 +97,11 @@ export default class SingleESP32Connection {
 		this._isAlive = true
 	}
 
-	public dispose(): void {
-		this.cleanup("disposed")
+	public dispose(skipCallback: boolean = false): void {
+		if (skipCallback) {
+			this.cleanup("disposed", true)
+		} else {
+			this.cleanup("disposed")
+		}
 	}
 }
