@@ -5,10 +5,7 @@ import BrowserSocketManager from "../../classes/browser-socket-manager"
 
 export default function getCurrentlyConnectedPipUUID(userId: number): PipUUID | null {
 	try {
-		const connectionInfo = BrowserSocketManager.getInstance().getConnectionInfo(userId)
-		if (isUndefined(connectionInfo)) return null
-		if (isNull(connectionInfo.currentlyConnectedPipUUID)) return null
-		const pipUUID = connectionInfo.currentlyConnectedPipUUID
+		const pipUUID = BrowserSocketManager.getInstance().getCurrentlyConnectedPipUUID(userId)
 		if (isNull(pipUUID)) return null
 
 		const foundPip = Esp32SocketManager.getInstance().getESPStatus(pipUUID)

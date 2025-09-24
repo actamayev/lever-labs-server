@@ -7,6 +7,7 @@ import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 import { LedControlData } from "@bluedotrobots/common-ts/types/garage"
 import { tuneToSoundType } from "@bluedotrobots/common-ts/protocol"
+import BrowserSocketManager from "../browser-socket-manager"
 
 export default class SendEsp32MessageManager extends Singleton {
 	private constructor() {
@@ -102,6 +103,8 @@ export default class SendEsp32MessageManager extends Singleton {
 						const status = espManager.getESPStatus(pipUUID)
 						if (status?.connectedToOnlineUserId) {
 							espManager.updateLastActivityForUser(pipUUID, status.connectedToOnlineUserId)
+							// Also update browser socket manager activity for proper 90min timer
+							BrowserSocketManager.getInstance().updateUserActivity(status.connectedToOnlineUserId)
 						}
 						resolve()
 					}
