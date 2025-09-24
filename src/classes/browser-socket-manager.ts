@@ -1,3 +1,4 @@
+/* eslint-disable max-depth */
 import isUndefined from "lodash/isUndefined"
 import { isNull } from "lodash"
 import { Server as SocketIOServer, Socket } from "socket.io"
@@ -179,18 +180,16 @@ export default class BrowserSocketManager extends Singleton {
 		userState.lastActivityAt = new Date()
 
 		// If connecting to a pip, emit status to all user's sockets
-		if (pipUUID) {
-			const espStatus = Esp32SocketManager.getInstance().getESPStatus(pipUUID)
-			if (espStatus) {
-				const connectionStatus = espConnectionStateToClientConnectionStatus(espStatus, userId)
-				userState.sockets.forEach((_, socketId) => {
-					this.emitToSocket(socketId, "pip-connection-status-update", {
-						pipUUID,
-						newConnectionStatus: connectionStatus
-					})
-				})
-			}
-		}
+		if (!pipUUID) return
+		const espStatus = Esp32SocketManager.getInstance().getESPStatus(pipUUID)
+		if (!espStatus) return
+		const connectionStatus = espConnectionStateToClientConnectionStatus(espStatus, userId)
+		userState.sockets.forEach((_, socketId) => {
+			this.emitToSocket(socketId, "pip-connection-status-update", {
+				pipUUID,
+				newConnectionStatus: connectionStatus
+			})
+		})
 	}
 
 	public removePipConnection(userId: number): void {
@@ -202,54 +201,49 @@ export default class BrowserSocketManager extends Singleton {
 		userState.lastActivityAt = new Date()
 
 		// Emit disconnection status to all user's sockets
-		if (previousPipUUID) {
-			userState.sockets.forEach((_, socketId) => {
-				this.emitToSocket(socketId, "pip-connection-status-update", {
-					pipUUID: previousPipUUID,
-					newConnectionStatus: "offline"
-				})
+		if (!previousPipUUID) return
+		userState.sockets.forEach((_, socketId) => {
+			this.emitToSocket(socketId, "pip-connection-status-update", {
+				pipUUID: previousPipUUID,
+				newConnectionStatus: "offline"
 			})
-		}
+		})
 	}
 
 	public emitPipBatteryData(pipUUID: PipUUID, batteryData: BatteryMonitorData): void {
 		// Find all users connected to this pip and emit to ALL their sockets
 		this.connections.forEach((userState, userId) => {
-			if (userState.currentlyConnectedPipUUID === pipUUID) {
-				userState.sockets.forEach((_, socketId) => {
-					this.emitToSocket(socketId, "battery-monitor-data", { pipUUID, batteryData })
-				})
-			}
+			if (userState.currentlyConnectedPipUUID !== pipUUID) return
+			userState.sockets.forEach((_, socketId) => {
+				this.emitToSocket(socketId, "battery-monitor-data", { pipUUID, batteryData })
+			})
 		})
 	}
 
 	public emitPipDinoScore(pipUUID: PipUUID, score: number): void {
 		this.connections.forEach((userState, userId) => {
-			if (userState.currentlyConnectedPipUUID === pipUUID) {
-				userState.sockets.forEach((_, socketId) => {
-					this.emitToSocket(socketId, "dino-score-update", { pipUUID, score })
-				})
-			}
+			if (userState.currentlyConnectedPipUUID !== pipUUID) return
+			userState.sockets.forEach((_, socketId) => {
+				this.emitToSocket(socketId, "dino-score-update", { pipUUID, score })
+			})
 		})
 	}
 
 	public sendBrowserPipSensorData(pipUUID: PipUUID, sensorPayload: SensorPayload): void {
 		this.connections.forEach((userState, userId) => {
-			if (userState.currentlyConnectedPipUUID === pipUUID) {
-				userState.sockets.forEach((_, socketId) => {
-					this.emitToSocket(socketId, "general-sensor-data", sensorPayload)
-				})
-			}
+			if (userState.currentlyConnectedPipUUID !== pipUUID) return
+			userState.sockets.forEach((_, socketId) => {
+				this.emitToSocket(socketId, "general-sensor-data", sensorPayload)
+			})
 		})
 	}
 
 	public sendBrowserPipSensorDataMZ(pipUUID: PipUUID, sensorPayload: SensorPayloadMZ): void {
 		this.connections.forEach((userState, userId) => {
-			if (userState.currentlyConnectedPipUUID === pipUUID) {
-				userState.sockets.forEach((_, socketId) => {
-					this.emitToSocket(socketId, "general-sensor-data-mz", sensorPayload)
-				})
-			}
+			if (userState.currentlyConnectedPipUUID !== pipUUID) return
+			userState.sockets.forEach((_, socketId) => {
+				this.emitToSocket(socketId, "general-sensor-data-mz", sensorPayload)
+			})
 		})
 	}
 
@@ -301,12 +295,7 @@ export default class BrowserSocketManager extends Singleton {
 	}
 
 	public emitStudentLeftHub(teacherUserId: number, data: StudentLeftHub): void {
-		const userState = this.connections.get(teacherUserId)
-		if (isUndefined(userState)) return
-
-		userState.sockets.forEach((_, socketId) => {
-			this.emitToSocket(socketId, "student-left-hub", data)
-		})
+		this.emitToUser(teacherUserId, "student-left-hub", data)
 	}
 
 	public emitToUser<E extends SocketEvents>(
@@ -358,8 +347,7 @@ export default class BrowserSocketManager extends Singleton {
 	// Helper method to update activity from any tab
 	public updateUserActivity(userId: number): void {
 		const userState = this.connections.get(userId)
-		if (userState) {
-			userState.lastActivityAt = new Date()
-		}
+		if (!userState) return
+		userState.lastActivityAt = new Date()
 	}
 }
