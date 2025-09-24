@@ -51,7 +51,7 @@ export default class Esp32SocketManager extends Singleton {
 				const connection = new SingleESP32Connection(
 					pipId,
 					socket,
-					(disconnectedPipId: PipUUID) => this.handleDisconnection(disconnectedPipId)
+					(disconnectedPipId: PipUUID) => this.handleDisconnection(disconnectedPipId, false)
 				)
 
 				// ✅ TRACK ACTIVE CONNECTIONS - this replaces your registration message
@@ -91,7 +91,7 @@ export default class Esp32SocketManager extends Singleton {
 				break
 			case "/pip-turning-off":
 				console.info(`ESP32 ${pipId} turning off, disconnecting`)
-				this.handleDisconnection(pipId)
+				this.handleDisconnection(pipId, true)
 				break
 			case "/dino-score":
 				BrowserSocketManager.getInstance().emitPipDinoScore(pipId, payload.score)
@@ -176,7 +176,7 @@ export default class Esp32SocketManager extends Singleton {
 		}
 	}
 
-	public handleDisconnection(pipId: PipUUID): void {
+	public handleDisconnection(pipId: PipUUID, isShutdown: boolean): void {
 		try {
 			console.info(`ESP32 disconnected: ${pipId}`)
 
@@ -184,14 +184,15 @@ export default class Esp32SocketManager extends Singleton {
 			const connectionInfo = this.connections.get(pipId)
 
 			if (!connectionInfo) return
+			const updatedStatus: ESPConnectionState = {
+				...connectionInfo.status,
+				online: false,
+				connectedToOnlineUserId: isShutdown ? null : connectionInfo.status.connectedToOnlineUserId,
+				connectedToSerialUserId: isShutdown ? null : connectionInfo.status.connectedToSerialUserId
+			}
 			this.connections.set(pipId, {
 				...connectionInfo,
-				status: {
-					...connectionInfo.status,
-					online: false,
-					connectedToOnlineUserId: null,
-					connectedToSerialUserId: null
-				}
+				status: updatedStatus
 			})
 
 			// Dispose of the connection object to stop ping intervals and clean up
