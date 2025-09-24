@@ -163,13 +163,13 @@ export default class Esp32SocketManager extends Singleton {
 				},
 				connection
 			})
-			BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(existing.status.lastOnlineConnectedUser.userId, pipId)
-			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
-				existing.status.lastOnlineConnectedUser.userId, pipId, "connected online to you"
-			)
 			void SendEsp32MessageManager.getInstance().sendBinaryMessage(
 				pipId,
 				MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.CONNECTED)
+			)
+			BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(existing.status.lastOnlineConnectedUser.userId, pipId)
+			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
+				existing.status.lastOnlineConnectedUser.userId, pipId, "connected online to you"
 			)
 		} catch (error) {
 			console.error(`Failed to register connection for ${pipId}:`, error)
@@ -187,7 +187,7 @@ export default class Esp32SocketManager extends Singleton {
 			const updatedStatus: ESPConnectionState = {
 				...connectionInfo.status,
 				online: false,
-				connectedToOnlineUserId: isShutdown ? null : connectionInfo.status.connectedToOnlineUserId,
+				connectedToOnlineUserId: null,
 				connectedToSerialUserId: isShutdown ? null : connectionInfo.status.connectedToSerialUserId
 			}
 			this.connections.set(pipId, {
