@@ -7,7 +7,7 @@ Staging:
 	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./.env.production ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src/.env.staging
 	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./ecosystem.config.js ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src
 	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem ./.npmrc ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots
-	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem -r ./dist ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots
+	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem -r ./dist/src ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist
 	scp -i /Users/arieltamayev/Documents/bdr-staging-ec2-keypair.pem -r ./prisma ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src
 
 Production:
@@ -16,7 +16,7 @@ Production:
 	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem ./.env.production ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src/.env.production
 	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem ./ecosystem.config.js ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
 	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem ./.npmrc ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots
-	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem -r ./dist ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots
+	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem -r ./dist/src ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist
 	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem -r ./prisma ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
 
 To SSH into AWS:

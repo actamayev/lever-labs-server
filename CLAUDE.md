@@ -185,7 +185,6 @@ pm2 restart [app_id]   # Restart specific process
 
 ## Important Notes
 
-- **No Tests**: Currently no test suite - manual testing required
 - **Environment Files**: Use `.env.local` for development, `.env` only during migrations
 - **Package Updates**: Run `sudo npm update @bluedotrobots/common-ts` for common library
 - **Code Style**: Follow existing patterns, use kebab-case for files
