@@ -167,9 +167,7 @@ export default class BrowserSocketManager extends Singleton {
 		if (userState.currentlyConnectedPipUUID !== pipUUID) return
 
 		// Emit to ALL sockets for this user
-		userState.sockets.forEach((_, socketId) => {
-			this.emitToSocket(socketId, "pip-connection-status-update", { pipUUID, newConnectionStatus })
-		})
+		this.emitToAllUserStateSockets(userState, "pip-connection-status-update", { pipUUID, newConnectionStatus })
 	}
 
 	public updateCurrentlyConnectedPip(userId: number, pipUUID: PipUUID | null): void {
@@ -184,11 +182,9 @@ export default class BrowserSocketManager extends Singleton {
 		const espStatus = Esp32SocketManager.getInstance().getESPStatus(pipUUID)
 		if (!espStatus) return
 		const connectionStatus = espConnectionStateToClientConnectionStatus(espStatus, userId)
-		userState.sockets.forEach((_, socketId) => {
-			this.emitToSocket(socketId, "pip-connection-status-update", {
-				pipUUID,
-				newConnectionStatus: connectionStatus
-			})
+		this.emitToAllUserStateSockets(userState, "pip-connection-status-update", {
+			pipUUID,
+			newConnectionStatus: connectionStatus
 		})
 	}
 
@@ -202,49 +198,39 @@ export default class BrowserSocketManager extends Singleton {
 
 		// Emit disconnection status to all user's sockets
 		if (!previousPipUUID) return
-		userState.sockets.forEach((_, socketId) => {
-			this.emitToSocket(socketId, "pip-connection-status-update", {
-				pipUUID: previousPipUUID,
-				newConnectionStatus: "offline"
-			})
+		this.emitToAllUserStateSockets(userState, "pip-connection-status-update", {
+			pipUUID: previousPipUUID,
+			newConnectionStatus: "offline"
+		})
+	}
+
+	private emitDataToConnectedPipUsers<E extends SocketEvents>(
+		pipUUID: PipUUID,
+		event: E,
+		payload: SocketEventPayloadMap[E]
+	): void {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		this.connections.forEach((userState, _userId) => {
+			if (userState.currentlyConnectedPipUUID !== pipUUID) return
+			this.emitToAllUserStateSockets(userState, event, payload)
 		})
 	}
 
 	public emitPipBatteryData(pipUUID: PipUUID, batteryData: BatteryMonitorData): void {
 		// Find all users connected to this pip and emit to ALL their sockets
-		this.connections.forEach((userState, userId) => {
-			if (userState.currentlyConnectedPipUUID !== pipUUID) return
-			userState.sockets.forEach((_, socketId) => {
-				this.emitToSocket(socketId, "battery-monitor-data", { pipUUID, batteryData })
-			})
-		})
+		this.emitDataToConnectedPipUsers(pipUUID, "battery-monitor-data", { pipUUID, batteryData })
 	}
 
 	public emitPipDinoScore(pipUUID: PipUUID, score: number): void {
-		this.connections.forEach((userState, userId) => {
-			if (userState.currentlyConnectedPipUUID !== pipUUID) return
-			userState.sockets.forEach((_, socketId) => {
-				this.emitToSocket(socketId, "dino-score-update", { pipUUID, score })
-			})
-		})
+		this.emitDataToConnectedPipUsers(pipUUID, "dino-score-update", { pipUUID, score })
 	}
 
 	public sendBrowserPipSensorData(pipUUID: PipUUID, sensorPayload: SensorPayload): void {
-		this.connections.forEach((userState, userId) => {
-			if (userState.currentlyConnectedPipUUID !== pipUUID) return
-			userState.sockets.forEach((_, socketId) => {
-				this.emitToSocket(socketId, "general-sensor-data", sensorPayload)
-			})
-		})
+		this.emitDataToConnectedPipUsers(pipUUID, "general-sensor-data", sensorPayload)
 	}
 
 	public sendBrowserPipSensorDataMZ(pipUUID: PipUUID, sensorPayload: SensorPayloadMZ): void {
-		this.connections.forEach((userState, userId) => {
-			if (userState.currentlyConnectedPipUUID !== pipUUID) return
-			userState.sockets.forEach((_, socketId) => {
-				this.emitToSocket(socketId, "general-sensor-data-mz", sensorPayload)
-			})
-		})
+		this.emitDataToConnectedPipUsers(pipUUID, "general-sensor-data-mz", sensorPayload)
 	}
 
 	public async emitStudentJoinedClassroom(
@@ -260,10 +246,8 @@ export default class BrowserSocketManager extends Singleton {
 		if (isUndefined(studentUsername)) return
 
 		// Emit to all teacher's sockets
-		userState.sockets.forEach((_, socketId) => {
-			this.emitToSocket(socketId, "student-joined-classroom", {
-				classCode, studentUsername: studentUsername || "", studentId
-			})
+		this.emitToAllUserStateSockets(userState, "student-joined-classroom", {
+			classCode, studentUsername: studentUsername || "", studentId
 		})
 	}
 
@@ -271,9 +255,7 @@ export default class BrowserSocketManager extends Singleton {
 		const userState = this.connections.get(teacherUserId)
 		if (isUndefined(userState)) return
 
-		userState.sockets.forEach((_, socketId) => {
-			this.emitToSocket(socketId, "student-joined-hub", data)
-		})
+		this.emitToAllUserStateSockets(userState, "student-joined-hub", data)
 	}
 
 	public emitNewHubToStudents(studentUserIds: number[], hubInfo: StudentViewHubData): void {
@@ -307,6 +289,14 @@ export default class BrowserSocketManager extends Singleton {
 		if (!userState) return
 
 		// Emit to ALL sockets for this user
+		this.emitToAllUserStateSockets(userState, event, payload)
+	}
+
+	private emitToAllUserStateSockets<E extends SocketEvents>(
+		userState: UserConnectionState,
+		event: E,
+		payload: SocketEventPayloadMap[E]
+	): void {
 		userState.sockets.forEach((_, socketId) => {
 			this.emitToSocket(socketId, event, payload)
 		})
