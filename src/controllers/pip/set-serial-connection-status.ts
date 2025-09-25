@@ -2,7 +2,6 @@ import { Response, Request } from "express"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
-import autoConnectToLastOnlineUser from "../../utils/pip/auto-connect-to-last-online-user"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 
 export default function setSerialConnectionStatus(req: Request, res: Response): void {
@@ -12,8 +11,6 @@ export default function setSerialConnectionStatus(req: Request, res: Response): 
 
 		if (!connected) {
 			Esp32SocketManager.getInstance().handleSerialDisconnect(pipUUID)
-			// We don't pass the userId since the user that disconnected serial from pip may be same user as the online user
-			autoConnectToLastOnlineUser(pipUUID)
 		} else {
 			const onlineConnectedUserId = Esp32SocketManager.getInstance().handleSerialConnect(pipUUID, userId)
 			if (onlineConnectedUserId && onlineConnectedUserId !== userId) {

@@ -16,7 +16,6 @@ import handleDisconnectHubHelper from "../utils/handle-disconnect-hub-helper"
 import retrieveUsername from "../db-operations/read/credentials/retrieve-username"
 import { UserConnectedStatus } from "@bluedotrobots/common-ts/protocol"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
-import autoConnectToLastOnlineUser from "../utils/pip/auto-connect-to-last-online-user"
 import espConnectionStateToClientConnectionStatus from "../utils/pip/esp-connection-state-to-client-connection-status"
 
 type UserConnectionState = {
@@ -149,7 +148,6 @@ export default class BrowserSocketManager extends Singleton {
 						)
 						Esp32SocketManager.getInstance().setOnlineUserDisconnected(currentlyConnectedPipUUID, false)
 					}
-					autoConnectToLastOnlineUser(currentlyConnectedPipUUID, userId)
 				}
 			}
 
