@@ -83,15 +83,6 @@ export default class SingleESP32Connection {
 		}
 	}
 
-	// ✅ Public methods for checking connection status
-	public isConnected(): boolean {
-		return this.socket.readyState === this.socket.OPEN && this._isAlive
-	}
-
-	public isAlive(): boolean {
-		return this._isAlive
-	}
-
 	public resetPingCounter(): void {
 		this._missedPingCount = 0
 		this._isAlive = true

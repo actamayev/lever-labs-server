@@ -73,16 +73,20 @@ export default class BrowserSocketManager extends Singleton {
 		}
 
 		const userId = socket.userId
+		const existingState = this.connections.get(userId)
+		const isFirstSocket = !existingState || existingState.sockets.size === 0
+
 		this.addSocketToUser(userId, socket.id)
 
-		// If user already connected to a pip, emit current status to this new socket (this is for multiple tabs)
-		const userState = this.connections.get(userId)
-		if (userState?.sockets.size === 1) {
+		// Only attempt auto-connect if this is truly the first connection
+		// and we don't already have a pip connection
+		if (isFirstSocket && !existingState?.currentlyConnectedPipUUID) {
 			// This is the first socket - attempt auto-connect
-			// This handles the browser-side reconnection
 			autoConnectToPip(userId)
-			// console.info(`Auto-connect attempt for user ${userId}:`, autoConnectResult)
 		}
+
+		// If user already connected to a pip, emit current status to this new socket
+		const userState = this.connections.get(userId)
 		if (userState?.currentlyConnectedPipUUID) {
 			const espStatus = Esp32SocketManager.getInstance().getESPStatus(userState.currentlyConnectedPipUUID)
 			if (espStatus) {
@@ -176,8 +180,18 @@ export default class BrowserSocketManager extends Singleton {
 	}
 
 	public updateCurrentlyConnectedPip(userId: number, pipUUID: PipUUID | null): void {
-		const userState = this.connections.get(userId)
-		if (isUndefined(userState)) return
+		let userState = this.connections.get(userId)
+
+		if (isUndefined(userState)) {
+			// Create a user state even if no sockets yet (e.g., during login auto-connect)
+			userState = {
+				sockets: new Map(),
+				currentlyConnectedPipUUID: pipUUID,
+				lastActivityAt: new Date()
+			}
+			this.connections.set(userId, userState)
+			return
+		}
 
 		userState.currentlyConnectedPipUUID = pipUUID
 		userState.lastActivityAt = new Date()
