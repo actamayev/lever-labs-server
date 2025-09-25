@@ -4,7 +4,7 @@ import PrismaClientClass from "../../../classes/prisma-client"
 import HubManager from "../../../classes/hub-manager"
 
 export default async function joinClassroom(
-	studentId: number,
+	studentUserId: number,
 	classroomId: number
 ): Promise<StudentClassroomData> {
 	try {
@@ -12,7 +12,7 @@ export default async function joinClassroom(
 
 		const result = await prismaClient.student.create({
 			data: {
-				user_id: studentId,
+				user_id: studentUserId,
 				classroom_id: classroomId,
 				joined_classroom_at: new Date()
 			},

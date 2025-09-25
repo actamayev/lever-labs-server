@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeEach, jest, afterEach } from "@jest/globals"
-import { UUID } from "crypto"
 
 // Mock WebSocket and related modules
 const mockWebSocket = {
@@ -37,14 +36,15 @@ jest.mock("@/classes/browser-socket-manager", () => ({
 }))
 
 import SingleESP32Connection from "@/classes/esp32/single-esp32-connection"
+import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 
 describe("ESP32 Socket Management", () => {
 	describe("SingleESP32Connection", () => {
 		let connection: SingleESP32Connection
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		let mockSocket: any
-		let mockOnDisconnect: jest.MockedFunction<(socketId: UUID) => void>
-		let mockSocketId: UUID
+		let mockOnDisconnect: jest.MockedFunction<(pipId: PipUUID) => void>
+		let mockPipId: PipUUID
 
 		beforeEach(() => {
 			// Reset all mocks
@@ -65,9 +65,9 @@ describe("ESP32 Socket Management", () => {
 			}
 
 			mockOnDisconnect = jest.fn()
-			mockSocketId = "test-socket-uuid" as UUID
+			mockPipId = "test-pip-uuid" as PipUUID
 
-			connection = new SingleESP32Connection(mockSocketId, mockSocket, mockOnDisconnect)
+			connection = new SingleESP32Connection(mockPipId, mockSocket, mockOnDisconnect)
 		})
 
 		afterEach(() => {
@@ -110,7 +110,7 @@ describe("ESP32 Socket Management", () => {
 			jest.advanceTimersByTime(750) // Fourth ping - _missedPingCount >= MAX_MISSED_PINGS (2), triggers disconnect
 
 			// Assert
-			expect(mockOnDisconnect).toHaveBeenCalledWith(mockSocketId)
+			expect(mockOnDisconnect).toHaveBeenCalledWith(mockPipId)
 		})
 
 		it("should handle socket close event", () => {
@@ -121,7 +121,7 @@ describe("ESP32 Socket Management", () => {
 			if (closeHandler) closeHandler()
 
 			// Assert
-			expect(mockOnDisconnect).toHaveBeenCalledWith(mockSocketId)
+			expect(mockOnDisconnect).toHaveBeenCalledWith(mockPipId)
 		})
 
 		it("should handle socket error event", () => {
@@ -133,7 +133,7 @@ describe("ESP32 Socket Management", () => {
 			if (errorHandler) errorHandler(mockError)
 
 			// Assert
-			expect(mockOnDisconnect).toHaveBeenCalledWith(mockSocketId)
+			expect(mockOnDisconnect).toHaveBeenCalledWith(mockPipId)
 		})
 
 		it("should handle ping failures gracefully", () => {
@@ -147,7 +147,7 @@ describe("ESP32 Socket Management", () => {
 			jest.advanceTimersByTime(750)
 
 			// Assert
-			expect(mockOnDisconnect).toHaveBeenCalledWith(mockSocketId)
+			expect(mockOnDisconnect).toHaveBeenCalledWith(mockPipId)
 		})
 
 		it("should prevent multiple cleanup calls", () => {

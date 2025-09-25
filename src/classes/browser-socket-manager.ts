@@ -1,5 +1,6 @@
+/* eslint-disable max-depth */
 import isUndefined from "lodash/isUndefined"
-import { isNil, isNull } from "lodash"
+import { isNull } from "lodash"
 import { Server as SocketIOServer, Socket } from "socket.io"
 import { StudentViewHubData } from "@bluedotrobots/common-ts/types/hub"
 import { SensorPayload, ClientPipConnectionStatus,
@@ -15,9 +16,17 @@ import handleDisconnectHubHelper from "../utils/handle-disconnect-hub-helper"
 import retrieveUsername from "../db-operations/read/credentials/retrieve-username"
 import { UserConnectedStatus } from "@bluedotrobots/common-ts/protocol"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
+import espConnectionStateToClientConnectionStatus from "../utils/pip/esp-connection-state-to-client-connection-status"
+import autoConnectToPip from "../utils/pip/auto-connect-to-pip"
+
+type UserConnectionState = {
+	sockets: Set<string>  // Set of unique socket IDs
+	currentlyConnectedPipUUID: PipUUID | null
+	lastActivityAt: Date
+}
 
 export default class BrowserSocketManager extends Singleton {
-	private connections = new Map<number, BrowserSocketConnectionInfo>()
+	private connections = new Map<number, UserConnectionState>() // userId -> user connection state
 
 	private constructor(private readonly io: SocketIOServer) {
 		super()
@@ -34,6 +43,22 @@ export default class BrowserSocketManager extends Singleton {
 		return BrowserSocketManager.instance
 	}
 
+	public getUserConnectionState(userId: number): UserConnectionState | undefined {
+		return this.connections.get(userId)
+	}
+
+	// Helper method to get current pip for user
+	public getCurrentlyConnectedPipUUID(userId: number): PipUUID | null {
+		const userState = this.connections.get(userId)
+		return userState?.currentlyConnectedPipUUID || null
+	}
+
+	// Helper method to check if user has any active sockets
+	public hasActiveSockets(userId: number): boolean {
+		const userState = this.connections.get(userId)
+		return (userState?.sockets.size || 0) > 0
+	}
+
 	private initializeListeners(): void {
 		this.io.on("connection", (socket: Socket) => {
 			this.handleBrowserConnection(socket)
@@ -46,11 +71,34 @@ export default class BrowserSocketManager extends Singleton {
 			console.error(`User ${socket.userId} is not authenticated`)
 			return
 		}
-		this.addConnection(socket.userId, {
-			socketId: socket.id,
-			currentlyConnectedPip: null
-		})
-		socket.on("disconnect", () => this.handleDisconnection(socket.userId))
+
+		const userId = socket.userId
+		const existingState = this.connections.get(userId)
+		const isFirstSocket = !existingState || existingState.sockets.size === 0
+
+		this.addSocketToUser(userId, socket.id)
+
+		// Only attempt auto-connect if this is truly the first connection
+		// and we don't already have a pip connection
+		if (isFirstSocket && !existingState?.currentlyConnectedPipUUID) {
+			// This is the first socket - attempt auto-connect
+			autoConnectToPip(userId)
+		}
+
+		// If user already connected to a pip, emit current status to this new socket
+		const userState = this.connections.get(userId)
+		if (userState?.currentlyConnectedPipUUID) {
+			const espStatus = Esp32SocketManager.getInstance().getESPStatus(userState.currentlyConnectedPipUUID)
+			if (espStatus) {
+				const connectionStatus = espConnectionStateToClientConnectionStatus(espStatus, userId)
+				this.emitToSocket(socket.id, "pip-connection-status-update", {
+					pipUUID: userState.currentlyConnectedPipUUID,
+					newConnectionStatus: connectionStatus
+				})
+			}
+		}
+
+		socket.on("disconnect", () => this.handleDisconnection(userId, socket.id))
 	}
 
 	private setupAllListeners(socket: Socket): void {
@@ -63,158 +111,170 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	private addConnection(userId: number, info: BrowserSocketConnectionInfo): void {
-		this.connections.set(userId, info)
+	private addSocketToUser(userId: number, socketId: string): void {
+		const existingState = this.connections.get(userId)
+
+		if (existingState) {
+			// Add socket to existing user state
+			existingState.sockets.add(socketId)
+			existingState.lastActivityAt = new Date()
+		} else {
+			// Create new user state
+			const newState: UserConnectionState = {
+				sockets: new Set([socketId]),
+				currentlyConnectedPipUUID: null,
+				lastActivityAt: new Date()
+			}
+			this.connections.set(userId, newState)
+		}
 	}
 
-	// eslint-disable-next-line complexity
-	private handleDisconnection(userId: number | undefined): void {
+	private handleDisconnection(userId: number, socketId: string): void {
 		try {
-			if (isUndefined(userId) || !this.connections.has(userId)) return
-			const currentlyConnectedPip = this.connections.get(userId)?.currentlyConnectedPip
+			const userState = this.connections.get(userId)
+			if (isUndefined(userState)) return
 
-			if (!isNil(currentlyConnectedPip)) {
-				if (currentlyConnectedPip.status.connectedToOnlineUser || currentlyConnectedPip.status.online) {
-					void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-						currentlyConnectedPip.pipUUID,
-						MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.NOT_CONNECTED)
-					)
-					// eslint-disable-next-line max-depth
-					if (currentlyConnectedPip.status.connectedToOnlineUser) {
-						const updatedStatus: ESPConnectionState = {
-							...currentlyConnectedPip.status,
-							connectedToOnlineUser: false
-						}
-						currentlyConnectedPip.status = updatedStatus
-						this.emitPipStatusUpdate(currentlyConnectedPip.pipUUID, updatedStatus)
-						Esp32SocketManager.getInstance().setUserConnection(currentlyConnectedPip.pipUUID, false)
+			// Remove this socket from user's socket list
+			userState.sockets.delete(socketId)
+
+			// If user still has other sockets open, just update activity and return
+			if (userState.sockets.size > 0) {
+				userState.lastActivityAt = new Date()
+				return
+			}
+
+			// This was the last socket - proceed with full disconnection logic
+			const currentlyConnectedPipUUID = userState.currentlyConnectedPipUUID
+
+			if (!isNull(currentlyConnectedPipUUID)) {
+				const espStatus = Esp32SocketManager.getInstance().getESPStatus(currentlyConnectedPipUUID)
+				if (!isUndefined(espStatus)) {
+					if (espStatus.connectedToSerialUserId === userId) {
+						Esp32SocketManager.getInstance().handleSerialDisconnect(currentlyConnectedPipUUID)
 					}
-				} else if (currentlyConnectedPip.status.connectedToSerial) {
-					const updatedStatus: ESPConnectionState = {
-						...currentlyConnectedPip.status,
-						connectedToSerial: false
+					if (espStatus.connectedToOnlineUserId === userId) {
+						void SendEsp32MessageManager.getInstance().sendBinaryMessage(
+							currentlyConnectedPipUUID,
+							MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.NOT_CONNECTED)
+						)
+						Esp32SocketManager.getInstance().setOnlineUserDisconnected(currentlyConnectedPipUUID, false)
 					}
-					currentlyConnectedPip.status = updatedStatus
-					this.emitPipStatusUpdate(currentlyConnectedPip.pipUUID, updatedStatus)
 				}
 			}
-			void handleDisconnectHubHelper(userId)
+
+			handleDisconnectHubHelper(userId)
+			// Remove user entirely since no sockets remain
 			this.connections.delete(userId)
 		} catch (error) {
 			console.error("Error during disconnection:", error)
 		}
 	}
 
-	public emitPipStatusUpdate(pipUUID: PipUUID, newConnectionStatus: ESPConnectionState): void {
-		this.connections.forEach((connectionInfo, userId) => {
-			// Check if the specified pipUUID exists in this connection's currentlyConnectedPip
-			if (isNil(connectionInfo.currentlyConnectedPip)) return
-			const pipToUpdate = connectionInfo.currentlyConnectedPip.pipUUID === pipUUID
+	public emitPipStatusUpdateToUser(userId: number, pipUUID: PipUUID, newConnectionStatus: ClientPipConnectionStatus): void {
+		const userState = this.connections.get(userId)
+		if (isUndefined(userState)) return
+		if (userState.currentlyConnectedPipUUID !== pipUUID) return
 
-			if (!pipToUpdate) return
-			connectionInfo.currentlyConnectedPip.status = newConnectionStatus
-			// Emit event to this specific connection using user-relative client status
-			const clientStatus = this.toClientStatus(newConnectionStatus, userId, pipUUID)
-			this.emitToSocket(connectionInfo.socketId, "pip-connection-status-update", { pipUUID, newConnectionStatus: clientStatus })
+		// Emit to ALL sockets for this user
+		this.emitToAllUserStateSockets(userState, "pip-connection-status-update", { pipUUID, newConnectionStatus })
+	}
+
+	public updateCurrentlyConnectedPip(userId: number, pipUUID: PipUUID | null): void {
+		let userState = this.connections.get(userId)
+
+		if (isUndefined(userState)) {
+			// Create a user state even if no sockets yet (e.g., during login auto-connect)
+			userState = {
+				sockets: new Set(),
+				currentlyConnectedPipUUID: pipUUID,
+				lastActivityAt: new Date()
+			}
+			this.connections.set(userId, userState)
+			return
+		}
+
+		userState.currentlyConnectedPipUUID = pipUUID
+		userState.lastActivityAt = new Date()
+
+		// If connecting to a pip, emit status to all user's sockets
+		if (!pipUUID) return
+		const espStatus = Esp32SocketManager.getInstance().getESPStatus(pipUUID)
+		if (!espStatus) return
+		const connectionStatus = espConnectionStateToClientConnectionStatus(espStatus, userId)
+		this.emitToAllUserStateSockets(userState, "pip-connection-status-update", {
+			pipUUID,
+			newConnectionStatus: connectionStatus
+		})
+	}
+
+	public removePipConnection(userId: number): void {
+		const userState = this.connections.get(userId)
+		if (isUndefined(userState)) return
+
+		const previousPipUUID = userState.currentlyConnectedPipUUID
+		userState.currentlyConnectedPipUUID = null
+		userState.lastActivityAt = new Date()
+
+		// Emit disconnection status to all user's sockets
+		if (!previousPipUUID) return
+		this.emitToAllUserStateSockets(userState, "pip-connection-status-update", {
+			pipUUID: previousPipUUID,
+			newConnectionStatus: "offline"
+		})
+	}
+
+	private emitDataToConnectedPipUsers<E extends SocketEvents>(
+		pipUUID: PipUUID,
+		event: E,
+		payload: SocketEventPayloadMap[E]
+	): void {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		this.connections.forEach((userState, _userId) => {
+			if (userState.currentlyConnectedPipUUID !== pipUUID) return
+			this.emitToAllUserStateSockets(userState, event, payload)
 		})
 	}
 
 	public emitPipBatteryData(pipUUID: PipUUID, batteryData: BatteryMonitorData): void {
-		this.connections.forEach((connectionInfo) => {
-			if (isNull(connectionInfo.currentlyConnectedPip)) return
-			const pipToUpdate = connectionInfo.currentlyConnectedPip.pipUUID === pipUUID
-
-			if (pipToUpdate) {
-				this.emitToSocket(connectionInfo.socketId, "battery-monitor-data", { pipUUID, batteryData })
-			}
-		})
+		// Find all users connected to this pip and emit to ALL their sockets
+		this.emitDataToConnectedPipUsers(pipUUID, "battery-monitor-data", { pipUUID, batteryData })
 	}
 
 	public emitPipDinoScore(pipUUID: PipUUID, score: number): void {
-		this.connections.forEach((connectionInfo) => {
-			if (isNull(connectionInfo.currentlyConnectedPip)) return
-			const pipToUpdate = connectionInfo.currentlyConnectedPip.pipUUID === pipUUID
-			if (pipToUpdate) {
-				this.emitToSocket(connectionInfo.socketId, "dino-score-update", { pipUUID, score })
-			}
-		})
-	}
-
-	public addPipStatusToAccount(
-		userId: number,
-		pipUUID: PipUUID,
-		status: ESPConnectionState
-	): boolean {
-		try {
-			const connectionInfo = this.connections.get(userId)
-
-			if (!connectionInfo) {
-				console.warn(`No connection found for userId: ${userId}`)
-				return false
-			}
-
-			// Update the currentlyConnectedPip entry for this user
-			connectionInfo.currentlyConnectedPip = { pipUUID, status }
-			return true
-		} catch (error) {
-			console.error(error)
-			return false
-		}
-	}
-
-	public whichUserConnectedToPipUUID(pipUUID: PipUUID): number | undefined {
-		for (const [userID, connectionInfo] of this.connections.entries()) {
-			// Check if the specified pipUUID with status "connectedToOnlineUser" exists
-			if (isNull(connectionInfo.currentlyConnectedPip)) continue
-			const foundConnection =
-		connectionInfo.currentlyConnectedPip.pipUUID === pipUUID &&
-		connectionInfo.currentlyConnectedPip.status.connectedToOnlineUser
-
-			// If a match is found, return the key (userID)
-			if (foundConnection) {
-				return userID
-			}
-		}
-
-		return undefined
+		this.emitDataToConnectedPipUsers(pipUUID, "dino-score-update", { pipUUID, score })
 	}
 
 	public sendBrowserPipSensorData(pipUUID: PipUUID, sensorPayload: SensorPayload): void {
-		this.connections.forEach((connectionInfo) => {
-			if (isNull(connectionInfo.currentlyConnectedPip)) return
-			const foundPip = connectionInfo.currentlyConnectedPip.pipUUID === pipUUID
-			if (foundPip) {
-				this.emitToSocket(connectionInfo.socketId, "general-sensor-data", sensorPayload)
-			}
-		})
+		this.emitDataToConnectedPipUsers(pipUUID, "general-sensor-data", sensorPayload)
 	}
 
-	// TODO: Create re-usable method for sending this type of data (see sendBrowserPipSensorData, sendBrowserPipSensorDataMZ)
 	public sendBrowserPipSensorDataMZ(pipUUID: PipUUID, sensorPayload: SensorPayloadMZ): void {
-		this.connections.forEach((connectionInfo) => {
-			if (isNull(connectionInfo.currentlyConnectedPip)) return
-			const foundPip = connectionInfo.currentlyConnectedPip.pipUUID === pipUUID
-			if (foundPip) {
-				this.emitToSocket(connectionInfo.socketId, "general-sensor-data-mz", sensorPayload)
-			}
-		})
+		this.emitDataToConnectedPipUsers(pipUUID, "general-sensor-data-mz", sensorPayload)
 	}
 
-	public async emitStudentJoinedClassroom(teacherUserId: number, classCode: ClassCode, studentUserId: number): Promise<void> {
-		// 1. See if any of the teachers are connected. If none of them are connected, return. if at least one is connected, continue.
-		// For each that is connected, emit the event to the teacher.
-		const socketId = this.connections.get(teacherUserId)?.socketId
-		if (isUndefined(socketId)) return
+	public async emitStudentJoinedClassroom(
+		teacherUserId: number,
+		classCode: ClassCode,
+		studentUserId: number,
+		studentId: number
+	): Promise<void> {
+		const userState = this.connections.get(teacherUserId)
+		if (isUndefined(userState) || userState.sockets.size === 0) return
+
 		const studentUsername = await retrieveUsername(studentUserId)
-		if (isUndefined(socketId)) return
-		this.emitToSocket(socketId, "student-joined-classroom", {
-			classCode, studentUsername: studentUsername || "", studentId: studentUserId })
+		if (isUndefined(studentUsername)) return
+
+		// Emit to all teacher's sockets
+		this.emitToAllUserStateSockets(userState, "student-joined-classroom", {
+			classCode, studentUsername: studentUsername || "", studentId
+		})
 	}
 
 	public emitStudentJoinedHub(teacherUserId: number, data: StudentJoinedHub): void {
-		const socketId = this.connections.get(teacherUserId)?.socketId
-		if (isUndefined(socketId)) return
-		this.emitToSocket(socketId, "student-joined-hub", data)
+		const userState = this.connections.get(teacherUserId)
+		if (isUndefined(userState)) return
+
+		this.emitToAllUserStateSockets(userState, "student-joined-hub", data)
 	}
 
 	public emitNewHubToStudents(studentUserIds: number[], hubInfo: StudentViewHubData): void {
@@ -236,9 +296,7 @@ export default class BrowserSocketManager extends Singleton {
 	}
 
 	public emitStudentLeftHub(teacherUserId: number, data: StudentLeftHub): void {
-		const socketId = this.connections.get(teacherUserId)?.socketId
-		if (isUndefined(socketId)) return
-		this.emitToSocket(socketId, "student-left-hub", data)
+		this.emitToUser(teacherUserId, "student-left-hub", data)
 	}
 
 	public emitToUser<E extends SocketEvents>(
@@ -246,9 +304,21 @@ export default class BrowserSocketManager extends Singleton {
 		event: E,
 		payload: SocketEventPayloadMap[E]
 	): void {
-		const connectionInfo = this.connections.get(userId)
-		if (!connectionInfo) return
-		this.emitToSocket(connectionInfo.socketId, event, payload)
+		const userState = this.connections.get(userId)
+		if (!userState) return
+
+		// Emit to ALL sockets for this user
+		this.emitToAllUserStateSockets(userState, event, payload)
+	}
+
+	private emitToAllUserStateSockets<E extends SocketEvents>(
+		userState: UserConnectionState,
+		event: E,
+		payload: SocketEventPayloadMap[E]
+	): void {
+		userState.sockets.forEach(socketId => {
+			this.emitToSocket(socketId, event, payload)
+		})
 	}
 
 	private emitToSocket<E extends SocketEvents>(
@@ -257,22 +327,6 @@ export default class BrowserSocketManager extends Singleton {
 		payload: SocketEventPayloadMap[E]
 	): void {
 		this.io.to(socketId).emit(event, payload)
-	}
-
-	public getIsUserConnectedToPip(userId: number, pipUUID: PipUUID): boolean {
-		const connectionInfo = this.connections.get(userId)
-		if (isUndefined(connectionInfo)) return false
-		if (isNull(connectionInfo.currentlyConnectedPip)) return false
-		return connectionInfo.currentlyConnectedPip.pipUUID === pipUUID && connectionInfo.currentlyConnectedPip.status.connectedToOnlineUser
-	}
-
-	public getCurrentlyConnectedPip(userId: number): CurrentlyConnectedPip | undefined {
-		const connectionInfo = this.connections.get(userId)
-		if (
-			isUndefined(connectionInfo) ||
-			isNull(connectionInfo.currentlyConnectedPip)
-		) return undefined
-		return connectionInfo.currentlyConnectedPip
 	}
 
 	public emitGarageDrivingStatusUpdateToStudents(studentUserIds: number[], garageDrivingStatus: boolean): void {
@@ -299,48 +353,10 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	// Method to disconnect user from PIP when serial connection takes priority
-	public disconnectUserFromPip(pipUUID: PipUUID): void {
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		for (const [userId, connectionInfo] of this.connections.entries()) {
-			if (connectionInfo.currentlyConnectedPip?.pipUUID === pipUUID &&
-				connectionInfo.currentlyConnectedPip.status.connectedToOnlineUser) {
-
-				// Update the connection status to remove user connection
-				const updatedStatus: ESPConnectionState = {
-					...connectionInfo.currentlyConnectedPip.status,
-					connectedToOnlineUser: false
-				}
-				connectionInfo.currentlyConnectedPip.status = updatedStatus
-
-				// Notify the ESP32 that user is no longer connected
-				void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-					pipUUID,
-					MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.NOT_CONNECTED)
-				)
-
-				// Emit status update to the browser
-				this.emitPipStatusUpdate(pipUUID, updatedStatus)
-				break
-			}
-		}
-	}
-
-	// Helper method to convert ESPConnectionState to user-relative ClientPipConnectionStatus
-	private toClientStatus(status: ESPConnectionState, requestingUserId: number, pipUUID: PipUUID): ClientPipConnectionStatus {
-		// Serial connection takes priority over everything
-		if (status.connectedToSerial) return "connected to serial"
-
-		// Check if offline
-		if (!status.online) return "offline"
-
-		// If someone is connected to this PIP, check if it's the requesting user
-		if (status.connectedToOnlineUser) {
-			const connectedUserId = this.whichUserConnectedToPipUUID(pipUUID)
-			return connectedUserId === requestingUserId ? "connected to you" : "connected to another user"
-		}
-
-		// Just online, available for connection
-		return "online"
+	// Helper method to update activity from any tab
+	public updateUserActivity(userId: number): void {
+		const userState = this.connections.get(userId)
+		if (!userState) return
+		userState.lastActivityAt = new Date()
 	}
 }

@@ -19,7 +19,9 @@ export default async function updateIndividualStudentGarageLights(req: Request, 
 		}
 
 		BrowserSocketManager.getInstance().emitGarageLightsStatusUpdateToStudents([studentUserId], garageLightsStatus)
-		turnOffStudentPipLeds(studentUserId)
+		if (!garageLightsStatus) {
+			turnOffStudentPipLeds(studentUserId)
+		}
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {

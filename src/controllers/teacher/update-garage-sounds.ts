@@ -21,7 +21,11 @@ export default async function updateGarageSoundsAllStudents(req: Request, res: R
 			res.status(200).json({ success: "No students found in classroom" } satisfies SuccessResponse)
 			return
 		}
-		studentUserIds.forEach(studentUserId => stopStudentPipSound(studentUserId))
+		if (!garageSoundsStatus) {
+			studentUserIds.forEach(studentUserId => {
+				stopStudentPipSound(studentUserId)
+			})
+		}
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {

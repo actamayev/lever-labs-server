@@ -17,8 +17,11 @@ export default async function updateIndividualStudentGarageDriving(req: Request,
 			res.status(200).json({ success: "Student user ID not found" } satisfies SuccessResponse)
 			return
 		}
+
 		BrowserSocketManager.getInstance().emitGarageDrivingStatusUpdateToStudents([studentUserId], garageDrivingStatus)
-		brakeStudentPip(studentUserId)
+		if (!garageDrivingStatus) {
+			brakeStudentPip(studentUserId)
+		}
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {

@@ -5,7 +5,7 @@ import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
 import checkIfUserConnectedToPip from "../middleware/check/check-if-user-connect-to-pip"
 import validatePipUUIDInBody from "../middleware/request-validation/pip/validate-pip-uuid-in-body"
 import validateSetSerialConnection from "../middleware/request-validation/pip/validate-set-serial-connection"
-import confirmOtherUserIsntConnectedToPip from "../middleware/confirm/confirm-other-user-isnt-connected-to-pip"
+import confirmUserIsntAlreadyConnectedToPip from "../middleware/confirm/confirm-user-isnt-already-connected-to-pip"
 
 import stopSensorPolling from "../controllers/pip/stop-sensor-polling"
 import streamFirmwareUpdate from "../controllers/pip/stream-firmware-update"
@@ -13,6 +13,7 @@ import retrievePipUUIDStatus from "../controllers/pip/retrieve-pip-uuid-status"
 import clientConnectToPipRequest from "../controllers/pip/client-connect-to-pip-request"
 import setSerialConnectionStatus from "../controllers/pip/set-serial-connection-status"
 import clientDisconnectFromPipRequest from "../controllers/pip/client-disconnect-from-pip-request"
+import pipTurningOffSerialConnection from "../controllers/pip/pip-turning-off-serial-connection"
 
 const pipRoutes = express.Router()
 
@@ -21,7 +22,7 @@ pipRoutes.post(
 	validatePipUUIDInBody,
 	jwtVerifyAttachUserId,
 	confirmPipIsActive(false),
-	confirmOtherUserIsntConnectedToPip,
+	confirmUserIsntAlreadyConnectedToPip,
 	clientConnectToPipRequest
 )
 
@@ -56,6 +57,13 @@ pipRoutes.post(
 	validateSetSerialConnection,
 	jwtVerifyAttachUserId,
 	setSerialConnectionStatus
+)
+
+pipRoutes.post(
+	"/pip-turning-off-serial-connection",
+	validatePipUUIDInBody,
+	jwtVerifyAttachUserId,
+	pipTurningOffSerialConnection
 )
 
 export default pipRoutes

@@ -4,7 +4,7 @@ import { ClientSocketEvents, ClientSocketEventPayloadMap } from "@bluedotrobots/
 import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
 import { tuneToSoundType } from "@bluedotrobots/common-ts/protocol"
 import { LedControlData, MotorControlData, HeadlightData, HornData } from "@bluedotrobots/common-ts/types/garage"
-import { PlayFunSoundPayload } from "@bluedotrobots/common-ts/types/pip"
+import { ExtendedPlayFunSoundPayload } from "@bluedotrobots/common-ts/dist/src/types/socket"
 
 type ListenerHandler<T> = (payload: T) => void
 
@@ -51,7 +51,7 @@ const listenersMap: {
 			console.error(error)
 		}
 	},
-	"play-fun-sound": (funSoundsData: PlayFunSoundPayload) => {
+	"play-fun-sound": (funSoundsData: ExtendedPlayFunSoundPayload) => {
 		try {
 			if (funSoundsData.sound === null) {
 				const buffer = MessageBuilder.createStopSoundMessage()

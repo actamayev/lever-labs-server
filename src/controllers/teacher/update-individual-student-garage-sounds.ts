@@ -17,8 +17,11 @@ export default async function updateIndividualStudentGarageSounds(req: Request, 
 			res.status(200).json({ success: "Student user ID not found" } satisfies SuccessResponse)
 			return
 		}
+
 		BrowserSocketManager.getInstance().emitGarageSoundsStatusUpdateToStudents([studentUserId], garageSoundsStatus)
-		stopStudentPipSound(studentUserId)
+		if (!garageSoundsStatus) {
+			stopStudentPipSound(studentUserId)
+		}
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
