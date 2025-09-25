@@ -80,8 +80,8 @@ export default class BrowserSocketManager extends Singleton {
 		if (userState?.sockets.size === 1) {
 			// This is the first socket - attempt auto-connect
 			// This handles the browser-side reconnection
-			const autoConnectResult = autoConnectToPip(userId)
-			console.info(`Auto-connect attempt for user ${userId}:`, autoConnectResult)
+			autoConnectToPip(userId)
+			// console.info(`Auto-connect attempt for user ${userId}:`, autoConnectResult)
 		}
 		if (userState?.currentlyConnectedPipUUID) {
 			const espStatus = Esp32SocketManager.getInstance().getESPStatus(userState.currentlyConnectedPipUUID)
