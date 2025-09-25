@@ -3,7 +3,7 @@ import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 
-export default function confirmOtherUserIsntConnectedToPip(
+export default function confirmUserIsntAlreadyConnectedToPip(
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -22,7 +22,7 @@ export default function confirmOtherUserIsntConnectedToPip(
 	} catch (error) {
 		console.error(error)
 		res.status(500).json(
-			{ error: "Internal Server Error: Unable to confirm another user isn't connected to this Pip" } satisfies ErrorResponse
+			{ error: "Internal Server Error: Unable to confirm user isn't already connected to this Pip" } satisfies ErrorResponse
 		)
 		return
 	}

@@ -5,7 +5,7 @@ import jwtVerifyAttachUserId from "../middleware/jwt/jwt-verify-attach-user-id"
 import checkIfUserConnectedToPip from "../middleware/check/check-if-user-connect-to-pip"
 import validatePipUUIDInBody from "../middleware/request-validation/pip/validate-pip-uuid-in-body"
 import validateSetSerialConnection from "../middleware/request-validation/pip/validate-set-serial-connection"
-import confirmOtherUserIsntConnectedToPip from "../middleware/confirm/confirm-other-user-isnt-connected-to-pip"
+import confirmUserIsntAlreadyConnectedToPip from "../middleware/confirm/confirm-user-isnt-already-connected-to-pip"
 
 import stopSensorPolling from "../controllers/pip/stop-sensor-polling"
 import streamFirmwareUpdate from "../controllers/pip/stream-firmware-update"
@@ -22,7 +22,7 @@ pipRoutes.post(
 	validatePipUUIDInBody,
 	jwtVerifyAttachUserId,
 	confirmPipIsActive(false),
-	confirmOtherUserIsntConnectedToPip,
+	confirmUserIsntAlreadyConnectedToPip,
 	clientConnectToPipRequest
 )
 
