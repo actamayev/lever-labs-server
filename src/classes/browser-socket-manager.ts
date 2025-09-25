@@ -20,7 +20,7 @@ import espConnectionStateToClientConnectionStatus from "../utils/pip/esp-connect
 import autoConnectToPip from "../utils/pip/auto-connect-to-pip"
 
 type UserConnectionState = {
-	sockets: Map<string, string>  // socketId -> socketId for easy lookup
+	sockets: Set<string>  // Set of unique socket IDs
 	currentlyConnectedPipUUID: PipUUID | null
 	lastActivityAt: Date
 }
@@ -116,12 +116,12 @@ export default class BrowserSocketManager extends Singleton {
 
 		if (existingState) {
 			// Add socket to existing user state
-			existingState.sockets.set(socketId, socketId)
+			existingState.sockets.add(socketId)
 			existingState.lastActivityAt = new Date()
 		} else {
 			// Create new user state
 			const newState: UserConnectionState = {
-				sockets: new Map([[socketId, socketId]]),
+				sockets: new Set([socketId]),
 				currentlyConnectedPipUUID: null,
 				lastActivityAt: new Date()
 			}
@@ -185,7 +185,7 @@ export default class BrowserSocketManager extends Singleton {
 		if (isUndefined(userState)) {
 			// Create a user state even if no sockets yet (e.g., during login auto-connect)
 			userState = {
-				sockets: new Map(),
+				sockets: new Set(),
 				currentlyConnectedPipUUID: pipUUID,
 				lastActivityAt: new Date()
 			}
@@ -316,7 +316,7 @@ export default class BrowserSocketManager extends Singleton {
 		event: E,
 		payload: SocketEventPayloadMap[E]
 	): void {
-		userState.sockets.forEach((_, socketId) => {
+		userState.sockets.forEach(socketId => {
 			this.emitToSocket(socketId, event, payload)
 		})
 	}
