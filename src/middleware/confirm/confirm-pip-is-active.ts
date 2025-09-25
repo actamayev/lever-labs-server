@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from "express"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 import { ErrorResponse, MessageResponse } from "@bluedotrobots/common-ts/types/api"
-import BrowserSocketManager from "../../classes/browser-socket-manager"
 
 export default function confirmPipIsActive(confirmUserConnectedToPip: boolean) {
 	return (req: Request, res: Response, next: NextFunction): void => {
@@ -11,19 +10,15 @@ export default function confirmPipIsActive(confirmUserConnectedToPip: boolean) {
 
 			const isPipActive = Esp32SocketManager.getInstance().isPipUUIDConnected(pipUUID)
 			if (!isPipActive) {
-				res.status(400).json({
-					message: "This Pip is not active/connected to the internet"
-				} satisfies MessageResponse)
+				res.status(400).json({ message: "This Pip is not active/connected to the internet" } satisfies MessageResponse)
 				return
 			}
 
 			if (confirmUserConnectedToPip) {
 				const { userId } = req
-				const isUserConnectedToPip = BrowserSocketManager.getInstance().getIsUserConnectedToPip(userId, pipUUID)
+				const isUserConnectedToPip = Esp32SocketManager.getInstance().getIsUserIdConnectedToOnlinePip(pipUUID, userId)
 				if (!isUserConnectedToPip) {
-					res.status(400).json({
-						message: "This Pip is not active/connected to the internet"
-					} satisfies MessageResponse)
+					res.status(400).json({ message: "This Pip is not active/connected to this user" } satisfies MessageResponse)
 					return
 				}
 			}

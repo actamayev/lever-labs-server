@@ -1,6 +1,6 @@
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import BrowserSocketManager from "../../classes/browser-socket-manager"
+import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 import { ErrorResponse, MessageResponse } from "@bluedotrobots/common-ts/types/api"
 
@@ -13,7 +13,7 @@ export default function confirmUserConnectedToPip(
 		const { userId } = req
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		const connectedUserId = BrowserSocketManager.getInstance().whichUserConnectedToPipUUID(pipUUID)
+		const connectedUserId = Esp32SocketManager.getInstance().getUserIdConnectedToOnlinePip(pipUUID)
 
 		if (isUndefined(connectedUserId)) {
 			// Get current ESP status and set user as connected

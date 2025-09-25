@@ -1,10 +1,10 @@
+import { isUndefined } from "lodash"
 import { Response, Request } from "express"
 import { ErrorResponse, StudentClassroomData } from "@bluedotrobots/common-ts/types/api"
 import { ClassCode } from "@bluedotrobots/common-ts/types/utils"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import joinClassroom from "../../db-operations/write/student/join-classroom"
 import getTeacherIdFromClassroom from "../../db-operations/read/classroom-teacher-map/get-teacher-id-from-classroom"
-import { isUndefined } from "lodash"
 
 export default async function joinClass(req: Request, res: Response): Promise<void> {
 	try {
@@ -17,7 +17,7 @@ export default async function joinClass(req: Request, res: Response): Promise<vo
 			res.status(400).json({ error: "Teacher not found" } satisfies ErrorResponse)
 			return
 		}
-		void BrowserSocketManager.getInstance().emitStudentJoinedClassroom(teacherId, classCode, userId)
+		void BrowserSocketManager.getInstance().emitStudentJoinedClassroom(teacherId, classCode, userId, studentClassroomData.studentId)
 
 		res.status(200).json(studentClassroomData satisfies StudentClassroomData)
 		return

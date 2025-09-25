@@ -4,6 +4,11 @@ import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } fr
 import Singleton from "../singleton"
 import SecretsManager from "./secrets-manager"
 
+interface FirmwareData {
+	firmwareVersion: number
+	firmwareBuffer: Buffer
+}
+
 export default class AwsS3 extends Singleton {
 	private s3: S3Client
 

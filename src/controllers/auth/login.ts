@@ -10,6 +10,7 @@ import retrieveUserFromContact from "../../utils/auth-helpers/login/retrieve-use
 import addLoginHistoryRecord from "../../db-operations/write/login-history/add-login-history-record"
 import retrieveStudentClasses from "../../db-operations/read/credentials/retrieve-student-classes"
 import { setAuthCookie } from "../../middleware/cookie-helpers"
+import autoConnectToPip from "../../utils/pip/auto-connect-to-pip"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function login(req: Request, res: Response): Promise<void> {
@@ -47,6 +48,7 @@ export default async function login(req: Request, res: Response): Promise<void> 
 
 		setAuthCookie(res, accessToken)
 
+		const autoConnectToPipResult = autoConnectToPip(credentialsResult.user_id)
 		res.status(200).json({
 			personalInfo: {
 				username: credentialsResult.username as string,
@@ -57,7 +59,8 @@ export default async function login(req: Request, res: Response): Promise<void> 
 				name: credentialsResult.name,
 			},
 			teacherData: extractTeacherDataFromUserData(credentialsResult),
-			studentClasses
+			studentClasses,
+			autoConnectedPipUUID: autoConnectToPipResult.pipUUID
 		} satisfies LoginSuccess)
 		void addLoginHistoryRecord(credentialsResult.user_id)
 		return

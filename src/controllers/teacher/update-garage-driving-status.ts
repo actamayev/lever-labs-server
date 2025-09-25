@@ -21,7 +21,11 @@ export default async function updateGarageDrivingStatusAllStudents(req: Request,
 			res.status(200).json({ success: "No students found in classroom" } satisfies SuccessResponse)
 			return
 		}
-		studentUserIds.forEach(studentUserId => brakeStudentPip(studentUserId))
+		if (!garageDrivingStatus) {
+			studentUserIds.forEach(studentUserId => {
+				brakeStudentPip(studentUserId)
+			})
+		}
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
