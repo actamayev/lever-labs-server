@@ -17,6 +17,7 @@ import retrieveUsername from "../db-operations/read/credentials/retrieve-usernam
 import { UserConnectedStatus } from "@bluedotrobots/common-ts/protocol"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import espConnectionStateToClientConnectionStatus from "../utils/pip/esp-connection-state-to-client-connection-status"
+import autoConnectToPip from "../utils/pip/auto-connect-to-pip"
 
 type UserConnectionState = {
 	sockets: Map<string, string>  // socketId -> socketId for easy lookup
@@ -74,8 +75,14 @@ export default class BrowserSocketManager extends Singleton {
 		const userId = socket.userId
 		this.addSocketToUser(userId, socket.id)
 
-		// If user already connected to a pip, emit current status to this new socket
+		// If user already connected to a pip, emit current status to this new socket (this is for multiple tabs)
 		const userState = this.connections.get(userId)
+		if (userState?.sockets.size === 1) {
+			// This is the first socket - attempt auto-connect
+			// This handles the browser-side reconnection
+			const autoConnectResult = autoConnectToPip(userId)
+			console.info(`Auto-connect attempt for user ${userId}:`, autoConnectResult)
+		}
 		if (userState?.currentlyConnectedPipUUID) {
 			const espStatus = Esp32SocketManager.getInstance().getESPStatus(userState.currentlyConnectedPipUUID)
 			if (espStatus) {
@@ -151,7 +158,7 @@ export default class BrowserSocketManager extends Singleton {
 				}
 			}
 
-			void handleDisconnectHubHelper(userId)
+			handleDisconnectHubHelper(userId)
 			// Remove user entirely since no sockets remain
 			this.connections.delete(userId)
 		} catch (error) {

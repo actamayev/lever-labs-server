@@ -112,20 +112,22 @@ export default class Esp32SocketManager extends Singleton {
 		connectionInfo.connection?.resetPingCounter()
 	}
 
-	// eslint-disable-next-line max-lines-per-function
+	// In esp32-socket-manager.ts registerConnection method:
 	private registerConnection(pipId: PipUUID, connection: SingleESP32Connection): void {
 		try {
 			const existing = this.connections.get(pipId)
 
 			if (!existing) {
-			// ✅ NEW CONNECTION - track it immediately
+				// ✅ NEW CONNECTION - track it immediately
 				const initialStatus = this.createInitialStatus()
 				this.connections.set(pipId, { status: initialStatus, connection })
 				return
 			}
+
 			console.info(`ESP32 ${pipId} connecting online, modifying existing connection`)
 			existing.connection?.dispose()
 
+			// Handle serial connection case
 			if (existing.status.connectedToSerialUserId) {
 				this.connections.set(pipId, {
 					status: {
@@ -141,36 +143,22 @@ export default class Esp32SocketManager extends Singleton {
 				})
 				return
 			}
-			if (!existing.status.lastOnlineConnectedUser) {
-				this.connections.set(pipId, {
-					status: {
-						...existing.status,
-						online: true
-					},
-					connection
-				})
-				return
-			}
+
+			// For all other cases, just mark ESP as online but don't auto-connect
+			// Let the browser handle reconnection when it comes online
 			this.connections.set(pipId, {
 				status: {
 					...existing.status,
 					online: true,
-					connectedToOnlineUserId: existing.status.lastOnlineConnectedUser.userId,
-					lastOnlineConnectedUser: {
-						userId: existing.status.lastOnlineConnectedUser.userId,
-						lastActivityAt: new Date()
-					}
+					connectedToOnlineUserId: null, // Don't auto-assign
+					// Preserve lastOnlineConnectedUser for browser auto-connect
 				},
 				connection
 			})
-			void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-				pipId,
-				MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.CONNECTED)
-			)
-			BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(existing.status.lastOnlineConnectedUser.userId, pipId)
-			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
-				existing.status.lastOnlineConnectedUser.userId, pipId, "connected online to you"
-			)
+
+			// Don't send any connection messages to ESP here
+			// Wait for browser to initiate connection
+
 		} catch (error) {
 			console.error(`Failed to register connection for ${pipId}:`, error)
 		}
@@ -381,6 +369,7 @@ export default class Esp32SocketManager extends Singleton {
 				return pipId
 			}
 		}
+		// console.log(Array.from(this.connections.values()).map(connection => connection.status))
 		return null
 	}
 
