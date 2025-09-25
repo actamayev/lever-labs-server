@@ -5,7 +5,7 @@ import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-mana
 import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
 import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
 
-export enum AutoConnectToPipResultEnum {
+enum AutoConnectToPipResultEnum {
 	SUCCESS = "SUCCESS",
 	ERROR = "ERROR",
 	NO_PIP_FOUND = "NO_PIP_FOUND"
