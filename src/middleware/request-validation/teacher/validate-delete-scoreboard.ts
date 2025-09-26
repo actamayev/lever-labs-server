@@ -3,14 +3,13 @@ import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts/types/api"
 
-const updateTeamScoreSchema = Joi.object({
-	teamNumber: Joi.number().integer().min(1).max(2).required(),
-	newScore: Joi.number().integer().min(0).max(1000).required()
+const deleteScoreboardSchema = Joi.object({
+	scoreboardId: Joi.string().uuid().required()
 }).required()
 
-export default function validateUpdateTeamScore(req: Request, res: Response, next: NextFunction): void {
+export default function validateDeleteScoreboard(req: Request, res: Response, next: NextFunction): void {
 	try {
-		const { error } = updateTeamScoreSchema.validate(req.body)
+		const { error } = deleteScoreboardSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
 			res.status(400).json({ validationError: error.details[0].message } satisfies ValidationErrorResponse)
@@ -20,7 +19,7 @@ export default function validateUpdateTeamScore(req: Request, res: Response, nex
 		next()
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to validate update team score" } satisfies ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate delete scoreboard" } satisfies ErrorResponse)
 		return
 	}
 }
