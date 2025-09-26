@@ -1,6 +1,6 @@
 import Singleton from "./singleton"
 import { ClassCode, ScoreboardUUID } from "@bluedotrobots/common-ts/types/utils"
-import { Scoreboard, TeamStats } from "@bluedotrobots/common-ts/types/scoreboard"
+import { Scoreboard, TeamStats, StudentJoinedScoreboardData } from "@bluedotrobots/common-ts/types/scoreboard"
 
 export default class ScoreboardManager extends Singleton {
 	private scoreboards: Map<ScoreboardUUID, Scoreboard> = new Map()
@@ -27,8 +27,8 @@ export default class ScoreboardManager extends Singleton {
 				scoreboardId,
 				classCode,
 				scoreboardName,
-				team1Stats: this.createBlankTeamStats(),
-				team2Stats: this.createBlankTeamStats(),
+				team1Stats: this.createBlankTeamStats("Team 1"),
+				team2Stats: this.createBlankTeamStats("Team 2"),
 				timeRemaining: 0
 			}
 		)
@@ -43,8 +43,8 @@ export default class ScoreboardManager extends Singleton {
 		this.scoreboards.delete(scoreboardId)
 	}
 
-	private createBlankTeamStats(): TeamStats {
-		return { teamName: "Team 1", score: 0 }
+	private createBlankTeamStats(teamName: string): TeamStats {
+		return { teamName, score: 0, students: [] }
 	}
 
 	public getScoreboards(classCode: ClassCode): Scoreboard[] {
@@ -62,5 +62,37 @@ export default class ScoreboardManager extends Singleton {
 		const scoreboard = this.getScoreboard(scoreboardId)
 		if (!scoreboard) return
 		scoreboard.timeRemaining = timeRemaining
+	}
+
+	public addStudent(scoreboardId: ScoreboardUUID, team: 1 | 2, studentId: number, username: string): void {
+		const scoreboard = this.getScoreboard(scoreboardId)
+		if (!scoreboard) return
+
+		const studentData: StudentJoinedScoreboardData = { studentId, username }
+
+		if (team === 1) {
+			// Check if student is already in team 1
+			if (!scoreboard.team1Stats.students.some(s => s.studentId === studentId)) {
+				scoreboard.team1Stats.students.push(studentData)
+			}
+		} else {
+			// Check if student is already in team 2
+			if (!scoreboard.team2Stats.students.some(s => s.studentId === studentId)) {
+				scoreboard.team2Stats.students.push(studentData)
+			}
+		}
+	}
+
+	public removeStudent(scoreboardId: ScoreboardUUID, team: 1 | 2, studentId: number): void {
+		const scoreboard = this.getScoreboard(scoreboardId)
+		if (!scoreboard) return
+
+		if (team === 1) {
+			// Remove from team 1
+			scoreboard.team1Stats.students = scoreboard.team1Stats.students.filter(s => s.studentId !== studentId)
+		} else {
+			// Remove from team 2
+			scoreboard.team2Stats.students = scoreboard.team2Stats.students.filter(s => s.studentId !== studentId)
+		}
 	}
 }
