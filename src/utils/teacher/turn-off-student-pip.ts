@@ -2,30 +2,6 @@ import getCurrentlyConnectedPipUUID from "../pip/get-currently-connected-pip-uui
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
 
-export function turnOffStudentPipLeds(studentUserId: number): void {
-	try {
-		const currentlyConnectedPipUUID = getCurrentlyConnectedPipUUID(studentUserId)
-		if (!currentlyConnectedPipUUID) return
-
-		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-			currentlyConnectedPipUUID, MessageBuilder.createLedMessage({
-				topLeftColor: { r: 0, g: 0, b: 0 },
-				topRightColor: { r: 0, g: 0, b: 0 },
-				middleLeftColor: { r: 0, g: 0, b: 0 },
-				middleRightColor: { r: 0, g: 0, b: 0 },
-				backLeftColor: { r: 0, g: 0, b: 0 },
-				backRightColor: { r: 0, g: 0, b: 0 }
-			})
-		)
-		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-			currentlyConnectedPipUUID, MessageBuilder.createHeadlightMessage(false)
-		)
-	} catch (error) {
-		console.error(error)
-		throw error
-	}
-}
-
 export function brakeStudentPip(studentUserId: number): void {
 	try {
 		const currentlyConnectedPipUUID = getCurrentlyConnectedPipUUID(studentUserId)
