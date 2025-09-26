@@ -17,20 +17,20 @@ export default async function addStudentToScoreboard(req: Request, res: Response
 		// Check if scoreboard exists
 		const scoreboard = ScoreboardManager.getInstance().getScoreboard(scoreboardId)
 		if (!scoreboard) {
-			res.status(404).json({ error: "Scoreboard not found" } satisfies ErrorResponse)
+			res.status(500).json({ error: "Scoreboard not found" } satisfies ErrorResponse)
 			return
 		}
 
 		// Verify the scoreboard belongs to the specified class
 		if (scoreboard.classCode !== classCode) {
-			res.status(403).json({ error: "Scoreboard does not belong to this class" } satisfies ErrorResponse)
+			res.status(500).json({ error: "Scoreboard does not belong to this class" } satisfies ErrorResponse)
 			return
 		}
 
 		// Get student username
 		const username = await getStudentUsername(studentId)
 		if (!username) {
-			res.status(404).json({ error: "Student not found" } satisfies ErrorResponse)
+			res.status(500).json({ error: "Student not found" } satisfies ErrorResponse)
 			return
 		}
 
