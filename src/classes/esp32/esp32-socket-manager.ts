@@ -415,7 +415,6 @@ export default class Esp32SocketManager extends Singleton {
 				return pipId
 			}
 		}
-		// console.log(Array.from(this.connections.values()).map(connection => connection.status))
 		return null
 	}
 

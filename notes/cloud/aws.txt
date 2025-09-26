@@ -24,7 +24,7 @@ Production:
 	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem ./.env.production ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src/.env.production
 	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem ./ecosystem.config.js ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
 	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem ./.npmrc ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots
-	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem -r ./dist/src/classes ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist
+	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem -r ./dist/src/classes ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
 	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem -r ./dist/src/controllers ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
 	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem -r ./dist/src/db-operations ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
 	scp -i /Users/arieltamayev/Documents/bdr-production-ec2.pem -r ./dist/src/db-seed-data ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
