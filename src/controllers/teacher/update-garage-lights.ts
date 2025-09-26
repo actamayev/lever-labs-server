@@ -4,7 +4,6 @@ import updateGarageLightsAllStudentsDB from "../../db-operations/write/student/u
 import getClassroomStudentIds from "../../db-operations/read/classroom/get-classroom-student-ids"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import { isEmpty } from "lodash"
-import { turnOffStudentPipLeds } from "../../utils/teacher/turn-off-student-pip"
 
 export default async function updateGarageLightsAllStudents(req: Request, res: Response): Promise<void> {
 	try {
@@ -20,11 +19,6 @@ export default async function updateGarageLightsAllStudents(req: Request, res: R
 		if (isEmpty(studentUserIds)) {
 			res.status(200).json({ success: "No students found in classroom" } satisfies SuccessResponse)
 			return
-		}
-		if (!garageLightsStatus) {
-			studentUserIds.forEach(studentUserId => {
-				turnOffStudentPipLeds(studentUserId)
-			})
 		}
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return

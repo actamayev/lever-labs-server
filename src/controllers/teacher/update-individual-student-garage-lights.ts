@@ -2,7 +2,6 @@ import { Response, Request } from "express"
 import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import getStudentUserId from "../../db-operations/read/student/get-student-user-id"
-import { turnOffStudentPipLeds } from "../../utils/teacher/turn-off-student-pip"
 import updateIndividualStudentGarageLightsDB from "../../db-operations/write/student/update-individual-student-garage-lights-db"
 
 export default async function updateIndividualStudentGarageLights(req: Request, res: Response): Promise<void> {
@@ -19,9 +18,7 @@ export default async function updateIndividualStudentGarageLights(req: Request, 
 		}
 
 		BrowserSocketManager.getInstance().emitGarageLightsStatusUpdateToStudents([studentUserId], garageLightsStatus)
-		if (!garageLightsStatus) {
-			turnOffStudentPipLeds(studentUserId)
-		}
+
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {
