@@ -3,6 +3,7 @@ import { DetailedClassroomData } from "@bluedotrobots/common-ts/types/api"
 import { ClassCode } from "@bluedotrobots/common-ts/types/utils"
 import HubManager from "../../../classes/hub-manager"
 import PrismaClientClass from "../../../classes/prisma-client"
+import ScoreboardManager from "../../../classes/scoreboard-manager"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function getDetailedTeacherClassroomData(
@@ -57,7 +58,8 @@ export default async function getDetailedTeacherClassroomData(
 				garageLightsAllowed: student.garage_lights_allowed,
 				garageDisplayAllowed: student.garage_display_allowed
 			})),
-			activeHubs: HubManager.getInstance().getTeacherHubs(userId)
+			activeHubs: HubManager.getInstance().getTeacherHubs(userId),
+			scoreboards: ScoreboardManager.getInstance().getScoreboards(classroom.classroom.class_code as ClassCode)
 		} satisfies DetailedClassroomData
 	} catch (error) {
 		console.error(error)

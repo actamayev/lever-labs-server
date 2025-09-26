@@ -1,7 +1,8 @@
 import { randomUUID } from "crypto"
 import { Response, Request } from "express"
-import { ErrorResponse, CreateScoreboardRequest } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse } from "@bluedotrobots/common-ts/types/api"
 import { ClassCode, ScoreboardUUID } from "@bluedotrobots/common-ts/types/utils"
+import { Scoreboard } from "@bluedotrobots/common-ts/types/scoreboard"
 import ScoreboardManager from "../../classes/scoreboard-manager"
 
 export default function createScoreboard(req: Request, res: Response): void {
@@ -10,9 +11,9 @@ export default function createScoreboard(req: Request, res: Response): void {
 		const { scoreboardName } = req.body as { scoreboardName: string }
 
 		const scoreboardId = randomUUID() as ScoreboardUUID
-		ScoreboardManager.getInstance().createScoreboard(scoreboardId, scoreboardName, classCode)
+		const scoreboard = ScoreboardManager.getInstance().createScoreboard(scoreboardId, scoreboardName, classCode)
 
-		res.status(200).json({ scoreboardId } satisfies CreateScoreboardRequest)
+		res.status(200).json(scoreboard satisfies Scoreboard)
 		return
 	} catch (error) {
 		console.error(error)

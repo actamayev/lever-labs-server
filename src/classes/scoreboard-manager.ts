@@ -20,7 +20,7 @@ export default class ScoreboardManager extends Singleton {
 		scoreboardId: ScoreboardUUID,
 		scoreboardName: string,
 		classCode: ClassCode
-	): void {
+	): Scoreboard {
 		this.scoreboards.set(
 			scoreboardId,
 			{
@@ -32,6 +32,7 @@ export default class ScoreboardManager extends Singleton {
 				timeRemaining: 0
 			}
 		)
+		return this.scoreboards.get(scoreboardId) as Scoreboard
 	}
 
 	public getScoreboard(scoreboardId: ScoreboardUUID): Scoreboard | undefined {
@@ -44,5 +45,22 @@ export default class ScoreboardManager extends Singleton {
 
 	private createBlankTeamStats(): TeamStats {
 		return { teamName: "Team 1", score: 0 }
+	}
+
+	public getScoreboards(classCode: ClassCode): Scoreboard[] {
+		return Array.from(this.scoreboards.values()).filter(scoreboard => scoreboard.classCode === classCode)
+	}
+
+	public setTeamScore(scoreboardId: ScoreboardUUID, team: 1 | 2, newScore: number): void {
+		const scoreboard = this.getScoreboard(scoreboardId)
+		if (!scoreboard) return
+		if (team === 1) scoreboard.team1Stats.score = newScore
+		else scoreboard.team2Stats.score = newScore
+	}
+
+	public setRemainingTime(scoreboardId: ScoreboardUUID, timeRemaining: number): void {
+		const scoreboard = this.getScoreboard(scoreboardId)
+		if (!scoreboard) return
+		scoreboard.timeRemaining = timeRemaining
 	}
 }
