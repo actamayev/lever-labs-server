@@ -1,0 +1,26 @@
+import Joi from "joi"
+import isUndefined from "lodash/isUndefined"
+import { Request, Response, NextFunction } from "express"
+import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts/types/api"
+
+const updateRemainingTimeSchema = Joi.object({
+	scoreboardId: Joi.string().uuid().required(),
+	timeRemainingInSeconds: Joi.number().integer().min(0).max(3600).required()
+}).required()
+
+export default function validateUpdateRemainingTime(req: Request, res: Response, next: NextFunction): void {
+	try {
+		const { error } = updateRemainingTimeSchema.validate(req.body)
+
+		if (!isUndefined(error)) {
+			res.status(400).json({ validationError: error.details[0].message } satisfies ValidationErrorResponse)
+			return
+		}
+
+		next()
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ error: "Internal Server Error: Unable to validate update remaining time" } satisfies ErrorResponse)
+		return
+	}
+}
