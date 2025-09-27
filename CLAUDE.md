@@ -1,4 +1,4 @@
-# Blue Dot Robots Server - Claude Instructions
+# Lever Labs Server - Claude Instructions
 
 ## Project Overview
 Educational robotics platform server built with Node.js/TypeScript, featuring ESP32 hardware integration, real-time communication, and AI-powered educational content.

@@ -1,7 +1,7 @@
 module.exports = {
 	apps: [
 	  {
-			name: "blue-dot-robots-server",
+			name: "lever-labs-server",
 			script: "./index.js",
 			instances: 1,
 			exec_mode: "fork", // 👈 force fork mode

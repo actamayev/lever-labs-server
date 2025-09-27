@@ -21,7 +21,7 @@ export default async function login(req: Request, res: Response): Promise<void> 
 		const credentialsResult = await retrieveUserFromContact(contact, loginContactType)
 		if (isNull(credentialsResult)) {
 			res.status(400).json(
-				{ message: `There is no Blue Dot Robots account associated with ${contact}. Please try again.` } satisfies MessageResponse
+				{ message: `There is no Lever Labs account associated with ${contact}. Please try again.` } satisfies MessageResponse
 			)
 			return
 		}

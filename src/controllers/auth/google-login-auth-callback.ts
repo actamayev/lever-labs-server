@@ -56,7 +56,7 @@ export default async function googleLoginAuthCallback(req: Request, res: Respons
 			const credentialsResult = await findUserById(userId)
 			if (isNull(credentialsResult)) {
 				// eslint-disable-next-line max-len
-				res.status(400).json({ message: `There is no Blue Dot Robots account associated with ${payload.email}. Please try again.` } satisfies MessageResponse)
+				res.status(400).json({ message: `There is no Lever Labs account associated with ${payload.email}. Please try again.` } satisfies MessageResponse)
 				return
 			}
 			accessToken = await signJWT({ userId, username: credentialsResult.username as string, isActive: true })
