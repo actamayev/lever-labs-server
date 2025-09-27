@@ -1,6 +1,6 @@
 import { MessageSender } from "@prisma/client"
-import { BlocklyJson } from "@bluedotrobots/common-ts/types/sandbox"
-import { SandboxProjectUUID } from "@bluedotrobots/common-ts/types/utils"
+import { BlocklyJson } from "@lever-labs/common-ts/types/sandbox"
+import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
 
 declare global {
 	interface RetrievedSandboxData {

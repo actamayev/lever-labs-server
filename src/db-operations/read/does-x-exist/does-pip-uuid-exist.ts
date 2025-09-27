@@ -1,5 +1,5 @@
 import PrismaClientClass from "../../../classes/prisma-client"
-import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
+import { PipUUID } from "@lever-labs/common-ts/types/utils"
 
 export default async function doesPipUUIDExist(pipUUID: PipUUID): Promise<boolean> {
 	try {

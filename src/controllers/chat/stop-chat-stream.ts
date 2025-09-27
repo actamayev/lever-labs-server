@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 import StreamManager from "../../classes/stream-manager"
 
 export default function stopChatStream(req: Request, res: Response): void {

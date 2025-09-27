@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import EspLatestFirmwareManager from "../../classes/esp32/esp-latest-firmware-manager"
-import { ErrorResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse } from "@lever-labs/common-ts/types/api"
 // This endpoint is hit by Pip when retrieving the latest firmware
 export default async function streamFirmwareUpdate(_req: Request, res: Response): Promise<void> {
 	try {

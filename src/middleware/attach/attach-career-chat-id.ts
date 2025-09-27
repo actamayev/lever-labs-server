@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse } from "@lever-labs/common-ts/types/api"
 import findOrCreateCareerChat from "../../db-operations/write/career-chat/find-or-create-career-chat"
 
 export default async function attachCareerChatId(

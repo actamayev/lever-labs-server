@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
-import { ScoreboardUUID } from "@bluedotrobots/common-ts/types/utils"
+import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
+import { ScoreboardUUID } from "@lever-labs/common-ts/types/utils"
 import ScoreboardManager from "../../classes/scoreboard-manager"
 
 export default function updateRemainingTime(req: Request, res: Response): void {

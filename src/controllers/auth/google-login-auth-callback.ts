@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import { SiteThemes } from "@prisma/client"
 import { isNull, isUndefined } from "lodash"
 import { BasicPersonalInfoResponse, ErrorResponse, GoogleAuthSuccess, MessageResponse,
-	StudentClassroomData, TeacherData } from "@bluedotrobots/common-ts/types/api"
+	StudentClassroomData, TeacherData } from "@lever-labs/common-ts/types/api"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import SecretsManager from "../../classes/aws/secrets-manager"

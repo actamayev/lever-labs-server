@@ -1,14 +1,14 @@
 import { isNull } from "lodash"
 import { Server as WSServer } from "ws"
-import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
-import { ESPToServerMessage } from "@bluedotrobots/common-ts/types/pip"
+import { PipUUID } from "@lever-labs/common-ts/types/utils"
+import { ESPToServerMessage } from "@lever-labs/common-ts/types/pip"
 import Singleton from "../singleton"
 import isPipUUID from "../../utils/type-helpers/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"
 import SingleESP32Connection from "./single-esp32-connection"
 import SendEsp32MessageManager from "./send-esp32-message-manager"
-import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
-import { UserConnectedStatus } from "@bluedotrobots/common-ts/protocol"
+import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
+import { UserConnectedStatus } from "@lever-labs/common-ts/protocol"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()

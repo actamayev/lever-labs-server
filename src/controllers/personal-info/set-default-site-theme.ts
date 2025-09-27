@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { SiteThemes } from "@prisma/client"
 import updateDefaultSiteTheme from "../../db-operations/write/credentials/update-default-site-theme"
-import { ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse, SuccessResponse} from "@lever-labs/common-ts/types/api"
 
 export default async function setDefaultSiteTheme(req: Request, res: Response): Promise<void> {
 	try {

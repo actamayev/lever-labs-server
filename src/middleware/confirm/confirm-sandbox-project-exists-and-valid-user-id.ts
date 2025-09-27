@@ -1,7 +1,7 @@
 import { isUndefined } from "lodash"
 import { Request, Response, NextFunction } from "express"
 import retrieveUserIdFromSandboxProjectUUID from "../../db-operations/read/sandbox_project/retrieve-user-id-from-sandbox-project-id"
-import { ErrorResponse, MessageResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse, MessageResponse } from "@lever-labs/common-ts/types/api"
 
 export default async function confirmSandboxProjectExistsAndValidUserId(
 	req: Request,

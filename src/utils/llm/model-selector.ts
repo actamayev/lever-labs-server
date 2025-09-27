@@ -1,4 +1,4 @@
-import { InteractionType } from "@bluedotrobots/common-ts/types/chat"
+import { InteractionType } from "@lever-labs/common-ts/types/chat"
 
 type ExtendedInteractionType = InteractionType | "checkCode"
 

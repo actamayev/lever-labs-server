@@ -1,6 +1,6 @@
 import { isNull } from "lodash"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, MessageResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse, MessageResponse } from "@lever-labs/common-ts/types/api"
 import getTeacherApprovalStatus from "../../db-operations/read/teacher/get-teacher-approval-status-and-teacher-id"
 
 export default async function confirmUserIsNotTeacher(

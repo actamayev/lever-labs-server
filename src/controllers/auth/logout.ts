@@ -1,4 +1,4 @@
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 import { Request, Response } from "express"
 import { clearAuthCookie } from "../../middleware/cookie-helpers"
 

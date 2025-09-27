@@ -102,14 +102,6 @@ npm run cloud-seed       # Seed in cloud
 - **Database**: RDS PostgreSQL
 - **Process Manager**: PM2 for server processes
 
-### Deploy Workflow
-1. `npm run build` locally
-2. SCP files to EC2 (see `notes/aws.txt` for commands)
-3. SSH into instance: `aws ec2-instance-connect ssh --instance-id [id] --os-user ubuntu`
-4. Navigate to app directory: `cd blue-dot-robots/`
-5. Install deps: `npm i --production`
-6. Restart: `pm2 restart 0 && pm2 logs`
-
 ### Database Access
 - **Staging**: PGAdmin
 - **Production**: SSH tunnel + psql (see `notes/aws.txt`)
@@ -186,6 +178,6 @@ pm2 restart [app_id]   # Restart specific process
 ## Important Notes
 
 - **Environment Files**: Use `.env.local` for development, `.env` only during migrations
-- **Package Updates**: Run `sudo npm update @bluedotrobots/common-ts` for common library
+- **Package Updates**: Run `sudo npm update @lever-labs/common-ts` for common library
 - **Code Style**: Follow existing patterns, use kebab-case for files
 - **Security**: Never commit secrets, use AWS Secrets Manager

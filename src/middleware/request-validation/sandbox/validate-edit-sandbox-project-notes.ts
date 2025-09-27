@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse, ValidationErrorResponse} from "@lever-labs/common-ts/types/api"
 
 const editSandboxProjectNotesSchema = Joi.object({
 	projectNotes: Joi.string().max(10000).allow("").required()

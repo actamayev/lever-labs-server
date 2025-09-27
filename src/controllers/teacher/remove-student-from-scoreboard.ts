@@ -1,7 +1,7 @@
 import { Response, Request } from "express"
-import { ErrorResponse } from "@bluedotrobots/common-ts/types/api"
-import { ClassCode, ScoreboardUUID } from "@bluedotrobots/common-ts/types/utils"
-import { Scoreboard } from "@bluedotrobots/common-ts/types/scoreboard"
+import { ErrorResponse } from "@lever-labs/common-ts/types/api"
+import { ClassCode, ScoreboardUUID } from "@lever-labs/common-ts/types/utils"
+import { Scoreboard } from "@lever-labs/common-ts/types/scoreboard"
 import ScoreboardManager from "../../classes/scoreboard-manager"
 
 export default function removeStudentFromScoreboard(req: Request, res: Response): void {

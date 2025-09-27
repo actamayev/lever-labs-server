@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import retrieveCompletedReadingBlocksDB from "../../db-operations/read/completed-reading-block/retrieve-completed-reading-blocks-db"
-import { ErrorResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse } from "@lever-labs/common-ts/types/api"
 
 export default async function retrieveCompletedReadingBlocks(req: Request, res: Response): Promise<void> {
 	try {

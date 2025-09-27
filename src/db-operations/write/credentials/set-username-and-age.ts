@@ -1,4 +1,4 @@
-import { NewGoogleInfoRequest } from "@bluedotrobots/common-ts/types/api"
+import { NewGoogleInfoRequest } from "@lever-labs/common-ts/types/api"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function setUsernameAndAge(

@@ -1,4 +1,4 @@
-import { ActivityUUID } from "@bluedotrobots/common-ts/types/lab"
+import { ActivityUUID } from "@lever-labs/common-ts/types/lab"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function findActivityIdFromUUID(activityUUID: ActivityUUID): Promise<number | null> {

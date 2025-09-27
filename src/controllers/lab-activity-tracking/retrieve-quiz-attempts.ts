@@ -1,7 +1,7 @@
 import { Response, Request } from "express"
 import retrieveQuestionsFromActivity from "../../db-operations/read/activity/retrieve-questions-from-activity"
-import { ErrorResponse } from "@bluedotrobots/common-ts/types/api"
-import { RetrievedQuestions } from "@bluedotrobots/common-ts/types/lab"
+import { ErrorResponse } from "@lever-labs/common-ts/types/api"
+import { RetrievedQuestions } from "@lever-labs/common-ts/types/lab"
 
 export default async function retrieveQuizAttempts(req: Request, res: Response): Promise<void> {
 	try {
