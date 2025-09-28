@@ -1,7 +1,7 @@
 import { Response, Request } from "express"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
-import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
+import { PipUUID } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 
 export default function pipTurningOffSerialConnection(req: Request, res: Response): void {
 	try {

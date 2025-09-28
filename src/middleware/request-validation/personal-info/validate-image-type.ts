@@ -1,6 +1,6 @@
 import { isUndefined } from "lodash"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, ValidationErrorResponse} from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse, ValidationErrorResponse} from "@lever-labs/common-ts/types/api"
 
 export default function validateImageType (req: Request, res: Response, next: NextFunction): void {
 	try {

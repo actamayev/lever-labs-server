@@ -1,6 +1,6 @@
 import { isEmpty } from "lodash"
 import { Response, Request } from "express"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import { stopStudentPipSound } from "../../utils/teacher/turn-off-student-pip"
 import getClassroomStudentIds from "../../db-operations/read/classroom/get-classroom-student-ids"

@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
-import { TeacherName } from "@bluedotrobots/common-ts/types/teacher"
+import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
+import { TeacherName } from "@lever-labs/common-ts/types/teacher"
 import updateTeacherName from "../../db-operations/write/teacher/update-teacher-name"
 
 export default async function editTeacherName(req: Request, res: Response): Promise<void> {

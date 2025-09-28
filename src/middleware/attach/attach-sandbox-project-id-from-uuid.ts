@@ -1,8 +1,8 @@
 import { isUndefined } from "lodash"
 import { Request, Response, NextFunction } from "express"
 import findSandboxProjectIdFromUUID from "../../db-operations/read/find/find-sandbox-project-id-from-uuid"
-import { SandboxProjectUUID } from "@bluedotrobots/common-ts/types/utils"
-import { ErrorResponse, MessageResponse } from "@bluedotrobots/common-ts/types/api"
+import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, MessageResponse } from "@lever-labs/common-ts/types/api"
 
 export default async function attachSandboxProjectIdFromUUID(req: Request, res: Response, next: NextFunction): Promise<void> {
 	try {

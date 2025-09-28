@@ -1,4 +1,4 @@
-import { SandboxChatMessage } from "@bluedotrobots/common-ts/types/chat"
+import { SandboxChatMessage } from "@lever-labs/common-ts/types/chat"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function retrieveSandboxChatMessages(sandboxChatId: number): Promise<SandboxChatMessage[]> {

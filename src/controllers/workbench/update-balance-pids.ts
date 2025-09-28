@@ -1,8 +1,8 @@
 import { Response, Request } from "express"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
-import { BalancePidsProps } from "@bluedotrobots/common-ts/types/garage"
-import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
+import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
+import { BalancePidsProps } from "@lever-labs/common-ts/types/garage"
+import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
 
 export default function updateBalancePids(req: Request, res: Response): void {
 	try {

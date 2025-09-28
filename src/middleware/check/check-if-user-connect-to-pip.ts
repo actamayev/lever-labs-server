@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express"
-import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
-import { ErrorResponse, MessageResponse} from "@bluedotrobots/common-ts/types/api"
+import { PipUUID } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, MessageResponse} from "@lever-labs/common-ts/types/api"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import { isUndefined } from "lodash"
 

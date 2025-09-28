@@ -1,8 +1,8 @@
 import { groupBy, isNull } from "lodash"
-import { AvailableBlock } from "@bluedotrobots/common-ts/types/career-quest"
-import { ParentCategoryName, SensorCategoryName, LogicCategoryName } from "@bluedotrobots/common-ts/types/blockly/block-categories"
-import { BlockNames} from "@bluedotrobots/common-ts/types/blockly/blockly"
-import { BLOCK_REGISTRY } from "@bluedotrobots/common-ts/types/utils/blockly-registry"
+import { AvailableBlock } from "@lever-labs/common-ts/types/career-quest"
+import { ParentCategoryName, SensorCategoryName, LogicCategoryName } from "@lever-labs/common-ts/types/blockly/block-categories"
+import { BlockNames} from "@lever-labs/common-ts/types/blockly/blockly"
+import { BLOCK_REGISTRY } from "@lever-labs/common-ts/types/utils/blockly-registry"
 
 interface CategorizedBlocks {
 	flatCategories: Record<string, AvailableBlock[]>

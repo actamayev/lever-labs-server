@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 import deleteCareerChat from "../../db-operations/write/career-chat/delete-career-chat"
 
 export default async function deleteCareerChatController(req: Request, res: Response): Promise<void> {

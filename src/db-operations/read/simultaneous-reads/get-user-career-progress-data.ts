@@ -4,10 +4,10 @@ import {
 	CareerQuestHint,
 	CareerQuestCodeSubmission,
 	CareerProgressData
-} from "@bluedotrobots/common-ts/types/api"
-import { BlocklyJson } from "@bluedotrobots/common-ts/types/sandbox"
-import { ChallengeChatMessage, SandboxChatMessage } from "@bluedotrobots/common-ts/types/chat"
-import { ChallengeUUID } from "@bluedotrobots/common-ts/types/utils"
+} from "@lever-labs/common-ts/types/api"
+import { BlocklyJson } from "@lever-labs/common-ts/types/sandbox"
+import { ChallengeChatMessage, SandboxChatMessage } from "@lever-labs/common-ts/types/chat"
+import { ChallengeUUID } from "@lever-labs/common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 // eslint-disable-next-line max-lines-per-function

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, jest } from "@jest/globals"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
-import { PipUUID, ClassCode } from "@bluedotrobots/common-ts/types/utils"
+import { PipUUID, ClassCode } from "@lever-labs/common-ts/types/utils"
 
 // Simplified mock types for testing
 type MockPrismaClient = {

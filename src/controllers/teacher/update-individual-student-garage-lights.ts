@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import getStudentUserId from "../../db-operations/read/student/get-student-user-id"
 import updateIndividualStudentGarageLightsDB from "../../db-operations/write/student/update-individual-student-garage-lights-db"

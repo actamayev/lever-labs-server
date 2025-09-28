@@ -1,6 +1,6 @@
 import { OutgoingSandboxChatData, SandboxChatMessage,
 	OutgoingChallengeGeneralMessage, OutgoingChallengeCheckCodeMessage,
-	OutgoingChallengeHintMessage, ChallengeChatMessage, OutgoingCareerMessage } from "@bluedotrobots/common-ts/types/chat"
+	OutgoingChallengeHintMessage, ChallengeChatMessage, OutgoingCareerMessage } from "@lever-labs/common-ts/types/chat"
 
 declare global {
 	interface ProcessedChallengeGeneralMessage extends OutgoingChallengeGeneralMessage {

@@ -1,4 +1,4 @@
-import { BlocklyJson } from "@bluedotrobots/common-ts/types/sandbox"
+import { BlocklyJson } from "@lever-labs/common-ts/types/sandbox"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function updateSandboxProject(sandboxProjectId: number, newBlocklyJson: BlocklyJson): Promise<void> {

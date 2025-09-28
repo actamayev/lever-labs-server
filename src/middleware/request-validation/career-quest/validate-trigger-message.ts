@@ -1,8 +1,8 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, ValidationErrorResponse } from "@bluedotrobots/common-ts/types/api"
-import { CareerType, MeetPipTriggerType } from "@bluedotrobots/common-ts/protocol"
+import { ErrorResponse, ValidationErrorResponse } from "@lever-labs/common-ts/types/api"
+import { CareerType, MeetPipTriggerType } from "@lever-labs/common-ts/protocol"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
 
 function validateTriggerMessageType(

@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 import addCompletedReadingBlock from "../../db-operations/write/completed-reading-block/add-completed-reading-block"
 
 export default async function markReadingBlockComplete(req: Request, res: Response): Promise<void> {

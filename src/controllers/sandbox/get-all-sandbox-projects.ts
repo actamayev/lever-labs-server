@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { ErrorResponse, RetrieveSandboxProjectsResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse, RetrieveSandboxProjectsResponse } from "@lever-labs/common-ts/types/api"
 import retrieveUserSandboxProjectData from "../../db-operations/read/sandbox_project/retrieve-user-sandbox-project-data"
 
 export default async function getAllSandboxProjects(req: Request, res: Response): Promise<void> {

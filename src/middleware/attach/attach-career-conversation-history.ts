@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse } from "@lever-labs/common-ts/types/api"
 import retrieveCareerChatMessages from "../../db-operations/read/career-message/retrieve-career-chat-messages"
 
 export default async function attachCareerConversationHistory(req: Request, res: Response, next: NextFunction): Promise<void> {
