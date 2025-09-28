@@ -2,38 +2,40 @@ To copy important files to AWS, run the following commands from the lever-labs-s
 Locally, run `npm run build`
 
 Staging:
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./package.json ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./package-lock.json ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./.env.production ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src/.env.staging
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./ecosystem.config.js ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./.npmrc ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/classes ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/controllers ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/db-operations ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/db-seed-data ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/middleware ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/prisma ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/routes ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/types ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/utils ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./prisma ubuntu@34.229.209.115:/home/ubuntu/blue-dot-robots/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./package.json ubuntu@34.229.209.115:/home/ubuntu/lever-labs
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./package-lock.json ubuntu@34.229.209.115:/home/ubuntu/lever-labs
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./.env.production ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src/.env.staging
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./ecosystem.config.js ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./.npmrc ubuntu@34.229.209.115:/home/ubuntu/lever-labs
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/index.js ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/classes ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/controllers ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/db-operations ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/db-seed-data ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/middleware ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/prisma ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/routes ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/types ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/utils ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./prisma ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
 
 Production:
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem ./package.json ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem ./package-lock.json ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem ./.env.production ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src/.env.production
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem ./ecosystem.config.js ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem ./.npmrc ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/classes ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/controllers ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/db-operations ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/db-seed-data ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/middleware ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/prisma ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/routes ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/types ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/utils ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./prisma ubuntu@54.81.65.153:/home/ubuntu/blue-dot-robots/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem ./package.json ubuntu@54.81.65.153:/home/ubuntu/lever-labs
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem ./package-lock.json ubuntu@54.81.65.153:/home/ubuntu/lever-labs
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem ./.env.production ubuntu@54.81.65.153:/home/ubuntu/lever-labs/dist/src/.env.production
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem ./ecosystem.config.js ubuntu@54.81.65.153:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem ./.npmrc ubuntu@54.81.65.153:/home/ubuntu/lever-labs
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/index.js ubuntu@54.81.65.153:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/classes ubuntu@54.81.65.153:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/controllers ubuntu@54.81.65.153:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/db-operations ubuntu@54.81.65.153:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/db-seed-data ubuntu@54.81.65.153:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/middleware ubuntu@54.81.65.153:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/prisma ubuntu@54.81.65.153:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/routes ubuntu@54.81.65.153:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/types ubuntu@54.81.65.153:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./dist/src/utils ubuntu@54.81.65.153:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2.pem -r ./prisma ubuntu@54.81.65.153:/home/ubuntu/lever-labs/dist/src
 
 To SSH into AWS:
 	Staging:
@@ -48,7 +50,7 @@ For Database migrations, navigate to dist/src, and run:
 
 Shortcuts:
 	Restart server after application update:
-		cd blue-dot-robots/ && npm i --production && pm2 restart 0 && pm2 logs;
+		cd lever-labs/ && npm i --production && pm2 restart 0 && pm2 logs;
 	DB (be in /dist/src folder)
 		npx prisma migrate deploy && npx prisma generate && pm2 restart 0 && pm2 logs;
 
@@ -66,3 +68,5 @@ Other:
 	sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
 
 Periodically locally run `depcheck` to see if any packages aren't being used
+
+When first settings up the server, create a lever-labs folder, and a dist folder inside of it, and a src folder inside of that.
