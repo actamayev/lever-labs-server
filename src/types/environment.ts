@@ -11,7 +11,7 @@ declare namespace NodeJS {
 		// Encryption:
 		EMAIL_ENCRYPTION_KEY: DeterministicEncryptionKeys
 
-		BDR_S3_BUCKET: string
+		LEVER_LABS_S3_BUCKET: string
 		FIRMWARE_S3_BUCKET: string
 
 		// Production only:

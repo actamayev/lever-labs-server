@@ -131,9 +131,9 @@ export default class SecretsManager extends Singleton {
 
 	private getSecretName(): string {
 		if (process.env.NODE_ENV === "staging") {
-			return "blue-dot-staging-secrets"
+			return "lever-labs-staging-secrets"
 		} else if (process.env.NODE_ENV === "production") {
-			return "blue-dot-production-secrets"
+			return "lever-labs-production-secrets"
 		}
 		return ""
 	}

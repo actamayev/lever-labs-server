@@ -32,7 +32,7 @@ export default class AwsS3 extends Singleton {
 
 	public async uploadImage(fileBuffer: Buffer, imageUUID: string): Promise<string> {
 		try {
-			const s3BucketName = await SecretsManager.getInstance().getSecret("BDR_S3_BUCKET")
+			const s3BucketName = await SecretsManager.getInstance().getSecret("LEVER_LABS_S3_BUCKET")
 
 			const key = `profile-pictures/${imageUUID}`
 			const command = new PutObjectCommand({
