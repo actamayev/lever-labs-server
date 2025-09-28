@@ -1,5 +1,5 @@
 import { isNull, isUndefined } from "lodash"
-import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
+import { PipUUID } from "@lever-labs/common-ts/types/utils"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 

@@ -1,6 +1,6 @@
 import { isNull } from "lodash"
-import { DetailedClassroomData } from "@bluedotrobots/common-ts/types/api"
-import { ClassCode } from "@bluedotrobots/common-ts/types/utils"
+import { DetailedClassroomData } from "@lever-labs/common-ts/types/api"
+import { ClassCode } from "@lever-labs/common-ts/types/utils"
 import HubManager from "../../../classes/hub-manager"
 import PrismaClientClass from "../../../classes/prisma-client"
 import ScoreboardManager from "../../../classes/scoreboard-manager"

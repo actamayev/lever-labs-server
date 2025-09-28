@@ -1,6 +1,6 @@
 import isNull from "lodash/isNull"
 import { Response, Request } from "express"
-import { ErrorResponse, LoginRequest, LoginSuccess, MessageResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse, LoginRequest, LoginSuccess, MessageResponse } from "@lever-labs/common-ts/types/api"
 import Hash from "../../classes/hash"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
@@ -21,7 +21,7 @@ export default async function login(req: Request, res: Response): Promise<void> 
 		const credentialsResult = await retrieveUserFromContact(contact, loginContactType)
 		if (isNull(credentialsResult)) {
 			res.status(400).json(
-				{ message: `There is no Blue Dot Robots account associated with ${contact}. Please try again.` } satisfies MessageResponse
+				{ message: `There is no Lever Labs account associated with ${contact}. Please try again.` } satisfies MessageResponse
 			)
 			return
 		}

@@ -1,4 +1,4 @@
-import { PipUUID } from "@bluedotrobots/common-ts/types/utils"
+import { PipUUID } from "@lever-labs/common-ts/types/utils"
 
 export default class SingleESP32Connection {
 	private _isAlive: boolean = true

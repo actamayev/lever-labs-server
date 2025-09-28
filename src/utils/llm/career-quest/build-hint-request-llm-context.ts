@@ -1,4 +1,4 @@
-import { ChallengeUUID } from "@bluedotrobots/common-ts/types/utils"
+import { ChallengeUUID } from "@lever-labs/common-ts/types/utils"
 import findChallengeDataFromUUID from "../find-challenge-data-from-uuid"
 
 // eslint-disable-next-line max-lines-per-function

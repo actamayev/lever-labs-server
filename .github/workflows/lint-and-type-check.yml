@@ -15,7 +15,7 @@ jobs:
         node-version: 'lts/*'
         cache: 'npm'
         registry-url: 'https://npm.pkg.github.com'
-        scope: '@bluedotrobots'
+        scope: '@lever-labs'
 
     - name: Install dependencies
       run: npm ci
@@ -37,7 +37,7 @@ jobs:
         node-version: 'lts/*'
         cache: 'npm'
         registry-url: 'https://npm.pkg.github.com'
-        scope: '@bluedotrobots'
+        scope: '@lever-labs'
 
     - name: Install dependencies
       run: npm ci

@@ -1,5 +1,5 @@
 import { clamp } from "lodash"
-import { MotorControlData } from "@bluedotrobots/common-ts/types/garage"
+import { MotorControlData } from "@lever-labs/common-ts/types/garage"
 
 interface MotorSpeeds {
 	leftMotor: number

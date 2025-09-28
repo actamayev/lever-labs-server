@@ -1,10 +1,10 @@
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 import calculateMotorSpeeds from "../calculate-motor-speeds"
-import { ClientSocketEvents, ClientSocketEventPayloadMap } from "@bluedotrobots/common-ts/types/socket"
-import { MessageBuilder } from "@bluedotrobots/common-ts/message-builder"
-import { tuneToSoundType } from "@bluedotrobots/common-ts/protocol"
-import { LedControlData, MotorControlData, HeadlightData, HornData } from "@bluedotrobots/common-ts/types/garage"
-import { ExtendedPlayFunSoundPayload } from "@bluedotrobots/common-ts/dist/src/types/socket"
+import { ClientSocketEvents, ClientSocketEventPayloadMap } from "@lever-labs/common-ts/types/socket"
+import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
+import { tuneToSoundType } from "@lever-labs/common-ts/protocol"
+import { LedControlData, MotorControlData, HeadlightData, HornData } from "@lever-labs/common-ts/types/garage"
+import { ExtendedPlayFunSoundPayload } from "@lever-labs/common-ts/dist/src/types/socket"
 
 type ListenerHandler<T> = (payload: T) => void
 

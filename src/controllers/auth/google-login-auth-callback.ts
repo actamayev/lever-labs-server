@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import { SiteThemes } from "@prisma/client"
 import { isNull, isUndefined } from "lodash"
 import { BasicPersonalInfoResponse, ErrorResponse, GoogleAuthSuccess, MessageResponse,
-	StudentClassroomData, TeacherData } from "@bluedotrobots/common-ts/types/api"
+	StudentClassroomData, TeacherData } from "@lever-labs/common-ts/types/api"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import SecretsManager from "../../classes/aws/secrets-manager"
@@ -56,7 +56,7 @@ export default async function googleLoginAuthCallback(req: Request, res: Respons
 			const credentialsResult = await findUserById(userId)
 			if (isNull(credentialsResult)) {
 				// eslint-disable-next-line max-len
-				res.status(400).json({ message: `There is no Blue Dot Robots account associated with ${payload.email}. Please try again.` } satisfies MessageResponse)
+				res.status(400).json({ message: `There is no Lever Labs account associated with ${payload.email}. Please try again.` } satisfies MessageResponse)
 				return
 			}
 			accessToken = await signJWT({ userId, username: credentialsResult.username as string, isActive: true })

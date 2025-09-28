@@ -1,8 +1,8 @@
-# Blue Dot Robots Server - Testing Strategy & Implementation
+# Lever Labs Server - Testing Strategy & Implementation
 
 ## Overview
 
-This document outlines the comprehensive testing strategy implemented for the Blue Dot Robots server, focusing on stability improvements and critical system validation.
+This document outlines the comprehensive testing strategy implemented for the Lever Labs server, focusing on stability improvements and critical system validation.
 
 ## Testing Framework
 

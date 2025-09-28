@@ -1,6 +1,6 @@
 import Singleton from "./singleton"
-import { ClassCode, ScoreboardUUID } from "@bluedotrobots/common-ts/types/utils"
-import { Scoreboard, TeamStats, StudentJoinedScoreboardData } from "@bluedotrobots/common-ts/types/scoreboard"
+import { ClassCode, ScoreboardUUID } from "@lever-labs/common-ts/types/utils"
+import { Scoreboard, TeamStats, StudentJoinedScoreboardData } from "@lever-labs/common-ts/types/scoreboard"
 
 export default class ScoreboardManager extends Singleton {
 	private scoreboards: Map<ScoreboardUUID, Scoreboard> = new Map()

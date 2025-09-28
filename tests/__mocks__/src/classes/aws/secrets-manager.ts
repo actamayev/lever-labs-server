@@ -10,7 +10,7 @@ export const mockSecretsManager = {
 				"GOOGLE_CLIENT_ID": "test-google-client-id",
 				"GOOGLE_CLIENT_SECRET": "test-google-client-secret",
 				"EMAIL_ENCRYPTION_KEY": "dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcw==",
-				"BDR_S3_BUCKET": "test-bdr-s3-bucket",
+				"LEVER_LABS_S3_BUCKET": "test-bdr-s3-bucket",
 				"FIRMWARE_S3_BUCKET": "test-firmware-s3-bucket",
 				"DATABASE_URL": "test-database-url",
 				"AWS_ACCESS_KEY_ID": "test-aws-access-key-id",

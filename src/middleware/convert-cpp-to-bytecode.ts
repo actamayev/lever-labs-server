@@ -1,5 +1,5 @@
-import { ErrorResponse} from "@bluedotrobots/common-ts/types/api"
-import { CppParser } from "@bluedotrobots/common-ts/parsers"
+import { ErrorResponse} from "@lever-labs/common-ts/types/api"
+import { CppParser } from "@lever-labs/common-ts/parsers"
 import { Request, Response, NextFunction } from "express"
 
 export default function convertCppToBytecode(req: Request, res: Response, next: NextFunction): void {

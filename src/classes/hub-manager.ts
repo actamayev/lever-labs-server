@@ -1,5 +1,5 @@
-import { StudentViewHubData, TeacherViewHubData } from "@bluedotrobots/common-ts/types/hub"
-import { ClassCode, HubUUID } from "@bluedotrobots/common-ts/types/utils"
+import { StudentViewHubData, TeacherViewHubData } from "@lever-labs/common-ts/types/hub"
+import { ClassCode, HubUUID } from "@lever-labs/common-ts/types/utils"
 import Singleton from "./singleton"
 
 interface Hub extends TeacherViewHubData {

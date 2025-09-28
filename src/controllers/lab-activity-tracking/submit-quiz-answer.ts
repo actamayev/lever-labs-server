@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import submitQuestionAnswerDb from "../../db-operations/write/user-answer/submit-question-answer-db"
-import { ErrorResponse, SuccessResponse } from "@bluedotrobots/common-ts/types/api"
+import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 
 export default async function submitQuizAnswer(req: Request, res: Response): Promise<void> {
 	try {

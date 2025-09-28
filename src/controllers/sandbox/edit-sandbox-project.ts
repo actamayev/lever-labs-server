@@ -1,7 +1,7 @@
 import { Response, Request } from "express"
 import updateSandboxProject from "../../db-operations/write/sandbox-project/update-sandbox-project"
-import { ErrorResponse, SuccessResponse} from "@bluedotrobots/common-ts/types/api"
-import { BlocklyJson } from "@bluedotrobots/common-ts/types/sandbox"
+import { ErrorResponse, SuccessResponse} from "@lever-labs/common-ts/types/api"
+import { BlocklyJson } from "@lever-labs/common-ts/types/sandbox"
 
 export default async function editSandboxProject(req: Request, res: Response): Promise<void> {
 	try {

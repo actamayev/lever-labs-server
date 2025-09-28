@@ -1,4 +1,4 @@
-import { RetrievedQuestions, QuestionUUID } from "@bluedotrobots/common-ts/types/lab"
+import { RetrievedQuestions, QuestionUUID } from "@lever-labs/common-ts/types/lab"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 // eslint-disable-next-line max-lines-per-function

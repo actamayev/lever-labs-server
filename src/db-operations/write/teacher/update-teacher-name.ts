@@ -1,4 +1,4 @@
-import { TeacherName } from "@bluedotrobots/common-ts/types/teacher"
+import { TeacherName } from "@lever-labs/common-ts/types/teacher"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function updateTeacherName(
