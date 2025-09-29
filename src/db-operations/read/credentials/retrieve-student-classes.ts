@@ -32,9 +32,7 @@ export default async function retrieveStudentClasses(userId: number): Promise<St
 			}
 		})
 
-		if (!studentData?.student) {
-			return []
-		}
+		if (!studentData?.student) return []
 
 		return await Promise.all(
 			studentData.student.map(async singleStudentData => ({

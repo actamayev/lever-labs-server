@@ -102,7 +102,7 @@ export default class RedisManager extends Singleton {
 	/**
 	 * Get all keys matching a pattern (use sparingly in production)
 	 */
-	public async keys(pattern: string): Promise<RedisKey[]> {
+	public async keys(pattern: RedisWildcardPattern): Promise<RedisKey[]> {
 		return (await this.client.keys(pattern)) as RedisKey[]
 	}
 }
