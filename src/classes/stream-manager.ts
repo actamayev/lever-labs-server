@@ -1,3 +1,4 @@
+import { isNull } from "lodash"
 import SingletonWithRedis from "./singletons/singleton-with-redis"
 
 export default class StreamManager extends SingletonWithRedis {
@@ -34,12 +35,9 @@ export default class StreamManager extends SingletonWithRedis {
 		const redis = await this.getRedis()
 		const streamExists = await redis.get(`stream:${streamId}`)
 
-		if (streamExists) {
-			await this.cleanupStream(streamId)
-			return true
-		}
-
-		return false
+		if (isNull(streamExists)) return false
+		await this.cleanupStream(streamId)
+		return true
 	}
 
 	// Clean up a stream
