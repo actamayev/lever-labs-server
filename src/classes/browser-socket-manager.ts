@@ -26,7 +26,6 @@ type UserConnectionState = {
 }
 
 export default class BrowserSocketManager extends SingletonWithRedis {
-
 	private constructor(private readonly io: SocketIOServer) {
 		super()
 		this.initializeListeners()
