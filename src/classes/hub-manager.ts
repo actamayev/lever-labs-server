@@ -1,13 +1,12 @@
 import { StudentViewHubData, TeacherViewHubData } from "@lever-labs/common-ts/types/hub"
 import { ClassCode, HubUUID } from "@lever-labs/common-ts/types/utils"
-import Singleton from "./singletons/singleton"
+import SingletonWithRedis from "./singletons/singleton-with-redis"
 
 interface Hub extends TeacherViewHubData {
 	teacherId: number
 }
 
-export default class HubManager extends Singleton {
-	private hubs: Map<HubUUID, Hub> = new Map()
+export default class HubManager extends SingletonWithRedis {
 
 	private constructor() {
 		super()
@@ -20,93 +19,180 @@ export default class HubManager extends Singleton {
 		return HubManager.instance
 	}
 
-	public createHub(hubId: HubUUID, hub: Hub): void {
-		this.hubs.set(hubId, hub)
+	public async createHub(hubId: HubUUID, hub: Hub): Promise<void> {
+		const redis = await this.getRedis()
+		await redis.set(`hub:${hubId}`, JSON.stringify(hub))
 	}
 
-	public deleteHub(hubId: HubUUID): void {
-		this.hubs.delete(hubId)
+	public async deleteHub(hubId: HubUUID): Promise<void> {
+		const redis = await this.getRedis()
+		await redis.del(`hub:${hubId}`)
 	}
 
-	public setSlideId(hubId: HubUUID, slideId: string): void {
-		const hub = this.hubs.get(hubId)
-		if (!hub) return
+	public async setSlideId(hubId: HubUUID, slideId: string): Promise<void> {
+		const redis = await this.getRedis()
+		const hubData = await redis.get(`hub:${hubId}`)
+		if (!hubData) return
+
+		const hub = JSON.parse(hubData) as Hub
 		hub.slideId = slideId
+		await redis.set(`hub:${hubId}`, JSON.stringify(hub))
 	}
 
-	public addStudentToHub(hubId: HubUUID, userId: number, username: string): Hub | null {
-		const hub = this.hubs.get(hubId)
-		if (!hub) return null
+	public async addStudentToHub(hubId: HubUUID, userId: number, username: string): Promise<Hub | null> {
+		const redis = await this.getRedis()
+		const hubData = await redis.get(`hub:${hubId}`)
+		if (!hubData) return null
+
+		const hub = JSON.parse(hubData) as Hub
 		hub.studentsJoined.push({ userId, username })
+		await redis.set(`hub:${hubId}`, JSON.stringify(hub))
 		return hub
 	}
 
-	public removeStudentFromHub(hubId: HubUUID, userId: number): void {
-		const hub = this.hubs.get(hubId)
-		if (!hub) return
+	public async removeStudentFromHub(hubId: HubUUID, userId: number): Promise<void> {
+		const redis = await this.getRedis()
+		const hubData = await redis.get(`hub:${hubId}`)
+		if (!hubData) return
+
+		const hub = JSON.parse(hubData) as Hub
 		hub.studentsJoined = hub.studentsJoined.filter(student => student.userId !== userId)
+		await redis.set(`hub:${hubId}`, JSON.stringify(hub))
 	}
 
-	public removeStudentFromAllHubs(userId: number): void {
-		this.hubs.forEach(hub => {
+	public async removeStudentFromAllHubs(userId: number): Promise<void> {
+		const redis = await this.getRedis()
+		const keys = await redis.keys("hub:*")
+
+		for (const key of keys) {
+			const hubData = await redis.get(key)
+			if (!hubData) continue
+
+			const hub = JSON.parse(hubData) as Hub
 			hub.studentsJoined = hub.studentsJoined.filter(student => student.userId !== userId)
-		})
+			await redis.set(key, JSON.stringify(hub))
+		}
 	}
 
-	public doesHubBelongToTeacher(hubId: HubUUID, teacherId: number): boolean {
-		const hub = this.hubs.get(hubId)
-		if (!hub) return false
+	public async doesHubBelongToTeacher(hubId: HubUUID, teacherId: number): Promise<boolean> {
+		const redis = await this.getRedis()
+		const hubData = await redis.get(`hub:${hubId}`)
+		if (!hubData) return false
+
+		const hub = JSON.parse(hubData) as Hub
 		return hub.teacherId === teacherId
 	}
 
-	public getStudentHubs(classCode: ClassCode): StudentViewHubData[] {
-		return Array.from(this.hubs.values()).filter(hub => hub.classCode === classCode).map(hub => ({
-			hubId: hub.hubId,
-			classCode: hub.classCode,
-			careerUUID: hub.careerUUID,
-			slideId: hub.slideId,
-			hubName: hub.hubName
-		}))
+	public async getStudentHubs(classCode: ClassCode): Promise<StudentViewHubData[]> {
+		const redis = await this.getRedis()
+		const keys = await redis.keys("hub:*")
+		const hubs: StudentViewHubData[] = []
+
+		for (const key of keys) {
+			const hubData = await redis.get(key)
+			if (!hubData) continue
+
+			const hub = JSON.parse(hubData) as Hub
+			if (hub.classCode === classCode) {
+				hubs.push({
+					hubId: hub.hubId,
+					classCode: hub.classCode,
+					careerUUID: hub.careerUUID,
+					slideId: hub.slideId,
+					hubName: hub.hubName
+				})
+			}
+		}
+
+		return hubs
 	}
 
-	public getTeacherHubs(teacherId: number): TeacherViewHubData[] {
-		return Array.from(this.hubs.values()).filter(hub => hub.teacherId === teacherId).map(hub => ({
-			hubId: hub.hubId,
-			classCode: hub.classCode,
-			careerUUID: hub.careerUUID,
-			slideId: hub.slideId,
-			hubName: hub.hubName,
-			studentsJoined: hub.studentsJoined
-		}))
+	public async getTeacherHubs(teacherId: number): Promise<TeacherViewHubData[]> {
+		const redis = await this.getRedis()
+		const keys = await redis.keys("hub:*")
+		const hubs: TeacherViewHubData[] = []
+
+		for (const key of keys) {
+			const hubData = await redis.get(key)
+			if (!hubData) continue
+
+			const hub = JSON.parse(hubData) as Hub
+			if (hub.teacherId === teacherId) {
+				hubs.push({
+					hubId: hub.hubId,
+					classCode: hub.classCode,
+					careerUUID: hub.careerUUID,
+					slideId: hub.slideId,
+					hubName: hub.hubName,
+					studentsJoined: hub.studentsJoined
+				})
+			}
+		}
+
+		return hubs
 	}
 
-	public getClassroomActiveHubs(classCode: ClassCode): StudentViewHubData[] {
-		return Array.from(this.hubs.values()).filter(hub => hub.classCode === classCode).map(hub => ({
-			hubId: hub.hubId,
-			classCode: hub.classCode,
-			careerUUID: hub.careerUUID,
-			slideId: hub.slideId,
-			hubName: hub.hubName
-		}))
+	public async getClassroomActiveHubs(classCode: ClassCode): Promise<StudentViewHubData[]> {
+		const redis = await this.getRedis()
+		const keys = await redis.keys("hub:*")
+		const hubs: StudentViewHubData[] = []
+
+		for (const key of keys) {
+			const hubData = await redis.get(key)
+			if (!hubData) continue
+
+			const hub = JSON.parse(hubData) as Hub
+			if (hub.classCode === classCode) {
+				hubs.push({
+					hubId: hub.hubId,
+					classCode: hub.classCode,
+					careerUUID: hub.careerUUID,
+					slideId: hub.slideId,
+					hubName: hub.hubName
+				})
+			}
+		}
+
+		return hubs
 	}
 
-	public checkIfStudentInHub(hubId: HubUUID, userId: number): boolean {
-		const hub = this.hubs.get(hubId)
-		if (!hub) return false
+	public async checkIfStudentInHub(hubId: HubUUID, userId: number): Promise<boolean> {
+		const redis = await this.getRedis()
+		const hubData = await redis.get(`hub:${hubId}`)
+		if (!hubData) return false
+
+		const hub = JSON.parse(hubData) as Hub
 		return hub.studentsJoined.some(student => student.userId === userId)
 	}
 
-	public getStudentHubsByUserId(userId: number): { hubId: HubUUID, classCode: ClassCode, teacherId: number }[] {
-		return Array.from(this.hubs.values()).filter(hub => hub.studentsJoined.some(student => student.userId === userId)).map(hub => ({
-			hubId: hub.hubId,
-			classCode: hub.classCode,
-			teacherId: hub.teacherId
-		}))
+	public async getStudentHubsByUserId(userId: number): Promise<{ hubId: HubUUID, classCode: ClassCode, teacherId: number }[]> {
+		const redis = await this.getRedis()
+		const keys = await redis.keys("hub:*")
+		const studentHubs: { hubId: HubUUID, classCode: ClassCode, teacherId: number }[] = []
+
+		for (const key of keys) {
+			const hubData = await redis.get(key)
+			if (!hubData) continue
+
+			const hub = JSON.parse(hubData) as Hub
+			if (hub.studentsJoined.some(student => student.userId === userId)) {
+				studentHubs.push({
+					hubId: hub.hubId,
+					classCode: hub.classCode,
+					teacherId: hub.teacherId
+				})
+			}
+		}
+
+		return studentHubs
 	}
 
-	public getStudentIdsByHubId(hubId: HubUUID): number[] {
-		const hub = this.hubs.get(hubId)
-		if (!hub) return []
+	public async getStudentIdsByHubId(hubId: HubUUID): Promise<number[]> {
+		const redis = await this.getRedis()
+		const hubData = await redis.get(`hub:${hubId}`)
+		if (!hubData) return []
+
+		const hub = JSON.parse(hubData) as Hub
 		return hub.studentsJoined.map(student => student.userId)
 	}
 }

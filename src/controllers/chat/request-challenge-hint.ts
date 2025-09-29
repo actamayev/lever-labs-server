@@ -35,7 +35,7 @@ export default async function requestChallengeHint(req: Request, res: Response):
 
 		// Code is incorrect - proceed with hint request
 		// Create a new stream and get streamId
-		const { streamId, abortController } = StreamManager.getInstance().createStream()
+		const { streamId, abortController } = await StreamManager.getInstance().createStream()
 
 		// Immediately respond with streamId so client can use it to stop if needed
 		res.status(200).json({ streamId } satisfies StartChatSuccess)
@@ -136,6 +136,6 @@ async function processHintRequest(
 		}
 	} finally {
 		// Clean up the stream
-		StreamManager.getInstance().stopStream(streamId)
+		void StreamManager.getInstance().stopStream(streamId)
 	}
 }

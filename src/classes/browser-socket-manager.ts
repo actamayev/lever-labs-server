@@ -162,7 +162,7 @@ export default class BrowserSocketManager extends Singleton {
 				}
 			}
 
-			handleDisconnectHubHelper(userId)
+			void handleDisconnectHubHelper(userId)
 			// Remove user entirely since no sockets remain
 			this.connections.delete(userId)
 		} catch (error) {

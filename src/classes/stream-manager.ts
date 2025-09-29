@@ -1,7 +1,6 @@
-import Singleton from "./singletons/singleton"
+import SingletonWithRedis from "./singletons/singleton-with-redis"
 
-export default class StreamManager extends Singleton {
-	private activeStreams = new Map<string, AbortController>()
+export default class StreamManager extends SingletonWithRedis {
 
 	private constructor() {
 		super()
@@ -15,27 +14,28 @@ export default class StreamManager extends Singleton {
 	}
 
 	// Start a new stream and return streamId
-	public createStream(): { streamId: string; abortController: AbortController } {
+	public async createStream(): Promise<{ streamId: string; abortController: AbortController }> {
 		const streamId = `stream_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`
 		const abortController = new AbortController()
 
-		this.activeStreams.set(streamId, abortController)
+		const redis = await this.getRedis()
+		await redis.set(`stream:${streamId}`, "active")
 
 		// Auto-cleanup after exit
 		setTimeout(() => {
-			this.cleanupStream(streamId)
+			void this.cleanupStream(streamId)
 		}, 30 * 1000)
 
 		return { streamId, abortController }
 	}
 
 	// Stop a stream
-	public stopStream(streamId: string): boolean {
-		const abortController = this.activeStreams.get(streamId)
+	public async stopStream(streamId: string): Promise<boolean> {
+		const redis = await this.getRedis()
+		const streamExists = await redis.get(`stream:${streamId}`)
 
-		if (abortController) {
-			abortController.abort()
-			this.cleanupStream(streamId)
+		if (streamExists) {
+			await this.cleanupStream(streamId)
 			return true
 		}
 
@@ -43,7 +43,8 @@ export default class StreamManager extends Singleton {
 	}
 
 	// Clean up a stream
-	private cleanupStream(streamId: string): void {
-		this.activeStreams.delete(streamId)
+	private async cleanupStream(streamId: string): Promise<void> {
+		const redis = await this.getRedis()
+		await redis.del(`stream:${streamId}`)
 	}
 }

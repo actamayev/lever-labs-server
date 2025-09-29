@@ -10,14 +10,14 @@ import BrowserSocketManager from "../../classes/browser-socket-manager"
 import buildSandboxLLMContext from "../../utils/llm/build-sandbox-llm-context"
 import addSandboxMessage from "../../db-operations/write/sandbox-message/add-sandbox-message"
 
-export default function sendSandboxMessage(req: Request, res: Response): void {
+export default async function sendSandboxMessage(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
 		const { projectUUID } = req.params as { projectUUID: SandboxProjectUUID }
 		const chatData = req.body as ProcessedSandboxChatData
 
 		// Create a new stream and get streamId
-		const { streamId, abortController } = StreamManager.getInstance().createStream()
+		const { streamId, abortController } = await StreamManager.getInstance().createStream()
 
 		// Immediately respond with streamId so client can use it to stop if needed
 		res.status(200).json({ streamId } satisfies StartChatSuccess)
@@ -138,6 +138,6 @@ async function processLLMRequest(
 		}
 	} finally {
 		// Clean up the stream
-		StreamManager.getInstance().stopStream(streamId)
+		void StreamManager.getInstance().stopStream(streamId)
 	}
 }

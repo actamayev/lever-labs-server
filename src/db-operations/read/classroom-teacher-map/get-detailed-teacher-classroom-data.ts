@@ -58,7 +58,7 @@ export default async function getDetailedTeacherClassroomData(
 				garageLightsAllowed: student.garage_lights_allowed,
 				garageDisplayAllowed: student.garage_display_allowed
 			})),
-			activeHubs: HubManager.getInstance().getTeacherHubs(userId),
+			activeHubs: await HubManager.getInstance().getTeacherHubs(userId),
 			scoreboards: await ScoreboardManager.getInstance().getScoreboards(classroom.classroom.class_code as ClassCode)
 		} satisfies DetailedClassroomData
 	} catch (error) {

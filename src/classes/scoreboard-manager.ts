@@ -1,3 +1,4 @@
+import { isNull } from "lodash"
 import SingletonWithRedis from "./singletons/singleton-with-redis"
 import { ClassCode, ScoreboardUUID } from "@lever-labs/common-ts/types/utils"
 import { Scoreboard, TeamStats, StudentJoinedScoreboardData } from "@lever-labs/common-ts/types/scoreboard"
@@ -29,14 +30,14 @@ export default class ScoreboardManager extends SingletonWithRedis {
 		}
 
 		const redis = await this.getRedis()
-		await redis.set(`scoreboard:${scoreboardId}` as RedisKey, JSON.stringify(scoreboard))
+		await redis.set(`scoreboard:${scoreboardId}`, JSON.stringify(scoreboard))
 
 		return scoreboard
 	}
 
 	public async getScoreboard(scoreboardId: ScoreboardUUID): Promise<Scoreboard | undefined> {
 		const redis = await this.getRedis()
-		const data = await redis.get(`scoreboard:${scoreboardId}` as RedisKey)
+		const data = await redis.get(`scoreboard:${scoreboardId}`)
 
 		if (!data) return undefined
 
@@ -45,7 +46,7 @@ export default class ScoreboardManager extends SingletonWithRedis {
 
 	public async cleanupScoreboard(scoreboardId: ScoreboardUUID): Promise<void> {
 		const redis = await this.getRedis()
-		await redis.del(`scoreboard:${scoreboardId}` as RedisKey)
+		await redis.del(`scoreboard:${scoreboardId}`)
 	}
 
 	private createBlankTeamStats(teamName: string): TeamStats {
@@ -59,12 +60,11 @@ export default class ScoreboardManager extends SingletonWithRedis {
 		const scoreboards: Scoreboard[] = []
 
 		for (const key of keys) {
-			const data = await redis.get(key as RedisKey)
-			if (data) {
-				const scoreboard = JSON.parse(data) as Scoreboard
-				if (scoreboard.classCode === classCode) {
-					scoreboards.push(scoreboard)
-				}
+			const data = await redis.get(key)
+			if (isNull(data)) continue
+			const scoreboard = JSON.parse(data) as Scoreboard
+			if (scoreboard.classCode === classCode) {
+				scoreboards.push(scoreboard)
 			}
 		}
 
@@ -79,7 +79,7 @@ export default class ScoreboardManager extends SingletonWithRedis {
 		else scoreboard.team2Stats.score = newScore
 
 		const redis = await this.getRedis()
-		await redis.set(`scoreboard:${scoreboardId}` as RedisKey, JSON.stringify(scoreboard))
+		await redis.set(`scoreboard:${scoreboardId}`, JSON.stringify(scoreboard))
 	}
 
 	public async setRemainingTime(scoreboardId: ScoreboardUUID, timeRemaining: number): Promise<void> {
@@ -89,7 +89,7 @@ export default class ScoreboardManager extends SingletonWithRedis {
 		scoreboard.timeRemaining = timeRemaining
 
 		const redis = await this.getRedis()
-		await redis.set(`scoreboard:${scoreboardId}` as RedisKey, JSON.stringify(scoreboard))
+		await redis.set(`scoreboard:${scoreboardId}`, JSON.stringify(scoreboard))
 	}
 
 	public async addStudent(scoreboardId: ScoreboardUUID, team: 1 | 2, studentId: number, username: string): Promise<void> {
@@ -111,7 +111,7 @@ export default class ScoreboardManager extends SingletonWithRedis {
 		}
 
 		const redis = await this.getRedis()
-		await redis.set(`scoreboard:${scoreboardId}` as RedisKey, JSON.stringify(scoreboard))
+		await redis.set(`scoreboard:${scoreboardId}`, JSON.stringify(scoreboard))
 	}
 
 	public async removeStudent(scoreboardId: ScoreboardUUID, team: 1 | 2, studentId: number): Promise<void> {
@@ -127,6 +127,6 @@ export default class ScoreboardManager extends SingletonWithRedis {
 		}
 
 		const redis = await this.getRedis()
-		await redis.set(`scoreboard:${scoreboardId}` as RedisKey, JSON.stringify(scoreboard))
+		await redis.set(`scoreboard:${scoreboardId}`, JSON.stringify(scoreboard))
 	}
 }

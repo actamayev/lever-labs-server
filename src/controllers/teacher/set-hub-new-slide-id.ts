@@ -12,7 +12,7 @@ export default async function setHubNewSlideId(req: Request, res: Response): Pro
 		const { hubId, newSlideId } = req.body as { hubId: HubUUID, newSlideId: string }
 		const { classCode } = req.params as { classCode: ClassCode }
 
-		HubManager.getInstance().setSlideId(hubId, newSlideId)
+		await HubManager.getInstance().setSlideId(hubId, newSlideId)
 
 		const updatedHubInfo: UpdatedHubSlideId = { classCode, hubId, newSlideId }
 
