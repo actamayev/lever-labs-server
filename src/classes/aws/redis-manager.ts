@@ -100,21 +100,6 @@ export default class RedisManager extends Singleton {
 	}
 
 	/**
-	 * Scan for keys matching a pattern
-	 * Returns [cursor, keys[]]
-	 */
-	public async scan(cursor: string, pattern?: string, count?: number): Promise<[string, string[]]> {
-		if (pattern && count) {
-			return await this.client.scan(cursor, "MATCH", pattern, "COUNT", count)
-		} else if (pattern) {
-			return await this.client.scan(cursor, "MATCH", pattern)
-		} else if (count) {
-			return await this.client.scan(cursor, "COUNT", count)
-		}
-		return await this.client.scan(cursor)
-	}
-
-	/**
 	 * Get all keys matching a pattern (use sparingly in production)
 	 */
 	public async keys(pattern: string): Promise<RedisKey[]> {
