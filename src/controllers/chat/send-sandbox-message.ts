@@ -63,7 +63,7 @@ async function processLLMRequest(
 		const modelId = selectModel("generalQuestion")
 
 		// Send start event with challengeId
-		socketManager.emitToUser(userId, "sandbox-chatbot-stream-start", { sandboxProjectUUID })
+		await socketManager.emitToUser(userId, "sandbox-chatbot-stream-start", { sandboxProjectUUID })
 
 		// Check abort before making OpenAI call
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -101,7 +101,7 @@ async function processLLMRequest(
 				// eslint-disable-next-line max-depth
 				if (content) {
 					aiResponseContent += content // Collect the content
-					socketManager.emitToUser(userId, "sandbox-chatbot-stream-chunk", { sandboxProjectUUID, content })
+					await socketManager.emitToUser(userId, "sandbox-chatbot-stream-chunk", { sandboxProjectUUID, content })
 				}
 			}
 
@@ -116,7 +116,7 @@ async function processLLMRequest(
 					modelId
 				)
 
-				socketManager.emitToUser(userId, "sandbox-chatbot-stream-complete", { sandboxProjectUUID })
+				await socketManager.emitToUser(userId, "sandbox-chatbot-stream-complete", { sandboxProjectUUID })
 			}
 
 		} catch (error) {

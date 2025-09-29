@@ -5,21 +5,21 @@ import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import autoConnectToLastOnlineUser from "../../utils/pip/auto-connect-to-last-online-user"
 
-export default function setSerialConnectionStatus(req: Request, res: Response): void {
+export default async function setSerialConnectionStatus(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
 		const { pipUUID, connected } = req.body as { pipUUID: PipUUID; connected: boolean }
 
 		if (!connected) {
 			Esp32SocketManager.getInstance().handleSerialDisconnect(pipUUID)
-			autoConnectToLastOnlineUser(pipUUID)
+			await autoConnectToLastOnlineUser(pipUUID)
 		} else {
 			const onlineConnectedUserId = Esp32SocketManager.getInstance().handleSerialConnect(pipUUID, userId)
 			if (onlineConnectedUserId && onlineConnectedUserId !== userId) {
-				BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
+				await BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
 					onlineConnectedUserId, pipUUID, "offline"
 				)
-				BrowserSocketManager.getInstance().removePipConnection(onlineConnectedUserId)
+				await BrowserSocketManager.getInstance().removePipConnection(onlineConnectedUserId)
 			}
 		}
 

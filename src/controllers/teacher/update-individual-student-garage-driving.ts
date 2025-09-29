@@ -20,7 +20,7 @@ export default async function updateIndividualStudentGarageDriving(req: Request,
 
 		BrowserSocketManager.getInstance().emitGarageDrivingStatusUpdateToStudents([studentUserId], garageDrivingStatus)
 		if (!garageDrivingStatus) {
-			brakeStudentPip(studentUserId)
+			void brakeStudentPip(studentUserId)
 		}
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return

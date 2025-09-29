@@ -107,7 +107,7 @@ export default class BrowserSocketManager extends SingletonWithRedis {
 		// and we don't already have a pip connection
 		if (isFirstSocket && !existingState?.currentlyConnectedPipUUID) {
 			// This is the first socket - attempt auto-connect
-			autoConnectToPip(userId)
+			await autoConnectToPip(userId)
 		}
 
 		// If user already connected to a pip, emit current status to this new socket

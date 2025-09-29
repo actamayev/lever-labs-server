@@ -28,7 +28,7 @@ export default async function joinHub(req: Request, res: Response): Promise<void
 			return
 		}
 		const data: StudentJoinedHub = { classCode, hubId, studentUsername: username || "", studentUserId: userId }
-		BrowserSocketManager.getInstance().emitStudentJoinedHub(teacherId, data)
+		await BrowserSocketManager.getInstance().emitStudentJoinedHub(teacherId, data)
 		const studentViewHubData: StudentViewHubData = {
 			hubId,
 			classCode,

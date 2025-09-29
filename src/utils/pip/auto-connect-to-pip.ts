@@ -16,14 +16,14 @@ interface AutoConnectToPipResult {
 	pipUUID: PipUUID | null
 }
 
-export default function autoConnectToPip(userId: number): AutoConnectToPipResult {
+export default async function autoConnectToPip(userId: number): Promise<AutoConnectToPipResult> {
 	try {
 		const pipUUID = Esp32SocketManager.getInstance().checkIfLastConnectedUserIdIsCurrentUser(userId)
 		if (!pipUUID) return { result: AutoConnectToPipResultEnum.NO_PIP_FOUND, pipUUID: null }
 
 		const success = Esp32SocketManager.getInstance().setOnlineUserConnected(pipUUID, userId)
 		if (!success) return { result: AutoConnectToPipResultEnum.ERROR, pipUUID: null }
-		BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(userId, pipUUID)
+		await BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(userId, pipUUID)
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
 			pipUUID,
 			MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.CONNECTED)
