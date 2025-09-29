@@ -10,14 +10,14 @@ import BrowserSocketManager from "../../classes/browser-socket-manager"
 import addCareerMessage from "../../db-operations/write/career-message/add-career-message"
 import buildCareerChatLLMContext from "../../utils/llm/career-quest/build-career-chat-llm-context"
 
-export default function sendCareerMessage(req: Request, res: Response): void {
+export default async function sendCareerMessage(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
 		const { careerUUID } = req.params as { careerUUID: CareerUUID }
 		const chatData = req.body as ProcessedCareerChatData
 
 		// Create a new stream and get streamId
-		const { streamId, abortController } = StreamManager.getInstance().createStream()
+		const { streamId, abortController } = await StreamManager.getInstance().createStream()
 
 		// Immediately respond with streamId so client can use it to stop if needed
 		res.status(200).json({ streamId } satisfies StartChatSuccess)
@@ -54,7 +54,7 @@ async function processLLMRequest(
 		const messages = buildCareerChatLLMContext(chatData)
 		const modelId = selectModel("generalQuestion")
 
-		socketManager.emitToUser(userId, "career-chatbot-stream-start", {
+		await socketManager.emitToUser(userId, "career-chatbot-stream-start", {
 			careerUUID,
 		})
 
@@ -85,7 +85,7 @@ async function processLLMRequest(
 			const content = chunk.choices[0]?.delta?.content
 			if (content) {
 				aiResponseContent += content
-				socketManager.emitToUser(userId, "career-chatbot-stream-chunk", {
+				await socketManager.emitToUser(userId, "career-chatbot-stream-chunk", {
 					careerUUID,
 					content
 				})
@@ -101,7 +101,7 @@ async function processLLMRequest(
 				modelId
 			)
 
-			socketManager.emitToUser(userId, "career-chatbot-stream-complete", {
+			await socketManager.emitToUser(userId, "career-chatbot-stream-complete", {
 				careerUUID,
 			})
 		}
@@ -117,6 +117,6 @@ async function processLLMRequest(
 		}
 	} finally {
 		// Clean up the stream
-		StreamManager.getInstance().stopStream(streamId)
+		void StreamManager.getInstance().stopStream(streamId)
 	}
 }

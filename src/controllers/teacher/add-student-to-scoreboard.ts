@@ -15,7 +15,7 @@ export default async function addStudentToScoreboard(req: Request, res: Response
 		}
 
 		// Check if scoreboard exists
-		const scoreboard = ScoreboardManager.getInstance().getScoreboard(scoreboardId)
+		const scoreboard = await ScoreboardManager.getInstance().getScoreboard(scoreboardId)
 		if (!scoreboard) {
 			res.status(500).json({ error: "Scoreboard not found" } satisfies ErrorResponse)
 			return
@@ -35,10 +35,10 @@ export default async function addStudentToScoreboard(req: Request, res: Response
 		}
 
 		// Add student to scoreboard
-		ScoreboardManager.getInstance().addStudent(scoreboardId, teamNumber as 1 | 2, studentId, username)
+		await ScoreboardManager.getInstance().addStudent(scoreboardId, teamNumber as 1 | 2, studentId, username)
 
 		// Return updated scoreboard
-		const updatedScoreboard = ScoreboardManager.getInstance().getScoreboard(scoreboardId)
+		const updatedScoreboard = await ScoreboardManager.getInstance().getScoreboard(scoreboardId)
 		if (!updatedScoreboard) {
 			res.status(500).json({ error: "Internal Server Error: Unable to retrieve updated scoreboard" } satisfies ErrorResponse)
 			return

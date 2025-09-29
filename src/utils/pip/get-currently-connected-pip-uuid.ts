@@ -3,9 +3,9 @@ import { PipUUID } from "@lever-labs/common-ts/types/utils"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 
-export default function getCurrentlyConnectedPipUUID(userId: number): PipUUID | null {
+export default async function getCurrentlyConnectedPipUUID(userId: number): Promise<PipUUID | null> {
 	try {
-		const pipUUID = BrowserSocketManager.getInstance().getCurrentlyConnectedPipUUID(userId)
+		const pipUUID = await BrowserSocketManager.getInstance().getCurrentlyConnectedPipUUID(userId)
 		if (isNull(pipUUID)) return null
 
 		const foundPip = Esp32SocketManager.getInstance().getESPStatus(pipUUID)

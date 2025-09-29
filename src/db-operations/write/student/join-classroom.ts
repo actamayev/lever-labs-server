@@ -26,7 +26,7 @@ export default async function joinClassroom(
 			joinedClassroomAt: result.joined_classroom_at,
 			classroomName: result.classroom.classroom_name,
 			classCode: result.classroom.class_code as ClassCode,
-			activeHubs: HubManager.getInstance().getClassroomActiveHubs(result.classroom.class_code as ClassCode),
+			activeHubs: await HubManager.getInstance().getClassroomActiveHubs(result.classroom.class_code as ClassCode),
 			garageDrivingAllowed: result.garage_driving_allowed,
 			garageSoundsAllowed: result.garage_sounds_allowed,
 			garageLightsAllowed: result.garage_lights_allowed,

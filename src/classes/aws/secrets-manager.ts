@@ -1,6 +1,6 @@
 import { isEmpty, isNull, isUndefined } from "lodash"
 import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager"
-import Singleton from "../singleton"
+import Singleton from "../singletons/singleton"
 
 export default class SecretsManager extends Singleton {
 	private secrets: Map<SecretKeys, string> = new Map()

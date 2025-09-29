@@ -35,7 +35,7 @@ export default async function requestChallengeHint(req: Request, res: Response):
 
 		// Code is incorrect - proceed with hint request
 		// Create a new stream and get streamId
-		const { streamId, abortController } = StreamManager.getInstance().createStream()
+		const { streamId, abortController } = await StreamManager.getInstance().createStream()
 
 		// Immediately respond with streamId so client can use it to stop if needed
 		res.status(200).json({ streamId } satisfies StartChatSuccess)
@@ -68,7 +68,7 @@ async function processHintRequest(
 		const messages = buildHintLLMContext(challengeUUID, chatData, hintNumber)
 		const modelId = selectModel("hint")
 
-		socketManager.emitToUser(userId, "challenge-chatbot-stream-start", {
+		await socketManager.emitToUser(userId, "challenge-chatbot-stream-start", {
 			careerUUID: chatData.careerUUID,
 			challengeUUID,
 			interactionType: "hint"
@@ -102,7 +102,7 @@ async function processHintRequest(
 
 			if (content) {
 				hintContent += content
-				socketManager.emitToUser(userId, "challenge-chatbot-stream-chunk", {
+				await socketManager.emitToUser(userId, "challenge-chatbot-stream-chunk", {
 					careerUUID: chatData.careerUUID,
 					challengeUUID,
 					content
@@ -120,7 +120,7 @@ async function processHintRequest(
 				hintNumber
 			})
 
-			socketManager.emitToUser(userId, "challenge-chatbot-stream-complete", {
+			await socketManager.emitToUser(userId, "challenge-chatbot-stream-complete", {
 				careerUUID: chatData.careerUUID,
 				challengeUUID
 			})
@@ -136,6 +136,6 @@ async function processHintRequest(
 		}
 	} finally {
 		// Clean up the stream
-		StreamManager.getInstance().stopStream(streamId)
+		void StreamManager.getInstance().stopStream(streamId)
 	}
 }

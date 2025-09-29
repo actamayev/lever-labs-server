@@ -1,10 +1,9 @@
-import Singleton from "./singleton"
+import { isNull } from "lodash"
+import SingletonWithRedis from "./singletons/singleton-with-redis"
 import { ClassCode, ScoreboardUUID } from "@lever-labs/common-ts/types/utils"
 import { Scoreboard, TeamStats, StudentJoinedScoreboardData } from "@lever-labs/common-ts/types/scoreboard"
 
-export default class ScoreboardManager extends Singleton {
-	private scoreboards: Map<ScoreboardUUID, Scoreboard> = new Map()
-
+export default class ScoreboardManager extends SingletonWithRedis {
 	private constructor() {
 		super()
 	}
@@ -16,56 +15,85 @@ export default class ScoreboardManager extends Singleton {
 		return ScoreboardManager.instance
 	}
 
-	public createScoreboard(
+	public async createScoreboard(
 		scoreboardId: ScoreboardUUID,
 		scoreboardName: string,
 		classCode: ClassCode
-	): Scoreboard {
-		this.scoreboards.set(
+	): Promise<Scoreboard> {
+		const scoreboard: Scoreboard = {
 			scoreboardId,
-			{
-				scoreboardId,
-				classCode,
-				scoreboardName,
-				team1Stats: this.createBlankTeamStats("Team 1"),
-				team2Stats: this.createBlankTeamStats("Team 2"),
-				timeRemaining: 0
-			}
-		)
-		return this.scoreboards.get(scoreboardId) as Scoreboard
+			classCode,
+			scoreboardName,
+			team1Stats: this.createBlankTeamStats("Team 1"),
+			team2Stats: this.createBlankTeamStats("Team 2"),
+			timeRemaining: 0
+		}
+
+		const redis = await this.getRedis()
+		await redis.set(`scoreboard:${scoreboardId}`, JSON.stringify(scoreboard))
+
+		return scoreboard
 	}
 
-	public getScoreboard(scoreboardId: ScoreboardUUID): Scoreboard | undefined {
-		return this.scoreboards.get(scoreboardId)
+	public async getScoreboard(scoreboardId: ScoreboardUUID): Promise<Scoreboard | undefined> {
+		const redis = await this.getRedis()
+		const data = await redis.get(`scoreboard:${scoreboardId}`)
+
+		if (!data) return undefined
+
+		return JSON.parse(data) as Scoreboard
 	}
 
-	public cleanupScoreboard(scoreboardId: ScoreboardUUID): void {
-		this.scoreboards.delete(scoreboardId)
+	public async cleanupScoreboard(scoreboardId: ScoreboardUUID): Promise<void> {
+		const redis = await this.getRedis()
+		await redis.del(`scoreboard:${scoreboardId}`)
 	}
 
 	private createBlankTeamStats(teamName: string): TeamStats {
 		return { teamName, score: 0, students: [] }
 	}
 
-	public getScoreboards(classCode: ClassCode): Scoreboard[] {
-		return Array.from(this.scoreboards.values()).filter(scoreboard => scoreboard.classCode === classCode)
+	public async getScoreboards(classCode: ClassCode): Promise<Scoreboard[]> {
+		const redis = await this.getRedis()
+		const keys = await redis.keys("scoreboard:*")
+
+		const scoreboards: Scoreboard[] = []
+
+		for (const key of keys) {
+			const data = await redis.get(key)
+			if (isNull(data)) continue
+			const scoreboard = JSON.parse(data) as Scoreboard
+			if (scoreboard.classCode === classCode) {
+				scoreboards.push(scoreboard)
+			}
+		}
+
+		return scoreboards
 	}
 
-	public setTeamScore(scoreboardId: ScoreboardUUID, team: 1 | 2, newScore: number): void {
-		const scoreboard = this.getScoreboard(scoreboardId)
+	public async setTeamScore(scoreboardId: ScoreboardUUID, team: 1 | 2, newScore: number): Promise<void> {
+		const scoreboard = await this.getScoreboard(scoreboardId)
 		if (!scoreboard) return
+
 		if (team === 1) scoreboard.team1Stats.score = newScore
 		else scoreboard.team2Stats.score = newScore
+
+		const redis = await this.getRedis()
+		await redis.set(`scoreboard:${scoreboardId}`, JSON.stringify(scoreboard))
 	}
 
-	public setRemainingTime(scoreboardId: ScoreboardUUID, timeRemaining: number): void {
-		const scoreboard = this.getScoreboard(scoreboardId)
+	public async setRemainingTime(scoreboardId: ScoreboardUUID, timeRemaining: number): Promise<void> {
+		const scoreboard = await this.getScoreboard(scoreboardId)
 		if (!scoreboard) return
+
 		scoreboard.timeRemaining = timeRemaining
+
+		const redis = await this.getRedis()
+		await redis.set(`scoreboard:${scoreboardId}`, JSON.stringify(scoreboard))
 	}
 
-	public addStudent(scoreboardId: ScoreboardUUID, team: 1 | 2, studentId: number, username: string): void {
-		const scoreboard = this.getScoreboard(scoreboardId)
+	public async addStudent(scoreboardId: ScoreboardUUID, team: 1 | 2, studentId: number, username: string): Promise<void> {
+		const scoreboard = await this.getScoreboard(scoreboardId)
 		if (!scoreboard) return
 
 		const studentData: StudentJoinedScoreboardData = { studentId, username }
@@ -81,10 +109,13 @@ export default class ScoreboardManager extends Singleton {
 				scoreboard.team2Stats.students.push(studentData)
 			}
 		}
+
+		const redis = await this.getRedis()
+		await redis.set(`scoreboard:${scoreboardId}`, JSON.stringify(scoreboard))
 	}
 
-	public removeStudent(scoreboardId: ScoreboardUUID, team: 1 | 2, studentId: number): void {
-		const scoreboard = this.getScoreboard(scoreboardId)
+	public async removeStudent(scoreboardId: ScoreboardUUID, team: 1 | 2, studentId: number): Promise<void> {
+		const scoreboard = await this.getScoreboard(scoreboardId)
 		if (!scoreboard) return
 
 		if (team === 1) {
@@ -94,5 +125,8 @@ export default class ScoreboardManager extends Singleton {
 			// Remove from team 2
 			scoreboard.team2Stats.students = scoreboard.team2Stats.students.filter(s => s.studentId !== studentId)
 		}
+
+		const redis = await this.getRedis()
+		await redis.set(`scoreboard:${scoreboardId}`, JSON.stringify(scoreboard))
 	}
 }

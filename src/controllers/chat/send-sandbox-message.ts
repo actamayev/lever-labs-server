@@ -10,14 +10,14 @@ import BrowserSocketManager from "../../classes/browser-socket-manager"
 import buildSandboxLLMContext from "../../utils/llm/build-sandbox-llm-context"
 import addSandboxMessage from "../../db-operations/write/sandbox-message/add-sandbox-message"
 
-export default function sendSandboxMessage(req: Request, res: Response): void {
+export default async function sendSandboxMessage(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
 		const { projectUUID } = req.params as { projectUUID: SandboxProjectUUID }
 		const chatData = req.body as ProcessedSandboxChatData
 
 		// Create a new stream and get streamId
-		const { streamId, abortController } = StreamManager.getInstance().createStream()
+		const { streamId, abortController } = await StreamManager.getInstance().createStream()
 
 		// Immediately respond with streamId so client can use it to stop if needed
 		res.status(200).json({ streamId } satisfies StartChatSuccess)
@@ -63,7 +63,7 @@ async function processLLMRequest(
 		const modelId = selectModel("generalQuestion")
 
 		// Send start event with challengeId
-		socketManager.emitToUser(userId, "sandbox-chatbot-stream-start", { sandboxProjectUUID })
+		await socketManager.emitToUser(userId, "sandbox-chatbot-stream-start", { sandboxProjectUUID })
 
 		// Check abort before making OpenAI call
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -101,7 +101,7 @@ async function processLLMRequest(
 				// eslint-disable-next-line max-depth
 				if (content) {
 					aiResponseContent += content // Collect the content
-					socketManager.emitToUser(userId, "sandbox-chatbot-stream-chunk", { sandboxProjectUUID, content })
+					await socketManager.emitToUser(userId, "sandbox-chatbot-stream-chunk", { sandboxProjectUUID, content })
 				}
 			}
 
@@ -116,7 +116,7 @@ async function processLLMRequest(
 					modelId
 				)
 
-				socketManager.emitToUser(userId, "sandbox-chatbot-stream-complete", { sandboxProjectUUID })
+				await socketManager.emitToUser(userId, "sandbox-chatbot-stream-complete", { sandboxProjectUUID })
 			}
 
 		} catch (error) {
@@ -138,6 +138,6 @@ async function processLLMRequest(
 		}
 	} finally {
 		// Clean up the stream
-		StreamManager.getInstance().stopStream(streamId)
+		void StreamManager.getInstance().stopStream(streamId)
 	}
 }

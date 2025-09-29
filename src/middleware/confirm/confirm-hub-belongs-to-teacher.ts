@@ -3,16 +3,16 @@ import { ErrorResponse, MessageResponse } from "@lever-labs/common-ts/types/api"
 import { HubUUID } from "@lever-labs/common-ts/types/utils"
 import HubManager from "../../classes/hub-manager"
 
-export default function confirmHubBelongsToTeacher(
+export default async function confirmHubBelongsToTeacher(
 	req: Request,
 	res: Response,
 	next: NextFunction
-): void {
+): Promise<void> {
 	try {
 		const { userId } = req
 		const { hubId } = req.body as { hubId: HubUUID }
 
-		const doesClassBelongToTeacher = HubManager.getInstance().doesHubBelongToTeacher(hubId, userId)
+		const doesClassBelongToTeacher = await HubManager.getInstance().doesHubBelongToTeacher(hubId, userId)
 
 		 if (doesClassBelongToTeacher === false) {
 			res.status(400).json({ message: "You are not a teacher for this hub"} satisfies MessageResponse)

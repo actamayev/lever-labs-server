@@ -9,7 +9,7 @@ import { PipUUID, ClassCode } from "@lever-labs/common-ts/types/utils"
 import { SocketEvents, SocketEventPayloadMap,
 	StudentJoinedHub, DeletedHub, UpdatedHubSlideId, StudentLeftHub } from "@lever-labs/common-ts/types/socket"
 import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
-import Singleton from "./singleton"
+import SingletonWithRedis from "./singletons/singleton-with-redis"
 import listenersMap from "../utils/constants/listeners-map"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import handleDisconnectHubHelper from "../utils/handle-disconnect-hub-helper"
@@ -25,9 +25,7 @@ type UserConnectionState = {
 	lastActivityAt: Date
 }
 
-export default class BrowserSocketManager extends Singleton {
-	private connections = new Map<number, UserConnectionState>() // userId -> user connection state
-
+export default class BrowserSocketManager extends SingletonWithRedis {
 	private constructor(private readonly io: SocketIOServer) {
 		super()
 		this.initializeListeners()
@@ -43,50 +41,76 @@ export default class BrowserSocketManager extends Singleton {
 		return BrowserSocketManager.instance
 	}
 
-	public getUserConnectionState(userId: number): UserConnectionState | undefined {
-		return this.connections.get(userId)
+	public async getUserConnectionState(userId: number): Promise<UserConnectionState | undefined> {
+		const redis = await this.getRedis()
+		const data = await redis.get(`browser_connection:${userId}`)
+		if (!data) return undefined
+
+		const parsed = JSON.parse(data)
+		return {
+			sockets: new Set(parsed.sockets),
+			currentlyConnectedPipUUID: parsed.currentlyConnectedPipUUID,
+			lastActivityAt: new Date(parsed.lastActivityAt)
+		}
 	}
 
 	// Helper method to get current pip for user
-	public getCurrentlyConnectedPipUUID(userId: number): PipUUID | null {
-		const userState = this.connections.get(userId)
+	public async getCurrentlyConnectedPipUUID(userId: number): Promise<PipUUID | null> {
+		const userState = await this.getUserConnectionState(userId)
 		return userState?.currentlyConnectedPipUUID || null
 	}
 
 	// Helper method to check if user has any active sockets
-	public hasActiveSockets(userId: number): boolean {
-		const userState = this.connections.get(userId)
+	public async hasActiveSockets(userId: number): Promise<boolean> {
+		const userState = await this.getUserConnectionState(userId)
 		return (userState?.sockets.size || 0) > 0
+	}
+
+	// Helper method to save user connection state to Redis
+	private async saveUserConnectionState(userId: number, userState: UserConnectionState): Promise<void> {
+		const redis = await this.getRedis()
+		const serialized = {
+			sockets: Array.from(userState.sockets),
+			currentlyConnectedPipUUID: userState.currentlyConnectedPipUUID,
+			lastActivityAt: userState.lastActivityAt.toISOString()
+		}
+		await redis.set(`browser_connection:${userId}`, JSON.stringify(serialized))
+	}
+
+	// Helper method to delete user connection state from Redis
+	private async deleteUserConnectionState(userId: number): Promise<void> {
+		const redis = await this.getRedis()
+		await redis.del(`browser_connection:${userId}`)
 	}
 
 	private initializeListeners(): void {
 		this.io.on("connection", (socket: Socket) => {
-			this.handleBrowserConnection(socket)
+			void this.handleBrowserConnection(socket)
 			this.setupAllListeners(socket)
 		})
 	}
 
-	private handleBrowserConnection(socket: Socket): void {
+	private async handleBrowserConnection(socket: Socket): Promise<void> {
 		if (isUndefined(socket.userId)) {
 			console.error(`User ${socket.userId} is not authenticated`)
 			return
 		}
 
 		const userId = socket.userId
-		const existingState = this.connections.get(userId)
+		const existingState = await this.getUserConnectionState(userId)
 		const isFirstSocket = !existingState || existingState.sockets.size === 0
 
-		this.addSocketToUser(userId, socket.id)
+		await this.addSocketToUser(userId, socket.id)
 
 		// Only attempt auto-connect if this is truly the first connection
 		// and we don't already have a pip connection
 		if (isFirstSocket && !existingState?.currentlyConnectedPipUUID) {
 			// This is the first socket - attempt auto-connect
-			autoConnectToPip(userId)
+			await autoConnectToPip(userId)
 		}
 
 		// If user already connected to a pip, emit current status to this new socket
-		const userState = this.connections.get(userId)
+		const userState = await this.getUserConnectionState(userId)
 		if (userState?.currentlyConnectedPipUUID) {
 			const espStatus = Esp32SocketManager.getInstance().getESPStatus(userState.currentlyConnectedPipUUID)
 			if (espStatus) {
@@ -98,7 +122,7 @@ export default class BrowserSocketManager extends Singleton {
 			}
 		}
 
-		socket.on("disconnect", () => this.handleDisconnection(userId, socket.id))
+		socket.on("disconnect", () => void this.handleDisconnection(userId, socket.id))
 	}
 
 	private setupAllListeners(socket: Socket): void {
@@ -111,13 +135,14 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	private addSocketToUser(userId: number, socketId: string): void {
-		const existingState = this.connections.get(userId)
+	private async addSocketToUser(userId: number, socketId: string): Promise<void> {
+		const existingState = await this.getUserConnectionState(userId)
 
 		if (existingState) {
 			// Add socket to existing user state
 			existingState.sockets.add(socketId)
 			existingState.lastActivityAt = new Date()
+			await this.saveUserConnectionState(userId, existingState)
 		} else {
 			// Create new user state
 			const newState: UserConnectionState = {
@@ -125,13 +150,13 @@ export default class BrowserSocketManager extends Singleton {
 				currentlyConnectedPipUUID: null,
 				lastActivityAt: new Date()
 			}
-			this.connections.set(userId, newState)
+			await this.saveUserConnectionState(userId, newState)
 		}
 	}
 
-	private handleDisconnection(userId: number, socketId: string): void {
+	private async handleDisconnection(userId: number, socketId: string): Promise<void> {
 		try {
-			const userState = this.connections.get(userId)
+			const userState = await this.getUserConnectionState(userId)
 			if (isUndefined(userState)) return
 
 			// Remove this socket from user's socket list
@@ -140,6 +165,7 @@ export default class BrowserSocketManager extends Singleton {
 			// If user still has other sockets open, just update activity and return
 			if (userState.sockets.size > 0) {
 				userState.lastActivityAt = new Date()
+				await this.saveUserConnectionState(userId, userState)
 				return
 			}
 
@@ -162,16 +188,20 @@ export default class BrowserSocketManager extends Singleton {
 				}
 			}
 
-			handleDisconnectHubHelper(userId)
+			void handleDisconnectHubHelper(userId)
 			// Remove user entirely since no sockets remain
-			this.connections.delete(userId)
+			await this.deleteUserConnectionState(userId)
 		} catch (error) {
 			console.error("Error during disconnection:", error)
 		}
 	}
 
-	public emitPipStatusUpdateToUser(userId: number, pipUUID: PipUUID, newConnectionStatus: ClientPipConnectionStatus): void {
-		const userState = this.connections.get(userId)
+	public async emitPipStatusUpdateToUser(
+		userId: number,
+		pipUUID: PipUUID,
+		newConnectionStatus: ClientPipConnectionStatus
+	): Promise<void> {
+		const userState = await this.getUserConnectionState(userId)
 		if (isUndefined(userState)) return
 		if (userState.currentlyConnectedPipUUID !== pipUUID) return
 
@@ -179,8 +209,8 @@ export default class BrowserSocketManager extends Singleton {
 		this.emitToAllUserStateSockets(userState, "pip-connection-status-update", { pipUUID, newConnectionStatus })
 	}
 
-	public updateCurrentlyConnectedPip(userId: number, pipUUID: PipUUID | null): void {
-		let userState = this.connections.get(userId)
+	public async updateCurrentlyConnectedPip(userId: number, pipUUID: PipUUID | null): Promise<void> {
+		let userState = await this.getUserConnectionState(userId)
 
 		if (isUndefined(userState)) {
 			// Create a user state even if no sockets yet (e.g., during login auto-connect)
@@ -189,12 +219,13 @@ export default class BrowserSocketManager extends Singleton {
 				currentlyConnectedPipUUID: pipUUID,
 				lastActivityAt: new Date()
 			}
-			this.connections.set(userId, userState)
+			await this.saveUserConnectionState(userId, userState)
 			return
 		}
 
 		userState.currentlyConnectedPipUUID = pipUUID
 		userState.lastActivityAt = new Date()
+		await this.saveUserConnectionState(userId, userState)
 
 		// If connecting to a pip, emit status to all user's sockets
 		if (!pipUUID) return
@@ -207,13 +238,14 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	public removePipConnection(userId: number): void {
-		const userState = this.connections.get(userId)
+	public async removePipConnection(userId: number): Promise<void> {
+		const userState = await this.getUserConnectionState(userId)
 		if (isUndefined(userState)) return
 
 		const previousPipUUID = userState.currentlyConnectedPipUUID
 		userState.currentlyConnectedPipUUID = null
 		userState.lastActivityAt = new Date()
+		await this.saveUserConnectionState(userId, userState)
 
 		// Emit disconnection status to all user's sockets
 		if (!previousPipUUID) return
@@ -223,33 +255,45 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	private emitDataToConnectedPipUsers<E extends SocketEvents>(
+	private async emitDataToConnectedPipUsers<E extends SocketEvents>(
 		pipUUID: PipUUID,
 		event: E,
 		payload: SocketEventPayloadMap[E]
-	): void {
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		this.connections.forEach((userState, _userId) => {
-			if (userState.currentlyConnectedPipUUID !== pipUUID) return
-			this.emitToAllUserStateSockets(userState, event, payload)
-		})
+	): Promise<void> {
+		const redis = await this.getRedis()
+		const keys = await redis.keys("browser_connection:*")
+
+		for (const key of keys) {
+			const data = await redis.get(key)
+			if (!data) continue
+
+			const userState = JSON.parse(data)
+			if (userState.currentlyConnectedPipUUID !== pipUUID) continue
+
+			const reconstructedState: UserConnectionState = {
+				sockets: new Set(userState.sockets),
+				currentlyConnectedPipUUID: userState.currentlyConnectedPipUUID,
+				lastActivityAt: new Date(userState.lastActivityAt)
+			}
+			this.emitToAllUserStateSockets(reconstructedState, event, payload)
+		}
 	}
 
 	public emitPipBatteryData(pipUUID: PipUUID, batteryData: BatteryMonitorData): void {
 		// Find all users connected to this pip and emit to ALL their sockets
-		this.emitDataToConnectedPipUsers(pipUUID, "battery-monitor-data", { pipUUID, batteryData })
+		void this.emitDataToConnectedPipUsers(pipUUID, "battery-monitor-data", { pipUUID, batteryData })
 	}
 
 	public emitPipDinoScore(pipUUID: PipUUID, score: number): void {
-		this.emitDataToConnectedPipUsers(pipUUID, "dino-score-update", { pipUUID, score })
+		void this.emitDataToConnectedPipUsers(pipUUID, "dino-score-update", { pipUUID, score })
 	}
 
 	public sendBrowserPipSensorData(pipUUID: PipUUID, sensorPayload: SensorPayload): void {
-		this.emitDataToConnectedPipUsers(pipUUID, "general-sensor-data", sensorPayload)
+		void this.emitDataToConnectedPipUsers(pipUUID, "general-sensor-data", sensorPayload)
 	}
 
 	public sendBrowserPipSensorDataMZ(pipUUID: PipUUID, sensorPayload: SensorPayloadMZ): void {
-		this.emitDataToConnectedPipUsers(pipUUID, "general-sensor-data-mz", sensorPayload)
+		void this.emitDataToConnectedPipUsers(pipUUID, "general-sensor-data-mz", sensorPayload)
 	}
 
 	public async emitStudentJoinedClassroom(
@@ -258,7 +302,7 @@ export default class BrowserSocketManager extends Singleton {
 		studentUserId: number,
 		studentId: number
 	): Promise<void> {
-		const userState = this.connections.get(teacherUserId)
+		const userState = await this.getUserConnectionState(teacherUserId)
 		if (isUndefined(userState) || userState.sockets.size === 0) return
 
 		const studentUsername = await retrieveUsername(studentUserId)
@@ -270,8 +314,8 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	public emitStudentJoinedHub(teacherUserId: number, data: StudentJoinedHub): void {
-		const userState = this.connections.get(teacherUserId)
+	public async emitStudentJoinedHub(teacherUserId: number, data: StudentJoinedHub): Promise<void> {
+		const userState = await this.getUserConnectionState(teacherUserId)
 		if (isUndefined(userState)) return
 
 		this.emitToAllUserStateSockets(userState, "student-joined-hub", data)
@@ -279,32 +323,32 @@ export default class BrowserSocketManager extends Singleton {
 
 	public emitNewHubToStudents(studentUserIds: number[], hubInfo: StudentViewHubData): void {
 		studentUserIds.forEach(studentUserId => {
-			this.emitToUser(studentUserId, "new-hub", hubInfo)
+			void this.emitToUser(studentUserId, "new-hub", hubInfo)
 		})
 	}
 
 	public emitDeletedHubToStudents(studentUserIds: number[], deletedHubInfo: DeletedHub): void {
 		studentUserIds.forEach(studentUserId => {
-			this.emitToUser(studentUserId, "deleted-hub", deletedHubInfo)
+			void this.emitToUser(studentUserId, "deleted-hub", deletedHubInfo)
 		})
 	}
 
 	public emitUpdatedHubToStudents(studentUserIds: number[], updatedHubInfo: UpdatedHubSlideId): void {
 		studentUserIds.forEach(studentUserId => {
-			this.emitToUser(studentUserId, "updated-hub-slide-id", updatedHubInfo)
+			void this.emitToUser(studentUserId, "updated-hub-slide-id", updatedHubInfo)
 		})
 	}
 
 	public emitStudentLeftHub(teacherUserId: number, data: StudentLeftHub): void {
-		this.emitToUser(teacherUserId, "student-left-hub", data)
+		void this.emitToUser(teacherUserId, "student-left-hub", data)
 	}
 
-	public emitToUser<E extends SocketEvents>(
+	public async emitToUser<E extends SocketEvents>(
 		userId: number,
 		event: E,
 		payload: SocketEventPayloadMap[E]
-	): void {
-		const userState = this.connections.get(userId)
+	): Promise<void> {
+		const userState = await this.getUserConnectionState(userId)
 		if (!userState) return
 
 		// Emit to ALL sockets for this user
@@ -331,32 +375,33 @@ export default class BrowserSocketManager extends Singleton {
 
 	public emitGarageDrivingStatusUpdateToStudents(studentUserIds: number[], garageDrivingStatus: boolean): void {
 		studentUserIds.forEach(studentUserId => {
-			this.emitToUser(studentUserId, "garage-driving-status-update", { garageDrivingStatus })
+			void this.emitToUser(studentUserId, "garage-driving-status-update", { garageDrivingStatus })
 		})
 	}
 
 	public emitGarageSoundsStatusUpdateToStudents(studentUserIds: number[], garageSoundsStatus: boolean): void {
 		studentUserIds.forEach(studentUserId => {
-			this.emitToUser(studentUserId, "garage-sounds-status-update", { garageSoundsStatus })
+			void this.emitToUser(studentUserId, "garage-sounds-status-update", { garageSoundsStatus })
 		})
 	}
 
 	public emitGarageLightsStatusUpdateToStudents(studentUserIds: number[], garageLightsStatus: boolean): void {
 		studentUserIds.forEach(studentUserId => {
-			this.emitToUser(studentUserId, "garage-lights-status-update", { garageLightsStatus })
+			void this.emitToUser(studentUserId, "garage-lights-status-update", { garageLightsStatus })
 		})
 	}
 
 	public emitGarageDisplayStatusUpdateToStudents(studentUserIds: number[], garageDisplayStatus: boolean): void {
 		studentUserIds.forEach(studentUserId => {
-			this.emitToUser(studentUserId, "garage-display-status-update", { garageDisplayStatus })
+			void this.emitToUser(studentUserId, "garage-display-status-update", { garageDisplayStatus })
 		})
 	}
 
 	// Helper method to update activity from any tab
-	public updateUserActivity(userId: number): void {
-		const userState = this.connections.get(userId)
+	public async updateUserActivity(userId: number): Promise<void> {
+		const userState = await this.getUserConnectionState(userId)
 		if (!userState) return
 		userState.lastActivityAt = new Date()
+		await this.saveUserConnectionState(userId, userState)
 	}
 }
