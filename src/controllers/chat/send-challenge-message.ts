@@ -10,14 +10,14 @@ import buildChallengeLLMContext from "../../utils/llm/career-quest/build-challen
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import addChallengeMessage from "../../db-operations/write/challenge-message/add-challenge-message"
 
-export default function sendChallengeMessage(req: Request, res: Response): void {
+export default async function sendChallengeMessage(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
 		const { challengeUUID } = req.params as { challengeUUID: ChallengeUUID }
 		const chatData = req.body as ProcessedChallengeGeneralMessage
 
 		// Create a new stream and get streamId
-		const { streamId, abortController } = StreamManager.getInstance().createStream()
+		const { streamId, abortController } = await StreamManager.getInstance().createStream()
 
 		// Immediately respond with streamId so client can use it to stop if needed
 		res.status(200).json({ streamId } satisfies StartChatSuccess)
@@ -54,7 +54,7 @@ async function processLLMRequest(
 		const messages = buildChallengeLLMContext(challengeUUID, chatData)
 		const modelId = selectModel("generalQuestion")
 
-		socketManager.emitToUser(userId, "challenge-chatbot-stream-start", {
+		await socketManager.emitToUser(userId, "challenge-chatbot-stream-start", {
 			careerUUID: chatData.careerUUID,
 			challengeUUID,
 			interactionType: "generalQuestion"
@@ -87,7 +87,7 @@ async function processLLMRequest(
 			const content = chunk.choices[0]?.delta?.content
 			if (content) {
 				aiResponseContent += content
-				socketManager.emitToUser(userId, "challenge-chatbot-stream-chunk", {
+				await socketManager.emitToUser(userId, "challenge-chatbot-stream-chunk", {
 					careerUUID: chatData.careerUUID,
 					challengeUUID,
 					content
@@ -104,7 +104,7 @@ async function processLLMRequest(
 				modelId
 			)
 
-			socketManager.emitToUser(userId, "challenge-chatbot-stream-complete", {
+			await socketManager.emitToUser(userId, "challenge-chatbot-stream-complete", {
 				careerUUID: chatData.careerUUID,
 				challengeUUID
 			})
@@ -121,6 +121,6 @@ async function processLLMRequest(
 		}
 	} finally {
 		// Clean up the stream
-		StreamManager.getInstance().stopStream(streamId)
+		void StreamManager.getInstance().stopStream(streamId)
 	}
 }

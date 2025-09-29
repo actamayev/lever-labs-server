@@ -4,7 +4,7 @@ import { ClassCode, ScoreboardUUID } from "@lever-labs/common-ts/types/utils"
 import { Scoreboard } from "@lever-labs/common-ts/types/scoreboard"
 import ScoreboardManager from "../../classes/scoreboard-manager"
 
-export default function removeStudentFromScoreboard(req: Request, res: Response): void {
+export default async function removeStudentFromScoreboard(req: Request, res: Response): Promise<void> {
 	try {
 		const { classCode } = req.params as { classCode: ClassCode }
 		const { studentId, scoreboardId, teamNumber } = req.body as {
@@ -14,7 +14,7 @@ export default function removeStudentFromScoreboard(req: Request, res: Response)
 		}
 
 		// Check if scoreboard exists
-		const scoreboard = ScoreboardManager.getInstance().getScoreboard(scoreboardId)
+		const scoreboard = await ScoreboardManager.getInstance().getScoreboard(scoreboardId)
 		if (!scoreboard) {
 			res.status(500).json({ error: "Scoreboard not found" } satisfies ErrorResponse)
 			return
@@ -26,10 +26,10 @@ export default function removeStudentFromScoreboard(req: Request, res: Response)
 			return
 		}
 		// Remove student from scoreboard
-		ScoreboardManager.getInstance().removeStudent(scoreboardId, teamNumber as 1 | 2, studentId)
+		await ScoreboardManager.getInstance().removeStudent(scoreboardId, teamNumber as 1 | 2, studentId)
 
 		// Return updated scoreboard
-		const updatedScoreboard = ScoreboardManager.getInstance().getScoreboard(scoreboardId)
+		const updatedScoreboard = await ScoreboardManager.getInstance().getScoreboard(scoreboardId)
 		if (!updatedScoreboard) {
 			res.status(500).json({ error: "Scoreboard not found" } satisfies ErrorResponse)
 			return

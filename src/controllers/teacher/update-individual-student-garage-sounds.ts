@@ -20,7 +20,7 @@ export default async function updateIndividualStudentGarageSounds(req: Request, 
 
 		BrowserSocketManager.getInstance().emitGarageSoundsStatusUpdateToStudents([studentUserId], garageSoundsStatus)
 		if (!garageSoundsStatus) {
-			stopStudentPipSound(studentUserId)
+			void stopStudentPipSound(studentUserId)
 		}
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return

@@ -7,13 +7,13 @@ import { UserConnectedStatus } from "@lever-labs/common-ts/protocol"
 import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 
-export default function clientDisconnectFromPipRequest (req: Request, res: Response): void {
+export default async function clientDisconnectFromPipRequest (req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
 		const success = Esp32SocketManager.getInstance().setOnlineUserDisconnected(pipUUID, true)
-		BrowserSocketManager.getInstance().removePipConnection(userId)
+		await BrowserSocketManager.getInstance().removePipConnection(userId)
 		if (!success) {
 			res.status(400).json({ message: "Unable to disconnect from Pip" } satisfies MessageResponse)
 			return

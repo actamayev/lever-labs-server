@@ -5,13 +5,13 @@ import { ClassCode, ScoreboardUUID } from "@lever-labs/common-ts/types/utils"
 import { Scoreboard } from "@lever-labs/common-ts/types/scoreboard"
 import ScoreboardManager from "../../classes/scoreboard-manager"
 
-export default function createScoreboard(req: Request, res: Response): void {
+export default async function createScoreboard(req: Request, res: Response): Promise<void> {
 	try {
 		const { classCode } = req.params as { classCode: ClassCode }
 		const { scoreboardName } = req.body as { scoreboardName: string }
 
 		const scoreboardId = randomUUID() as ScoreboardUUID
-		const scoreboard = ScoreboardManager.getInstance().createScoreboard(scoreboardId, scoreboardName, classCode)
+		const scoreboard = await ScoreboardManager.getInstance().createScoreboard(scoreboardId, scoreboardName, classCode)
 
 		res.status(200).json(scoreboard satisfies Scoreboard)
 		return

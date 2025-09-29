@@ -3,12 +3,12 @@ import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 import { ScoreboardUUID } from "@lever-labs/common-ts/types/utils"
 import ScoreboardManager from "../../classes/scoreboard-manager"
 
-export default function updateRemainingTime(req: Request, res: Response): void {
+export default async function updateRemainingTime(req: Request, res: Response): Promise<void> {
 	try {
 		const { scoreboardId, timeRemainingInSeconds } = req.body as { scoreboardId: ScoreboardUUID, timeRemainingInSeconds: number }
 
-		ScoreboardManager.getInstance().setRemainingTime(scoreboardId, timeRemainingInSeconds)
-		const scoreboard = ScoreboardManager.getInstance().getScoreboard(scoreboardId)
+		await ScoreboardManager.getInstance().setRemainingTime(scoreboardId, timeRemainingInSeconds)
+		const scoreboard = await ScoreboardManager.getInstance().getScoreboard(scoreboardId)
 
 		if (!scoreboard) {
 			res.status(500).json({ error: "Scoreboard not found" } satisfies ErrorResponse)

@@ -15,7 +15,9 @@ export default async function createHub(req: Request, res: Response): Promise<vo
 		const studentUserIds = await getClassroomStudentIds(classroomId)
 
 		const hubId = randomUUID() as HubUUID
-		HubManager.getInstance().createHub(hubId, { teacherId: userId, hubName, classCode, careerUUID, slideId, studentsJoined: [], hubId })
+		await HubManager.getInstance().createHub(hubId,
+			{ teacherId: userId, hubName, classCode, careerUUID, slideId, studentsJoined: [], hubId }
+		)
 
 		const hubInfo: StudentViewHubData = { hubId, classCode, careerUUID, slideId, hubName }
 		void BrowserSocketManager.getInstance().emitNewHubToStudents(studentUserIds, hubInfo)

@@ -19,6 +19,9 @@ declare global {
 		| "LEVER_LABS_S3_BUCKET"
 		| "FIRMWARE_S3_BUCKET"
 		| "OPENROUTER_API_KEY"
+		| "REDIS_HOST"
+		| "REDIS_PORT"
+		| "REDIS_PASSWORD"
 
 	type SecretsObject = { [K in SecretKeys]: string }
 }

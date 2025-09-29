@@ -3,11 +3,11 @@ import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import { PipUUID } from "@lever-labs/common-ts/types/utils"
 import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 
-export default function pipTurningOffSerialConnection(req: Request, res: Response): void {
+export default async function pipTurningOffSerialConnection(req: Request, res: Response): Promise<void> {
 	try {
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		Esp32SocketManager.getInstance().handleDisconnection(pipUUID, true)
+		await Esp32SocketManager.getInstance().handleDisconnection(pipUUID, true)
 
 		res.status(200).json({ success: "Successfully shutting down Pip" } satisfies SuccessResponse)
 		return

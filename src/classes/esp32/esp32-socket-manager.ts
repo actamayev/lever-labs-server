@@ -2,7 +2,7 @@ import { isNull } from "lodash"
 import { Server as WSServer } from "ws"
 import { PipUUID } from "@lever-labs/common-ts/types/utils"
 import { ESPToServerMessage } from "@lever-labs/common-ts/types/pip"
-import Singleton from "../singleton"
+import Singleton from "../singletons/singleton"
 import isPipUUID from "../../utils/type-helpers/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"
 import SingleESP32Connection from "./single-esp32-connection"
@@ -51,11 +51,11 @@ export default class Esp32SocketManager extends Singleton {
 				const connection = new SingleESP32Connection(
 					pipId,
 					socket,
-					(disconnectedPipId: PipUUID) => this.handleDisconnection(disconnectedPipId, false)
+					(disconnectedPipId: PipUUID) => void this.handleDisconnection(disconnectedPipId, false)
 				)
 
 				// ✅ TRACK ACTIVE CONNECTIONS - this replaces your registration message
-				this.registerConnection(pipId, connection)
+				void this.registerConnection(pipId, connection)
 
 				socket.on("message", (message) => {
 					this.handleOngoingMessage(pipId, message.toString())
@@ -91,7 +91,7 @@ export default class Esp32SocketManager extends Singleton {
 				break
 			case "/pip-turning-off":
 				console.info(`ESP32 ${pipId} turning off, disconnecting`)
-				this.handleDisconnection(pipId, true)
+				void this.handleDisconnection(pipId, true)
 				break
 			case "/dino-score":
 				BrowserSocketManager.getInstance().emitPipDinoScore(pipId, payload.score)
@@ -113,7 +113,7 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	// eslint-disable-next-line max-lines-per-function
-	private registerConnection(pipId: PipUUID, connection: SingleESP32Connection): void {
+	private async registerConnection(pipId: PipUUID, connection: SingleESP32Connection): Promise<void> {
 		try {
 			const existing = this.connections.get(pipId)
 
@@ -165,8 +165,8 @@ export default class Esp32SocketManager extends Singleton {
 				}
 
 				// Check if user is currently online
-				const browserManager = BrowserSocketManager.getInstance()
-				if (browserManager.hasActiveSockets(userId)) {
+				const hasActiveSockets = await BrowserSocketManager.getInstance().hasActiveSockets(userId)
+				if (hasActiveSockets) {
 					// User is online - auto-reconnect
 					this.connections.set(pipId, {
 						status: {
@@ -188,8 +188,8 @@ export default class Esp32SocketManager extends Singleton {
 					)
 
 					// Update browser state
-					browserManager.updateCurrentlyConnectedPip(userId, pipId)
-					browserManager.emitPipStatusUpdateToUser(userId, pipId, "connected online to you")
+					void BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(userId, pipId)
+					void BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(userId, pipId, "connected online to you")
 
 					return
 				}
@@ -210,7 +210,7 @@ export default class Esp32SocketManager extends Singleton {
 		}
 	}
 
-	public handleDisconnection(pipId: PipUUID, isShutdown: boolean): void {
+	public async handleDisconnection(pipId: PipUUID, isShutdown: boolean): Promise<void> {
 		try {
 			console.info(`ESP32 disconnected: ${pipId}`)
 
@@ -233,8 +233,8 @@ export default class Esp32SocketManager extends Singleton {
 			connectionInfo.connection?.dispose(true)
 			const userConnectedToOnlineBeforeDisconnection = connectionInfo.status.connectedToOnlineUserId
 			if (!userConnectedToOnlineBeforeDisconnection) return
-			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(userConnectedToOnlineBeforeDisconnection, pipId, "offline")
-			BrowserSocketManager.getInstance().removePipConnection(userConnectedToOnlineBeforeDisconnection)
+			await BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(userConnectedToOnlineBeforeDisconnection, pipId, "offline")
+			await BrowserSocketManager.getInstance().removePipConnection(userConnectedToOnlineBeforeDisconnection)
 		} catch (error) {
 			console.error(`Failed to handle disconnection for ${pipId}:`, error)
 		}
