@@ -1,6 +1,6 @@
 import { StudentViewHubData, TeacherViewHubData } from "@lever-labs/common-ts/types/hub"
 import { ClassCode, HubUUID } from "@lever-labs/common-ts/types/utils"
-import Singleton from "./singleton"
+import Singleton from "./singletons/singleton"
 
 interface Hub extends TeacherViewHubData {
 	teacherId: number

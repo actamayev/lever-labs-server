@@ -1,4 +1,4 @@
-import Singleton from "./singleton"
+import Singleton from "./singletons/singleton"
 
 export default class StreamManager extends Singleton {
 	private activeStreams = new Map<string, AbortController>()
