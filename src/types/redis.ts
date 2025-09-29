@@ -5,6 +5,7 @@ declare global {
     | `hub:${HubUUID}`
     | `scoreboard:${ScoreboardUUID}`
     | `stream:${string}` // StreamIds are dynamic, so less strict here
+    | `browser_connection:${number}` // UserId for browser connections
 }
 
 export {}

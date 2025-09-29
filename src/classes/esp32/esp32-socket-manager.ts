@@ -55,7 +55,7 @@ export default class Esp32SocketManager extends Singleton {
 				)
 
 				// ✅ TRACK ACTIVE CONNECTIONS - this replaces your registration message
-				this.registerConnection(pipId, connection)
+				void this.registerConnection(pipId, connection)
 
 				socket.on("message", (message) => {
 					this.handleOngoingMessage(pipId, message.toString())
@@ -113,7 +113,7 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	// eslint-disable-next-line max-lines-per-function
-	private registerConnection(pipId: PipUUID, connection: SingleESP32Connection): void {
+	private async registerConnection(pipId: PipUUID, connection: SingleESP32Connection): Promise<void> {
 		try {
 			const existing = this.connections.get(pipId)
 
@@ -166,7 +166,7 @@ export default class Esp32SocketManager extends Singleton {
 
 				// Check if user is currently online
 				const browserManager = BrowserSocketManager.getInstance()
-				if (browserManager.hasActiveSockets(userId)) {
+				if (await browserManager.hasActiveSockets(userId)) {
 					// User is online - auto-reconnect
 					this.connections.set(pipId, {
 						status: {
@@ -188,8 +188,8 @@ export default class Esp32SocketManager extends Singleton {
 					)
 
 					// Update browser state
-					browserManager.updateCurrentlyConnectedPip(userId, pipId)
-					browserManager.emitPipStatusUpdateToUser(userId, pipId, "connected online to you")
+					void browserManager.updateCurrentlyConnectedPip(userId, pipId)
+					void browserManager.emitPipStatusUpdateToUser(userId, pipId, "connected online to you")
 
 					return
 				}
@@ -233,8 +233,8 @@ export default class Esp32SocketManager extends Singleton {
 			connectionInfo.connection?.dispose(true)
 			const userConnectedToOnlineBeforeDisconnection = connectionInfo.status.connectedToOnlineUserId
 			if (!userConnectedToOnlineBeforeDisconnection) return
-			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(userConnectedToOnlineBeforeDisconnection, pipId, "offline")
-			BrowserSocketManager.getInstance().removePipConnection(userConnectedToOnlineBeforeDisconnection)
+			void BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(userConnectedToOnlineBeforeDisconnection, pipId, "offline")
+			void BrowserSocketManager.getInstance().removePipConnection(userConnectedToOnlineBeforeDisconnection)
 		} catch (error) {
 			console.error(`Failed to handle disconnection for ${pipId}:`, error)
 		}
