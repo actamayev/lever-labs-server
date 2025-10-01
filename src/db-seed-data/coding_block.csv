@@ -3,12 +3,12 @@ coding_block_id ,block_name   ,led_color ,color_sensor_detection_color ,speaker_
               2 ,set_led      ,green     ,                             ,
               3 ,set_led      ,blue      ,                             ,
               4 ,set_led      ,white     ,                             ,
-              5 ,set_led      ,off     ,                             ,
+              5 ,set_led      ,off       ,                             ,
               6 ,check_color  ,          ,red                          ,
               7 ,check_color  ,          ,green                        ,
               8 ,check_color  ,          ,blue                         ,
               9 ,check_color  ,          ,white                        ,
-              10 ,play_tone    ,          ,                             ,A
+             10 ,play_tone    ,          ,                             ,A
              11 ,play_tone    ,          ,                             ,B
              12 ,play_tone    ,          ,                             ,C
              13 ,play_tone    ,          ,                             ,D
