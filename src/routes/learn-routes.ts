@@ -7,37 +7,37 @@ import validateFillInTheBlankAnswer from "../middleware/request-validation/learn
 import getAllLessons from "../controllers/learn/get-all-lessons"
 import getSingleLesson from "../controllers/learn/get-single-lesson"
 import markLessonComplete from "../controllers/learn/mark-lesson-complete"
-import getBlockToFunctionQuestions from "../controllers/learn/get-block-to-function-questions"
-import getFillInTheBlankQuestions from "../controllers/learn/get-fill-in-the-blank-questions"
-import getFunctionToBlockQuestions from "../controllers/learn/get-function-to-block-questions"
+import submitBlockToFunctionAnswer from "../controllers/learn/submit-block-to-function-answer"
+import submitFillInTheBlankAnswer from "../controllers/learn/submit-fill-in-the-blank-answer"
+import submitFunctionToBlockAnswer from "../controllers/learn/submit-function-to-block-answer"
 
 const learnRoutes = express.Router()
 
 learnRoutes.get("/get-all-lessons", getAllLessons)
 
-learnRoutes.get("/get-single-lesson/:lessonUuid", attachLessonIdFromUuid, getSingleLesson)
+learnRoutes.get("/get-single-lesson/:lessonUUID", attachLessonIdFromUuid, getSingleLesson)
 
-learnRoutes.post("/mark-lesson-complete/:lessonUuid", attachLessonIdFromUuid, markLessonComplete)
+learnRoutes.post("/mark-lesson-complete/:lessonUUID", attachLessonIdFromUuid, markLessonComplete)
 
 learnRoutes.post(
-	"/questions/block-to-function/:lessonUuid",
+	"/submit-block-to-function/:lessonUUID",
 	attachLessonIdFromUuid,
 	validateBlockToFunctionAnswer,
-	getBlockToFunctionQuestions
+	submitBlockToFunctionAnswer
 )
 
 learnRoutes.post(
-	"/questions/function-to-block/:lessonUuid",
+	"/submit-function-to-block/:lessonUUID",
 	attachLessonIdFromUuid,
 	validateFunctionToBlockAnswer,
-	getFunctionToBlockQuestions
+	submitFunctionToBlockAnswer
 )
 
 learnRoutes.post(
-	"/questions/fill-in-the-blank/:lessonUuid",
+	"/submit-fill-in-the-blank/:lessonUUID",
 	attachLessonIdFromUuid,
 	validateFillInTheBlankAnswer,
-	getFillInTheBlankQuestions
+	submitFillInTheBlankAnswer
 )
 
 export default learnRoutes

@@ -1,53 +1,42 @@
 import { QuestionType } from "@prisma/client"
 
 declare global {
-	// Base lesson type
+	// Base lesson type used by learn endpoints
 	interface Lesson {
 		lessonUuid: string
 		lessonName: string
+		isCompleted: boolean
 	}
 
-	// Lesson with questions
+	// Lesson with questions (used by get-single-lesson)
 	interface LessonWithQuestions extends Lesson {
 		lessonQuestionMap: LessonQuestionMap[]
 	}
 
-	// Lesson question mapping
+	// Ordering and mapping of questions within a lesson
 	interface LessonQuestionMap {
 		lessonQuestionMapId: number
 		order: number
 		question: Question
 	}
 
-	// Base question type
+	// Core question shape with optional polymorphic payloads
 	interface Question {
 		questionId: string
 		questionType: QuestionType
-	}
-
-	// Block to function question
-	interface BlockToFunctionQuestion extends Question {
 		blockToFunctionFlashcard: {
 			codingBlockId: number
 			blockToFunctionAnswerChoice: BlockToFunctionAnswerChoice[]
 		} | null
-	}
-
-	// Function to block question
-	interface FunctionToBlockQuestion extends Question {
 		functionToBlockFlashcard: {
 			functionToBlockAnswerChoice: FunctionToBlockAnswerChoice[]
 		} | null
-	}
-
-	// Fill in the blank question
-	interface FillInTheBlankQuestion extends Question {
 		fillInTheBlank: {
 			fillInTheBlankBlockBank: FillInTheBlankBlockBank[]
 		} | null
 	}
 
-	// Answer choice types
+	// Nested answer choice/blocks types
 	interface BlockToFunctionAnswerChoice {
 		blockToFunctionAnswerChoiceId: number
 		order: number
@@ -69,31 +58,13 @@ declare global {
 		quantity: number
 	}
 
-	interface GetBlockToFunctionQuestionsDbReturn extends LessonQuestionMap {
-		question: BlockToFunctionQuestion
-	}
-
-	interface GetFunctionToBlockQuestionsDbReturn extends LessonQuestionMap {
-		question: FunctionToBlockQuestion
-	}
-
-	interface GetFillInTheBlankQuestionsDbReturn extends LessonQuestionMap {
-		question: FillInTheBlankQuestion
-	}
-
-	// API response types
+	// API response envelopes
 	interface LessonResponse {
 		lesson: LessonWithQuestions
 	}
 
 	interface LessonsResponse {
 		lessons: Lesson[]
-	}
-
-	interface QuestionsResponse {
-		questions: (LessonQuestionMap & {
-			question: BlockToFunctionQuestion | FunctionToBlockQuestion | FillInTheBlankQuestion
-		})[]
 	}
 }
 

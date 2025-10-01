@@ -4,12 +4,8 @@ import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse } from "@lever-labs/common-ts/types/api"
 
 const fillInTheBlankAnswerSchema = Joi.object({
-	selectedBlocks: Joi.array().items(
-		Joi.object({
-			blockId: Joi.number().integer().positive().required(),
-			order: Joi.number().integer().min(0).required()
-		})
-	).required()
+	userCppAnswer: Joi.string().required(),
+	blocklyJson: Joi.object().required()
 }).required()
 
 export default function validateFillInTheBlankAnswer(req: Request, res: Response, next: NextFunction): void {
