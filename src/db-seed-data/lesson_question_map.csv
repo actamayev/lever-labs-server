@@ -1,6 +1,33 @@
 lesson_question_map_id ,lesson_id                            ,question_id                          ,order
                      1 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,0fb9aff7-7e8e-469e-9f9b-3e49e9afb7f7 ,    0
-                     2 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,d4869682-c4bf-4b8d-adbe-624b3a9a5bba ,    1
-                     3 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,ccc46da7-9eea-4947-8609-c81569c08bc1 ,    3
-                     4 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,7a50dd6a-fd98-47ef-b139-33e74c53ad15 ,    4
-                     5 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,b06f8967-6807-45a5-978d-ba40fc859af9 ,    5
+                     2 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,ccc46da7-9eea-4947-8609-c81569c08bc1 ,    1
+                     3 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,338b61e7-0620-41ea-97f3-472620680606 ,    2 ,
+                     4 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,b9b86255-a734-4580-8985-e79ba9abee6e ,    2 ,
+                     5 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,9b436da3-a09f-4df0-9d96-627a6066ca96 ,    2 ,
+                     6 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,2f3a54b1-9a11-44ad-9489-e39d24d41449 ,    2 ,
+                     7 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,09866ff9-47b3-4d0e-afb8-e2ff3fbffb34 ,    2 ,
+                     8 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,51491e09-0d1d-4aa2-83a0-858907cefeda ,    2 ,
+                     9 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,a1fc025d-7868-42a5-b56e-bb8ad97c82e7 ,    2 ,
+                    10 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,ab5a798e-0220-47fa-a84c-7bc15cc6fae9 ,    2 ,
+                    11 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,56621cfd-1721-42a2-b093-567284472889 ,    2 ,
+                    12 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,7deff7d7-e66c-4c36-ad77-f1dbf2958a60 ,    2 ,
+                    13 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,cd8fbb6f-1c4e-435f-a9f1-470a10d7e41d ,    2 ,
+                    14 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,19f0dd98-1fda-45df-872e-c34954ad0561 ,    2 ,
+                    15 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,9411178a-c445-4f8d-81d1-92350e64ddff ,    2 ,
+
+                    16 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,a47236da-74c8-49a9-89a1-958beb09bbbd ,    2 ,
+                    17 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,21d180d5-0824-4bd3-9668-050821a79dfa ,    2 ,
+                    18 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,2fb40077-6755-4a18-8d97-0714c146925c ,    2 ,
+                    19 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,1ad41a4c-a18f-4782-b282-aae30c9f7775 ,    2 ,
+                    20 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,3116f038-4e86-45cd-a751-6057f59b8325 ,    2 ,
+                    21 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,e0861600-9715-42e9-bbea-e0e44886b323 ,    2 ,
+                    22 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,6c473ee8-7545-4145-ab0f-e85656fd1730 ,    2 ,
+                    23 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,543ebabb-e34b-4373-8f66-c241c2b58e59 ,    2 ,
+                    24 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,175595ce-6356-42b2-84c5-1bcf726c333c ,    2 ,
+                    25 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,7d87605c-0e06-4539-a5db-f86e4716da44 ,    2 ,
+                    26 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,fe4da357-9a8f-4d0c-a9ab-08eab566bbc8 ,    2 ,
+                    27 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,24aec295-25e7-46d7-90ea-97d79e77481c ,    2 ,
+                    28 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,3ee60331-76da-4424-b944-a90de9fc839d ,    2 ,
+                    29 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,3301937c-30b6-4e00-81dd-caa81f9f9988 ,    2 ,
+                    30 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,caa2d278-c43f-47fd-b9ef-040d02ec0c41 ,    2 ,
+                    31 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,2bde835b-1600-4063-990a-6313e554cc53 ,    2 ,
