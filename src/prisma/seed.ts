@@ -1,139 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import isUndefined from "lodash/isUndefined"
+import { BlocklyJson } from "@lever-labs/common-ts/types/sandbox"
 import parseCSV from "../utils/parse-csv"
 import PrismaClientClass from "../classes/prisma-client"
-import { ActivityUUID, QuestionUUID } from "@lever-labs/common-ts/types/lab"
-
-async function seedActivities(): Promise<void> {
-	const prismaClient = await PrismaClientClass.getPrismaClient()
-	const activities = parseCSV("../db-seed-data/activities.csv") as SeededActivityData[]
-
-	console.info("Seeding activities...")
-	await Promise.all(activities.map(activity => {
-		if (
-			!activity.activity_id ||
-			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-			!activity.lesson_name || !activity.activity_type ||
-			!activity.activity_name
-		) {
-			throw new Error(`Invalid activity data: ${JSON.stringify(activity)}`)
-		}
-		// const uuid = crypto.randomUUID()
-		return prismaClient.activity.upsert({
-			where: {
-				activity_id: activity.activity_id
-			},
-			update: {
-				activity_type: activity.activity_type,
-				lesson_name: activity.lesson_name,
-				activity_name: activity.activity_name
-			},
-			create: {
-				activity_id: activity.activity_id,
-				activity_type: activity.activity_type,
-				lesson_name: activity.lesson_name,
-				activity_name: activity.activity_name
-			}
-		})
-	}))
-}
-
-async function seedReadingQuestions(): Promise<void> {
-	const prismaClient = await PrismaClientClass.getPrismaClient()
-	const questions = parseCSV("../db-seed-data/reading_questions.csv") as ReadingQuestionData[]
-
-	// Seed reading questions
-	console.info("Seeding reading questions...")
-	await Promise.all(questions.map(question => {
-		if (
-			!question.reading_question_id ||
-			!question.activity_id ||
-			!question.question_text
-		) {
-			throw new Error(`Invalid question data: ${JSON.stringify(question)}`)
-		}
-		// const uuid = crypto.randomUUID()
-		return prismaClient.reading_question.upsert({
-			where: {
-				reading_question_id: question.reading_question_id
-			},
-			update: {
-				activity_id: question.activity_id as ActivityUUID,
-				question_text: question.question_text,
-			},
-			create: {
-				reading_question_id: question.reading_question_id,
-				activity_id: question.activity_id as ActivityUUID,
-				question_text: question.question_text,
-			}
-		})
-	}))
-}
-
-async function seedAnswerChoices(): Promise<void> {
-	const prismaClient = await PrismaClientClass.getPrismaClient()
-	const answerChoices = parseCSV("../db-seed-data/reading_questions_answer_choices.csv") as ReadingQuestionAnswerChoice[]
-
-	console.info("Seeding answer choices...")
-	await Promise.all(answerChoices.map(choice => {
-		if (
-			!choice.reading_question_answer_choice_id ||
-			!choice.reading_question_id ||
-			!choice.answer_text ||
-			isUndefined(choice.is_correct) ||
-			!choice.explanation
-		) {
-			throw new Error(`Invalid choice data: ${JSON.stringify(choice)}`)
-		}
-		return prismaClient.reading_question_answer_choice.upsert({
-			where: {
-				reading_question_answer_choice_id: choice.reading_question_answer_choice_id
-			},
-			update: {
-				reading_question_id: choice.reading_question_id as QuestionUUID,
-				answer_text: choice.answer_text,
-				is_correct: choice.is_correct,
-				explanation: choice.explanation
-			},
-			create: {
-				reading_question_answer_choice_id: choice.reading_question_answer_choice_id,
-				reading_question_id: choice.reading_question_id as QuestionUUID,
-				answer_text: choice.answer_text,
-				is_correct: choice.is_correct,
-				explanation: choice.explanation
-			}
-		})
-	} ))
-}
-
-async function seedReadingSections(): Promise<void> {
-	const prismaClient = await PrismaClientClass.getPrismaClient()
-	const readingSections = parseCSV("../db-seed-data/reading_sections.csv") as ReadingSection[]
-
-	console.info("Seeding reading sections...")
-	await Promise.all(readingSections.map(readingSection => {
-		if (
-			!readingSection.reading_block_id ||
-			!readingSection.reading_id ||
-			!readingSection.reading_block_name
-		) {
-			throw new Error(`Invalid reading section data: ${JSON.stringify(readingSection)}`)
-		}
-		return prismaClient.reading_block.upsert({
-			where: {
-				reading_block_id: readingSection.reading_block_id
-			},
-			update: {
-				reading_id: readingSection.reading_id,
-				reading_block_name: readingSection.reading_block_name
-			},
-			create: {
-				reading_block_id: readingSection.reading_block_id,
-				reading_id: readingSection.reading_id,
-				reading_block_name: readingSection.reading_block_name
-			}
-		})
-	}))
-}
 
 async function seedCareers(): Promise<void> {
 	const prismaClient = await PrismaClientClass.getPrismaClient()
@@ -194,19 +63,348 @@ async function seedChallenges(): Promise<void> {
 	} ))
 }
 
+async function seedLessons(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const lessons = parseCSV("../db-seed-data/lesson.csv") as LessonData[]
+
+	console.info("Seeding lessons...")
+	await Promise.all(lessons.map(lesson => {
+		if (
+			!lesson.lesson_id ||
+			!lesson.lesson_name
+		) {
+			throw new Error(`Invalid lesson data: ${JSON.stringify(lesson)}`)
+		}
+		return prismaClient.lesson.upsert({
+			where: {
+				lesson_id: lesson.lesson_id
+			},
+			update: {
+				lesson_name: lesson.lesson_name,
+				lesson_description: lesson.lesson_description
+			},
+			create: {
+				lesson_id: lesson.lesson_id,
+				lesson_name: lesson.lesson_name,
+				lesson_description: lesson.lesson_description
+			}
+		})
+	}))
+}
+
+async function seedQuestions(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const questions = parseCSV("../db-seed-data/question.csv") as QuestionData[]
+
+	console.info("Seeding questions...")
+	await Promise.all(questions.map(question => {
+		if (
+			!question.question_id ||
+			!question.question_type
+		) {
+			throw new Error(`Invalid question data: ${JSON.stringify(question)}`)
+		}
+		return prismaClient.question.upsert({
+			where: {
+				question_id: question.question_id
+			},
+			update: {
+				question_type: question.question_type
+			},
+			create: {
+				question_id: question.question_id,
+				question_type: question.question_type
+			}
+		})
+	}))
+}
+
+async function seedCodingBlocks(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const codingBlocks = parseCSV("../db-seed-data/coding_block.csv") as CodingBlockData[]
+
+	console.info("Seeding coding blocks...")
+	await Promise.all(codingBlocks.map(block => {
+		if (
+			!block.coding_block_id ||
+			!block.block_name
+		) {
+			throw new Error(`Invalid coding block data: ${JSON.stringify(block)}`)
+		}
+		return prismaClient.coding_block.upsert({
+			where: {
+				coding_block_id: block.coding_block_id
+			},
+			update: {
+				block_name: block.block_name,
+				motor_speed: block.motor_speed,
+				led_color: block.led_color,
+				direction: block.direction,
+				delay_ms: block.delay_ms,
+				color_sensor_detection_color: block.color_sensor_detection_color,
+				speaker_sound: block.speaker_sound
+			},
+			create: {
+				coding_block_id: block.coding_block_id,
+				block_name: block.block_name,
+				motor_speed: block.motor_speed,
+				led_color: block.led_color,
+				direction: block.direction,
+				delay_ms: block.delay_ms,
+				color_sensor_detection_color: block.color_sensor_detection_color,
+				speaker_sound: block.speaker_sound
+			}
+		})
+	}))
+}
+
+async function seedBlockToFunctionFlashcards(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const flashcards = parseCSV("../db-seed-data/block_to_function_flashcard.csv") as BlockToFunctionFlashcardData[]
+
+	console.info("Seeding block to function flashcards...")
+	await Promise.all(flashcards.map(flashcard => {
+		if (
+			!flashcard.question_id ||
+			!flashcard.coding_block_id
+		) {
+			throw new Error(`Invalid block to function flashcard data: ${JSON.stringify(flashcard)}`)
+		}
+		return prismaClient.block_to_function_flashcard.upsert({
+			where: {
+				question_id: flashcard.question_id
+			},
+			update: {
+				coding_block_id: flashcard.coding_block_id
+			},
+			create: {
+				question_id: flashcard.question_id,
+				coding_block_id: flashcard.coding_block_id
+			}
+		})
+	}))
+}
+
+async function seedFunctionToBlockFlashcards(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const flashcards = parseCSV("../db-seed-data/function_to_block_flashcard.csv") as FunctionToBlockFlashcardData[]
+
+	console.info("Seeding function to block flashcards...")
+	await Promise.all(flashcards.map(flashcard => {
+		if (
+			!flashcard.question_id ||
+			!flashcard.question_text
+		) {
+			throw new Error(`Invalid function to block flashcard data: ${JSON.stringify(flashcard)}`)
+		}
+		return prismaClient.function_to_block_flashcard.upsert({
+			where: {
+				question_id: flashcard.question_id
+			},
+			update: {
+				question_text: flashcard.question_text
+			},
+			create: {
+				question_id: flashcard.question_id,
+				question_text: flashcard.question_text
+			}
+		})
+	}))
+}
+
+async function seedFillInTheBlanks(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const fillInBlanks = parseCSV("../db-seed-data/fill_in_the_blank.csv") as FillInTheBlankData[]
+
+	console.info("Seeding fill in the blanks...")
+	await Promise.all(fillInBlanks.map(fillInBlank => {
+		if (
+			!fillInBlank.question_id ||
+			!fillInBlank.initial_blockly_json ||
+			!fillInBlank.reference_solution_cpp
+		) {
+			throw new Error(`Invalid fill in the blank data: ${JSON.stringify(fillInBlank)}`)
+		}
+		return prismaClient.fill_in_the_blank.upsert({
+			where: {
+				question_id: fillInBlank.question_id
+			},
+			update: {
+				initial_blockly_json: fillInBlank.initial_blockly_json as BlocklyJson,
+				reference_solution_cpp: fillInBlank.reference_solution_cpp
+			},
+			create: {
+				question_id: fillInBlank.question_id,
+				initial_blockly_json: fillInBlank.initial_blockly_json as BlocklyJson,
+				reference_solution_cpp: fillInBlank.reference_solution_cpp
+			}
+		})
+	}))
+}
+
+async function seedFillInTheBlankBlockBanks(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const blockBanks = parseCSV("../db-seed-data/fill_in_the_blank_block_bank.csv") as FillInTheBlankBlockBankData[]
+
+	console.info("Seeding fill in the blank block banks...")
+	await Promise.all(blockBanks.map(blockBank => {
+		if (
+			!blockBank.fill_in_the_blank_block_bank_id ||
+			!blockBank.fill_in_the_blank_id ||
+			!blockBank.coding_block_id ||
+			isUndefined(blockBank.quantity) ||
+			isUndefined(blockBank.order)
+		) {
+			throw new Error(`Invalid fill in the blank block bank data: ${JSON.stringify(blockBank)}`)
+		}
+		return prismaClient.fill_in_the_blank_block_bank.upsert({
+			where: {
+				fill_in_the_blank_block_bank_id: blockBank.fill_in_the_blank_block_bank_id
+			},
+			update: {
+				fill_in_the_blank_id: blockBank.fill_in_the_blank_id,
+				coding_block_id: blockBank.coding_block_id,
+				quantity: blockBank.quantity,
+				order: blockBank.order
+			},
+			create: {
+				fill_in_the_blank_block_bank_id: blockBank.fill_in_the_blank_block_bank_id,
+				fill_in_the_blank_id: blockBank.fill_in_the_blank_id,
+				coding_block_id: blockBank.coding_block_id,
+				quantity: blockBank.quantity,
+				order: blockBank.order
+			}
+		})
+	}))
+}
+
+async function seedLessonQuestionMaps(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const maps = parseCSV("../db-seed-data/lesson_question_map.csv") as LessonQuestionMapData[]
+
+	console.info("Seeding lesson question maps...")
+	await Promise.all(maps.map(map => {
+		if (
+			!map.lesson_question_map_id ||
+			!map.lesson_id ||
+			!map.question_id ||
+			isUndefined(map.order)
+		) {
+			throw new Error(`Invalid lesson question map data: ${JSON.stringify(map)}`)
+		}
+		return prismaClient.lesson_question_map.upsert({
+			where: {
+				lesson_question_map_id: map.lesson_question_map_id
+			},
+			update: {
+				lesson_id: map.lesson_id,
+				question_id: map.question_id,
+				order: map.order
+			},
+			create: {
+				lesson_question_map_id: map.lesson_question_map_id,
+				lesson_id: map.lesson_id,
+				question_id: map.question_id,
+				order: map.order
+			}
+		})
+	}))
+}
+
+async function seedBlockToFunctionAnswerChoices(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const choices = parseCSV("../db-seed-data/block_to_function_answer_choice.csv") as BlockToFunctionAnswerChoiceData[]
+
+	console.info("Seeding block to function answer choices...")
+	await Promise.all(choices.map(choice => {
+		if (
+			!choice.block_to_function_answer_choice_id ||
+			!choice.block_to_function_flashcard_id ||
+			!choice.function_description_text ||
+			isUndefined(choice.is_correct) ||
+			isUndefined(choice.order)
+		) {
+			throw new Error(`Invalid block to function answer choice data: ${JSON.stringify(choice)}`)
+		}
+		return prismaClient.block_to_function_answer_choice.upsert({
+			where: {
+				block_to_function_answer_choice_id: choice.block_to_function_answer_choice_id
+			},
+			update: {
+				block_to_function_flashcard_id: choice.block_to_function_flashcard_id,
+				function_description_text: choice.function_description_text,
+				is_correct: choice.is_correct,
+				order: choice.order
+			},
+			create: {
+				block_to_function_answer_choice_id: choice.block_to_function_answer_choice_id,
+				block_to_function_flashcard_id: choice.block_to_function_flashcard_id,
+				function_description_text: choice.function_description_text,
+				is_correct: choice.is_correct,
+				order: choice.order
+			}
+		})
+	}))
+}
+
+async function seedFunctionToBlockAnswerChoices(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const choices = parseCSV("../db-seed-data/function_to_block_answer_choice.csv") as FunctionToBlockAnswerChoiceData[]
+
+	console.info("Seeding function to block answer choices...")
+	await Promise.all(choices.map(choice => {
+		if (
+			!choice.function_to_block_answer_choice_id ||
+			!choice.function_to_block_flashcard_id ||
+			!choice.coding_block_id ||
+			isUndefined(choice.is_correct) ||
+			isUndefined(choice.order)
+		) {
+			throw new Error(`Invalid function to block answer choice data: ${JSON.stringify(choice)}`)
+		}
+		return prismaClient.function_to_block_answer_choice.upsert({
+			where: {
+				function_to_block_answer_choice_id: choice.function_to_block_answer_choice_id
+			},
+			update: {
+				function_to_block_flashcard_id: choice.function_to_block_flashcard_id,
+				coding_block_id: choice.coding_block_id,
+				is_correct: choice.is_correct,
+				order: choice.order
+			},
+			create: {
+				function_to_block_answer_choice_id: choice.function_to_block_answer_choice_id,
+				function_to_block_flashcard_id: choice.function_to_block_flashcard_id,
+				coding_block_id: choice.coding_block_id,
+				is_correct: choice.is_correct,
+				order: choice.order
+			}
+		})
+	}))
+}
+
 async function main(): Promise<void> {
 	try {
-		await seedActivities()
-
-		await seedReadingQuestions()
-
-		await seedAnswerChoices()
-
-		await seedReadingSections()
-
 		await seedCareers()
-
 		await seedChallenges()
+
+		// Seed lesson system
+		await seedCodingBlocks()
+		await seedLessons()
+		await seedQuestions()
+
+		// Seed flashcard types (depends on questions and coding blocks)
+		await seedBlockToFunctionFlashcards()
+		await seedFunctionToBlockFlashcards()
+		await seedFillInTheBlanks()
+
+		// Seed answer choices and block banks (depends on flashcards)
+		await seedBlockToFunctionAnswerChoices()
+		await seedFunctionToBlockAnswerChoices()
+		await seedFillInTheBlankBlockBanks()
+
+		// Seed lesson-question relationships (depends on lessons and questions)
+		await seedLessonQuestionMaps()
 
 		console.info("Seeding completed successfully")
 	} catch (error) {

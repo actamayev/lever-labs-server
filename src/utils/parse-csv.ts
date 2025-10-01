@@ -1,64 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import path from "path"
 import Papa from "papaparse"
 import { readFileSync } from "fs"
-import { ActivityTypes, LessonNames } from "@prisma/client"
-
-// Type guard functions
-function isActivityData(data: unknown): data is SeededActivityData {
-	const d = data as SeededActivityData
-	return (
-		typeof d === "object" &&
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        d !== null &&
-        typeof d.activity_id === "number" &&
-		typeof d.activity_id === "string" &&
-        Object.values(LessonNames).includes(d.lesson_name) &&
-        Object.values(ActivityTypes).includes(d.activity_type)
-	)
-}
-
-function isReadingQuestionData(data: unknown): data is ReadingQuestionData {
-	const d = data as ReadingQuestionData
-	return (
-		typeof d === "object" &&
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        d !== null &&
-        typeof d.reading_question_id === "number" &&
-        typeof d.activity_id === "number" &&
-        typeof d.question_text === "string"
-	)
-}
-
-function isAnswerChoiceData(data: unknown): data is ReadingQuestionAnswerChoice {
-	const d = data as ReadingQuestionAnswerChoice
-	return (
-		typeof d === "object" &&
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        d !== null &&
-        typeof d.reading_question_answer_choice_id === "number" &&
-        typeof d.reading_question_id === "number" &&
-        typeof d.answer_text === "string" &&
-        typeof d.is_correct === "boolean"
-	)
-}
-
-function isReadingSectionData(data: unknown): data is ReadingSection {
-	const d = data as ReadingSection
-	return (
-		typeof d === "object" &&
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        d !== null &&
-        typeof d.reading_block_id === "number" &&
-        typeof d.reading_id === "number" &&
-        typeof d.reading_block_name === "string"
-	)
-}
+import { QuestionType } from "@prisma/client"
 
 function isCareerData(data: unknown): data is CareerData {
 	const d = data as CareerData
 	return (
 		typeof d === "object" &&
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         d !== null &&
         typeof d.career_id === "number" &&
         typeof d.career_name === "string" &&
@@ -70,12 +19,123 @@ function isChallengeData(data: unknown): data is ChallengeData {
 	const d = data as ChallengeData
 	return (
 		typeof d === "object" &&
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         d !== null &&
         typeof d.challenge_id === "number" &&
         typeof d.challenge_name === "string" &&
         typeof d.challenge_uuid === "string" &&
         typeof d.career_id === "number"
+	)
+}
+
+function isLessonData(data: unknown): data is LessonData {
+	const d = data as LessonData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.lesson_id === "string" &&
+        typeof d.lesson_name === "string"
+	)
+}
+
+function isQuestionData(data: unknown): data is QuestionData {
+	const d = data as QuestionData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.question_id === "string" &&
+        Object.values(QuestionType).includes(d.question_type)
+	)
+}
+
+function isCodingBlockData(data: unknown): data is CodingBlockData {
+	const d = data as CodingBlockData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.coding_block_id === "number" &&
+        typeof d.block_name === "string"
+	)
+}
+
+function isBlockToFunctionFlashcardData(data: unknown): data is BlockToFunctionFlashcardData {
+	const d = data as BlockToFunctionFlashcardData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.question_id === "string" &&
+        typeof d.coding_block_id === "number"
+	)
+}
+
+function isFunctionToBlockFlashcardData(data: unknown): data is FunctionToBlockFlashcardData {
+	const d = data as FunctionToBlockFlashcardData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.question_id === "string" &&
+        typeof d.question_text === "string"
+	)
+}
+
+function isFillInTheBlankData(data: unknown): data is FillInTheBlankData {
+	const d = data as FillInTheBlankData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.question_id === "string" &&
+        typeof d.initial_blockly_json === "string" &&
+        typeof d.reference_solution_cpp === "string"
+	)
+}
+
+function isFillInTheBlankBlockBankData(data: unknown): data is FillInTheBlankBlockBankData {
+	const d = data as FillInTheBlankBlockBankData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.fill_in_the_blank_block_bank_id === "number" &&
+        typeof d.fill_in_the_blank_id === "string" &&
+        typeof d.coding_block_id === "number" &&
+        typeof d.quantity === "number" &&
+        typeof d.order === "number"
+	)
+}
+
+function isLessonQuestionMapData(data: unknown): data is LessonQuestionMapData {
+	const d = data as LessonQuestionMapData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.lesson_question_map_id === "number" &&
+        typeof d.lesson_id === "string" &&
+        typeof d.question_id === "string" &&
+        typeof d.order === "number"
+	)
+}
+
+function isBlockToFunctionAnswerChoiceData(data: unknown): data is BlockToFunctionAnswerChoiceData {
+	const d = data as BlockToFunctionAnswerChoiceData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.block_to_function_answer_choice_id === "number" &&
+        typeof d.block_to_function_flashcard_id === "string" &&
+        typeof d.function_description_text === "string" &&
+        typeof d.is_correct === "boolean" &&
+        typeof d.order === "number"
+	)
+}
+
+function isFunctionToBlockAnswerChoiceData(data: unknown): data is FunctionToBlockAnswerChoiceData {
+	const d = data as FunctionToBlockAnswerChoiceData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.function_to_block_answer_choice_id === "number" &&
+        typeof d.function_to_block_flashcard_id === "string" &&
+        typeof d.coding_block_id === "number" &&
+        typeof d.is_correct === "boolean" &&
+        typeof d.order === "number"
 	)
 }
 
@@ -89,7 +149,7 @@ function cleanObjectKeys<T extends { [K in keyof T]: unknown }>(
 	}, {} as T)
 }
 
-// eslint-disable-next-line max-lines-per-function
+// eslint-disable-next-line max-lines-per-function, complexity
 export default function parseCSV(filePath: string): AllSeedData[] {
 	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const csvFile = readFileSync(path.join(__dirname, filePath), "utf-8")
@@ -98,6 +158,7 @@ export default function parseCSV(filePath: string): AllSeedData[] {
 		skipEmptyLines: true,
 		transform: (value: string) => {
 			const cleanValue = value.trim()
+			if (cleanValue === "") return null
 			if (cleanValue.toLowerCase() === "true") return true
 			if (cleanValue.toLowerCase() === "false") return false
 			const num = Number(cleanValue)
@@ -110,38 +171,7 @@ export default function parseCSV(filePath: string): AllSeedData[] {
 
 	const fileName = path.basename(filePath)
 
-	// Validate and type data based on file path
-	if (fileName === "activities.csv") {
-		return cleanedData.map((row, index) => {
-			if (!isActivityData(row)) {
-				throw new Error(`Invalid activity data at row ${index + 1}: ${JSON.stringify(row)}`)
-			}
-			return row as SeededActivityData
-		})
-	} else if (fileName === "reading_questions.csv") {
-		return cleanedData.map((row, index) => {
-			if (!isReadingQuestionData(row)) {
-				throw new Error(`Invalid reading question data at row ${index + 1}: ${JSON.stringify(row)}`)
-			}
-			return row as ReadingQuestionData
-		})
-	} else if (fileName === "reading_questions_answer_choices.csv") {
-		return cleanedData.map((row, index) => {
-			if (!isAnswerChoiceData(row)) {
-				throw new Error(`Invalid answer choice data at row ${index + 1}: ${JSON.stringify(row)}`)
-			}
-			return row as ReadingQuestionAnswerChoice
-		})
-	}
-	else if (fileName === "reading_sections.csv") {
-		return cleanedData.map((row, index) => {
-			if (!isReadingSectionData(row)) {
-				throw new Error(`Invalid reading section data at row ${index + 1}: ${JSON.stringify(row)}`)
-			}
-			return row as ReadingSection
-		})
-	}
-	else if (fileName === "career.csv") {
+	if (fileName === "career.csv") {
 		return cleanedData.map((row, index) => {
 			if (!isCareerData(row)) {
 				throw new Error(`Invalid career data at row ${index + 1}: ${JSON.stringify(row)}`)
@@ -154,6 +184,83 @@ export default function parseCSV(filePath: string): AllSeedData[] {
 				throw new Error(`Invalid challenge data at row ${index + 1}: ${JSON.stringify(row)}`)
 			}
 			return row as ChallengeData
+		})
+	} else if (fileName === "lesson.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isLessonData(row)) {
+				throw new Error(`Invalid lesson data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as LessonData
+		})
+	} else if (fileName === "question.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isQuestionData(row)) {
+				throw new Error(`Invalid question data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as QuestionData
+		})
+	} else if (fileName === "coding_block.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isCodingBlockData(row)) {
+				throw new Error(`Invalid coding block data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as CodingBlockData
+		})
+	} else if (fileName === "block_to_function_flashcard.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isBlockToFunctionFlashcardData(row)) {
+				throw new Error(`Invalid block to function flashcard data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as BlockToFunctionFlashcardData
+		})
+	} else if (fileName === "function_to_block_flashcard.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isFunctionToBlockFlashcardData(row)) {
+				throw new Error(`Invalid function to block flashcard data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as FunctionToBlockFlashcardData
+		})
+	} else if (fileName === "fill_in_the_blank.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isFillInTheBlankData(row)) {
+				throw new Error(`Invalid fill in the blank data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			// Parse the JSON string
+			const parsed = row as FillInTheBlankData
+			try {
+				parsed.initial_blockly_json = JSON.parse(parsed.initial_blockly_json as unknown as string)
+			} catch (error) {
+				throw new Error(`Invalid JSON in fill_in_the_blank at row ${index + 1}: ${error}`)
+			}
+			return parsed
+		})
+	} else if (fileName === "fill_in_the_blank_block_bank.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isFillInTheBlankBlockBankData(row)) {
+				throw new Error(`Invalid fill in the blank block bank data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as FillInTheBlankBlockBankData
+		})
+	} else if (fileName === "lesson_question_map.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isLessonQuestionMapData(row)) {
+				throw new Error(`Invalid lesson question map data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as LessonQuestionMapData
+		})
+	} else if (fileName === "block_to_function_answer_choice.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isBlockToFunctionAnswerChoiceData(row)) {
+				throw new Error(`Invalid block to function answer choice data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as BlockToFunctionAnswerChoiceData
+		})
+	} else if (fileName === "function_to_block_answer_choice.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isFunctionToBlockAnswerChoiceData(row)) {
+				throw new Error(`Invalid function to block answer choice data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as FunctionToBlockAnswerChoiceData
 		})
 	}
 
