@@ -1,10 +1,12 @@
 import { Response, Request } from "express"
 import retrieveCompletedReadingBlocksDB from "../../db-operations/read/completed-reading-block/retrieve-completed-reading-blocks-db"
 import { ErrorResponse } from "@lever-labs/common-ts/types/api"
+import { ActivityUUID } from "@lever-labs/common-ts/types/lab"
 
 export default async function retrieveCompletedReadingBlocks(req: Request, res: Response): Promise<void> {
 	try {
-		const { userId, activityId } = req
+		const { userId } = req
+		const { activityId } = req.params as { activityId: ActivityUUID }
 		const completedReadingBlocks = await retrieveCompletedReadingBlocksDB(userId, activityId)
 
 		res.status(200).json({ completedReadingBlocks } satisfies { completedReadingBlocks: string[] })

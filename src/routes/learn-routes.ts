@@ -1,5 +1,5 @@
 import express from "express"
-import attachLessonIdFromUuid from "../middleware/attach/attach-lesson-id-from-uuid"
+import validateLessonId from "../middleware/request-validation/learn/validate-lesson-id"
 import validateBlockToFunctionAnswer from "../middleware/request-validation/learn/validate-block-to-function-answer"
 import validateFunctionToBlockAnswer from "../middleware/request-validation/learn/validate-function-to-block-answer"
 import validateFillInTheBlankAnswer from "../middleware/request-validation/learn/validate-fill-in-the-blank-answer"
@@ -15,20 +15,20 @@ const learnRoutes = express.Router()
 
 learnRoutes.get("/get-all-lessons", getAllLessons)
 
-learnRoutes.get("/get-detailed-lesson/:lessonUUID", attachLessonIdFromUuid, getDetailedLesson)
+learnRoutes.get("/get-detailed-lesson/:lessonId", validateLessonId, getDetailedLesson)
 
-learnRoutes.post("/mark-lesson-complete/:lessonUUID", attachLessonIdFromUuid, markLessonComplete)
+learnRoutes.post("/mark-lesson-complete/:lessonId", validateLessonId, markLessonComplete)
 
 learnRoutes.post(
-	"/submit-block-to-function/:lessonUUID",
-	attachLessonIdFromUuid,
+	"/submit-block-to-function/:lessonId",
+	validateLessonId,
 	validateBlockToFunctionAnswer,
 	submitBlockToFunctionAnswer
 )
 
 learnRoutes.post(
-	"/submit-function-to-block/:lessonUUID",
-	attachLessonIdFromUuid,
+	"/submit-function-to-block/:lessonId",
+	validateLessonId,
 	validateFunctionToBlockAnswer,
 	submitFunctionToBlockAnswer
 )
@@ -36,8 +36,8 @@ learnRoutes.post(
 // TODO: For simple questions, we can just submit the answer choice id.
 // For more complex questions, we need to submit the full answer to the LLM
 learnRoutes.post(
-	"/submit-fill-in-the-blank/:lessonUUID",
-	attachLessonIdFromUuid,
+	"/submit-fill-in-the-blank/:lessonId",
+	validateLessonId,
 	validateFillInTheBlankAnswer,
 	submitFillInTheBlankAnswer
 )

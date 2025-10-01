@@ -1,6 +1,7 @@
+import { ActivityUUID } from "@lever-labs/common-ts/types/lab"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function retrieveCompletedReadingBlocksDB(userId: number, readingId: number): Promise<string[]> {
+export default async function retrieveCompletedReadingBlocksDB(userId: number, readingId: ActivityUUID): Promise<string[]> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 

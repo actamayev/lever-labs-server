@@ -1,0 +1,11 @@
+coding_block_id,block_name,motor_speed,led_color,direction,sensor_threshold,delay_ms
+1,turn_motor,50,,,LEFT,
+2,turn_motor,75,,,RIGHT,
+3,set_led,,RED,,,
+4,set_led,,BLUE,,,
+5,read_distance_sensor,,,,,
+6,wait,,,,,1000
+7,wait,,,,,3000
+8,stop_motor,,,,,
+9,if_statement,,,,,
+10,turn_motor,100,,,FORWARD,

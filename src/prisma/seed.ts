@@ -1,6 +1,7 @@
 import isUndefined from "lodash/isUndefined"
 import parseCSV from "../utils/parse-csv"
 import PrismaClientClass from "../classes/prisma-client"
+import { ActivityUUID, QuestionUUID } from "@lever-labs/common-ts/types/lab"
 
 async function seedActivities(): Promise<void> {
 	const prismaClient = await PrismaClientClass.getPrismaClient()
@@ -12,8 +13,7 @@ async function seedActivities(): Promise<void> {
 			!activity.activity_id ||
 			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			!activity.lesson_name || !activity.activity_type ||
-			!activity.activity_name ||
-			!activity.uuid
+			!activity.activity_name
 		) {
 			throw new Error(`Invalid activity data: ${JSON.stringify(activity)}`)
 		}
@@ -31,7 +31,6 @@ async function seedActivities(): Promise<void> {
 				activity_id: activity.activity_id,
 				activity_type: activity.activity_type,
 				lesson_name: activity.lesson_name,
-				activity_uuid: activity.uuid,
 				activity_name: activity.activity_name
 			}
 		})
@@ -48,8 +47,7 @@ async function seedReadingQuestions(): Promise<void> {
 		if (
 			!question.reading_question_id ||
 			!question.activity_id ||
-			!question.question_text ||
-			!question.uuid
+			!question.question_text
 		) {
 			throw new Error(`Invalid question data: ${JSON.stringify(question)}`)
 		}
@@ -59,14 +57,13 @@ async function seedReadingQuestions(): Promise<void> {
 				reading_question_id: question.reading_question_id
 			},
 			update: {
-				activity_id: question.activity_id,
+				activity_id: question.activity_id as ActivityUUID,
 				question_text: question.question_text,
 			},
 			create: {
 				reading_question_id: question.reading_question_id,
-				activity_id: question.activity_id,
+				activity_id: question.activity_id as ActivityUUID,
 				question_text: question.question_text,
-				reading_question_uuid: question.uuid
 			}
 		})
 	}))
@@ -92,14 +89,14 @@ async function seedAnswerChoices(): Promise<void> {
 				reading_question_answer_choice_id: choice.reading_question_answer_choice_id
 			},
 			update: {
-				reading_question_id: choice.reading_question_id,
+				reading_question_id: choice.reading_question_id as QuestionUUID,
 				answer_text: choice.answer_text,
 				is_correct: choice.is_correct,
 				explanation: choice.explanation
 			},
 			create: {
 				reading_question_answer_choice_id: choice.reading_question_answer_choice_id,
-				reading_question_id: choice.reading_question_id,
+				reading_question_id: choice.reading_question_id as QuestionUUID,
 				answer_text: choice.answer_text,
 				is_correct: choice.is_correct,
 				explanation: choice.explanation

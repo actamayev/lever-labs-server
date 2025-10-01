@@ -4,23 +4,21 @@ import { ActivityUUID, QuestionUUID } from "@lever-labs/common-ts/types/lab"
 
 declare global {
 	interface SeededActivityData {
-		activity_id: number
+		activity_id: ActivityUUID
 		lesson_name: LessonNames
 		activity_type: ActivityTypes
 		activity_name: string
-		uuid: ActivityUUID
 	}
 
 	interface ReadingQuestionData {
-		reading_question_id: number
-		activity_id: number
+		reading_question_id: QuestionUUID
+		activity_id: ActivityUUID
 		question_text: string
-		uuid: QuestionUUID
 	}
 
 	interface ReadingQuestionAnswerChoice {
 		reading_question_answer_choice_id: number
-		reading_question_id: number
+		reading_question_id: QuestionUUID
 		answer_text: string
 		is_correct: boolean
 		explanation: string
@@ -28,7 +26,7 @@ declare global {
 
 	interface ReadingSection {
 		reading_block_id: number
-		reading_id: number
+		reading_id: ActivityUUID
 		reading_block_name: string
 	}
 

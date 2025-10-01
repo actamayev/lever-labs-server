@@ -102,10 +102,9 @@ enum LessonNames {
 
 // Reference Configuration data
 model activity {
-	activity_id													Int       @id @default(autoincrement())
+	activity_id													String       @id @default(uuid())
 	lesson_name													LessonNames
 	activity_type	                                            ActivityTypes
-	activity_uuid												String		@unique
 	activity_name												String
 	reading_block                                               reading_block[]
 
@@ -115,7 +114,6 @@ model activity {
 	user_activity_progress										user_activity_progress[]
 	reading_questions											reading_question[]
 	@@unique([activity_type, activity_name])
-	@@index([activity_uuid], name: "activity__activity_uuid_idx")
 }
 
 enum ProgressStatus {
@@ -126,7 +124,7 @@ enum ProgressStatus {
 model user_activity_progress {
 	user_activity_progress_id									Int       @id @default(autoincrement())
 	user_id             										Int
-	activity_id                                               	Int
+	activity_id                                               	String
   	status    													ProgressStatus
 
   	completed_at  												DateTime?
@@ -143,7 +141,7 @@ model user_activity_progress {
 // Reference Configuration data
 model reading_block {
 	reading_block_id											Int       @id @default(autoincrement())
-	reading_id                                               	Int
+	reading_id                                               	String
   	reading_block_name    										String		@unique
 
 	created_at                                                  DateTime  @default(now())
@@ -171,10 +169,9 @@ model completed_reading_block {
 
 // Reference Configuration data
 model reading_question {
-	reading_question_id											Int       @id @default(autoincrement())
-	activity_id                                               	Int
+	reading_question_id											String       @id @default(uuid())
+	activity_id                                               	String
 	question_text												String
-	reading_question_uuid										String		@unique
 
 	created_at                                                  DateTime  @default(now())
 
@@ -188,7 +185,7 @@ model reading_question {
 // Reference Configuration data
 model reading_question_answer_choice {
 	reading_question_answer_choice_id							Int       @id @default(autoincrement())
-	reading_question_id                                         Int
+	reading_question_id                                         String
 	answer_text													String
 	is_correct													Boolean
 	explanation													String
@@ -196,7 +193,7 @@ model reading_question_answer_choice {
 	created_at                                                  DateTime  @default(now())
 
 	reading_question                                            reading_question @relation(fields: [reading_question_id], references: [reading_question_id])
-	user_answer												user_answer[]
+	user_answer													user_answer[]
 	@@index([reading_question_id], name: "reading_question_answer_choice__reading_question_id_idx")
 	@@unique([reading_question_id, answer_text])
 }
@@ -588,10 +585,10 @@ model coding_block {
 }
 
 model lesson {
-	lesson_id												Int       @id @default(autoincrement())
-	lesson_uuid												String		@unique
+	lesson_id												String    @id @default(uuid())
 	lesson_name												String
-
+	lesson_description										String?
+	
 	created_at												DateTime  @default(now())
 	updated_at												DateTime  @default(now()) @updatedAt
 	
@@ -601,7 +598,7 @@ model lesson {
 
 model lesson_question_map {
 	lesson_question_map_id									Int       @id @default(autoincrement())
-	lesson_id												Int
+	lesson_id												String
 	question_id												String
 	order													Int
 	
@@ -615,7 +612,7 @@ model lesson_question_map {
 model completed_user_lesson {
 	completed_user_lesson_id								Int       @id @default(autoincrement())
 	user_id													Int
-	lesson_id												Int
+	lesson_id												String
 	
 	created_at												DateTime  @default(now())
 	

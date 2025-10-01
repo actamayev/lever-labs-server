@@ -1,10 +1,10 @@
 import { isEmpty } from "lodash"
 import { DetailedLesson, LessonQuestionMap } from "@lever-labs/common-ts/types/learn"
 import PrismaClientClass from "../../../classes/prisma-client"
-import { LessonUUID } from "@lever-labs/common-ts/types/utils"
+import { DuolingoQuestionUUID, LessonUUID } from "@lever-labs/common-ts/types/utils"
 
 // eslint-disable-next-line max-lines-per-function
-export default async function getDetailedLessonDb(lessonId: number, userId: number): Promise<DetailedLesson | null> {
+export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: number): Promise<DetailedLesson | null> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -13,7 +13,7 @@ export default async function getDetailedLessonDb(lessonId: number, userId: numb
 				lesson_id: lessonId
 			},
 			select: {
-				lesson_uuid: true,
+				lesson_id: true,
 				lesson_name: true,
 				completed_user_lesson: {
 					where: { user_id: userId },
@@ -78,14 +78,14 @@ export default async function getDetailedLessonDb(lessonId: number, userId: numb
 		if (!lesson) return null
 
 		return {
-			lessonUuid: lesson.lesson_uuid as LessonUUID,
+			lessonId: lesson.lesson_id as LessonUUID,
 			lessonName: lesson.lesson_name,
 			isCompleted: !isEmpty(lesson.completed_user_lesson),
 			lessonQuestionMap: lesson.lesson_question_map.map(map => ({
 				lessonQuestionMapId: map.lesson_question_map_id,
 				order: map.order,
 				question: {
-					questionId: map.question.question_id,
+					questionId: map.question.question_id as DuolingoQuestionUUID,
 					questionType: map.question.question_type,
 					blockToFunctionFlashcard: map.question.block_to_function_flashcard ? {
 						codingBlockId: map.question.block_to_function_flashcard.coding_block_id,

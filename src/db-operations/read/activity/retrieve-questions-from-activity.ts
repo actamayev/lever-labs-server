@@ -1,8 +1,8 @@
-import { RetrievedQuestions, QuestionUUID } from "@lever-labs/common-ts/types/lab"
+import { RetrievedQuestions, ActivityUUID, QuestionUUID } from "@lever-labs/common-ts/types/lab"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 // eslint-disable-next-line max-lines-per-function
-export default async function retrieveQuestionsFromActivity(userId: number, activityId: number): Promise<RetrievedQuestions[]> {
+export default async function retrieveQuestionsFromActivity(userId: number, activityId: ActivityUUID): Promise<RetrievedQuestions[]> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -13,7 +13,6 @@ export default async function retrieveQuestionsFromActivity(userId: number, acti
 			select: {
 				question_text: true,
 				reading_question_id: true,
-				reading_question_uuid: true,
 				reading_question_answer_choice: {
 					select: {
 						answer_text: true,
@@ -34,8 +33,7 @@ export default async function retrieveQuestionsFromActivity(userId: number, acti
 
 		return retrievedQuestions.map(question => ({
 			questionText: question.question_text,
-			readingQuestionId: question.reading_question_id,
-			readingQuestionUUID: question.reading_question_uuid as QuestionUUID,
+			readingQuestionId: question.reading_question_id as QuestionUUID,
 			questionAnswerChoices: question.reading_question_answer_choice.map(choice => ({
 				answerText: choice.answer_text,
 				isCorrect: choice.is_correct,

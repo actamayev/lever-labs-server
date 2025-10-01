@@ -1,6 +1,7 @@
+import { LessonUUID } from "@lever-labs/common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function createCompletedUserLessonRecordDb(userId: number, lessonId: number): Promise<void> {
+export default async function createCompletedUserLessonRecordDb(userId: number, lessonId: LessonUUID): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 

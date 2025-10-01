@@ -7,9 +7,9 @@ export default async function retrieveUserActivityProgressDB(userId: number): Pr
 
 		const retrievedActivities = await prismaClient.activity.findMany({
 			select: {
+				activity_id: true,
 				activity_type: true,
 				activity_name: true,
-				activity_uuid: true,
 				user_activity_progress: {
 					where: {
 						user_id: userId
@@ -24,7 +24,7 @@ export default async function retrieveUserActivityProgressDB(userId: number): Pr
 
 		return retrievedActivities.map(singleActivity => ({
 			status: singleActivity.user_activity_progress[0]?.status ?? null,
-			activityUUID: singleActivity.activity_uuid as ActivityUUID,
+			activityId: singleActivity.activity_id as ActivityUUID,
 			activityName: singleActivity.activity_name,
 			activityType: singleActivity.activity_type
 		}) satisfies UserActivityProgress)

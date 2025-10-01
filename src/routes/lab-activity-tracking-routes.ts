@@ -1,9 +1,8 @@
 import express from "express"
 
-import attachActivityIdFromUUID from "../middleware/attach/attach-activity-id-from-uuid"
 import attachReadingBlockIdFromReadingName from "../middleware/attach/attach-reading-block-id-from-reading-name"
 import validateSubmitQuizAnswer from "../middleware/request-validation/lab-lesson-tracking/validate-submit-quiz-answer"
-import validateActivityUUIDInParams from "../middleware/request-validation/lab-lesson-tracking/validate-activity-uuid-in-params"
+import validateActivityIdInParams from "../middleware/request-validation/lab-lesson-tracking/validate-activity-id-in-params"
 import validateReadingBlockNameInParams from "../middleware/request-validation/lab-lesson-tracking/validate-reading-block-name-in-params"
 
 import submitQuizAnswer from "../controllers/lab-activity-tracking/submit-quiz-answer"
@@ -19,16 +18,14 @@ const labActivityTrackingRoutes = express.Router()
 labActivityTrackingRoutes.get("/retrieve-user-activity-progress", retrieveUserActivityProgress)
 
 labActivityTrackingRoutes.get(
-	"/retrieve-quiz-attempts/:activityUUID",
-	validateActivityUUIDInParams,
-	attachActivityIdFromUUID,
+	"/retrieve-quiz-attempts/:activityId",
+	validateActivityIdInParams,
 	retrieveQuizAttempts
 )
 
 labActivityTrackingRoutes.post(
-	"/mark-activity-complete/:activityUUID",
-	validateActivityUUIDInParams,
-	attachActivityIdFromUUID,
+	"/mark-activity-complete/:activityId",
+	validateActivityIdInParams,
 	markActivityComplete
 )
 
@@ -48,7 +45,6 @@ labActivityTrackingRoutes.post(
 labActivityTrackingRoutes.get(
 	"/retrieve-completed-reading-blocks/:readingUUID",
 	validateReadingUUIDInParams,
-	attachActivityIdFromUUID,
 	retrieveCompletedReadingBlocks
 )
 

@@ -11,7 +11,7 @@ function isActivityData(data: unknown): data is SeededActivityData {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         d !== null &&
         typeof d.activity_id === "number" &&
-		typeof d.uuid === "string" &&
+		typeof d.activity_id === "string" &&
         Object.values(LessonNames).includes(d.lesson_name) &&
         Object.values(ActivityTypes).includes(d.activity_type)
 	)

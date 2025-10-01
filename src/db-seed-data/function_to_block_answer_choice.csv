@@ -1,0 +1,8 @@
+function_to_block_answer_choice_id,function_to_block_flashcard_id,coding_block_id,is_correct,order
+1,d4869682-c4bf-4b8d-adbe-624b3a9a5bba,10,true,0
+2,d4869682-c4bf-4b8d-adbe-624b3a9a5bba,1,false,1
+3,d4869682-c4bf-4b8d-adbe-624b3a9a5bba,2,false,2
+4,d4869682-c4bf-4b8d-adbe-624b3a9a5bba,8,false,3
+5,7a50dd6a-fd98-47ef-b139-33e74c53ad15,7,true,0
+6,7a50dd6a-fd98-47ef-b139-33e74c53ad15,6,false,1
+7,7a50dd6a-fd98-47ef-b139-33e74c53ad15,8,false,2

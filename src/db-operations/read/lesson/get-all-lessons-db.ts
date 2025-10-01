@@ -8,7 +8,7 @@ export default async function getAllLessonsDb(userId: number): Promise<Lesson[]>
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 		const lessons = await prismaClient.lesson.findMany({
 			select: {
-				lesson_uuid: true,
+				lesson_id: true,
 				lesson_name: true,
 				completed_user_lesson: {
 					where: { user_id: userId },
@@ -22,7 +22,7 @@ export default async function getAllLessonsDb(userId: number): Promise<Lesson[]>
 		})
 
 		return lessons.map(lesson => ({
-			lessonUuid: lesson.lesson_uuid as LessonUUID,
+			lessonId: lesson.lesson_id as LessonUUID,
 			lessonName: lesson.lesson_name,
 			isCompleted: !isEmpty(lesson.completed_user_lesson)
 		}) satisfies Lesson)
