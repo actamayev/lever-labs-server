@@ -1,6 +1,6 @@
-lesson_question_map_id,lesson_id,question_id,order
-1,3121fdbf-f966-445e-94d9-8ef8520abd9e,0fb9aff7-7e8e-469e-9f9b-3e49e9afb7f7,0
-2,3121fdbf-f966-445e-94d9-8ef8520abd9e,d4869682-c4bf-4b8d-adbe-624b3a9a5bba,1
-3,3121fdbf-f966-445e-94d9-8ef8520abd9e,ccc46da7-9eea-4947-8609-c81569c08bc1,3
-4,3121fdbf-f966-445e-94d9-8ef8520abd9e,7a50dd6a-fd98-47ef-b139-33e74c53ad15,4
-5,3121fdbf-f966-445e-94d9-8ef8520abd9e,b06f8967-6807-45a5-978d-ba40fc859af9,5
+lesson_question_map_id ,lesson_id                            ,question_id                          ,order
+                     1 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,0fb9aff7-7e8e-469e-9f9b-3e49e9afb7f7 ,    0
+                     2 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,d4869682-c4bf-4b8d-adbe-624b3a9a5bba ,    1
+                     3 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,ccc46da7-9eea-4947-8609-c81569c08bc1 ,    3
+                     4 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,7a50dd6a-fd98-47ef-b139-33e74c53ad15 ,    4
+                     5 ,3121fdbf-f966-445e-94d9-8ef8520abd9e ,b06f8967-6807-45a5-978d-ba40fc859af9 ,    5

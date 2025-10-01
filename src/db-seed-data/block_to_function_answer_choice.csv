@@ -1,8 +1,8 @@
-block_to_function_answer_choice_id,block_to_function_flashcard_id,function_description_text,is_correct,order
-1,0fb9aff7-7e8e-469e-9f9b-3e49e9afb7f7,Turns the motor left at 50% speed,true,0
-2,0fb9aff7-7e8e-469e-9f9b-3e49e9afb7f7,Turns the motor right at 50% speed,false,1
-3,0fb9aff7-7e8e-469e-9f9b-3e49e9afb7f7,Stops the motor completely,false,2
-4,0fb9aff7-7e8e-469e-9f9b-3e49e9afb7f7,Turns the motor left at 75% speed,false,3
-5,ccc46da7-9eea-4947-8609-c81569c08bc1,Sets the LED to red color,true,0
-6,ccc46da7-9eea-4947-8609-c81569c08bc1,Sets the LED to blue color,false,1
-7,ccc46da7-9eea-4947-8609-c81569c08bc1,Turns off the LED,false,2
+block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,function_description_text          ,is_correct ,order
+                                 1 ,0fb9aff7-7e8e-469e-9f9b-3e49e9afb7f7 ,Turns the motor left at 50% speed  ,true       ,    0
+                                 2 ,0fb9aff7-7e8e-469e-9f9b-3e49e9afb7f7 ,Turns the motor right at 50% speed ,false      ,    1
+                                 3 ,0fb9aff7-7e8e-469e-9f9b-3e49e9afb7f7 ,Stops the motor completely         ,false      ,    2
+                                 4 ,0fb9aff7-7e8e-469e-9f9b-3e49e9afb7f7 ,Turns the motor left at 75% speed  ,false      ,    3
+                                 5 ,ccc46da7-9eea-4947-8609-c81569c08bc1 ,Sets the LED to red color          ,true       ,    0
+                                 6 ,ccc46da7-9eea-4947-8609-c81569c08bc1 ,Sets the LED to blue color         ,false      ,    1
+                                 7 ,ccc46da7-9eea-4947-8609-c81569c08bc1 ,Turns off the LED                  ,false      ,    2

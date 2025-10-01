@@ -3,18 +3,19 @@ coding_block_id ,block_name   ,led_color ,color_sensor_detection_color ,speaker_
               2 ,set_led      ,green     ,                             ,
               3 ,set_led      ,blue      ,                             ,
               4 ,set_led      ,white     ,                             ,
-              5 ,check_color  ,          ,red                          ,
-              6 ,check_color  ,          ,green                        ,
-              7 ,check_color  ,          ,blue                         ,
-              8 ,check_color  ,          ,white                        ,
-              9 ,play_tone    ,          ,                             ,A
-             10 ,play_tone    ,          ,                             ,B
-             11 ,play_tone    ,          ,                             ,C
-             12 ,play_tone    ,          ,                             ,D
-             13 ,play_tone    ,          ,                             ,E
-             14 ,play_tone    ,          ,                             ,F
-             15 ,play_tone    ,          ,                             ,G
-             16 ,if_statement ,          ,                             ,
-             16 ,if_else      ,          ,                             ,
-             17 ,if_else_2    ,          ,                             ,
-             18 ,if_else_3    ,          ,                             ,
+              5 ,set_led      ,off     ,                             ,
+              6 ,check_color  ,          ,red                          ,
+              7 ,check_color  ,          ,green                        ,
+              8 ,check_color  ,          ,blue                         ,
+              9 ,check_color  ,          ,white                        ,
+              10 ,play_tone    ,          ,                             ,A
+             11 ,play_tone    ,          ,                             ,B
+             12 ,play_tone    ,          ,                             ,C
+             13 ,play_tone    ,          ,                             ,D
+             14 ,play_tone    ,          ,                             ,E
+             15 ,play_tone    ,          ,                             ,F
+             16 ,play_tone    ,          ,                             ,G
+             17 ,if_statement ,          ,                             ,
+             18 ,if_else      ,          ,                             ,
+             19 ,if_else_2    ,          ,                             ,
+             20 ,if_else_3    ,          ,                             ,
