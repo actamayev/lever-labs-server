@@ -137,22 +137,16 @@ async function seedCodingBlocks(): Promise<void> {
 			},
 			update: {
 				block_name: block.block_name,
-				motor_speed: block.motor_speed,
 				led_color: block.led_color,
-				direction: block.direction,
-				delay_ms: block.delay_ms,
 				color_sensor_detection_color: block.color_sensor_detection_color,
-				speaker_sound: block.speaker_sound
+				speaker_tone: block.speaker_tone
 			},
 			create: {
 				coding_block_id: block.coding_block_id,
 				block_name: block.block_name,
-				motor_speed: block.motor_speed,
 				led_color: block.led_color,
-				direction: block.direction,
-				delay_ms: block.delay_ms,
 				color_sensor_detection_color: block.color_sensor_detection_color,
-				speaker_sound: block.speaker_sound
+				speaker_tone: block.speaker_tone
 			}
 		})
 	}))

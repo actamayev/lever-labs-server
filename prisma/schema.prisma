@@ -440,12 +440,9 @@ model coding_block {
 	block_name												String
 	
 	// Parameter columns (all nullable - different blocks use different params)
-	motor_speed												Int?
 	led_color												String?
-	direction												String?
-	delay_ms												Int?
 	color_sensor_detection_color							String?
-	speaker_sound											String?
+	speaker_tone											String?
 	
 	created_at												DateTime  @default(now())
 	

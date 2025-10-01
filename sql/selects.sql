@@ -12,3 +12,5 @@
 -- SELECT * FROM challenge_sandbox;
 
 -- SELECT * FROM _prisma_migrations;
+
+SELECT * FROM coding_block ORDER BY coding_block_id;

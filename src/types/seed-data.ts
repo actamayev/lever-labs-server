@@ -30,12 +30,9 @@ declare global {
 	interface CodingBlockData {
 		coding_block_id: number
 		block_name: string
-		motor_speed?: number | null
 		led_color?: string | null
-		direction?: string | null
-		delay_ms?: number | null
 		color_sensor_detection_color?: string | null
-		speaker_sound?: string | null
+		speaker_tone?: string | null
 	}
 
 	interface BlockToFunctionFlashcardData {
