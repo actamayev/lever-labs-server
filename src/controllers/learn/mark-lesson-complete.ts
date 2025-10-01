@@ -1,12 +1,12 @@
 import { Response, Request } from "express"
-import markLessonCompleteDb from "../../db-operations/write/lesson/mark-lesson-complete-db"
+import createCompletedUserLessonRecordDb from "../../db-operations/write/completed-user-lesson/create-completed-user-lesson-record"
 import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 
 export default async function markLessonComplete(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId, lessonId } = req
 
-		await markLessonCompleteDb(userId, lessonId)
+		await createCompletedUserLessonRecordDb(userId, lessonId)
 
 		res.status(200).json({ success: "Lesson marked as complete" } satisfies SuccessResponse)
 		return

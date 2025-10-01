@@ -19,5 +19,3 @@ export default async function submitFillInTheBlankAnswer(req: Request, res: Resp
 		return
 	}
 }
-
-

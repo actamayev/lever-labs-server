@@ -1,6 +1,11 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function addFillInTheBlankUserAnswer(userId: number, fillInTheBlankId: string, userCppAnswer: string, isCorrect: boolean): Promise<void> {
+export default async function addFillInTheBlankUserAnswer(
+	userId: number,
+	fillInTheBlankId: string,
+	userCppAnswer: string,
+	isCorrect: boolean
+): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 

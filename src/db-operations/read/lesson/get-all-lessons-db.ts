@@ -1,3 +1,6 @@
+import { isEmpty } from "lodash"
+import { Lesson } from "@lever-labs/common-ts/types/learn"
+import { LessonUUID } from "@lever-labs/common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function getAllLessonsDb(userId: number): Promise<Lesson[]> {
@@ -7,11 +10,8 @@ export default async function getAllLessonsDb(userId: number): Promise<Lesson[]>
 			select: {
 				lesson_uuid: true,
 				lesson_name: true,
-				lesson_user_progress: {
-					where: {
-						user_id: userId,
-						is_completed: true
-					},
+				completed_user_lesson: {
+					where: { user_id: userId },
 					select: { user_id: true },
 					take: 1
 				}
@@ -22,10 +22,10 @@ export default async function getAllLessonsDb(userId: number): Promise<Lesson[]>
 		})
 
 		return lessons.map(lesson => ({
-			lessonUuid: lesson.lesson_uuid,
+			lessonUuid: lesson.lesson_uuid as LessonUUID,
 			lessonName: lesson.lesson_name,
-			isCompleted: lesson.lesson_user_progress.length > 0
-		}))
+			isCompleted: !isEmpty(lesson.completed_user_lesson)
+		}) satisfies Lesson)
 	} catch (error) {
 		console.error(error)
 		throw error

@@ -17,5 +17,3 @@ export default async function submitBlockToFunctionAnswer(req: Request, res: Res
 		return
 	}
 }
-
-

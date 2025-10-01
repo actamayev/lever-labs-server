@@ -4,7 +4,6 @@ import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse } from "@lever-labs/common-ts/types/api"
 
 const fillInTheBlankAnswerSchema = Joi.object({
-	userCppAnswer: Joi.string().required(),
 	blocklyJson: Joi.object().required()
 }).required()
 

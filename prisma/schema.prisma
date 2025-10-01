@@ -53,7 +53,7 @@ model credentials {
 	block_to_function_user_answer								block_to_function_user_answer[]
 	function_to_block_user_answer								function_to_block_user_answer[]
 	fill_in_the_blank_user_answer								fill_in_the_blank_user_answer[]
-	lesson_user_progress										lesson_user_progress[]
+	completed_user_lesson										completed_user_lesson[]
 }
 
 model login_history {
@@ -596,7 +596,7 @@ model lesson {
 	updated_at												DateTime  @default(now()) @updatedAt
 	
 	lesson_question_map										lesson_question_map[]
-	lesson_user_progress									lesson_user_progress[]
+	completed_user_lesson									completed_user_lesson[]
 }
 
 model lesson_question_map {
@@ -612,19 +612,16 @@ model lesson_question_map {
 	@@index([lesson_id, order])
 }
 
-model lesson_user_progress {
-	lesson_user_progress_id									Int       @id @default(autoincrement())
+model completed_user_lesson {
+	completed_user_lesson_id								Int       @id @default(autoincrement())
 	user_id													Int
 	lesson_id												Int
-	is_completed											Boolean   @default(false)
-	completed_at											DateTime?
 	
 	created_at												DateTime  @default(now())
 	
 	user													credentials @relation(fields: [user_id], references: [user_id])
 	lesson													lesson    @relation(fields: [lesson_id], references: [lesson_id])
-	
-	@@unique([user_id, lesson_id])
+
 	@@index([user_id])
 	@@index([lesson_id])
 }

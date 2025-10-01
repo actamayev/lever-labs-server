@@ -1,7 +1,10 @@
+import { isEmpty } from "lodash"
+import { DetailedLesson, LessonQuestionMap } from "@lever-labs/common-ts/types/learn"
 import PrismaClientClass from "../../../classes/prisma-client"
+import { LessonUUID } from "@lever-labs/common-ts/types/utils"
 
 // eslint-disable-next-line max-lines-per-function
-export default async function getSingleLessonDb(lessonId: number): Promise<LessonWithQuestions | null> {
+export default async function getDetailedLessonDb(lessonId: number, userId: number): Promise<DetailedLesson | null> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -12,6 +15,11 @@ export default async function getSingleLessonDb(lessonId: number): Promise<Lesso
 			select: {
 				lesson_uuid: true,
 				lesson_name: true,
+				completed_user_lesson: {
+					where: { user_id: userId },
+					select: { user_id: true },
+					take: 1
+				},
 				lesson_question_map: {
 					select: {
 						lesson_question_map_id: true,
@@ -70,8 +78,9 @@ export default async function getSingleLessonDb(lessonId: number): Promise<Lesso
 		if (!lesson) return null
 
 		return {
-			lessonUuid: lesson.lesson_uuid,
+			lessonUuid: lesson.lesson_uuid as LessonUUID,
 			lessonName: lesson.lesson_name,
+			isCompleted: !isEmpty(lesson.completed_user_lesson),
 			lessonQuestionMap: lesson.lesson_question_map.map(map => ({
 				lessonQuestionMapId: map.lesson_question_map_id,
 				order: map.order,
@@ -106,7 +115,7 @@ export default async function getSingleLessonDb(lessonId: number): Promise<Lesso
 						}))
 					} : null
 				}
-			}))
+			}) satisfies LessonQuestionMap)
 		}
 	} catch (error) {
 		console.error(error)
