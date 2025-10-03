@@ -43,6 +43,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 								},
 								function_to_block_flashcard: {
 									select: {
+										question_text: true,
 										function_to_block_answer_choice: {
 											select: {
 												function_to_block_answer_choice_id: true,
@@ -98,6 +99,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 						}))
 					} : null,
 					functionToBlockFlashcard: map.question.function_to_block_flashcard ? {
+						questionText: map.question.function_to_block_flashcard.question_text,
 						// eslint-disable-next-line max-len
 						functionToBlockAnswerChoice: map.question.function_to_block_flashcard.function_to_block_answer_choice.map(choice => ({
 							functionToBlockAnswerChoiceId: choice.function_to_block_answer_choice_id,
