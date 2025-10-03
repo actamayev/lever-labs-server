@@ -2,7 +2,7 @@ import express from "express"
 import validateLessonId from "../middleware/request-validation/learn/validate-lesson-id"
 import validateBlockToFunctionAnswer from "../middleware/request-validation/learn/validate-block-to-function-answer"
 import validateFunctionToBlockAnswer from "../middleware/request-validation/learn/validate-function-to-block-answer"
-import validateFillInTheBlankAnswer from "../middleware/request-validation/learn/validate-fill-in-the-blank-answer"
+import validateCheckCareerQuestCode from "../middleware/request-validation/chat/validate-check-career-quest-code"
 
 import getAllLessons from "../controllers/learn/get-all-lessons"
 import getDetailedLesson from "../controllers/learn/get-detailed-lesson"
@@ -38,7 +38,7 @@ learnRoutes.post(
 learnRoutes.post(
 	"/submit-fill-in-the-blank/:lessonId",
 	validateLessonId,
-	validateFillInTheBlankAnswer,
+	validateCheckCareerQuestCode,
 	submitFillInTheBlankAnswer
 )
 
