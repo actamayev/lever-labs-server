@@ -73,12 +73,21 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 								},
 								fill_in_the_blank: {
 									select: {
+										question_text: true,
 										fill_in_the_blank_block_bank: {
 											select: {
 												fill_in_the_blank_block_bank_id: true,
 												order: true,
-												coding_block_id: true,
-												quantity: true
+												quantity: true,
+												coding_block: {
+													select: {
+														coding_block_id: true,
+														block_name: true,
+														led_color: true,
+														color_sensor_detection_color: true,
+														speaker_tone: true
+													}
+												}
 											}
 										}
 									}
@@ -139,10 +148,17 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 						}))
 					} : null,
 					fillInTheBlank: map.question.fill_in_the_blank ? {
+						questionText: map.question.fill_in_the_blank.question_text,
 						fillInTheBlankBlockBank: map.question.fill_in_the_blank.fill_in_the_blank_block_bank.map(bank => ({
 							fillInTheBlankBlockBankId: bank.fill_in_the_blank_block_bank_id,
 							order: bank.order,
-							codingBlockId: bank.coding_block_id,
+							codingBlock: {
+								codingBlockId: bank.coding_block.coding_block_id,
+								blockName: bank.coding_block.block_name as BlockNames,
+								ledColor: bank.coding_block.led_color,
+								colorSensorDetectionColor: bank.coding_block.color_sensor_detection_color,
+								speakerTone: bank.coding_block.speaker_tone
+							},
 							quantity: bank.quantity
 						}))
 					} : null
