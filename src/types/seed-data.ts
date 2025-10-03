@@ -56,8 +56,6 @@ declare global {
 		fill_in_the_blank_block_bank_id: number
 		fill_in_the_blank_id: string
 		coding_block_id: number
-		quantity: number
-		order: number
 	}
 
 	interface LessonQuestionMapData {

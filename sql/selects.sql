@@ -18,3 +18,4 @@
 -- SELECT * FROM function_to_block_user_answer;
 -- SELECT * FROM fill_in_the_blank;
 -- SELECT * FROM fill_in_the_blank_block_bank;
+-- SELECT * FROM fill_in_the_blank_user_answer;

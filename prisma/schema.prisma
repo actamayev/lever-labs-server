@@ -581,8 +581,6 @@ model fill_in_the_blank_block_bank {
 	fill_in_the_blank_block_bank_id							Int       @id @default(autoincrement())
 	fill_in_the_blank_id									String
 	coding_block_id											Int
-	quantity												Int       @default(1)
-	order													Int
 	
 	fill_in_the_blank										fill_in_the_blank @relation(fields: [fill_in_the_blank_id], references: [question_id], onDelete: Cascade)
 	coding_block											coding_block @relation(fields: [coding_block_id], references: [coding_block_id])

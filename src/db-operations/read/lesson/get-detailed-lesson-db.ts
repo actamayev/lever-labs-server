@@ -79,8 +79,6 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 										fill_in_the_blank_block_bank: {
 											select: {
 												fill_in_the_blank_block_bank_id: true,
-												order: true,
-												quantity: true,
 												coding_block: {
 													select: {
 														coding_block_id: true,
@@ -154,15 +152,13 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 						initialBlocklyJson: JSON.stringify(map.question.fill_in_the_blank.initial_blockly_json) as unknown as BlocklyJson,
 						fillInTheBlankBlockBank: map.question.fill_in_the_blank.fill_in_the_blank_block_bank.map(bank => ({
 							fillInTheBlankBlockBankId: bank.fill_in_the_blank_block_bank_id,
-							order: bank.order,
 							codingBlock: {
 								codingBlockId: bank.coding_block.coding_block_id,
 								blockName: bank.coding_block.block_name as BlockNames,
 								ledColor: bank.coding_block.led_color,
 								colorSensorDetectionColor: bank.coding_block.color_sensor_detection_color,
 								speakerTone: bank.coding_block.speaker_tone
-							},
-							quantity: bank.quantity
+							}
 						}))
 					} : null
 				}

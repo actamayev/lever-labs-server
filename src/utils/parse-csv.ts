@@ -95,9 +95,7 @@ function isFillInTheBlankBlockBankData(data: unknown): data is FillInTheBlankBlo
         d !== null &&
         typeof d.fill_in_the_blank_block_bank_id === "number" &&
         typeof d.fill_in_the_blank_id === "string" &&
-        typeof d.coding_block_id === "number" &&
-        typeof d.quantity === "number" &&
-        typeof d.order === "number"
+        typeof d.coding_block_id === "number"
 	)
 }
 

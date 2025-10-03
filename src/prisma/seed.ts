@@ -248,10 +248,9 @@ async function seedFillInTheBlankBlockBanks(): Promise<void> {
 		if (
 			!blockBank.fill_in_the_blank_block_bank_id ||
 			!blockBank.fill_in_the_blank_id ||
-			!blockBank.coding_block_id ||
-			isUndefined(blockBank.quantity) ||
-			isUndefined(blockBank.order)
+			!blockBank.coding_block_id
 		) {
+			console.error(blockBank)
 			throw new Error(`Invalid fill in the blank block bank data: ${JSON.stringify(blockBank)}`)
 		}
 		return prismaClient.fill_in_the_blank_block_bank.upsert({
@@ -261,15 +260,11 @@ async function seedFillInTheBlankBlockBanks(): Promise<void> {
 			update: {
 				fill_in_the_blank_id: blockBank.fill_in_the_blank_id,
 				coding_block_id: blockBank.coding_block_id,
-				quantity: blockBank.quantity,
-				order: blockBank.order
 			},
 			create: {
 				fill_in_the_blank_block_bank_id: blockBank.fill_in_the_blank_block_bank_id,
 				fill_in_the_blank_id: blockBank.fill_in_the_blank_id,
 				coding_block_id: blockBank.coding_block_id,
-				quantity: blockBank.quantity,
-				order: blockBank.order
 			}
 		})
 	}))
