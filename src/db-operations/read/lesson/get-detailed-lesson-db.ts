@@ -3,6 +3,7 @@ import { DetailedLesson, LessonQuestionMap } from "@lever-labs/common-ts/types/l
 import PrismaClientClass from "../../../classes/prisma-client"
 import { QuestionUUID, LessonUUID } from "@lever-labs/common-ts/types/utils"
 import { BlockNames } from "@lever-labs/common-ts/types/blockly/blockly"
+import { BlocklyJson } from "@lever-labs/common-ts/types/sandbox"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: number): Promise<DetailedLesson | null> {
@@ -74,6 +75,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 								fill_in_the_blank: {
 									select: {
 										question_text: true,
+										initial_blockly_json: true,
 										fill_in_the_blank_block_bank: {
 											select: {
 												fill_in_the_blank_block_bank_id: true,
@@ -149,6 +151,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 					} : null,
 					fillInTheBlank: map.question.fill_in_the_blank ? {
 						questionText: map.question.fill_in_the_blank.question_text,
+						initialBlocklyJson: JSON.stringify(map.question.fill_in_the_blank.initial_blockly_json) as unknown as BlocklyJson,
 						fillInTheBlankBlockBank: map.question.fill_in_the_blank.fill_in_the_blank_block_bank.map(bank => ({
 							fillInTheBlankBlockBankId: bank.fill_in_the_blank_block_bank_id,
 							order: bank.order,
