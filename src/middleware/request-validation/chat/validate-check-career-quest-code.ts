@@ -4,7 +4,8 @@ import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse} from "@lever-labs/common-ts/types/api"
 
 const validateCheckCareerQuestCodeSchema = Joi.object({
-	userCode: Joi.string().required()
+	userCode: Joi.string().required(),
+	fillInTheBlankId: Joi.string().required()
 }).required().unknown(false)
 
 export default function validateCheckCareerQuestCode(req: Request, res: Response, next: NextFunction): void {

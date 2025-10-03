@@ -1,17 +1,21 @@
 -- SELECT * FROM credentials ORDER BY created_at;
-SELECT * FROM profile_picture;
+-- SELECT * FROM profile_picture;
 -- SELECT * FROM pip_uuid;
--- SELECT * FROM activity ORDER BY activity_id;
--- SELECT * FROM reading_question ORDER BY reading_question_id;
--- SELECT * FROM reading_question_answer_choice ORDER BY reading_question_answer_choice_id;
 -- SELECT * FROM career_quest_message;
 -- SELECT * FROM career_user_progress;
 -- SELECT * FROM teacher;
 -- SELECT * FROM student;
 -- SELECT * FROM challenge ORDER BY created_at;
--- SELECT * FROM sandbox_project;
+-- SELECT * FROM sandbox_project ORDER BY updated_at;
 
 -- SELECT * from profile_picture;
 -- SELECT * FROM challenge_sandbox;
 
 -- SELECT * FROM _prisma_migrations;
+
+-- SELECT * FROM coding_block ORDER BY coding_block_id;
+-- SELECT * FROM block_to_function_user_answer;
+-- SELECT * FROM function_to_block_user_answer;
+-- SELECT * FROM fill_in_the_blank;
+-- SELECT * FROM fill_in_the_blank_block_bank;
+-- SELECT * FROM fill_in_the_blank_user_answer;
