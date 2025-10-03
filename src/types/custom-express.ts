@@ -4,7 +4,6 @@ declare global {
 		interface Request {
 			user: ExtendedCredentials
 			userId: number
-			activityId: number
 			readingBlockId: number
 			sandboxProjectId: number
 			bytecode: Float32Array

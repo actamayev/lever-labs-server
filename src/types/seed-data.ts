@@ -1,37 +1,8 @@
-import { ActivityTypes, LessonNames } from "@prisma/client"
+import { QuestionType } from "@prisma/client"
 import { CareerUUID, ChallengeUUID } from "@lever-labs/common-ts/types/utils"
-import { ActivityUUID, QuestionUUID } from "@lever-labs/common-ts/types/lab"
+import { BlocklyJson } from "@lever-labs/common-ts/types/sandbox"
 
 declare global {
-	interface SeededActivityData {
-		activity_id: number
-		lesson_name: LessonNames
-		activity_type: ActivityTypes
-		activity_name: string
-		uuid: ActivityUUID
-	}
-
-	interface ReadingQuestionData {
-		reading_question_id: number
-		activity_id: number
-		question_text: string
-		uuid: QuestionUUID
-	}
-
-	interface ReadingQuestionAnswerChoice {
-		reading_question_answer_choice_id: number
-		reading_question_id: number
-		answer_text: string
-		is_correct: boolean
-		explanation: string
-	}
-
-	interface ReadingSection {
-		reading_block_id: number
-		reading_id: number
-		reading_block_name: string
-	}
-
 	interface CareerData {
 		career_id: number
 		career_name: string
@@ -45,13 +16,84 @@ declare global {
 		career_id: number
 	}
 
+	interface LessonData {
+		lesson_id: string
+		lesson_name: string
+		lesson_description?: string
+	}
+
+	interface QuestionData {
+		question_id: string
+		question_type: QuestionType
+	}
+
+	interface CodingBlockData {
+		coding_block_id: number
+		block_name: string
+		led_color?: string | null
+		color_sensor_detection_color?: string | null
+		speaker_tone?: string | null
+	}
+
+	interface BlockToFunctionFlashcardData {
+		question_id: string
+		coding_block_id: number
+	}
+
+	interface FunctionToBlockFlashcardData {
+		question_id: string
+		question_text: string
+	}
+
+	interface FillInTheBlankData {
+		question_id: string
+		initial_blockly_json: BlocklyJson
+		reference_solution_cpp: string
+		question_text: string
+	}
+
+	interface FillInTheBlankBlockBankData {
+		fill_in_the_blank_block_bank_id: number
+		fill_in_the_blank_id: string
+		coding_block_id: number
+	}
+
+	interface LessonQuestionMapData {
+		lesson_question_map_id: number
+		lesson_id: string
+		question_id: string
+		order: number
+	}
+
+	interface BlockToFunctionAnswerChoiceData {
+		block_to_function_answer_choice_id: number
+		block_to_function_flashcard_id: string
+		function_description_text: string
+		is_correct: boolean
+		order: number
+	}
+
+	interface FunctionToBlockAnswerChoiceData {
+		function_to_block_answer_choice_id: number
+		function_to_block_flashcard_id: string
+		coding_block_id: number
+		is_correct: boolean
+		order: number
+	}
+
 	type AllSeedData =
-		| SeededActivityData
-		| ReadingQuestionData
-		| ReadingQuestionAnswerChoice
-		| ReadingSection
 		| CareerData
 		| ChallengeData
+		| LessonData
+		| QuestionData
+		| CodingBlockData
+		| BlockToFunctionFlashcardData
+		| FunctionToBlockFlashcardData
+		| FillInTheBlankData
+		| FillInTheBlankBlockBankData
+		| LessonQuestionMapData
+		| BlockToFunctionAnswerChoiceData
+		| FunctionToBlockAnswerChoiceData
 }
 
 export {}

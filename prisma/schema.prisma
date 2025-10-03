@@ -36,9 +36,6 @@ model credentials {
 	updated_at                                                  DateTime @default(now()) @updatedAt
 
 	login_history                                               login_history[]
-	user_activity_progress										user_activity_progress[]
-	user_answer													user_answer[]
-	completed_reading_block										completed_reading_block[]
 	sandbox_project												sandbox_project[]
 	challenge_chat												challenge_chat[]
 	career_chat													career_chat[]	
@@ -50,6 +47,10 @@ model credentials {
 	challenge_hint												challenge_hint[]
 	career_user_progress										career_user_progress[]
 	user_seen_challenges										user_seen_challenges[]
+	block_to_function_user_answer								block_to_function_user_answer[]
+	function_to_block_user_answer								function_to_block_user_answer[]
+	fill_in_the_blank_user_answer								fill_in_the_blank_user_answer[]
+	completed_user_lesson										completed_user_lesson[]
 }
 
 model login_history {
@@ -79,137 +80,6 @@ model email_update_subscriber {
 
 	created_at                                                  DateTime  @default(now())
 	is_active                                                   Boolean  @default(true)
-}
-
-enum ActivityTypes {
-	Reading
-	Code
-	Video
-	Demo
-	Summary
-}
-
-enum LessonNames {
-	LED
-	Motor
-	IMU
-	Button
-}
-
-// Reference Configuration data
-model activity {
-	activity_id													Int       @id @default(autoincrement())
-	lesson_name													LessonNames
-	activity_type	                                            ActivityTypes
-	activity_uuid												String		@unique
-	activity_name												String
-	reading_block                                               reading_block[]
-
-	created_at                                                  DateTime  @default(now())
-	updated_at                                                  DateTime @default(now()) @updatedAt
-	
-	user_activity_progress										user_activity_progress[]
-	reading_questions											reading_question[]
-	@@unique([activity_type, activity_name])
-	@@index([activity_uuid], name: "activity__activity_uuid_idx")
-}
-
-enum ProgressStatus {
-	IN_PROGRESS
-	COMPLETED
-}
-
-model user_activity_progress {
-	user_activity_progress_id									Int       @id @default(autoincrement())
-	user_id             										Int
-	activity_id                                               	Int
-  	status    													ProgressStatus
-
-  	completed_at  												DateTime?
-	created_at                                                  DateTime  @default(now())
-
-	user                                                        credentials @relation(fields: [user_id], references: [user_id])
-	activity                                                    activity @relation(fields: [activity_id], references: [activity_id])
-
-	@@index([user_id], name: "user_activity_progress__user_id_idx")
-	@@index([activity_id], name: "user_activity_progress__activity_id_idx")
-	@@unique([user_id, activity_id])
-}
-
-// Reference Configuration data
-model reading_block {
-	reading_block_id											Int       @id @default(autoincrement())
-	reading_id                                               	Int
-  	reading_block_name    										String		@unique
-
-	created_at                                                  DateTime  @default(now())
-
-	reading                                                     activity @relation(fields: [reading_id], references: [activity_id])
-	completed_reading_block										completed_reading_block[]
-	@@index([reading_id], name: "reading_block__reading_id_idx")
-}
-
-model completed_reading_block {
-	completed_reading_block_id									Int       @id @default(autoincrement())
-	reading_block_id											Int
-	user_id														Int
-
-	created_at                                                  DateTime  @default(now())
-	is_active													Boolean @default(true)
-
-	user                                                        credentials @relation(fields: [user_id], references: [user_id])
-	reading_block                                               reading_block @relation(fields: [reading_block_id], references: [reading_block_id])
-
-	@@index([user_id], name: "completed_reading_block__user_id_idx")
-	@@index([reading_block_id], name: "completed_reading_block__reading_block_id_idx")
-	@@unique([user_id, reading_block_id])
-}
-
-// Reference Configuration data
-model reading_question {
-	reading_question_id											Int       @id @default(autoincrement())
-	activity_id                                               	Int
-	question_text												String
-	reading_question_uuid										String		@unique
-
-	created_at                                                  DateTime  @default(now())
-
-	activity                                                    activity @relation(fields: [activity_id], references: [activity_id])
-	reading_question_answer_choice								reading_question_answer_choice[]
-
-	@@index([activity_id], name: "reading_question__activity_id_idx")
-	@@unique([activity_id, question_text])
-}
-
-// Reference Configuration data
-model reading_question_answer_choice {
-	reading_question_answer_choice_id							Int       @id @default(autoincrement())
-	reading_question_id                                         Int
-	answer_text													String
-	is_correct													Boolean
-	explanation													String
-
-	created_at                                                  DateTime  @default(now())
-
-	reading_question                                            reading_question @relation(fields: [reading_question_id], references: [reading_question_id])
-	user_answer												user_answer[]
-	@@index([reading_question_id], name: "reading_question_answer_choice__reading_question_id_idx")
-	@@unique([reading_question_id, answer_text])
-}
-
-model user_answer {
-	user_answers_id												Int       @id @default(autoincrement())
-	reading_question_answer_choice_id                           Int
-	user_id             										Int
-
-	created_at                                                  DateTime  @default(now())
-
-	reading_question                                            reading_question_answer_choice @relation(fields: [reading_question_answer_choice_id], references: [reading_question_answer_choice_id])
-	user                                                        credentials @relation(fields: [user_id], references: [user_id])
-
-	@@index([reading_question_answer_choice_id], name: "user_answers__reading_question_answer_choice_id_idx")
-	@@index([user_id], name: "user_answers__user_id_idx")
-	@@unique([reading_question_answer_choice_id, user_id])
 }
 
 model sandbox_project {
@@ -542,4 +412,195 @@ model student {
 
     @@unique([user_id, classroom_id])
     @@index([classroom_id])
+}
+
+enum QuestionType {
+	BLOCK_TO_FUNCTION
+	FUNCTION_TO_BLOCK
+	FILL_IN_BLANK
+}
+
+model question {
+	question_id												String       @id @default(uuid())
+	question_type											QuestionType
+	
+	created_at												DateTime     @default(now())
+	updated_at												DateTime     @default(now()) @updatedAt
+	
+	// Polymorphic relations - only ONE will be populated
+	block_to_function_flashcard								block_to_function_flashcard?
+	function_to_block_flashcard								function_to_block_flashcard?
+	fill_in_the_blank										fill_in_the_blank?
+	
+	lesson_question_map										lesson_question_map[]
+}
+
+model coding_block {
+	coding_block_id											Int       @id @default(autoincrement())
+	block_name												String
+	
+	// Parameter columns (all nullable - different blocks use different params)
+	led_color												String?
+	color_sensor_detection_color							String?
+	speaker_tone											String?
+	
+	created_at												DateTime  @default(now())
+	
+	block_to_function_flashcard								block_to_function_flashcard[]
+	function_to_block_answer_choice							function_to_block_answer_choice[]
+	fill_in_the_blank_block_bank							fill_in_the_blank_block_bank[]
+}
+
+model lesson {
+	lesson_id												String    @id @default(uuid())
+	lesson_name												String
+	lesson_description										String?
+	
+	created_at												DateTime  @default(now())
+	updated_at												DateTime  @default(now()) @updatedAt
+	
+	lesson_question_map										lesson_question_map[]
+	completed_user_lesson									completed_user_lesson[]
+}
+
+model lesson_question_map {
+	lesson_question_map_id									Int       @id @default(autoincrement())
+	lesson_id												String
+	question_id												String
+	order													Int
+	
+	lesson													lesson    @relation(fields: [lesson_id], references: [lesson_id])
+	question												question  @relation(fields: [question_id], references: [question_id])
+	
+	@@unique([lesson_id, question_id])
+	@@index([lesson_id, order])
+}
+
+model completed_user_lesson {
+	completed_user_lesson_id								Int       @id @default(autoincrement())
+	user_id													Int
+	lesson_id												String
+	
+	created_at												DateTime  @default(now())
+	
+	user													credentials @relation(fields: [user_id], references: [user_id])
+	lesson													lesson    @relation(fields: [lesson_id], references: [lesson_id])
+
+	@@index([user_id])
+	@@index([lesson_id])
+}
+
+model block_to_function_flashcard {
+	question_id												String    @id
+	coding_block_id											Int
+	
+	question												question  @relation(fields: [question_id], references: [question_id], onDelete: Cascade)
+	coding_block											coding_block @relation(fields: [coding_block_id], references: [coding_block_id])
+	
+	block_to_function_answer_choice							block_to_function_answer_choice[]
+}
+
+model block_to_function_answer_choice {
+	block_to_function_answer_choice_id						Int       @id @default(autoincrement())
+	block_to_function_flashcard_id							String
+	function_description_text								String
+	is_correct												Boolean
+	order													Int
+	
+	block_to_function_flashcard								block_to_function_flashcard @relation(fields: [block_to_function_flashcard_id], references: [question_id], onDelete: Cascade)
+	block_to_function_user_answer							block_to_function_user_answer[]
+	
+	@@index([block_to_function_flashcard_id])
+}
+
+model block_to_function_user_answer {
+	block_to_function_user_answer_id						Int       @id @default(autoincrement())
+	block_to_function_answer_choice_id						Int
+	user_id													Int
+	
+	created_at												DateTime  @default(now())
+	
+	answer_choice											block_to_function_answer_choice @relation(fields: [block_to_function_answer_choice_id], references: [block_to_function_answer_choice_id])
+	user													credentials @relation(fields: [user_id], references: [user_id])
+	
+	@@index([user_id])
+	@@index([block_to_function_answer_choice_id])
+}
+
+model function_to_block_flashcard {
+	question_id												String    @id
+	question_text											String
+	
+	question												question  @relation(fields: [question_id], references: [question_id], onDelete: Cascade)
+	
+	function_to_block_answer_choice							function_to_block_answer_choice[]
+}
+
+model function_to_block_answer_choice {
+	function_to_block_answer_choice_id						Int       @id @default(autoincrement())
+	function_to_block_flashcard_id							String
+	coding_block_id											Int
+	is_correct												Boolean
+	order													Int
+	
+	function_to_block_flashcard								function_to_block_flashcard @relation(fields: [function_to_block_flashcard_id], references: [question_id], onDelete: Cascade)
+	coding_block											coding_block @relation(fields: [coding_block_id], references: [coding_block_id])
+	function_to_block_user_answer							function_to_block_user_answer[]
+	
+	@@index([function_to_block_flashcard_id])
+	@@index([coding_block_id])
+}
+
+model function_to_block_user_answer {
+	function_to_block_user_answer_id						Int       @id @default(autoincrement())
+	function_to_block_answer_choice_id						Int
+	user_id													Int
+	
+	created_at												DateTime  @default(now())
+	
+	answer_choice											function_to_block_answer_choice @relation(fields: [function_to_block_answer_choice_id], references: [function_to_block_answer_choice_id])
+	user													credentials @relation(fields: [user_id], references: [user_id])
+	
+	@@index([user_id])
+	@@index([function_to_block_answer_choice_id])
+}
+
+model fill_in_the_blank {
+	question_id												String    @id
+	initial_blockly_json									Json
+	reference_solution_cpp									String
+	question_text											String
+	
+	question												question  @relation(fields: [question_id], references: [question_id], onDelete: Cascade)
+	
+	fill_in_the_blank_block_bank							fill_in_the_blank_block_bank[]
+	fill_in_the_blank_user_answer							fill_in_the_blank_user_answer[]
+}
+
+model fill_in_the_blank_block_bank {
+	fill_in_the_blank_block_bank_id							Int       @id @default(autoincrement())
+	fill_in_the_blank_id									String
+	coding_block_id											Int
+	
+	fill_in_the_blank										fill_in_the_blank @relation(fields: [fill_in_the_blank_id], references: [question_id], onDelete: Cascade)
+	coding_block											coding_block @relation(fields: [coding_block_id], references: [coding_block_id])
+	
+	@@index([fill_in_the_blank_id])
+	@@index([coding_block_id])
+}
+
+model fill_in_the_blank_user_answer {
+	fill_in_the_blank_user_answer_id						Int       @id @default(autoincrement())
+	fill_in_the_blank_id									String
+	user_id													Int
+	user_cpp_answer											String
+	is_correct												Boolean
+	
+	created_at												DateTime  @default(now())
+	
+	fill_in_the_blank										fill_in_the_blank @relation(fields: [fill_in_the_blank_id], references: [question_id])
+	user													credentials @relation(fields: [user_id], references: [user_id])
+	
+	@@index([user_id])
+	@@index([fill_in_the_blank_id])
 }

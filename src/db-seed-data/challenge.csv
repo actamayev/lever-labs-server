@@ -1,11 +1,10 @@
-challenge_id,challenge_name,challenge_uuid,career_id
-1, LED Obstacle Detection, 0e4568c6-7f85-4930-8db6-56d91fc8aee6, 3
-2, Basic Obstacle Avoidance with Movement, 090dc197-2e13-4dc6-b7f3-6002edd817ca, 3
-3, Smart Obstacle Avoidance with Turning, cd16d9bb-1cd0-42ff-9f2b-570e54ea3a31, 3
-4, Right Side Distance Sensor Detection, ea0e21fd-aa3c-440f-89b3-3642cf372fb0, 3
-5, Multi-Sensor Obstacle Avoidance with Else-If Chain, 8932c392-ed0b-4d7a-9c64-3f2154f6274f, 3
-
-6, S2_P4, 5892848a-8334-48a7-82aa-bbbe43d2e92f, 12
-7, S3_P5, 718e291a-1c03-4948-88c4-ef0762cfc4df, 12
-8, S4_P5, b9114111-48f1-4589-bc10-5030f2d9621f, 12
-9, S5_P4, d7eb2c2f-da43-4f6a-96e5-cffa51c51531, 12
+challenge_id ,challenge_name                                     ,challenge_uuid                       ,career_id
+           1 ,LED Obstacle Detection                             ,0e4568c6-7f85-4930-8db6-56d91fc8aee6 ,        3
+           2 ,Basic Obstacle Avoidance with Movement             ,090dc197-2e13-4dc6-b7f3-6002edd817ca ,        3
+           3 ,Smart Obstacle Avoidance with Turning              ,cd16d9bb-1cd0-42ff-9f2b-570e54ea3a31 ,        3
+           4 ,Right Side Distance Sensor Detection               ,ea0e21fd-aa3c-440f-89b3-3642cf372fb0 ,        3
+           5 ,Multi-Sensor Obstacle Avoidance with Else-If Chain ,8932c392-ed0b-4d7a-9c64-3f2154f6274f ,        3
+           6 ,S2_P4                                              ,5892848a-8334-48a7-82aa-bbbe43d2e92f ,       12
+           7 ,S3_P5                                              ,718e291a-1c03-4948-88c4-ef0762cfc4df ,       12
+           8 ,S4_P5                                              ,b9114111-48f1-4589-bc10-5030f2d9621f ,       12
+           9 ,S5_P4                                              ,d7eb2c2f-da43-4f6a-96e5-cffa51c51531 ,       12
