@@ -16,5 +16,3 @@ export default async function addFunctionToBlockUserAnswer(userId: number, answe
 		throw error
 	}
 }
-
-

@@ -2,6 +2,7 @@ import { isEmpty } from "lodash"
 import { DetailedLesson, LessonQuestionMap } from "@lever-labs/common-ts/types/learn"
 import PrismaClientClass from "../../../classes/prisma-client"
 import { QuestionUUID, LessonUUID } from "@lever-labs/common-ts/types/utils"
+import { BlockNames } from "@lever-labs/common-ts/types/blockly/blockly"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: number): Promise<DetailedLesson | null> {
@@ -30,13 +31,21 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 								question_type: true,
 								block_to_function_flashcard: {
 									select: {
-										coding_block_id: true,
 										block_to_function_answer_choice: {
 											select: {
 												block_to_function_answer_choice_id: true,
 												order: true,
 												function_description_text: true,
 												is_correct: true
+											}
+										},
+										coding_block: {
+											select: {
+												coding_block_id: true,
+												block_name: true,
+												led_color: true,
+												color_sensor_detection_color: true,
+												speaker_tone: true
 											}
 										}
 									}
@@ -48,8 +57,16 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 											select: {
 												function_to_block_answer_choice_id: true,
 												order: true,
-												coding_block_id: true,
-												is_correct: true
+												is_correct: true,
+												coding_block: {
+													select: {
+														coding_block_id: true,
+														block_name: true,
+														led_color: true,
+														color_sensor_detection_color: true,
+														speaker_tone: true
+													}
+												}
 											}
 										}
 									}
@@ -82,6 +99,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 			lessonId: lesson.lesson_id as LessonUUID,
 			lessonName: lesson.lesson_name,
 			isCompleted: !isEmpty(lesson.completed_user_lesson),
+			// eslint-disable-next-line max-lines-per-function
 			lessonQuestionMap: lesson.lesson_question_map.map(map => ({
 				lessonQuestionMapId: map.lesson_question_map_id,
 				order: map.order,
@@ -89,7 +107,13 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 					questionId: map.question.question_id as QuestionUUID,
 					questionType: map.question.question_type,
 					blockToFunctionFlashcard: map.question.block_to_function_flashcard ? {
-						codingBlockId: map.question.block_to_function_flashcard.coding_block_id,
+						codingBlock: {
+							codingBlockId: map.question.block_to_function_flashcard.coding_block.coding_block_id,
+							blockName: map.question.block_to_function_flashcard.coding_block.block_name as BlockNames,
+							ledColor: map.question.block_to_function_flashcard.coding_block.led_color,
+							colorSensorDetectionColor: map.question.block_to_function_flashcard.coding_block.color_sensor_detection_color,
+							speakerTone: map.question.block_to_function_flashcard.coding_block.speaker_tone
+						},
 						// eslint-disable-next-line max-len
 						blockToFunctionAnswerChoice: map.question.block_to_function_flashcard.block_to_function_answer_choice.map(choice => ({
 							blockToFunctionAnswerChoiceId: choice.block_to_function_answer_choice_id,
@@ -104,7 +128,13 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 						functionToBlockAnswerChoice: map.question.function_to_block_flashcard.function_to_block_answer_choice.map(choice => ({
 							functionToBlockAnswerChoiceId: choice.function_to_block_answer_choice_id,
 							order: choice.order,
-							codingBlockId: choice.coding_block_id,
+							codingBlock: {
+								codingBlockId: choice.coding_block.coding_block_id,
+								blockName: choice.coding_block.block_name as BlockNames,
+								ledColor: choice.coding_block.led_color,
+								colorSensorDetectionColor: choice.coding_block.color_sensor_detection_color,
+								speakerTone: choice.coding_block.speaker_tone
+							},
 							isCorrect: choice.is_correct
 						}))
 					} : null,

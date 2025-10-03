@@ -446,6 +446,7 @@ model coding_block {
 	
 	created_at												DateTime  @default(now())
 	
+	block_to_function_flashcard								block_to_function_flashcard[]
 	function_to_block_answer_choice							function_to_block_answer_choice[]
 	fill_in_the_blank_block_bank							fill_in_the_blank_block_bank[]
 }
@@ -494,6 +495,7 @@ model block_to_function_flashcard {
 	coding_block_id											Int
 	
 	question												question  @relation(fields: [question_id], references: [question_id], onDelete: Cascade)
+	coding_block											coding_block @relation(fields: [coding_block_id], references: [coding_block_id])
 	
 	block_to_function_answer_choice							block_to_function_answer_choice[]
 }
