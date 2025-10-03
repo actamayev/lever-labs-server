@@ -215,7 +215,8 @@ async function seedFillInTheBlanks(): Promise<void> {
 		if (
 			!fillInBlank.question_id ||
 			!fillInBlank.initial_blockly_json ||
-			!fillInBlank.reference_solution_cpp
+			!fillInBlank.reference_solution_cpp ||
+			!fillInBlank.question_text
 		) {
 			throw new Error(`Invalid fill in the blank data: ${JSON.stringify(fillInBlank)}`)
 		}
@@ -225,12 +226,14 @@ async function seedFillInTheBlanks(): Promise<void> {
 			},
 			update: {
 				initial_blockly_json: fillInBlank.initial_blockly_json as BlocklyJson,
-				reference_solution_cpp: fillInBlank.reference_solution_cpp
+				reference_solution_cpp: fillInBlank.reference_solution_cpp,
+				question_text: fillInBlank.question_text
 			},
 			create: {
 				question_id: fillInBlank.question_id,
 				initial_blockly_json: fillInBlank.initial_blockly_json as BlocklyJson,
-				reference_solution_cpp: fillInBlank.reference_solution_cpp
+				reference_solution_cpp: fillInBlank.reference_solution_cpp,
+				question_text: fillInBlank.question_text
 			}
 		})
 	}))

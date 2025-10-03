@@ -569,6 +569,7 @@ model fill_in_the_blank {
 	question_id												String    @id
 	initial_blockly_json									Json
 	reference_solution_cpp									String
+	question_text											String
 	
 	question												question  @relation(fields: [question_id], references: [question_id], onDelete: Cascade)
 	

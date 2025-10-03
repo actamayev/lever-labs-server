@@ -49,6 +49,7 @@ declare global {
 		question_id: string
 		initial_blockly_json: BlocklyJson
 		reference_solution_cpp: string
+		question_text: string
 	}
 
 	interface FillInTheBlankBlockBankData {
