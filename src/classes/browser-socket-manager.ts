@@ -123,6 +123,14 @@ export default class BrowserSocketManager extends SingletonWithRedis {
 		}
 
 		socket.on("disconnect", () => void this.handleDisconnection(userId, socket.id))
+		socket.on("heartbeat", () => void this.updateUserActivity(userId))
+		socket.on("tab-closing", async () => {
+			try {
+				await this.handleDisconnection(userId, socket.id)
+			} catch (e) {
+				console.warn("tab-closing cleanup failed:", e)
+			}
+		})
 	}
 
 	private setupAllListeners(socket: Socket): void {
