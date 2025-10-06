@@ -31,6 +31,7 @@ export default class BrowserSocketManager extends Singleton {
 	private constructor(private readonly io: SocketIOServer) {
 		super()
 		this.initializeListeners()
+		this.startCleanupJob()
 	}
 
 	public static override getInstance(io?: SocketIOServer): BrowserSocketManager {
@@ -41,6 +42,21 @@ export default class BrowserSocketManager extends Singleton {
 			BrowserSocketManager.instance = new BrowserSocketManager(io)
 		}
 		return BrowserSocketManager.instance
+	}
+
+	/**
+	 * Validates which socket IDs actually exist in Socket.IO
+	 * Returns array of valid socket IDs
+	 */
+	private validateSocketIds(socketIds: Set<string> | string[]): string[] {
+		const validSockets: string[] = []
+		for (const socketId of socketIds) {
+			const socket = this.io.sockets.sockets.get(socketId)
+			if (socket && socket.connected) {
+				validSockets.push(socketId)
+			}
+		}
+		return validSockets
 	}
 
 	public getUserConnectionState(userId: number): UserConnectionState | undefined {
@@ -66,6 +82,7 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
+	// eslint-disable-next-line max-lines-per-function, complexity
 	private handleBrowserConnection(socket: Socket): void {
 		if (isUndefined(socket.userId)) {
 			console.error(`User ${socket.userId} is not authenticated`)
@@ -74,14 +91,27 @@ export default class BrowserSocketManager extends Singleton {
 
 		const userId = socket.userId
 		const existingState = this.connections.get(userId)
-		const isFirstSocket = !existingState || existingState.sockets.size === 0
+
+		// NEW: Validate existing sockets before determining if this is "first"
+		let isFirstSocket = true
+		if (existingState) {
+			const validSockets = this.validateSocketIds(existingState.sockets)
+
+			if (validSockets.length !== existingState.sockets.size) {
+				console.info(
+					`🧹 User ${userId}: Cleaned ${existingState.sockets.size - validSockets.length} invalid sockets on new connection`
+				)
+				existingState.sockets = new Set(validSockets)
+			}
+
+			isFirstSocket = validSockets.length === 0
+		}
 
 		this.addSocketToUser(userId, socket.id)
 
 		// Only attempt auto-connect if this is truly the first connection
 		// and we don't already have a pip connection
 		if (isFirstSocket && !existingState?.currentlyConnectedPipUUID) {
-			// This is the first socket - attempt auto-connect
 			autoConnectToPip(userId)
 		}
 
@@ -137,6 +167,7 @@ export default class BrowserSocketManager extends Singleton {
 		}
 	}
 
+	// eslint-disable-next-line complexity
 	private handleDisconnection(userId: number, socketId: string): void {
 		try {
 			const userState = this.connections.get(userId)
@@ -145,10 +176,22 @@ export default class BrowserSocketManager extends Singleton {
 			// Remove this socket from user's socket list
 			userState.sockets.delete(socketId)
 
-			// If user still has other sockets open, just update activity and return
+			// NEW: Validate remaining sockets are actually connected
 			if (userState.sockets.size > 0) {
-				userState.lastActivityAt = new Date()
-				return
+				const validSockets = this.validateSocketIds(userState.sockets)
+
+				if (validSockets.length !== userState.sockets.size) {
+					console.info(
+						`🧹 User ${userId}: Cleaned ${userState.sockets.size - validSockets.length} invalid sockets during disconnect`
+					)
+					userState.sockets = new Set(validSockets)
+				}
+
+				// If user still has valid sockets open, just update activity and return
+				if (validSockets.length > 0) {
+					userState.lastActivityAt = new Date()
+					return
+				}
 			}
 
 			// This was the last socket - proceed with full disconnection logic
@@ -366,5 +409,63 @@ export default class BrowserSocketManager extends Singleton {
 		const userState = this.connections.get(userId)
 		if (!userState) return
 		userState.lastActivityAt = new Date()
+	}
+
+	/**
+ * Periodic cleanup job to catch sockets that disconnected without firing events
+ * Call this every 2-3 minutes
+ */
+	public cleanupStaleSockets(): void {
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		const STALE_THRESHOLD = 5 * 60 * 1000 // 5 minutes since last activity
+
+		this.connections.forEach((userState, userId) => {
+		// Check if connection is stale
+			const timeSinceActivity = Date.now() - userState.lastActivityAt.getTime()
+			const isStale = timeSinceActivity > STALE_THRESHOLD
+
+			// Validate sockets
+			const validSockets = this.validateSocketIds(userState.sockets)
+
+			// If sockets changed or connection is stale with no valid sockets
+			if (validSockets.length !== userState.sockets.size || (isStale && validSockets.length === 0)) {
+				console.info(`🧹 User ${userId}: ${userState.sockets.size} sockets → ${validSockets.length} valid (stale: ${isStale})`)
+
+				if (validSockets.length === 0) {
+				// No valid sockets - do full disconnection cleanup
+					const currentPip = userState.currentlyConnectedPipUUID
+
+					if (!isNull(currentPip)) {
+						const espStatus = Esp32SocketManager.getInstance().getESPStatus(currentPip)
+						if (!isUndefined(espStatus)) {
+							if (espStatus.connectedToSerialUserId === userId) {
+								Esp32SocketManager.getInstance().handleSerialDisconnect(currentPip)
+							}
+							if (espStatus.connectedToOnlineUserId === userId) {
+								void SendEsp32MessageManager.getInstance().sendBinaryMessage(
+									currentPip,
+									MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.NOT_CONNECTED)
+								)
+								Esp32SocketManager.getInstance().setOnlineUserDisconnected(currentPip, false)
+							}
+						}
+					}
+
+					void handleDisconnectHubHelper(userId)
+					this.connections.delete(userId)
+				} else {
+				// Update with valid sockets only
+					userState.sockets = new Set(validSockets)
+					userState.lastActivityAt = new Date()
+				}
+			}
+		})
+	}
+
+	private startCleanupJob(): void {
+		// Run stale socket cleanup every 2 minutes
+		setInterval(() => {
+			this.cleanupStaleSockets()
+		}, 2 * 60 * 1000)
 	}
 }
