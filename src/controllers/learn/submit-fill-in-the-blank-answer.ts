@@ -1,11 +1,11 @@
 import { Response, Request } from "express"
 import { CheckCodeResponse, ErrorResponse } from "@lever-labs/common-ts/types/api"
 import addFillInTheBlankUserAnswer from "../../db-operations/write/user-answer/add-fill-in-the-blank-user-answer"
-import PrismaClientClass from "../../classes/prisma-client"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
 import buildCheckFITBLLMContext, { fitbCheckResponseFormat } from "../../utils/llm/learn/build-check-fitb-llm-context"
 import { getRandomCorrectResponse, getRandomIncorrectResponse } from "../../utils/career-quest-responses"
+import retrieveFillInTheBlankQuestion from "../../db-operations/read/fill-in-the-blank/retrieve-fill-in-the-blank-question"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function submitFillInTheBlankAnswer(req: Request, res: Response): Promise<void> {
@@ -16,11 +16,7 @@ export default async function submitFillInTheBlankAnswer(req: Request, res: Resp
 		}
 
 		// Fetch reference solution and question text
-		const prismaClient = await PrismaClientClass.getPrismaClient()
-		const fitb = await prismaClient.fill_in_the_blank.findUnique({
-			where: { question_id: fillInTheBlankId },
-			select: { question_text: true, reference_solution_cpp: true }
-		})
+		const fitb = await retrieveFillInTheBlankQuestion(fillInTheBlankId)
 		if (!fitb) {
 			res.status(400).json({ error: "Invalid fill in the blank id" } satisfies ErrorResponse)
 			return
