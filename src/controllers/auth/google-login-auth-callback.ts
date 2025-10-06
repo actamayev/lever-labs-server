@@ -73,7 +73,7 @@ export default async function googleLoginAuthCallback(req: Request, res: Respons
 		}
 
 		setAuthCookie(res, accessToken)
-		const autoConnectToPipResult = await autoConnectToPip(userId)
+		const autoConnectToPipResult = autoConnectToPip(userId)
 
 		res.status(200).json({
 			isNewUser,

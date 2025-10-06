@@ -20,7 +20,7 @@ export default async function sendDinoScore(req: Request, res: Response): Promis
 		}
 		// emit
 		studentIds.forEach(studentId => {
-			void BrowserSocketManager.getInstance().emitToUser(studentId, "dino-score-update-all-peers", { score, username })
+			BrowserSocketManager.getInstance().emitToUser(studentId, "dino-score-update-all-peers", { score, username })
 		})
 
 		res.status(200).json({ success: "Dino score sent" } satisfies SuccessResponse)

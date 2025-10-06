@@ -17,7 +17,7 @@ export default async function deleteHub(req: Request, res: Response): Promise<vo
 		const deletedHubInfo: DeletedHub = { classCode, hubId }
 
 		const studentUserIds = await getClassroomStudentIds(classroomId)
-		void BrowserSocketManager.getInstance().emitDeletedHubToStudents(studentUserIds, deletedHubInfo)
+		BrowserSocketManager.getInstance().emitDeletedHubToStudents(studentUserIds, deletedHubInfo)
 
 		res.status(200).json({ success: "Hub deleted" } satisfies SuccessResponse)
 		return

@@ -6,7 +6,7 @@ import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-mana
 import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
 import { UserConnectedStatus } from "@lever-labs/common-ts/protocol"
 
-export default async function autoConnectToLastOnlineUser(pipId: PipUUID, preventAutoReconnectUserId?: number): Promise<void> {
+export default function autoConnectToLastOnlineUser(pipId: PipUUID, preventAutoReconnectUserId?: number): void {
 	try {
 		const espStatus = Esp32SocketManager.getInstance().getESPStatus(pipId)
 
@@ -28,8 +28,8 @@ export default async function autoConnectToLastOnlineUser(pipId: PipUUID, preven
 		) return
 
 		Esp32SocketManager.getInstance().setOnlineUserConnected(pipId, lastOnlineConnectedUserId)
-		await BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(lastOnlineConnectedUserId, pipId)
-		await BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(lastOnlineConnectedUserId, pipId, "connected online to you")
+		BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(lastOnlineConnectedUserId, pipId)
+		BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(lastOnlineConnectedUserId, pipId, "connected online to you")
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
 			pipId,
 			MessageBuilder.createIsUserConnectedToPipMessage(UserConnectedStatus.CONNECTED)
