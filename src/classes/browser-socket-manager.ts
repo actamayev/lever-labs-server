@@ -286,7 +286,8 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	public emitPipBatteryData(pipUUID: PipUUID, batteryData: BatteryMonitorData): void {
+	public emitPipBatteryData(pipUUID: PipUUID, batteryData?: BatteryMonitorData): void {
+		if (isUndefined(batteryData)) return
 		// Find all users connected to this pip and emit to ALL their sockets
 		this.emitDataToConnectedPipUsers(pipUUID, "battery-monitor-data", { pipUUID, batteryData })
 	}

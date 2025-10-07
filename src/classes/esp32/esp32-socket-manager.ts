@@ -77,7 +77,7 @@ export default class Esp32SocketManager extends Singleton {
 
 			switch (route) {
 			case "/device-initial-data":
-				// TODO: Modify the ESP code to send the battery data along with the device initial data
+				BrowserSocketManager.getInstance().emitPipBatteryData(pipId, payload.batteryData)
 				void SendEsp32MessageManager.getInstance().transferUpdateAvailableMessage(pipId, payload)
 				break
 			case "/sensor-data":
