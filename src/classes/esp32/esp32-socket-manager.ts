@@ -9,6 +9,7 @@ import SingleESP32Connection from "./single-esp32-connection"
 import SendEsp32MessageManager from "./send-esp32-message-manager"
 import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
 import { UserConnectedStatus } from "@lever-labs/common-ts/protocol"
+import doesPipUUIDExist from "../../db-operations/read/does-x-exist/does-pip-uuid-exist"
 
 export default class Esp32SocketManager extends Singleton {
 	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
@@ -32,39 +33,54 @@ export default class Esp32SocketManager extends Singleton {
 	}
 
 	private initializeWSServer(): void {
-		this.wss.on("connection", (socket: ExtendedWebSocket, request) => {
-			try {
-				// Extract pipId from headers
-				const pipId = request.headers["x-pip-id"] as string
+		this.wss.on("connection", (socket: ExtendedWebSocket, request): void => {
+			void (async (): Promise<void> => {
+				try {
+					// Extract pipId from headers
+					const pipId = request.headers["x-pip-id"] as string
 
-				if (!pipId || !isPipUUID(pipId)) {
-					console.warn("Invalid or missing X-Pip-Id header")
+					if (!pipId) {
+						console.warn("Missing X-Pip-Id header")
+						socket.close(1002, "Missing X-Pip-Id header")
+						return
+					}
+
+					if (!isPipUUID(pipId)) {
+						console.warn("Invalid X-Pip-Id header")
+						socket.close(1002, "Invalid X-Pip-Id header")
+						return
+					}
+
+					const pipIdExists = await doesPipUUIDExist(pipId)
+					if (!pipIdExists) {
+						console.warn(`PipId ${pipId} does not exist`)
+						socket.close(1002, "PipId does not exist")
+						return
+					}
+
+					console.info(`ESP32 ${pipId} connected - registering immediately`)
+
+					socket.pipId = pipId
+
+					// ✅ IMMEDIATE REGISTRATION - happens right when WebSocket connects
+					const connection = new SingleESP32Connection(
+						pipId,
+						socket,
+						(disconnectedPipId: PipUUID) => void this.handleDisconnection(disconnectedPipId, false)
+					)
+
+					// ✅ TRACK ACTIVE CONNECTIONS - this replaces your registration message
+					this.registerConnection(pipId, connection)
+
+					socket.on("message", (message) => {
+						this.handleOngoingMessage(pipId, message.toString())
+					})
+				} catch (error) {
+					console.error(error)
 					socket.close(1002, "Invalid or missing X-Pip-Id header")
 					return
 				}
-
-				console.info(`ESP32 ${pipId} connected - registering immediately`)
-
-				socket.pipId = pipId
-
-				// ✅ IMMEDIATE REGISTRATION - happens right when WebSocket connects
-				const connection = new SingleESP32Connection(
-					pipId,
-					socket,
-					(disconnectedPipId: PipUUID) => void this.handleDisconnection(disconnectedPipId, false)
-				)
-
-				// ✅ TRACK ACTIVE CONNECTIONS - this replaces your registration message
-				this.registerConnection(pipId, connection)
-
-				socket.on("message", (message) => {
-					this.handleOngoingMessage(pipId, message.toString())
-				})
-			} catch (error) {
-				console.error(error)
-				socket.close(1002, "Invalid or missing X-Pip-Id header")
-				return
-			}
+			})()
 		})
 	}
 
