@@ -25,8 +25,8 @@ export default async function submitFillInTheBlankAnswer(req: Request, res: Resp
 		// Evaluate with LLM (assume not a definite solution)
 		const openAiClient = await OpenAiClientClass.getOpenAiClient()
 		const messages = buildCheckFITBLLMContext(
-			fitb.question_text,
-			fitb.reference_solution_cpp,
+			fitb.questionText,
+			fitb.referenceSolutionCpp,
 			userCode
 		)
 		const response = await openAiClient.chat.completions.create({

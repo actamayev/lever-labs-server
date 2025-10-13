@@ -1,8 +1,9 @@
 import PrismaClientClass from "../../../classes/prisma-client"
+import { isNull } from "lodash"
 
 interface FillInTheBlankQuestion {
-	question_text: string
-	reference_solution_cpp: string
+	questionText: string
+	referenceSolutionCpp: string
 }
 
 export default async function retrieveFillInTheBlankQuestion(fillInTheBlankId: string): Promise<FillInTheBlankQuestion | null> {
@@ -12,7 +13,11 @@ export default async function retrieveFillInTheBlankQuestion(fillInTheBlankId: s
 			where: { question_id: fillInTheBlankId },
 			select: { question_text: true, reference_solution_cpp: true }
 		})
-		return fitb
+		if (isNull(fitb)) return null
+		return {
+			questionText: fitb.question_text,
+			referenceSolutionCpp: fitb.reference_solution_cpp
+		} satisfies FillInTheBlankQuestion
 	} catch (error) {
 		console.error(error)
 		throw error
