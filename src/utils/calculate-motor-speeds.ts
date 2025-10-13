@@ -12,16 +12,16 @@ export default function calculateMotorSpeeds(data: Omit<MotorControlData, "pipUU
 	const { vertical, horizontal } = data.motorControl
 	const { motorThrottlePercent } = data
 
-	const maxSpeed = 255
-	const spinSpeed = 100
-	const turnSpeed = 50
+	const maxSpeed = 4095
+	const spinSpeed = 1605
+	const turnSpeed = 803
 
 	// Define min/max speeds for different directions (this is used when throttling)
-	const forwardMinSpeed = 52
-	const backwardMaxSpeed = -56
-	const backwardMinSpeed = -255
-	const sideMaxSpeed = 100
-	const sideMinSpeed = -100
+	const forwardMinSpeed = 835
+	const backwardMaxSpeed = -900
+	const backwardMinSpeed = -4095
+	const sideMaxSpeed = 1605
+	const sideMinSpeed = -1605
 
 	// Helper function to apply throttle with specific bounds
 	const applyThrottle = (baseSpeed: number, min: number, max: number): number => {
