@@ -8,7 +8,7 @@ import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 
-export default async function clientConnectToPipRequest (req: Request, res: Response): Promise<void> {
+export default function clientConnectToPipRequest (req: Request, res: Response): void {
 	try {
 		const { userId } = req
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
@@ -18,10 +18,10 @@ export default async function clientConnectToPipRequest (req: Request, res: Resp
 			res.status(400).json({ message: "Unable to connect to Pip, serial connection is active" } satisfies MessageResponse)
 			return
 		} else if (isNumber(result)) {
-			await BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(result, pipUUID, "offline")
-			await BrowserSocketManager.getInstance().removePipConnection(result)
+			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(result, pipUUID, "offline")
+			BrowserSocketManager.getInstance().removePipConnection(result)
 		}
-		await BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(userId, pipUUID)
+		BrowserSocketManager.getInstance().updateCurrentlyConnectedPip(userId, pipUUID)
 
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
 			pipUUID,

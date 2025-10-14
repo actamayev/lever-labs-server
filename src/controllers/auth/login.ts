@@ -48,7 +48,7 @@ export default async function login(req: Request, res: Response): Promise<void> 
 
 		setAuthCookie(res, accessToken)
 
-		const autoConnectToPipResult = await autoConnectToPip(credentialsResult.user_id)
+		const autoConnectToPipResult = autoConnectToPip(credentialsResult.user_id)
 		res.status(200).json({
 			personalInfo: {
 				username: credentialsResult.username as string,

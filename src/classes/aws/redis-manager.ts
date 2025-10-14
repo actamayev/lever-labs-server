@@ -55,7 +55,6 @@ export default class RedisManager extends Singleton {
 		// Create connection promise for fail-fast behavior
 		const connectionPromise = new Promise<void>((resolve, reject) => {
 			client.once("ready", () => {
-				console.info("Redis connection established successfully")
 				resolve()
 			})
 

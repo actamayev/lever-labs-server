@@ -17,7 +17,7 @@ export default async function setHubNewSlideId(req: Request, res: Response): Pro
 		const updatedHubInfo: UpdatedHubSlideId = { classCode, hubId, newSlideId }
 
 		const studentUserIds = await getClassroomStudentIds(classroomId)
-		void BrowserSocketManager.getInstance().emitUpdatedHubToStudents(studentUserIds, updatedHubInfo)
+		BrowserSocketManager.getInstance().emitUpdatedHubToStudents(studentUserIds, updatedHubInfo)
 
 		res.status(200).json({ success: "Hub new slide id set" } satisfies SuccessResponse)
 		return

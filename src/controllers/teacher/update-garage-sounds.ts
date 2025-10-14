@@ -22,9 +22,7 @@ export default async function updateGarageSoundsAllStudents(req: Request, res: R
 			return
 		}
 		if (!garageSoundsStatus) {
-			studentUserIds.forEach(studentUserId => {
-				void stopStudentPipSound(studentUserId)
-			})
+			studentUserIds.forEach(studentUserId => stopStudentPipSound(studentUserId))
 		}
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
