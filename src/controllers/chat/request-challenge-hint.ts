@@ -68,7 +68,7 @@ async function processHintRequest(
 		const messages = buildHintLLMContext(challengeUUID, chatData, hintNumber)
 		const modelId = selectModel("hint")
 
-		await socketManager.emitToUser(userId, "challenge-chatbot-stream-start", {
+		socketManager.emitToUser(userId, "challenge-chatbot-stream-start", {
 			careerUUID: chatData.careerUUID,
 			challengeUUID,
 			interactionType: "hint"
@@ -102,7 +102,7 @@ async function processHintRequest(
 
 			if (content) {
 				hintContent += content
-				await socketManager.emitToUser(userId, "challenge-chatbot-stream-chunk", {
+				socketManager.emitToUser(userId, "challenge-chatbot-stream-chunk", {
 					careerUUID: chatData.careerUUID,
 					challengeUUID,
 					content
@@ -120,7 +120,7 @@ async function processHintRequest(
 				hintNumber
 			})
 
-			await socketManager.emitToUser(userId, "challenge-chatbot-stream-complete", {
+			socketManager.emitToUser(userId, "challenge-chatbot-stream-complete", {
 				careerUUID: chatData.careerUUID,
 				challengeUUID
 			})

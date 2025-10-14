@@ -20,7 +20,7 @@ export default async function createHub(req: Request, res: Response): Promise<vo
 		)
 
 		const hubInfo: StudentViewHubData = { hubId, classCode, careerUUID, slideId, hubName }
-		void BrowserSocketManager.getInstance().emitNewHubToStudents(studentUserIds, hubInfo)
+		BrowserSocketManager.getInstance().emitNewHubToStudents(studentUserIds, hubInfo)
 
 		res.status(200).json({ hubId } satisfies CreateHubRequest)
 		return

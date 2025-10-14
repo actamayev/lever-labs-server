@@ -22,9 +22,7 @@ export default async function updateGarageDisplayAllStudents(req: Request, res: 
 			return
 		}
 		if (!garageDisplayStatus) {
-			studentUserIds.forEach(studentUserId => {
-				void resetStudentPipDisplay(studentUserId)
-			})
+			studentUserIds.forEach(studentUserId => resetStudentPipDisplay(studentUserId))
 		}
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return

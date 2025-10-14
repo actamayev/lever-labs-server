@@ -19,9 +19,8 @@ export default async function updateIndividualStudentGarageDisplay(req: Request,
 		}
 
 		BrowserSocketManager.getInstance().emitGarageDisplayStatusUpdateToStudents([studentUserId], garageDisplayStatus)
-		if (!garageDisplayStatus) {
-			void resetStudentPipDisplay(studentUserId)
-		}
+		if (!garageDisplayStatus) resetStudentPipDisplay(studentUserId)
+
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return
 	} catch (error) {

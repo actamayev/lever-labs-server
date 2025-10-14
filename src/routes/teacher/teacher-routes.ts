@@ -110,6 +110,15 @@ teacherRoutes.post(
 )
 
 teacherRoutes.post(
+	"/update-garage-display-all-students/:classCode",
+	validateUpdateGarageDisplay,
+	attachTeacherId,
+	attachClassroomIdValidateClassCode,
+	confirmClassBelongsToTeacher,
+	updateGarageDisplay
+)
+
+teacherRoutes.post(
 	"/update-individual-student-garage-driving/:classCode",
 	validateUpdateIndividualStudentGarageDriving,
 	attachTeacherId,
@@ -134,15 +143,6 @@ teacherRoutes.post(
 	attachClassroomIdValidateClassCode,
 	confirmClassBelongsToTeacher,
 	updateIndividualStudentGarageLights
-)
-
-teacherRoutes.post(
-	"/update-garage-display-all-students/:classCode",
-	validateUpdateGarageDisplay,
-	attachTeacherId,
-	attachClassroomIdValidateClassCode,
-	confirmClassBelongsToTeacher,
-	updateGarageDisplay
 )
 
 teacherRoutes.post(

@@ -14,6 +14,7 @@ import setupRoutes from "./utils/config/setup-routes"
 import BrowserSocketManager from "./classes/browser-socket-manager"
 import Esp32SocketManager from "./classes/esp32/esp32-socket-manager"
 import EspLatestFirmwareManager from "./classes/esp32/esp-latest-firmware-manager"
+import RedisManager from "./classes/aws/redis-manager"
 
 process.on("unhandledRejection", (reason, promise) => {
 	console.error("🚨 Unhandled Promise Rejection at:", promise, "reason:", reason)
@@ -59,6 +60,17 @@ httpServer.on("upgrade", (request, socket, head) => {
 		esp32WSServer.emit("connection", ws, request)
 	})
 })
+
+void (async (): Promise<void> => {
+	try {
+		console.info("🔌 Connecting to Redis...")
+		await RedisManager.getInstance()
+		console.info("✅ Redis connected successfully")
+	} catch (error) {
+		console.error("❌ Failed to connect to Redis:", error)
+		console.error("Server will continue but Redis-dependent features will fail")
+	}
+})()
 
 setupRoutes(app)
 

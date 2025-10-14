@@ -102,7 +102,7 @@ export default class SendEsp32MessageManager extends Singleton {
 						if (status?.connectedToOnlineUserId) {
 							Esp32SocketManager.getInstance().updateLastActivityForUser(pipUUID, status.connectedToOnlineUserId)
 							// Also update browser socket manager activity for proper 90min timer
-							void BrowserSocketManager.getInstance().updateUserActivity(status.connectedToOnlineUserId)
+							BrowserSocketManager.getInstance().updateUserActivity(status.connectedToOnlineUserId)
 						}
 						resolve()
 					}

@@ -2,9 +2,9 @@ import getCurrentlyConnectedPipUUID from "../pip/get-currently-connected-pip-uui
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
 
-export async function brakeStudentPip(studentUserId: number): Promise<void> {
+export function brakeStudentPip(studentUserId: number): void {
 	try {
-		const currentlyConnectedPipUUID = await getCurrentlyConnectedPipUUID(studentUserId)
+		const currentlyConnectedPipUUID = getCurrentlyConnectedPipUUID(studentUserId)
 		if (!currentlyConnectedPipUUID) return
 
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
@@ -16,9 +16,9 @@ export async function brakeStudentPip(studentUserId: number): Promise<void> {
 	}
 }
 
-export async function stopStudentPipSound(studentUserId: number): Promise<void> {
+export function stopStudentPipSound(studentUserId: number): void {
 	try {
-		const currentlyConnectedPipUUID = await getCurrentlyConnectedPipUUID(studentUserId)
+		const currentlyConnectedPipUUID = getCurrentlyConnectedPipUUID(studentUserId)
 		if (!currentlyConnectedPipUUID) return
 
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
@@ -30,9 +30,9 @@ export async function stopStudentPipSound(studentUserId: number): Promise<void> 
 	}
 }
 
-export async function resetStudentPipDisplay(studentUserId: number): Promise<void> {
+export function resetStudentPipDisplay(studentUserId: number): void {
 	try {
-		const currentlyConnectedPipUUID = await getCurrentlyConnectedPipUUID(studentUserId)
+		const currentlyConnectedPipUUID = getCurrentlyConnectedPipUUID(studentUserId)
 		if (!currentlyConnectedPipUUID) return
 
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
