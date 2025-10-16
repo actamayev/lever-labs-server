@@ -46,7 +46,7 @@ declare global {
 	interface FillInTheBlankData {
 		question_id: string
 		initial_blockly_json: BlocklyJson
-		reference_solution_cpp: string
+		reference_solution_cpp: string | null
 		question_text: string
 	}
 
