@@ -251,7 +251,7 @@ async function seedFillInTheBlankBlockBanks(): Promise<void> {
 		if (
 			!blockBank.fill_in_the_blank_block_bank_id ||
 			!blockBank.fill_in_the_blank_id ||
-			!blockBank.coding_block_id
+			!blockBank.block_name_id
 		) {
 			console.error(blockBank)
 			throw new Error(`Invalid fill in the blank block bank data: ${JSON.stringify(blockBank)}`)
@@ -262,12 +262,12 @@ async function seedFillInTheBlankBlockBanks(): Promise<void> {
 			},
 			update: {
 				fill_in_the_blank_id: blockBank.fill_in_the_blank_id,
-				coding_block_id: blockBank.coding_block_id,
+				block_name_id: blockBank.block_name_id,
 			},
 			create: {
 				fill_in_the_blank_block_bank_id: blockBank.fill_in_the_blank_block_bank_id,
 				fill_in_the_blank_id: blockBank.fill_in_the_blank_id,
-				coding_block_id: blockBank.coding_block_id,
+				block_name_id: blockBank.block_name_id,
 			}
 		})
 	}))
@@ -378,6 +378,27 @@ async function seedFunctionToBlockAnswerChoices(): Promise<void> {
 	}))
 }
 
+async function seedBlockNames(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const blockNames = parseCSV("../db-seed-data/block_name.csv") as BlockNameData[]
+
+	console.info("Seeding block names...")
+	await Promise.all(blockNames.map(blockName => {
+		return prismaClient.block_name.upsert({
+			where: {
+				block_name_id: blockName.block_name_id
+			},
+			update: {
+				block_name: blockName.block_name
+			},
+			create: {
+				block_name_id: blockName.block_name_id,
+				block_name: blockName.block_name
+			}
+		})
+	}))
+}
+
 async function main(): Promise<void> {
 	try {
 		await seedCareers()
@@ -385,6 +406,7 @@ async function main(): Promise<void> {
 
 		// Seed lesson system
 		await seedCodingBlocks()
+		await seedBlockNames()
 		await seedLessons()
 		await seedQuestions()
 

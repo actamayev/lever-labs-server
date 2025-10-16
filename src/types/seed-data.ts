@@ -56,7 +56,7 @@ declare global {
 	interface FillInTheBlankBlockBankData {
 		fill_in_the_blank_block_bank_id: number
 		fill_in_the_blank_id: string
-		coding_block_id: number
+		block_name_id: number
 	}
 
 	interface LessonQuestionMapData {
@@ -82,6 +82,11 @@ declare global {
 		order: number
 	}
 
+	interface BlockNameData {
+		block_name_id: number
+		block_name: string
+	}
+
 	type AllSeedData =
 		| CareerData
 		| ChallengeData
@@ -95,6 +100,7 @@ declare global {
 		| LessonQuestionMapData
 		| BlockToFunctionAnswerChoiceData
 		| FunctionToBlockAnswerChoiceData
+		| BlockNameData
 }
 
 export {}

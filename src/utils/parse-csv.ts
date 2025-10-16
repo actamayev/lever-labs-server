@@ -96,7 +96,7 @@ function isFillInTheBlankBlockBankData(data: unknown): data is FillInTheBlankBlo
         d !== null &&
         typeof d.fill_in_the_blank_block_bank_id === "number" &&
         typeof d.fill_in_the_blank_id === "string" &&
-        typeof d.coding_block_id === "number"
+        typeof d.block_name_id === "number"
 	)
 }
 
@@ -135,6 +135,16 @@ function isFunctionToBlockAnswerChoiceData(data: unknown): data is FunctionToBlo
         typeof d.coding_block_id === "number" &&
         typeof d.is_correct === "boolean" &&
         typeof d.order === "number"
+	)
+}
+
+function isBlockNameData(data: unknown): data is BlockNameData {
+	const d = data as BlockNameData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.block_name_id === "number" &&
+        typeof d.block_name === "string"
 	)
 }
 
@@ -260,6 +270,13 @@ export default function parseCSV(filePath: string): AllSeedData[] {
 				throw new Error(`Invalid function to block answer choice data at row ${index + 1}: ${JSON.stringify(row)}`)
 			}
 			return row as FunctionToBlockAnswerChoiceData
+		})
+	} else if (fileName === "block_name.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isBlockNameData(row)) {
+				throw new Error(`Invalid block name data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as BlockNameData
 		})
 	}
 

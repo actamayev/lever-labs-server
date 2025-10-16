@@ -448,7 +448,6 @@ model coding_block {
 	
 	block_to_function_flashcard								block_to_function_flashcard[]
 	function_to_block_answer_choice							function_to_block_answer_choice[]
-	fill_in_the_blank_block_bank							fill_in_the_blank_block_bank[]
 }
 
 model lesson {
@@ -581,13 +580,13 @@ model fill_in_the_blank {
 model fill_in_the_blank_block_bank {
 	fill_in_the_blank_block_bank_id							Int       @id @default(autoincrement())
 	fill_in_the_blank_id									String
-	coding_block_id											Int
+	block_name_id											Int
 	
 	fill_in_the_blank										fill_in_the_blank @relation(fields: [fill_in_the_blank_id], references: [question_id], onDelete: Cascade)
-	coding_block											coding_block @relation(fields: [coding_block_id], references: [coding_block_id])
+	block_name												block_name @relation(fields: [block_name_id], references: [block_name_id])
 	
 	@@index([fill_in_the_blank_id])
-	@@index([coding_block_id])
+	@@index([block_name_id])
 }
 
 model fill_in_the_blank_user_answer {
@@ -604,4 +603,13 @@ model fill_in_the_blank_user_answer {
 	
 	@@index([user_id])
 	@@index([fill_in_the_blank_id])
+}
+
+model block_name {
+	block_name_id											Int       @id @default(autoincrement())
+	block_name												String	  @unique
+
+	created_at												DateTime  @default(now())
+
+	fill_in_the_blank_block_bank							fill_in_the_blank_block_bank[]
 }

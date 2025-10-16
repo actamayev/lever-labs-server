@@ -1,9 +1,9 @@
-fill_in_the_blank_block_bank_id ,fill_in_the_blank_id                 ,coding_block_id 
-                              1 ,b06f8967-6807-45a5-978d-ba40fc859af9 ,              5 
-                              2 ,b06f8967-6807-45a5-978d-ba40fc859af9 ,              6 
-                              4, ee79d412-4992-4c45-9cda-c241427e31d9 ,              5 
-                              5, ee79d412-4992-4c45-9cda-c241427e31d9 ,              10
-                              6, ee79d412-4992-4c45-9cda-c241427e31d9 ,              18
-                              7, 83f52273-c4e9-43de-8a08-76d14de7b1d9 ,              5
-                              8, 83f52273-c4e9-43de-8a08-76d14de7b1d9 ,              7
-                              9, 83f52273-c4e9-43de-8a08-76d14de7b1d9 ,              16
+fill_in_the_blank_block_bank_id ,fill_in_the_blank_id                 ,block_name_id 
+                              1 ,b06f8967-6807-45a5-978d-ba40fc859af9 ,              2 
+                              2 ,b06f8967-6807-45a5-978d-ba40fc859af9 ,              36 
+                              4, ee79d412-4992-4c45-9cda-c241427e31d9 ,              2 
+                              5, ee79d412-4992-4c45-9cda-c241427e31d9 ,              38
+                              6, ee79d412-4992-4c45-9cda-c241427e31d9 ,              11
+                              7, 83f52273-c4e9-43de-8a08-76d14de7b1d9 ,              2
+                              8, 83f52273-c4e9-43de-8a08-76d14de7b1d9 ,              36
+                              9, 83f52273-c4e9-43de-8a08-76d14de7b1d9 ,              38
