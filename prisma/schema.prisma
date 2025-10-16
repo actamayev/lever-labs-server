@@ -437,13 +437,8 @@ model question {
 
 model coding_block {
 	coding_block_id											Int       @id @default(autoincrement())
-	block_name												String
-	
-	// Parameter columns (all nullable - different blocks use different params)
-	led_color												String?
-	color_sensor_detection_color							String?
-	speaker_tone											String?
-	
+	coding_block_json										Json @default("{}")
+
 	created_at												DateTime  @default(now())
 	
 	block_to_function_flashcard								block_to_function_flashcard[]
