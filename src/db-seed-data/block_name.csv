@@ -23,17 +23,16 @@ block_name_id ,block_name
            22 ,wait
            23 ,forever_loop
            24 ,go_forward
-           25 ,go_forward
-           26 ,go_backward
-           27 ,go_forward_time
-           28 ,go_backward_time
-           29 ,go_forward_distance
-           30 ,go_backward_distance
-           31 ,stop
-           32 ,turn
-           33 ,imu_read
-           34 ,side_tof_read
-           35 ,center_tof_read
-           36 ,color_sensor_read
-           37 ,play_sound
-           38 ,play_tone
+           25 ,go_backward
+           26 ,go_forward_time
+           27 ,go_backward_time
+           28 ,go_forward_distance
+           29 ,go_backward_distance
+           30 ,stop
+           31 ,turn
+           32 ,imu_read
+           33 ,side_tof_read
+           34 ,center_tof_read
+           35 ,color_sensor_read
+           36 ,play_sound
+           37 ,play_tone

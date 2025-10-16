@@ -53,7 +53,7 @@ function isCodingBlockData(data: unknown): data is CodingBlockData {
 		typeof d === "object" &&
         d !== null &&
         typeof d.coding_block_id === "number" &&
-        typeof d.block_name === "string"
+        typeof d.coding_block_json === "string"
 	)
 }
 

@@ -44,10 +44,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 										coding_block: {
 											select: {
 												coding_block_id: true,
-												block_name: true,
-												led_color: true,
-												color_sensor_detection_color: true,
-												speaker_tone: true
+												coding_block_json: true
 											}
 										}
 									}
@@ -63,10 +60,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 												coding_block: {
 													select: {
 														coding_block_id: true,
-														block_name: true,
-														led_color: true,
-														color_sensor_detection_color: true,
-														speaker_tone: true
+														coding_block_json: true
 													}
 												}
 											}
@@ -79,14 +73,10 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 										initial_blockly_json: true,
 										fill_in_the_blank_block_bank: {
 											select: {
-												fill_in_the_blank_block_bank_id: true,
-												coding_block: {
+												block_name: {
 													select: {
-														coding_block_id: true,
-														block_name: true,
-														led_color: true,
-														color_sensor_detection_color: true,
-														speaker_tone: true
+														block_name_id: true,
+														block_name: true
 													}
 												}
 											}
@@ -119,10 +109,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 					blockToFunctionFlashcard: map.question.block_to_function_flashcard ? {
 						codingBlock: {
 							codingBlockId: map.question.block_to_function_flashcard.coding_block.coding_block_id,
-							blockName: map.question.block_to_function_flashcard.coding_block.block_name as BlockNames,
-							ledColor: map.question.block_to_function_flashcard.coding_block.led_color,
-							colorSensorDetectionColor: map.question.block_to_function_flashcard.coding_block.color_sensor_detection_color,
-							speakerTone: map.question.block_to_function_flashcard.coding_block.speaker_tone
+							codingBlockJson: map.question.block_to_function_flashcard.coding_block.coding_block_json as BlocklyJson,
 						},
 						// eslint-disable-next-line max-len
 						blockToFunctionAnswerChoice: map.question.block_to_function_flashcard.block_to_function_answer_choice.map(choice => ({
@@ -141,26 +128,17 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 							order: choice.order,
 							codingBlock: {
 								codingBlockId: choice.coding_block.coding_block_id,
-								blockName: choice.coding_block.block_name as BlockNames,
-								ledColor: choice.coding_block.led_color,
-								colorSensorDetectionColor: choice.coding_block.color_sensor_detection_color,
-								speakerTone: choice.coding_block.speaker_tone
+								codingBlockJson: choice.coding_block.coding_block_json as BlocklyJson,
 							},
 							isCorrect: choice.is_correct
 						}))
 					} : null,
 					fillInTheBlank: map.question.fill_in_the_blank ? {
 						questionText: map.question.fill_in_the_blank.question_text,
-						initialBlocklyJson: JSON.stringify(map.question.fill_in_the_blank.initial_blockly_json) as unknown as BlocklyJson,
-						fillInTheBlankBlockBank: map.question.fill_in_the_blank.fill_in_the_blank_block_bank.map(bank => ({
-							fillInTheBlankBlockBankId: bank.fill_in_the_blank_block_bank_id,
-							codingBlock: {
-								codingBlockId: bank.coding_block.coding_block_id,
-								blockName: bank.coding_block.block_name as BlockNames,
-								ledColor: bank.coding_block.led_color,
-								colorSensorDetectionColor: bank.coding_block.color_sensor_detection_color,
-								speakerTone: bank.coding_block.speaker_tone
-							}
+						initialBlocklyJson: map.question.fill_in_the_blank.initial_blockly_json as BlocklyJson,
+						availableBlocks: map.question.fill_in_the_blank.fill_in_the_blank_block_bank.map(bank => ({
+							blockNameId: bank.block_name.block_name_id,
+							blockName: bank.block_name.block_name as BlockNames,
 						}))
 					} : null
 				}

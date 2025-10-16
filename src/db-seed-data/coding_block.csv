@@ -1,21 +1,32 @@
-coding_block_id ,block_name          ,led_color ,color_sensor_detection_color ,speaker_tone
-              1 ,control_all_leds    ,red       ,                             ,
-              2 ,control_all_leds    ,green     ,                             ,
-              3 ,control_all_leds    ,blue      ,                             ,
-              4 ,control_all_leds    ,white     ,                             ,
-              5 ,control_all_leds    ,off       ,                             ,
-              6 ,color_sensor_read   ,          ,red                          ,
-              7 ,color_sensor_read   ,          ,green                        ,
-              8 ,color_sensor_read   ,          ,blue                         ,
-              9 ,color_sensor_read   ,          ,white                        ,
-             10 ,play_tone           ,          ,                             ,A
-             11 ,play_tone           ,          ,                             ,B
-             12 ,play_tone           ,          ,                             ,C
-             13 ,play_tone           ,          ,                             ,D
-             14 ,play_tone           ,          ,                             ,E
-             15 ,play_tone           ,          ,                             ,F
-             16 ,play_tone           ,          ,                             ,G
-             17 ,controls_if         ,          ,                             ,
-             18 ,controls_if_else    ,          ,                             ,
-             19 ,controls_if_elseif  ,          ,                             ,
-             20 ,controls_if_2elseif ,          ,                             ,
+coding_block_id ,coding_block_json
+              1 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""control_all_leds"",""id"":""W:zyD+5%msnV[!Y{Jdel"",""x"":-370,""y"":-210,""fields"":{""led_color"":""RED""}}]}}"
+              2 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""control_all_leds"",""id"":""W:zyD+6%msnV[!Y{Jdel"",""x"":-370,""y"":-210,""fields"":{""led_color"":""GREEN""}}]}}"
+              3 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""control_all_leds"",""id"":""W:zyD+7%msnV[!Y{Jdel"",""x"":-370,""y"":-210,""fields"":{""led_color"":""BLUE""}}]}}"
+              4 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""control_all_leds"",""id"":""W:zyD+8%msnV[!Y{Jdel"",""x"":-370,""y"":-210,""fields"":{""led_color"":""WHITE""}}]}}"
+              5 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""control_all_leds"",""id"":""W:zyD+9%msnV[!Y{Jdel"",""x"":-370,""y"":-210,""fields"":{""led_color"":""OFF""}}]}}"
+              6 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""color_sensor_read"",""id"":""b@R0~EjF{^7S+cfOT-Fc"",""x"":-390,""y"":-330,""fields"":{""color_sensor"":""RED""}}]}}"
+              7 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""color_sensor_read"",""id"":""b@R0~EqF{^7S+cfOT-Fc"",""x"":-390,""y"":-330,""fields"":{""color_sensor"":""GREEN""}}]}}"
+              8 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""color_sensor_read"",""id"":""b@R0~ErF{^7S+cfOT-Fc"",""x"":-390,""y"":-330,""fields"":{""color_sensor"":""BLUE""}}]}}"
+              9 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""color_sensor_read"",""id"":""b@R0~EsF{^7S+cfOT-Fc"",""x"":-390,""y"":-330,""fields"":{""color_sensor"":""WHITE""}}]}}"
+             10 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""play_tone"",""id"":""eT6X6iqqH(v%=aB!eoCm"",""x"":-470,""y"":-190,""fields"":{""play_tone"":""A""}}]}}"
+             11 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""play_tone"",""id"":""eT6X6iqrH(v%=aB!eoCm"",""x"":-470,""y"":-190,""fields"":{""play_tone"":""B""}}]}}"
+             12 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""play_tone"",""id"":""eT6X6iqsH(v%=aB!eoCm"",""x"":-470,""y"":-190,""fields"":{""play_tone"":""C""}}]}}"
+             13 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""play_tone"",""id"":""eT6X6iqtH(v%=aB!eoCm"",""x"":-470,""y"":-190,""fields"":{""play_tone"":""D""}}]}}"
+             14 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""play_tone"",""id"":""eT6X6iquH(v%=aB!eoCm"",""x"":-470,""y"":-190,""fields"":{""play_tone"":""E""}}]}}"
+             15 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""play_tone"",""id"":""eT6X6iqvH(v%=aB!eoCm"",""x"":-470,""y"":-190,""fields"":{""play_tone"":""F""}}]}}"
+             16 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""play_tone"",""id"":""eT6X6iqwH(v%=aB!eoCm"",""x"":-470,""y"":-190,""fields"":{""play_tone"":""G""}}]}}"
+             17 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""controls_if"",""id"":""XpNv6]{3L!]zHL.c}^,*"",""x"":-594,""y"":-339}]}}"
+             18 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""controls_if_else"",""id"":""tva:.58jz**4*_Yt%QXk"",""x"":-410,""y"":-150}]}}"
+             19 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""controls_if_elseif"",""id"":""tva:.58qz**4*_Yt%QXk"",""x"":-410,""y"":-150}]}}"
+             20 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""controls_if_2elseif"",""id"":""tva:.58sz**4*_Yt%QXk"",""x"":-410,""y"":-150}]}}"
+             21 ,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""go_forward_time"",""id"":""jx@.=_T3|fuKf?j{-bLq"",""x"":-430,""y"":-270,""fields"":{""seconds"":2,""SECONDS_LABEL"":""seconds"",""percentage"":80}}]}}"
+             22,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""go_forward_time"",""id"":""jx@.=_T3|fuKf?j{-bLq"",""x"":-430,""y"":-270,""fields"":{""seconds"":10,""SECONDS_LABEL"":""seconds"",""percentage"":80}}]}}"
+             23, "{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""wait"",""id"":""(RP=pNxFZI%!m=~TSZgO"",""x"":-350,""y"":-330,""fields"":{""wait"":1,""SECONDS_LABEL"":""second""}}]}}"
+             24, "{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""wait"",""id"":""(RP=pNxFZI%!m=~TSZgO"",""x"":-350,""y"":-330,""fields"":{""wait"":1,""SECONDS_LABEL"":""second""}},{""type"":""wait"",""id"":""7m|kbf+K#fKC@4_#x|,i"",""x"":-510,""y"":-330,""fields"":{""wait"":0.25,""SECONDS_LABEL"":""seconds""}}]}}"
+             25, "{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""controls_if"",""id"":""NrlDTc{HvIQa2D|QQaUM"",""x"":-530,""y"":-230,""inputs"":{""IF0"":{""block"":{""type"":""color_sensor_read"",""id"":""T}/Phs{2X[PcjT,Kuma9"",""fields"":{""color_sensor"":""RED""}}},""DO0"":{""block"":{""type"":""go_forward_time"",""id"":""TaI61JhOf{O2B!lpZ:w)"",""fields"":{""seconds"":1,""SECONDS_LABEL"":""second"",""percentage"":70}}}}}]}}"
+             26, "{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""controls_if"",""id"":""NrlDTc{HvIQa2D|QQaUM"",""x"":-530,""y"":-370,""inputs"":{""IF0"":{""block"":{""type"":""color_sensor_read"",""id"":""T}/Phs{2X[PcjT,Kuma9"",""fields"":{""color_sensor"":""BLUE""}}},""DO0"":{""block"":{""type"":""go_forward_time"",""id"":""TaI61JhOf{O2B!lpZ:w)"",""fields"":{""seconds"":1,""SECONDS_LABEL"":""second"",""percentage"":70},""next"":{""block"":{""type"":""control_all_leds"",""id"":""t[f}qU^tk.nDM17n72ek"",""fields"":{""led_color"":""BLUE""},""next"":{""block"":{""type"":""play_tone"",""id"":""}GwJZl;?r53._|^q0sHJ"",""fields"":{""play_tone"":""E""}}}}}}}}}]}}"
+             27,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""control_all_leds"",""id"":""t[f}qU^tk.nDM17n72ek"",""x"":-510,""y"":-410,""fields"":{""led_color"":""YELLOW""},""next"":{""block"":{""type"":""play_tone"",""id"":""}GwJZl;?r53._|^q0sHJ"",""fields"":{""play_tone"":""G""},""next"":{""block"":{""type"":""go_forward_time"",""id"":""TaI61JhOf{O2B!lpZ:w)"",""fields"":{""seconds"":1,""SECONDS_LABEL"":""second"",""percentage"":60}}}}}}]}}"
+             28,"{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""controls_if"",""id"":""NrlDTc{HvIQa2D|QQaUM"",""x"":-530,""y"":-370,""inputs"":{""IF0"":{""block"":{""type"":""color_sensor_read"",""id"":""T}/Phs{2X[PcjT,Kuma9"",""fields"":{""color_sensor"":""BLUE""}}},""DO0"":{""block"":{""type"":""go_forward_time"",""id"":""TaI61JhOf{O2B!lpZ:w)"",""fields"":{""seconds"":1,""SECONDS_LABEL"":""second"",""percentage"":60},""next"":{""block"":{""type"":""control_all_leds"",""id"":""t[f}qU^tk.nDM17n72ek"",""fields"":{""led_color"":""BLUE""},""next"":{""block"":{""type"":""play_tone"",""id"":""}GwJZl;?r53._|^q0sHJ"",""fields"":{""play_tone"":""E""}}}}}}}}}]}}"
+             29, "{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""turn"",""id"":""%q(6-LSfb-jD!|h[(f:1"",""x"":-510,""y"":-410,""fields"":{""turn_direction"":""COUNTERCLOCKWISE"",""turn_degrees"":45,""DEGREES_LABEL"":""degrees""},""next"":{""block"":{""type"":""wait"",""id"":""}UPR=++eECYA?/Sd(UVb"",""fields"":{""wait"":0.25,""SECONDS_LABEL"":""seconds""},""next"":{""block"":{""type"":""turn"",""id"":""D~*bgj-N2aR*LK($DqJA"",""fields"":{""turn_direction"":""CLOCKWISE"",""turn_degrees"":45,""DEGREES_LABEL"":""degrees""},""next"":{""block"":{""type"":""wait"",""id"":""FNR5_CLL[uBG:wI3n?yY"",""fields"":{""wait"":0.25,""SECONDS_LABEL"":""seconds""}}}}}}}}]}}"
+             30, "{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""go_forward_distance"",""id"":""GlHN})G?eQ*~c=$Lr{ta"",""x"":-477,""y"":-456,""fields"":{""distance"":5,""INCHES_LABEL"":""inches"",""percentage"":40},""next"":{""block"":{""type"":""wait"",""id"":""}UPR=++eECYA?/Sd(UVb"",""fields"":{""wait"":0.25,""SECONDS_LABEL"":""seconds""},""next"":{""block"":{""type"":""go_backward_distance"",""id"":""EX?g0`T8._i[PQi$~NWI"",""fields"":{""distance"":5,""INCHES_LABEL"":""inches"",""percentage"":40},""next"":{""block"":{""type"":""wait"",""id"":""FNR5_CLL[uBG:wI3n?yY"",""fields"":{""wait"":0.25,""SECONDS_LABEL"":""seconds""}}}}}}}}]}}"
+             31, "{""blocks"":{""languageVersion"":0,""blocks"":[{""type"":""go_forward_distance"",""id"":""GlHN})G?eQ*~c=$Lr{ta"",""x"":-477,""y"":-456,""fields"":{""distance"":10,""INCHES_LABEL"":""inches"",""percentage"":50},""next"":{""block"":{""type"":""wait"",""id"":""}UPR=++eECYA?/Sd(UVb"",""fields"":{""wait"":0.25,""SECONDS_LABEL"":""seconds""},""next"":{""block"":{""type"":""turn"",""id"":""?N)Wtb]taoJ_#tjpw[i,"",""fields"":{""turn_direction"":""COUNTERCLOCKWISE"",""turn_degrees"":90,""DEGREES_LABEL"":""degrees""},""next"":{""block"":{""type"":""wait"",""id"":""FNR5_CLL[uBG:wI3n?yY"",""fields"":{""wait"":0.25,""SECONDS_LABEL"":""seconds""}}}}}}}}]}}"

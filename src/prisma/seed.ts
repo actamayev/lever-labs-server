@@ -127,7 +127,7 @@ async function seedCodingBlocks(): Promise<void> {
 	await Promise.all(codingBlocks.map(block => {
 		if (
 			!block.coding_block_id ||
-			!block.block_name
+			!block.coding_block_json
 		) {
 			throw new Error(`Invalid coding block data: ${JSON.stringify(block)}`)
 		}
@@ -136,17 +136,11 @@ async function seedCodingBlocks(): Promise<void> {
 				coding_block_id: block.coding_block_id
 			},
 			update: {
-				block_name: block.block_name,
-				led_color: block.led_color,
-				color_sensor_detection_color: block.color_sensor_detection_color,
-				speaker_tone: block.speaker_tone
+				coding_block_json: block.coding_block_json,
 			},
 			create: {
 				coding_block_id: block.coding_block_id,
-				block_name: block.block_name,
-				led_color: block.led_color,
-				color_sensor_detection_color: block.color_sensor_detection_color,
-				speaker_tone: block.speaker_tone
+				coding_block_json: block.coding_block_json,
 			}
 		})
 	}))
