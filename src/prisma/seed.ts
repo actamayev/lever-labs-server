@@ -2,6 +2,7 @@
 import isUndefined from "lodash/isUndefined"
 import { BlocklyJson } from "@lever-labs/common-ts/types/sandbox"
 import parseCSV from "../utils/parse-csv"
+import parseJSON from "../utils/parse-json"
 import PrismaClientClass from "../classes/prisma-client"
 
 async function seedCareers(): Promise<void> {
@@ -121,7 +122,7 @@ async function seedQuestions(): Promise<void> {
 
 async function seedCodingBlocks(): Promise<void> {
 	const prismaClient = await PrismaClientClass.getPrismaClient()
-	const codingBlocks = parseCSV("../db-seed-data/coding_block.csv") as CodingBlockData[]
+	const codingBlocks = parseJSON("../db-seed-data/coding_block.json") as CodingBlockData[] // Changed from parseCSV
 
 	console.info("Seeding coding blocks...")
 	await Promise.all(codingBlocks.map(block => {
@@ -205,14 +206,13 @@ async function seedFunctionToBlockFlashcards(): Promise<void> {
 
 async function seedFillInTheBlanks(): Promise<void> {
 	const prismaClient = await PrismaClientClass.getPrismaClient()
-	const fillInBlanks = parseCSV("../db-seed-data/fill_in_the_blank.csv") as FillInTheBlankData[]
+	const fillInBlanks = parseJSON("../db-seed-data/fill_in_the_blank.json") as FillInTheBlankData[] // Changed from parseCSV
 
 	console.info("Seeding fill in the blanks...")
 	await Promise.all(fillInBlanks.map(fillInBlank => {
 		if (
 			!fillInBlank.question_id ||
 			!fillInBlank.initial_blockly_json ||
-			!fillInBlank.reference_solution_cpp ||
 			!fillInBlank.question_text
 		) {
 			throw new Error(`Invalid fill in the blank data: ${JSON.stringify(fillInBlank)}`)
@@ -223,18 +223,19 @@ async function seedFillInTheBlanks(): Promise<void> {
 			},
 			update: {
 				initial_blockly_json: fillInBlank.initial_blockly_json as BlocklyJson,
-				reference_solution_cpp: fillInBlank.reference_solution_cpp,
+				reference_solution_cpp: fillInBlank.reference_solution_cpp ?? "",
 				question_text: fillInBlank.question_text
 			},
 			create: {
 				question_id: fillInBlank.question_id,
 				initial_blockly_json: fillInBlank.initial_blockly_json as BlocklyJson,
-				reference_solution_cpp: fillInBlank.reference_solution_cpp,
+				reference_solution_cpp: fillInBlank.reference_solution_cpp ?? "",
 				question_text: fillInBlank.question_text
 			}
 		})
 	}))
 }
+
 
 async function seedFillInTheBlankBlockBanks(): Promise<void> {
 	const prismaClient = await PrismaClientClass.getPrismaClient()

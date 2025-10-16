@@ -11,7 +11,6 @@ import displayLedColorsDirectly from "../controllers/internal/display-led-colors
 import displayLedColorsToAll from "../controllers/internal/display-led-colors-to-all"
 import playSoundToAll from "../controllers/internal/play-sound-to-all"
 import getLatestFirmwareData from "../controllers/internal/get-latest-firmware-data"
-import stringifyBlocklyJson from "../controllers/internal/stringify-blockly-json"
 
 const internalRoutes = express.Router()
 
@@ -30,7 +29,5 @@ internalRoutes.post("/play-sound-to-all", playSoundToAll)
 internalRoutes.post("/firmware-update", forceFirmwareRefetch)
 
 internalRoutes.get("/get-latest-firmware-data", getLatestFirmwareData)
-
-internalRoutes.post("/stringify-blockly-json", stringifyBlocklyJson)
 
 export default internalRoutes
