@@ -493,6 +493,7 @@ model completed_user_lesson {
 model block_to_function_flashcard {
 	question_id												String    @id
 	coding_block_id											Int
+	question_text											String @default("")
 	
 	question												question  @relation(fields: [question_id], references: [question_id], onDelete: Cascade)
 	coding_block											coding_block @relation(fields: [coding_block_id], references: [coding_block_id])

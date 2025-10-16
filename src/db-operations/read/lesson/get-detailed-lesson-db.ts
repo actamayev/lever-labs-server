@@ -32,6 +32,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 								question_type: true,
 								block_to_function_flashcard: {
 									select: {
+										question_text: true,
 										block_to_function_answer_choice: {
 											select: {
 												block_to_function_answer_choice_id: true,
@@ -129,7 +130,8 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 							order: choice.order,
 							functionDescriptionText: choice.function_description_text,
 							isCorrect: choice.is_correct
-						}))
+						})),
+						questionText: map.question.block_to_function_flashcard.question_text
 					} : null,
 					functionToBlockFlashcard: map.question.function_to_block_flashcard ? {
 						questionText: map.question.function_to_block_flashcard.question_text,

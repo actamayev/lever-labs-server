@@ -38,6 +38,7 @@ declare global {
 	interface BlockToFunctionFlashcardData {
 		question_id: string
 		coding_block_id: number
+		question_text: string
 	}
 
 	interface FunctionToBlockFlashcardData {

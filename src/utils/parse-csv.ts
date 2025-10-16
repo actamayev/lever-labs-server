@@ -63,7 +63,8 @@ function isBlockToFunctionFlashcardData(data: unknown): data is BlockToFunctionF
 		typeof d === "object" &&
         d !== null &&
         typeof d.question_id === "string" &&
-        typeof d.coding_block_id === "number"
+        typeof d.coding_block_id === "number" &&
+        typeof d.question_text === "string"
 	)
 }
 

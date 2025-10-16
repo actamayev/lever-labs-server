@@ -160,7 +160,8 @@ async function seedBlockToFunctionFlashcards(): Promise<void> {
 	await Promise.all(flashcards.map(flashcard => {
 		if (
 			!flashcard.question_id ||
-			!flashcard.coding_block_id
+			!flashcard.coding_block_id ||
+			!flashcard.question_text
 		) {
 			throw new Error(`Invalid block to function flashcard data: ${JSON.stringify(flashcard)}`)
 		}
@@ -169,11 +170,13 @@ async function seedBlockToFunctionFlashcards(): Promise<void> {
 				question_id: flashcard.question_id
 			},
 			update: {
-				coding_block_id: flashcard.coding_block_id
+				coding_block_id: flashcard.coding_block_id,
+				question_text: flashcard.question_text
 			},
 			create: {
 				question_id: flashcard.question_id,
-				coding_block_id: flashcard.coding_block_id
+				coding_block_id: flashcard.coding_block_id,
+				question_text: flashcard.question_text
 			}
 		})
 	}))
