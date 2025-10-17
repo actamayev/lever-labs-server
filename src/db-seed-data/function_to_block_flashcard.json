@@ -104,10 +104,6 @@
 	  "question_text": "Which order synchronizes Pip's LED, tone, and motion outputs?"
 	},
 	{
-	  "question_id": "336d9cd0-7971-46b6-855f-414ce0d5fc35",
-	  "question_text": "Which block handles cases when no color condition is detected?"
-	},
-	{
 	  "question_id": "ced17917-9f2d-4788-be0b-db08debef5fa",
 	  "question_text": "Which sequence makes Pip alternate between clockwise and counterclockwise rotations at regular intervals?"
 	},
