@@ -17,6 +17,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 			select: {
 				lesson_id: true,
 				lesson_name: true,
+				lesson_order: true,
 				completed_user_lesson: {
 					where: { user_id: userId },
 					select: { user_id: true },
@@ -98,6 +99,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 		return {
 			lessonId: lesson.lesson_id as LessonUUID,
 			lessonName: lesson.lesson_name,
+			lessonOrder: lesson.lesson_order as number,
 			isCompleted: !isEmpty(lesson.completed_user_lesson),
 			// eslint-disable-next-line max-lines-per-function
 			lessonQuestionMap: lesson.lesson_question_map.map(map => ({

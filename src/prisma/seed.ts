@@ -72,7 +72,8 @@ async function seedLessons(): Promise<void> {
 	await Promise.all(lessons.map(lesson => {
 		if (
 			!lesson.lesson_id ||
-			!lesson.lesson_name
+			!lesson.lesson_name ||
+			!lesson.lesson_order
 		) {
 			throw new Error(`Invalid lesson data: ${JSON.stringify(lesson)}`)
 		}
@@ -82,12 +83,14 @@ async function seedLessons(): Promise<void> {
 			},
 			update: {
 				lesson_name: lesson.lesson_name,
-				lesson_description: lesson.lesson_description
+				lesson_description: lesson.lesson_description,
+				lesson_order: lesson.lesson_order
 			},
 			create: {
 				lesson_id: lesson.lesson_id,
 				lesson_name: lesson.lesson_name,
-				lesson_description: lesson.lesson_description
+				lesson_description: lesson.lesson_description,
+				lesson_order: lesson.lesson_order
 			}
 		})
 	}))

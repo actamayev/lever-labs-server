@@ -19,6 +19,7 @@ declare global {
 	interface LessonData {
 		lesson_id: string
 		lesson_name: string
+		lesson_order: number
 		lesson_description?: string
 	}
 

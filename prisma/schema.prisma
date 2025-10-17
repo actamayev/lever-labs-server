@@ -449,6 +449,7 @@ model lesson {
 	lesson_id												String    @id @default(uuid())
 	lesson_name												String
 	lesson_description										String?
+	lesson_order											Int?
 	
 	created_at												DateTime  @default(now())
 	updated_at												DateTime  @default(now()) @updatedAt

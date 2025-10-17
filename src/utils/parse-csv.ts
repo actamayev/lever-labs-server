@@ -33,7 +33,8 @@ function isLessonData(data: unknown): data is LessonData {
 		typeof d === "object" &&
         d !== null &&
         typeof d.lesson_id === "string" &&
-        typeof d.lesson_name === "string"
+        typeof d.lesson_name === "string" &&
+        typeof d.lesson_order === "number"
 	)
 }
 
