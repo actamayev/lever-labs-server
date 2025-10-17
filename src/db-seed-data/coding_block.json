@@ -1662,5 +1662,26 @@
 			  ]
 			}
 		  }
-		}
+		},
+		{
+			"coding_block_id": 63,
+			"coding_block_json": {
+			  "blocks": {
+				"languageVersion": 0,
+				"blocks": [
+				  {
+					"type": "go_forward_distance",
+					"id": "GlHN})G?eQ*~c=$Lr{ta",
+					"x": -477,
+					"y": -456,
+					"fields": {
+					  "distance": 10,
+					  "INCHES_LABEL": "inches",
+					  "percentage": 80
+					}
+				  }
+				]
+			  }
+			}
+		  }
 ]
