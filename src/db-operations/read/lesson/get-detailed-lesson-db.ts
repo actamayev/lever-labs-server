@@ -109,7 +109,8 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 					blockToFunctionFlashcard: map.question.block_to_function_flashcard ? {
 						codingBlock: {
 							codingBlockId: map.question.block_to_function_flashcard.coding_block.coding_block_id,
-							codingBlockJson: map.question.block_to_function_flashcard.coding_block.coding_block_json as BlocklyJson,
+							// eslint-disable-next-line max-len
+							codingBlockJson: JSON.stringify(map.question.block_to_function_flashcard.coding_block.coding_block_json) as unknown as BlocklyJson,
 						},
 						// eslint-disable-next-line max-len
 						blockToFunctionAnswerChoice: map.question.block_to_function_flashcard.block_to_function_answer_choice.map(choice => ({
@@ -135,7 +136,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 					} : null,
 					fillInTheBlank: map.question.fill_in_the_blank ? {
 						questionText: map.question.fill_in_the_blank.question_text,
-						initialBlocklyJson: map.question.fill_in_the_blank.initial_blockly_json as BlocklyJson,
+						initialBlocklyJson: JSON.stringify(map.question.fill_in_the_blank.initial_blockly_json) as unknown as BlocklyJson,
 						availableBlocks: map.question.fill_in_the_blank.fill_in_the_blank_block_bank.map(bank => ({
 							blockNameId: bank.block_name.block_name_id,
 							blockName: bank.block_name.block_name as BlockNames,
