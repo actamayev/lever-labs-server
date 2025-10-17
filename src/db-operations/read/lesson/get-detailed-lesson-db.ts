@@ -129,7 +129,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 							order: choice.order,
 							codingBlock: {
 								codingBlockId: choice.coding_block.coding_block_id,
-								codingBlockJson: choice.coding_block.coding_block_json as BlocklyJson,
+								codingBlockJson: JSON.stringify(choice.coding_block.coding_block_json) as unknown as BlocklyJson,
 							},
 							isCorrect: choice.is_correct
 						}))
