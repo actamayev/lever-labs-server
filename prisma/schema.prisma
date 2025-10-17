@@ -467,6 +467,7 @@ model lesson_question_map {
 	question												question  @relation(fields: [question_id], references: [question_id])
 	
 	@@unique([lesson_id, question_id])
+	@@unique([lesson_id, order])
 	@@index([lesson_id, order])
 }
 
