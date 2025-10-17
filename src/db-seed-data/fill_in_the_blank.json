@@ -137,14 +137,14 @@
 	{
 	  "question_id": "d3226479-98d4-402d-89b0-f901b45a7b35",
 	  "initial_blockly_json": {},
-	  "reference_solution_cpp": "goForwardTime(1, 50);\n wait(2);\n goBackwardTime(1, 50);",
-	  "question_text": "Make Pip drive forward for 1 second at 50 percent speed, wait 2 seconds, then backwards for 1 second at 50 percent speed."
+	  "reference_solution_cpp": "goForwardTime(0.5, 20);\n wait(2);\n goBackwardTime(0.5, 20);",
+	  "question_text": "Make Pip drive forward for 0.5 seconds at 20 percent speed, wait 2 seconds, then backwards for 0.5 seconds at 20 percent speed."
 	},
 	{
 	  "question_id": "696c0bdf-d52b-4842-823d-f89090974254",
 	  "initial_blockly_json": {},
-	  "reference_solution_cpp": "while(true) {\n    if (is_object_red()) {\n        play_tone(\"A\");\n    } else if (is_object_green()) {\n        play_tone(\"B\");\n    } else if (is_object_blue()) {\n        play_tone(\"C\");\n    } else {\n        play_tone(\"D\");\n    }\n}",
-	  "question_text": "Make Pip play different tone when Pip sees different colors (Red, Green, Blue, Other)"
+	  "reference_solution_cpp": "while(true) {\n    if (is_object_red()) {\n        play_tone(\"A\");\n    } else if (is_object_yellow()) {\n        play_tone(\"B\");\n    } else if (is_object_blue()) {\n        play_tone(\"C\");\n    } else {\n        play_tone(\"D\");\n    }\n}",
+	  "question_text": "Make Pip play different tone when Pip sees different colors (Red, Yellow, Blue, Other)"
 	},
 	{
 	  "question_id": "38c66878-5aad-476e-8b65-30e9f7620c49",
