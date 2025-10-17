@@ -19,7 +19,7 @@ c7a0cbdb-0200-4397-be43-5bcc2550b6db, Which block makes Pip go forward 10 inches
 9811a2bd-a9ab-432f-928c-6cbe97a48ce1, Which block makes Pip rotate 90 degrees clockwise?
 e4179c4c-678c-4cef-b411-c85bfdfbe9d6, Which block makes Pip stop all motor movement immediately?
 ef56915e-2a28-422a-9d8d-0f6446240943, Which block makes Pip wait for half a second?
-a9b39e82-f9d2-483a-980d-cdd7db549dda, Which block sequence makes Pip move forward with a consistent interval?
+a9b39e82-f9d2-483a-980d-cdd7db549dda, Which block sequence makes Pip move forward without delay?
 9b050c13-dc10-4f5d-89c1-06bef650318e, "Which block sequence makes Pip move forward for one second, then pause?"
 3ba6459b-ab67-4976-9614-813c9731a3ab, Which block makes Pip check whether the detected object is blue?
 cf20a68e-911b-44ac-8625-d677d68054b0, Which block makes Pip rotate 90 degrees clockwise when it detects a yellow object?

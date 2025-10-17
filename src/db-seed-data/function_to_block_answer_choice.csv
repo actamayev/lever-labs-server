@@ -60,8 +60,8 @@ function_to_block_answer_choice_id ,function_to_block_flashcard_id       ,coding
                                 58 ,ef56915e-2a28-422a-9d8d-0f6446240943 ,             39 ,true       ,    2
                                 59 ,ef56915e-2a28-422a-9d8d-0f6446240943 ,             38 ,false      ,    1
                                 60 ,ef56915e-2a28-422a-9d8d-0f6446240943 ,             40 ,false      ,    0
-                                61 ,a9b39e82-f9d2-483a-980d-cdd7db549dda ,             41 ,true       ,    1
-                                62 ,a9b39e82-f9d2-483a-980d-cdd7db549dda ,             42 ,false      ,    0
+                                61 ,a9b39e82-f9d2-483a-980d-cdd7db549dda ,             41 ,false       ,    1
+                                62 ,a9b39e82-f9d2-483a-980d-cdd7db549dda ,             42 ,true      ,    0
                                 63 ,a9b39e82-f9d2-483a-980d-cdd7db549dda ,             43 ,false      ,    2
                                 64 ,9b050c13-dc10-4f5d-89c1-06bef650318e ,             44 ,true       ,    0
                                 65 ,9b050c13-dc10-4f5d-89c1-06bef650318e ,             45 ,false      ,    1
