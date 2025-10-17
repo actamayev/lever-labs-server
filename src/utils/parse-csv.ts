@@ -59,16 +59,6 @@ function isBlockToFunctionFlashcardData(data: unknown): data is BlockToFunctionF
 	)
 }
 
-function isFunctionToBlockFlashcardData(data: unknown): data is FunctionToBlockFlashcardData {
-	const d = data as FunctionToBlockFlashcardData
-	return (
-		typeof d === "object" &&
-        d !== null &&
-        typeof d.question_id === "string" &&
-        typeof d.question_text === "string"
-	)
-}
-
 function isFillInTheBlankBlockBankData(data: unknown): data is FillInTheBlankBlockBankData {
 	const d = data as FillInTheBlankBlockBankData
 	return (
@@ -198,13 +188,6 @@ export default function parseCSV(filePath: string): AllSeedData[] {
 				throw new Error(`Invalid block to function flashcard data at row ${index + 1}: ${JSON.stringify(row)}`)
 			}
 			return row as BlockToFunctionFlashcardData
-		})
-	} else if (fileName === "function_to_block_flashcard.csv") {
-		return cleanedData.map((row, index) => {
-			if (!isFunctionToBlockFlashcardData(row)) {
-				throw new Error(`Invalid function to block flashcard data at row ${index + 1}: ${JSON.stringify(row)}`)
-			}
-			return row as FunctionToBlockFlashcardData
 		})
 	} else if (fileName === "fill_in_the_blank_block_bank.csv") {
 		return cleanedData.map((row, index) => {

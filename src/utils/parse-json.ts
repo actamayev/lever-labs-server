@@ -24,6 +24,16 @@ function isFillInTheBlankData(data: unknown): data is FillInTheBlankData {
 	)
 }
 
+function isFunctionToBlockFlashcardData(data: unknown): data is FunctionToBlockFlashcardData {
+	const d = data as FunctionToBlockFlashcardData
+	return (
+		typeof d === "object" &&
+		d !== null &&
+		typeof d.question_id === "string" &&
+		typeof d.question_text === "string"
+	)
+}
+
 export default function parseJSON(filePath: string): AllSeedData[] {
 	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const jsonFile = readFileSync(path.join(__dirname, filePath), "utf-8")
@@ -47,6 +57,16 @@ export default function parseJSON(filePath: string): AllSeedData[] {
 				throw new Error(`Invalid fill in the blank data at row ${index + 1}: ${JSON.stringify(row)}`)
 			}
 			return row as FillInTheBlankData
+		})
+	}
+
+
+	if (fileName === "function_to_block_flashcard.json") {
+		return parsedData.map((row: unknown, index: number) => {
+			if (!isFunctionToBlockFlashcardData(row)) {
+				throw new Error(`Invalid function to block flashcard data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as FunctionToBlockFlashcardData
 		})
 	}
 

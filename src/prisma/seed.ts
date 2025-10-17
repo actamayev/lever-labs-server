@@ -182,7 +182,7 @@ async function seedBlockToFunctionFlashcards(): Promise<void> {
 
 async function seedFunctionToBlockFlashcards(): Promise<void> {
 	const prismaClient = await PrismaClientClass.getPrismaClient()
-	const flashcards = parseCSV("../db-seed-data/function_to_block_flashcard.csv") as FunctionToBlockFlashcardData[]
+	const flashcards = parseJSON("../db-seed-data/function_to_block_flashcard.json") as FunctionToBlockFlashcardData[]
 
 	console.info("Seeding function to block flashcards...")
 	await Promise.all(flashcards.map(flashcard => {
