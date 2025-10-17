@@ -437,24 +437,19 @@ model question {
 
 model coding_block {
 	coding_block_id											Int       @id @default(autoincrement())
-	block_name												String
-	
-	// Parameter columns (all nullable - different blocks use different params)
-	led_color												String?
-	color_sensor_detection_color							String?
-	speaker_tone											String?
-	
+	coding_block_json										Json @default("{}")
+
 	created_at												DateTime  @default(now())
 	
 	block_to_function_flashcard								block_to_function_flashcard[]
 	function_to_block_answer_choice							function_to_block_answer_choice[]
-	fill_in_the_blank_block_bank							fill_in_the_blank_block_bank[]
 }
 
 model lesson {
 	lesson_id												String    @id @default(uuid())
 	lesson_name												String
 	lesson_description										String?
+	lesson_order											Int?
 	
 	created_at												DateTime  @default(now())
 	updated_at												DateTime  @default(now()) @updatedAt
@@ -473,6 +468,7 @@ model lesson_question_map {
 	question												question  @relation(fields: [question_id], references: [question_id])
 	
 	@@unique([lesson_id, question_id])
+	@@unique([lesson_id, order])
 	@@index([lesson_id, order])
 }
 
@@ -493,6 +489,7 @@ model completed_user_lesson {
 model block_to_function_flashcard {
 	question_id												String    @id
 	coding_block_id											Int
+	question_text											String @default("")
 	
 	question												question  @relation(fields: [question_id], references: [question_id], onDelete: Cascade)
 	coding_block											coding_block @relation(fields: [coding_block_id], references: [coding_block_id])
@@ -580,13 +577,13 @@ model fill_in_the_blank {
 model fill_in_the_blank_block_bank {
 	fill_in_the_blank_block_bank_id							Int       @id @default(autoincrement())
 	fill_in_the_blank_id									String
-	coding_block_id											Int
+	block_name_id											Int
 	
 	fill_in_the_blank										fill_in_the_blank @relation(fields: [fill_in_the_blank_id], references: [question_id], onDelete: Cascade)
-	coding_block											coding_block @relation(fields: [coding_block_id], references: [coding_block_id])
+	block_name												block_name @relation(fields: [block_name_id], references: [block_name_id])
 	
 	@@index([fill_in_the_blank_id])
-	@@index([coding_block_id])
+	@@index([block_name_id])
 }
 
 model fill_in_the_blank_user_answer {
@@ -603,4 +600,13 @@ model fill_in_the_blank_user_answer {
 	
 	@@index([user_id])
 	@@index([fill_in_the_blank_id])
+}
+
+model block_name {
+	block_name_id											Int       @id @default(autoincrement())
+	block_name												String	  @unique
+
+	created_at												DateTime  @default(now())
+
+	fill_in_the_blank_block_bank							fill_in_the_blank_block_bank[]
 }

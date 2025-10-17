@@ -1,6 +1,6 @@
 -- SELECT * FROM credentials ORDER BY created_at;
 -- SELECT * FROM profile_picture;
-SELECT * FROM pip_uuid;
+-- SELECT * FROM pip_uuid;
 -- SELECT * FROM career_quest_message;
 -- SELECT * FROM career_user_progress;
 -- SELECT * FROM teacher;
@@ -16,6 +16,9 @@ SELECT * FROM pip_uuid;
 -- SELECT * FROM coding_block ORDER BY coding_block_id;
 -- SELECT * FROM block_to_function_user_answer;
 -- SELECT * FROM function_to_block_user_answer;
+-- SELECT * FROM block_to_function_flashcard;
+-- SELECT * FROM function_to_block_flashcard;
 -- SELECT * FROM fill_in_the_blank;
 -- SELECT * FROM fill_in_the_blank_block_bank;
 -- SELECT * FROM fill_in_the_blank_user_answer;
+

@@ -33,7 +33,8 @@ function isLessonData(data: unknown): data is LessonData {
 		typeof d === "object" &&
         d !== null &&
         typeof d.lesson_id === "string" &&
-        typeof d.lesson_name === "string"
+        typeof d.lesson_name === "string" &&
+        typeof d.lesson_order === "number"
 	)
 }
 
@@ -47,44 +48,14 @@ function isQuestionData(data: unknown): data is QuestionData {
 	)
 }
 
-function isCodingBlockData(data: unknown): data is CodingBlockData {
-	const d = data as CodingBlockData
-	return (
-		typeof d === "object" &&
-        d !== null &&
-        typeof d.coding_block_id === "number" &&
-        typeof d.block_name === "string"
-	)
-}
-
 function isBlockToFunctionFlashcardData(data: unknown): data is BlockToFunctionFlashcardData {
 	const d = data as BlockToFunctionFlashcardData
 	return (
 		typeof d === "object" &&
         d !== null &&
         typeof d.question_id === "string" &&
-        typeof d.coding_block_id === "number"
-	)
-}
-
-function isFunctionToBlockFlashcardData(data: unknown): data is FunctionToBlockFlashcardData {
-	const d = data as FunctionToBlockFlashcardData
-	return (
-		typeof d === "object" &&
-        d !== null &&
-        typeof d.question_id === "string" &&
+        typeof d.coding_block_id === "number" &&
         typeof d.question_text === "string"
-	)
-}
-
-function isFillInTheBlankData(data: unknown): data is FillInTheBlankData {
-	const d = data as FillInTheBlankData
-	return (
-		typeof d === "object" &&
-        d !== null &&
-        typeof d.question_id === "string" &&
-        typeof d.initial_blockly_json === "string" &&
-        typeof d.reference_solution_cpp === "string"
 	)
 }
 
@@ -95,7 +66,7 @@ function isFillInTheBlankBlockBankData(data: unknown): data is FillInTheBlankBlo
         d !== null &&
         typeof d.fill_in_the_blank_block_bank_id === "number" &&
         typeof d.fill_in_the_blank_id === "string" &&
-        typeof d.coding_block_id === "number"
+        typeof d.block_name_id === "number"
 	)
 }
 
@@ -137,6 +108,16 @@ function isFunctionToBlockAnswerChoiceData(data: unknown): data is FunctionToBlo
 	)
 }
 
+function isBlockNameData(data: unknown): data is BlockNameData {
+	const d = data as BlockNameData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.block_name_id === "number" &&
+        typeof d.block_name === "string"
+	)
+}
+
 function cleanObjectKeys<T extends { [K in keyof T]: unknown }>(
 	obj: Record<string, unknown>
 ): T {
@@ -154,6 +135,10 @@ export default function parseCSV(filePath: string): AllSeedData[] {
 	const parsedData = Papa.parse(csvFile, {
 		header: true,
 		skipEmptyLines: true,
+		quoteChar: "\"",          // Add this
+		escapeChar: "\"",         // Add this
+		delimiter: ",",          // Add this
+		newline: "\n",           // Add this
 		transform: (value: string) => {
 			const cleanValue = value.trim()
 			if (cleanValue === "") return null
@@ -197,40 +182,12 @@ export default function parseCSV(filePath: string): AllSeedData[] {
 			}
 			return row as QuestionData
 		})
-	} else if (fileName === "coding_block.csv") {
-		return cleanedData.map((row, index) => {
-			if (!isCodingBlockData(row)) {
-				throw new Error(`Invalid coding block data at row ${index + 1}: ${JSON.stringify(row)}`)
-			}
-			return row as CodingBlockData
-		})
 	} else if (fileName === "block_to_function_flashcard.csv") {
 		return cleanedData.map((row, index) => {
 			if (!isBlockToFunctionFlashcardData(row)) {
 				throw new Error(`Invalid block to function flashcard data at row ${index + 1}: ${JSON.stringify(row)}`)
 			}
 			return row as BlockToFunctionFlashcardData
-		})
-	} else if (fileName === "function_to_block_flashcard.csv") {
-		return cleanedData.map((row, index) => {
-			if (!isFunctionToBlockFlashcardData(row)) {
-				throw new Error(`Invalid function to block flashcard data at row ${index + 1}: ${JSON.stringify(row)}`)
-			}
-			return row as FunctionToBlockFlashcardData
-		})
-	} else if (fileName === "fill_in_the_blank.csv") {
-		return cleanedData.map((row, index) => {
-			if (!isFillInTheBlankData(row)) {
-				throw new Error(`Invalid fill in the blank data at row ${index + 1}: ${JSON.stringify(row)}`)
-			}
-			// Parse the JSON string
-			const parsed = row as FillInTheBlankData
-			try {
-				parsed.initial_blockly_json = JSON.parse(parsed.initial_blockly_json as unknown as string)
-			} catch (error) {
-				throw new Error(`Invalid JSON in fill_in_the_blank at row ${index + 1}: ${error}`)
-			}
-			return parsed
 		})
 	} else if (fileName === "fill_in_the_blank_block_bank.csv") {
 		return cleanedData.map((row, index) => {
@@ -259,6 +216,13 @@ export default function parseCSV(filePath: string): AllSeedData[] {
 				throw new Error(`Invalid function to block answer choice data at row ${index + 1}: ${JSON.stringify(row)}`)
 			}
 			return row as FunctionToBlockAnswerChoiceData
+		})
+	} else if (fileName === "block_name.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isBlockNameData(row)) {
+				throw new Error(`Invalid block name data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as BlockNameData
 		})
 	}
 

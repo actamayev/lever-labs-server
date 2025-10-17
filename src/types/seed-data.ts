@@ -19,6 +19,7 @@ declare global {
 	interface LessonData {
 		lesson_id: string
 		lesson_name: string
+		lesson_order: number
 		lesson_description?: string
 	}
 
@@ -29,15 +30,13 @@ declare global {
 
 	interface CodingBlockData {
 		coding_block_id: number
-		block_name: string
-		led_color?: string | null
-		color_sensor_detection_color?: string | null
-		speaker_tone?: string | null
+		coding_block_json: BlocklyJson
 	}
 
 	interface BlockToFunctionFlashcardData {
 		question_id: string
 		coding_block_id: number
+		question_text: string
 	}
 
 	interface FunctionToBlockFlashcardData {
@@ -48,14 +47,14 @@ declare global {
 	interface FillInTheBlankData {
 		question_id: string
 		initial_blockly_json: BlocklyJson
-		reference_solution_cpp: string
+		reference_solution_cpp: string | null
 		question_text: string
 	}
 
 	interface FillInTheBlankBlockBankData {
 		fill_in_the_blank_block_bank_id: number
 		fill_in_the_blank_id: string
-		coding_block_id: number
+		block_name_id: number
 	}
 
 	interface LessonQuestionMapData {
@@ -81,6 +80,11 @@ declare global {
 		order: number
 	}
 
+	interface BlockNameData {
+		block_name_id: number
+		block_name: string
+	}
+
 	type AllSeedData =
 		| CareerData
 		| ChallengeData
@@ -94,6 +98,7 @@ declare global {
 		| LessonQuestionMapData
 		| BlockToFunctionAnswerChoiceData
 		| FunctionToBlockAnswerChoiceData
+		| BlockNameData
 }
 
 export {}
