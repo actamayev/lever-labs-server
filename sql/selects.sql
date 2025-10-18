@@ -10,7 +10,8 @@
 
 SELECT *
 FROM pip_uuid
-WHERE uuid ~ '[0Oo1lIS5Z2]' order by pip_uuid_id;
+WHERE uuid ~ '[0Oo1lIS52B8G6cUVWXYuvwxynN]'
+ORDER BY pip_uuid_id;
 
 -- SELECT * from profile_picture;
 -- SELECT * FROM challenge_sandbox;

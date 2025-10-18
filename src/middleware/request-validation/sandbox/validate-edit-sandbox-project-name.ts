@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse} from "@lever-labs/common-ts/types/api"
 
 const editSandboxProjectNameSchema = Joi.object({
-	projectName: Joi.string().max(50).required()
+	projectName: Joi.string().max(50).required().allow("")
 }).required()
 
 export default function validateEditSandboxProjectName(req: Request, res: Response, next: NextFunction): void {
