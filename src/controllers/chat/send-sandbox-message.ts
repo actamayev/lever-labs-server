@@ -17,7 +17,7 @@ export default async function sendSandboxMessage(req: Request, res: Response): P
 		const chatData = req.body as ProcessedSandboxChatData
 
 		// Create a new stream and get streamId
-		const { streamId, abortController } = await StreamManager.getInstance().createStream()
+		const { streamId, abortController } = StreamManager.getInstance().createStream()
 
 		// Immediately respond with streamId so client can use it to stop if needed
 		res.status(200).json({ streamId } satisfies StartChatSuccess)

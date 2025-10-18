@@ -7,7 +7,7 @@ export default async function stopChatStream(req: Request, res: Response): Promi
 		const { streamId } = req.body
 
 		// Stop the stream
-		const wasStopped = await StreamManager.getInstance().stopStream(streamId)
+		const wasStopped = StreamManager.getInstance().stopStream(streamId)
 
 		if (!wasStopped) {
 			console.info("Stream not found or already completed")

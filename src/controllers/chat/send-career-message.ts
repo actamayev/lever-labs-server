@@ -17,7 +17,7 @@ export default async function sendCareerMessage(req: Request, res: Response): Pr
 		const chatData = req.body as ProcessedCareerChatData
 
 		// Create a new stream and get streamId
-		const { streamId, abortController } = await StreamManager.getInstance().createStream()
+		const { streamId, abortController } = StreamManager.getInstance().createStream()
 
 		// Immediately respond with streamId so client can use it to stop if needed
 		res.status(200).json({ streamId } satisfies StartChatSuccess)

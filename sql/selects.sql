@@ -8,11 +8,11 @@
 -- SELECT * FROM challenge ORDER BY created_at;
 -- SELECT * FROM sandbox_project ORDER BY updated_at;
 
--- SELECT * FROM pip_uuid;
+-- SELECT * FROM pip_uuid ORDER BY pip_uuid_id;
 
 -- SELECT *
 -- FROM pip_uuid
--- WHERE uuid ~ '[0Oo1lIS52B8G6cUVWXYuvwxynN]'
+-- WHERE uuid ~ '[0Ooc1lIS5Z2B86bUVWwXxuvNG]'
 -- ORDER BY pip_uuid_id;
 
 -- SELECT * from profile_picture;

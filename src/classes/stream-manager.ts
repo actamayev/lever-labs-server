@@ -1,7 +1,13 @@
 import { isNull } from "lodash"
-import SingletonWithRedis from "./singletons/singleton-with-redis"
+import Singleton from "./singletons/singleton"
 
-export default class StreamManager extends SingletonWithRedis {
+interface StreamData {
+	abortController: AbortController
+	createdAt: number
+}
+
+export default class StreamManager extends Singleton {
+	private streams: Map<string, StreamData> = new Map()
 
 	private constructor() {
 		super()
@@ -15,34 +21,45 @@ export default class StreamManager extends SingletonWithRedis {
 	}
 
 	// Start a new stream and return streamId
-	public async createStream(): Promise<{ streamId: string; abortController: AbortController }> {
+	public createStream(): { streamId: string; abortController: AbortController } {
 		const streamId = `stream_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`
 		const abortController = new AbortController()
 
-		const redis = await this.getRedis()
-		await redis.set(`stream:${streamId}`, "active")
+		this.streams.set(streamId, {
+			abortController,
+			createdAt: Date.now()
+		})
 
-		// Auto-cleanup after exit
+		// Auto-cleanup after 30 seconds
 		setTimeout(() => {
-			void this.cleanupStream(streamId)
+			this.cleanupStream(streamId)
 		}, 30 * 1000)
 
 		return { streamId, abortController }
 	}
 
 	// Stop a stream
-	public async stopStream(streamId: string): Promise<boolean> {
-		const redis = await this.getRedis()
-		const streamExists = await redis.get(`stream:${streamId}`)
+	public stopStream(streamId: string): boolean {
+		const streamData = this.streams.get(streamId)
 
-		if (isNull(streamExists)) return false
-		await this.cleanupStream(streamId)
+		if (isNull(streamData) || !streamData) return false
+
+		this.cleanupStream(streamId)
 		return true
 	}
 
 	// Clean up a stream
-	private async cleanupStream(streamId: string): Promise<void> {
-		const redis = await this.getRedis()
-		await redis.del(`stream:${streamId}`)
+	private cleanupStream(streamId: string): void {
+		const streamData = this.streams.get(streamId)
+		if (streamData) {
+			// Abort the stream if it's still running
+			streamData.abortController.abort()
+			this.streams.delete(streamId)
+		}
+	}
+
+	// Optional: Get active stream count (useful for monitoring)
+	public getActiveStreamCount(): number {
+		return this.streams.size
 	}
 }

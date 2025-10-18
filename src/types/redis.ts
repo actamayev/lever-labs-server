@@ -4,7 +4,6 @@ declare global {
   type RedisKey =
     | `hub:${HubUUID}`
     | `scoreboard:${ScoreboardUUID}`
-    | `stream:${string}` // StreamIds are dynamic, so less strict here
 
   type RedisWildcardPattern = "scoreboard:*" | "hub:*"
 }
