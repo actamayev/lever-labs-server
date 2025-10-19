@@ -17,9 +17,6 @@ export const mockSecretsManager = {
 				"AWS_SECRET_ACCESS_KEY": "test-aws-secret-access-key",
 				"OPENROUTER_API_KEY": "test-openrouter-api-key",
 				"PIP_HARDWARE_VERSION": "1.0.0",
-				"REDIS_HOST": "localhost",
-				"REDIS_PORT": "6379",
-				"REDIS_PASSWORD": "test-redis-password",
 				"MONGODB_URL": "test-mongodb-url",
 			}
 			return Promise.resolve(secrets[secretKey] || "mock-secret")

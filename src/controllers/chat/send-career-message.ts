@@ -10,7 +10,7 @@ import BrowserSocketManager from "../../classes/browser-socket-manager"
 import addCareerMessage from "../../db-operations/write/career-message/add-career-message"
 import buildCareerChatLLMContext from "../../utils/llm/career-quest/build-career-chat-llm-context"
 
-export default async function sendCareerMessage(req: Request, res: Response): Promise<void> {
+export default function sendCareerMessage(req: Request, res: Response): void {
 	try {
 		const { userId } = req
 		const { careerUUID } = req.params as { careerUUID: CareerUUID }

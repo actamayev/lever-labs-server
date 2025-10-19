@@ -1,7 +1,7 @@
 import { Readable } from "stream"
 import { isEmpty, isNull } from "lodash"
 import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3"
-import Singleton from "../singletons/singleton"
+import Singleton from "../singleton"
 import SecretsManager from "./secrets-manager"
 
 interface FirmwareData {

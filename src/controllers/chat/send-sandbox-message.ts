@@ -10,7 +10,7 @@ import BrowserSocketManager from "../../classes/browser-socket-manager"
 import buildSandboxLLMContext from "../../utils/llm/build-sandbox-llm-context"
 import addSandboxMessage from "../../db-operations/write/sandbox-message/add-sandbox-message"
 
-export default async function sendSandboxMessage(req: Request, res: Response): Promise<void> {
+export default function sendSandboxMessage(req: Request, res: Response): void {
 	try {
 		const { userId } = req
 		const { projectUUID } = req.params as { projectUUID: SandboxProjectUUID }

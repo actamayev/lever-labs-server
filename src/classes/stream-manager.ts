@@ -1,5 +1,5 @@
 import { isNull } from "lodash"
-import Singleton from "./singletons/singleton"
+import Singleton from "./singleton"
 
 interface StreamData {
 	abortController: AbortController

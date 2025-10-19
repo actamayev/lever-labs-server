@@ -23,11 +23,6 @@ declare namespace NodeJS {
 
 		PIP_HARDWARE_VERSION: string
 
-		// Redis:
-		REDIS_HOST: string
-		REDIS_PORT: string
-		REDIS_PASSWORD: string
-
 		// MongoDB:
 		MONGODB_URL: string
 	}

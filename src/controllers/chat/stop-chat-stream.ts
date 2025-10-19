@@ -2,7 +2,7 @@ import { Response, Request } from "express"
 import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 import StreamManager from "../../classes/stream-manager"
 
-export default async function stopChatStream(req: Request, res: Response): Promise<void> {
+export default function stopChatStream(req: Request, res: Response): void {
 	try {
 		const { streamId } = req.body
 

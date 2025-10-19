@@ -10,7 +10,7 @@ import buildChallengeLLMContext from "../../utils/llm/career-quest/build-challen
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import addChallengeMessage from "../../db-operations/write/challenge-message/add-challenge-message"
 
-export default async function sendChallengeMessage(req: Request, res: Response): Promise<void> {
+export default function sendChallengeMessage(req: Request, res: Response): void {
 	try {
 		const { userId } = req
 		const { challengeUUID } = req.params as { challengeUUID: ChallengeUUID }

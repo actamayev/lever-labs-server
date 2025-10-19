@@ -1,4 +1,4 @@
-import Singleton from "./singletons/singleton"
+import Singleton from "./singleton"
 import MongoClientClass from "./mongo-client-class"
 import { ClassCode, ScoreboardUUID } from "@lever-labs/common-ts/types/utils"
 import { Scoreboard as ScoreboardType, StudentJoinedScoreboardData } from "@lever-labs/common-ts/types/scoreboard"
