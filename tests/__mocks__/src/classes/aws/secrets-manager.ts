@@ -20,6 +20,7 @@ export const mockSecretsManager = {
 				"REDIS_HOST": "localhost",
 				"REDIS_PORT": "6379",
 				"REDIS_PASSWORD": "test-redis-password",
+				"MONGODB_URL": "test-mongodb-url",
 			}
 			return Promise.resolve(secrets[secretKey] || "mock-secret")
 		})

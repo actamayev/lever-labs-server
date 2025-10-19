@@ -12,7 +12,8 @@ export default async function deleteHub(req: Request, res: Response): Promise<vo
 		const { hubId } = req.body as { hubId: HubUUID }
 		const { classCode } = req.params as { classCode: ClassCode }
 
-		await HubManager.getInstance().deleteHub(hubId)
+		const hubManager = await HubManager.getInstance()
+		await hubManager.deleteHub(hubId)
 
 		const deletedHubInfo: DeletedHub = { classCode, hubId }
 

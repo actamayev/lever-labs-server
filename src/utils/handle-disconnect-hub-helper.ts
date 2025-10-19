@@ -4,12 +4,13 @@ import BrowserSocketManager from "../classes/browser-socket-manager"
 
 export default async function handleDisconnectHubHelper(userId: number): Promise<void> {
 	try {
-		const studentHubs = await HubManager.getInstance().getStudentHubsByUserId(userId)
+		const hubManager = await HubManager.getInstance()
+		const studentHubs = await hubManager.getStudentHubsByUserId(userId)
 		studentHubs.forEach(hub => {
 			const data: StudentLeftHub = { classCode: hub.classCode, hubId: hub.hubId, studentUserId: userId }
 			BrowserSocketManager.getInstance().emitStudentLeftHub(hub.teacherId, data)
 		})
-		await HubManager.getInstance().removeStudentFromAllHubs(userId)
+		await hubManager.removeStudentFromAllHubs(userId)
 	} catch (error) {
 		console.error(error)
 	}

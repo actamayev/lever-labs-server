@@ -12,7 +12,8 @@ export default async function leaveHub(req: Request, res: Response): Promise<voi
 		const { userId, classroomId } = req
 		const { hubId } = req.body as { hubId: HubUUID }
 		const { classCode } = req.params as { classCode: ClassCode }
-		await HubManager.getInstance().removeStudentFromHub(hubId, userId)
+		const hubManager = await HubManager.getInstance()
+		await hubManager.removeStudentFromHub(hubId, userId)
 
 		const teacherId = await getTeacherIdFromClassroom(classroomId)
 		if (isUndefined(teacherId)) {

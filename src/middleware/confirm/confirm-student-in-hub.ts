@@ -11,8 +11,9 @@ export default async function confirmStudentInHub(
 	try {
 		const { studentId } = req
 		const { hubId } = req.body as { hubId: HubUUID }
+		const hubManager = await HubManager.getInstance()
 
-		const isStudentInHub = await HubManager.getInstance().checkIfStudentInHub(hubId, studentId)
+		const isStudentInHub = await hubManager.checkIfStudentInHub(hubId, studentId)
 
 		 if (isStudentInHub === false) {
 			res.status(400).json({ message: "You are not in this hub"} satisfies MessageResponse)

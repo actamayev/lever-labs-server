@@ -7,8 +7,9 @@ export default async function updateTeamScore(req: Request, res: Response): Prom
 	try {
 		const { teamNumber, newScore, scoreboardId } = req.body as { teamNumber: number, newScore: number, scoreboardId: ScoreboardUUID }
 
-		await ScoreboardManager.getInstance().setTeamScore(scoreboardId, teamNumber as 1 | 2, newScore)
-		const scoreboard = await ScoreboardManager.getInstance().getScoreboard(scoreboardId)
+		const scoreboardManager = await ScoreboardManager.getInstance()
+		await scoreboardManager.setTeamScore(scoreboardId, teamNumber as 1 | 2, newScore)
+		const scoreboard = await scoreboardManager.getScoreboard(scoreboardId)
 
 		if (!scoreboard) {
 			res.status(500).json({ error: "Scoreboard not found" } satisfies ErrorResponse)

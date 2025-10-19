@@ -8,14 +8,15 @@ export default async function deleteScoreboard(req: Request, res: Response): Pro
 		const { scoreboardId } = req.body as { scoreboardId: ScoreboardUUID }
 
 		// Check if scoreboard exists
-		const scoreboard = await ScoreboardManager.getInstance().getScoreboard(scoreboardId)
+		const scoreboardManager = await ScoreboardManager.getInstance()
+		const scoreboard = await scoreboardManager.getScoreboard(scoreboardId)
 		if (!scoreboard) {
 			res.status(500).json({ error: "Scoreboard not found" } satisfies ErrorResponse)
 			return
 		}
 
 		// Delete the scoreboard
-		await ScoreboardManager.getInstance().cleanupScoreboard(scoreboardId)
+		await scoreboardManager.cleanupScoreboard(scoreboardId)
 
 		res.status(200).json({ success: "Scoreboard deleted successfully" } satisfies SuccessResponse)
 		return

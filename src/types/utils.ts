@@ -22,6 +22,7 @@ declare global {
 		| "REDIS_HOST"
 		| "REDIS_PORT"
 		| "REDIS_PASSWORD"
+		| "MONGODB_URL"
 
 	type SecretsObject = { [K in SecretKeys]: string }
 }
