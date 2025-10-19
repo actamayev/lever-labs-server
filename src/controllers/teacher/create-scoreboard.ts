@@ -11,7 +11,8 @@ export default async function createScoreboard(req: Request, res: Response): Pro
 		const { scoreboardName } = req.body as { scoreboardName: string }
 
 		const scoreboardId = randomUUID() as ScoreboardUUID
-		const scoreboard = await ScoreboardManager.getInstance().createScoreboard(scoreboardId, scoreboardName, classCode)
+		const scoreboardManager = await ScoreboardManager.getInstance()
+		const scoreboard = await scoreboardManager.createScoreboard(scoreboardId, scoreboardName, classCode)
 
 		res.status(200).json(scoreboard satisfies Scoreboard)
 		return

@@ -16,7 +16,8 @@ export default async function joinHub(req: Request, res: Response): Promise<void
 		const { classCode } = req.params as { classCode: ClassCode }
 
 		const username = await retrieveUsername(userId)
-		const hub = await HubManager.getInstance().addStudentToHub(hubId, userId, username || "")
+		const hubManager = await HubManager.getInstance()
+		const hub = await hubManager.addStudentToHub(hubId, userId, username || "")
 		if (!hub) {
 			res.status(400).json({ error: "Hub not found" } satisfies ErrorResponse)
 			return

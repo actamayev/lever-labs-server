@@ -44,6 +44,9 @@
 		"allowUnusedLabels": false,                // Disallow unused labels
 		"allowUnreachableCode": false,             // Disallow unreachable code
 
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+
 		/* Completeness */
 		"skipLibCheck": true,
 

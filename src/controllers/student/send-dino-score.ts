@@ -9,8 +9,9 @@ export default async function sendDinoScore(req: Request, res: Response): Promis
 	try {
 		const { userId } = req
 		const { score, hubId } = req.body as { score: number, hubId: HubUUID }
+		const hubManager = await HubManager.getInstance()
 
-		let studentIds = await HubManager.getInstance().getStudentIdsByHubId(hubId)
+		let studentIds = await hubManager.getStudentIdsByHubId(hubId)
 		// filter out the userId
 		studentIds = studentIds.filter(id => id !== userId)
 		const username = await retrieveUsername(userId)

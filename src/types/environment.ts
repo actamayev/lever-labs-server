@@ -22,5 +22,8 @@ declare namespace NodeJS {
 		NODE_ENV: "staging" | "production" | undefined
 
 		PIP_HARDWARE_VERSION: string
+
+		// MongoDB:
+		MONGODB_URL: string
 	}
 }

@@ -7,8 +7,9 @@ export default async function updateRemainingTime(req: Request, res: Response): 
 	try {
 		const { scoreboardId, timeRemainingInSeconds } = req.body as { scoreboardId: ScoreboardUUID, timeRemainingInSeconds: number }
 
-		await ScoreboardManager.getInstance().setRemainingTime(scoreboardId, timeRemainingInSeconds)
-		const scoreboard = await ScoreboardManager.getInstance().getScoreboard(scoreboardId)
+		const scoreboardManager = await ScoreboardManager.getInstance()
+		await scoreboardManager.setRemainingTime(scoreboardId, timeRemainingInSeconds)
+		const scoreboard = await scoreboardManager.getScoreboard(scoreboardId)
 
 		if (!scoreboard) {
 			res.status(500).json({ error: "Scoreboard not found" } satisfies ErrorResponse)

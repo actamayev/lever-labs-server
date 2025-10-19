@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import path from "path"
 import { readFileSync } from "fs"
 

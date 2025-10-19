@@ -1,5 +1,5 @@
 import { isUndefined } from "lodash"
-import Singleton from "../singletons/singleton"
+import Singleton from "../singleton"
 import Esp32SocketManager from "./esp32-socket-manager"
 import EspLatestFirmwareManager from "./esp-latest-firmware-manager"
 import { DeviceInitialDataPayload } from "@lever-labs/common-ts/types/pip"
