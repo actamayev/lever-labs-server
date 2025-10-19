@@ -14,7 +14,7 @@ import setupRoutes from "./utils/config/setup-routes"
 import BrowserSocketManager from "./classes/browser-socket-manager"
 import Esp32SocketManager from "./classes/esp32/esp32-socket-manager"
 import EspLatestFirmwareManager from "./classes/esp32/esp-latest-firmware-manager"
-import RedisManager from "./classes/aws/redis-manager"
+import MongoClientManager from "./classes/mongo-client-class"
 
 process.on("unhandledRejection", (reason, promise) => {
 	console.error("🚨 Unhandled Promise Rejection at:", promise, "reason:", reason)
@@ -63,12 +63,11 @@ httpServer.on("upgrade", (request, socket, head) => {
 
 void (async (): Promise<void> => {
 	try {
-		console.info("🔌 Connecting to Redis...")
-		await RedisManager.getInstance()
-		console.info("✅ Redis connected successfully")
+		console.info("🔌 Connecting to MongoDB...")
+		await MongoClientManager.connect()
 	} catch (error) {
-		console.error("❌ Failed to connect to Redis:", error)
-		console.error("Server will continue but Redis-dependent features will fail")
+		console.error("❌ Failed to connect to MongoDB:", error)
+		console.error("Server will continue but MongoDB-dependent features will fail")
 	}
 })()
 
@@ -99,4 +98,3 @@ const PORT = process.env.PORT || 8080
 httpServer.listen(PORT, () => {
 	console.info(`Server is listening on port ${PORT}`)
 })
-

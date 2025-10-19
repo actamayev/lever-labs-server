@@ -12,7 +12,9 @@ export default async function confirmHubBelongsToTeacher(
 		const { userId } = req
 		const { hubId } = req.body as { hubId: HubUUID }
 
-		const doesClassBelongToTeacher = await HubManager.getInstance().doesHubBelongToTeacher(hubId, userId)
+		const hubManager = await HubManager.getInstance()
+
+		const doesClassBelongToTeacher = await hubManager.doesHubBelongToTeacher(hubId, userId)
 
 		 if (doesClassBelongToTeacher === false) {
 			res.status(400).json({ message: "You are not a teacher for this hub"} satisfies MessageResponse)

@@ -14,7 +14,8 @@ export default async function removeStudentFromScoreboard(req: Request, res: Res
 		}
 
 		// Check if scoreboard exists
-		const scoreboard = await ScoreboardManager.getInstance().getScoreboard(scoreboardId)
+		const scoreboardManager = await ScoreboardManager.getInstance()
+		const scoreboard = await scoreboardManager.getScoreboard(scoreboardId)
 		if (!scoreboard) {
 			res.status(500).json({ error: "Scoreboard not found" } satisfies ErrorResponse)
 			return
@@ -26,10 +27,10 @@ export default async function removeStudentFromScoreboard(req: Request, res: Res
 			return
 		}
 		// Remove student from scoreboard
-		await ScoreboardManager.getInstance().removeStudent(scoreboardId, teamNumber as 1 | 2, studentId)
+		await scoreboardManager.removeStudent(scoreboardId, teamNumber as 1 | 2, studentId)
 
 		// Return updated scoreboard
-		const updatedScoreboard = await ScoreboardManager.getInstance().getScoreboard(scoreboardId)
+		const updatedScoreboard = await scoreboardManager.getScoreboard(scoreboardId)
 		if (!updatedScoreboard) {
 			res.status(500).json({ error: "Scoreboard not found" } satisfies ErrorResponse)
 			return

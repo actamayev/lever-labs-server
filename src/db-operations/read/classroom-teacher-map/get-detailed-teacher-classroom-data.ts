@@ -47,6 +47,8 @@ export default async function getDetailedTeacherClassroomData(
 
 		if (isNull(classroom)) return null
 
+		const hubManager = await HubManager.getInstance()
+		const scoreboardManager = await ScoreboardManager.getInstance()
 		return {
 			classroomName: classroom.classroom.classroom_name,
 			classCode: classroom.classroom.class_code as ClassCode,
@@ -58,8 +60,8 @@ export default async function getDetailedTeacherClassroomData(
 				garageLightsAllowed: student.garage_lights_allowed,
 				garageDisplayAllowed: student.garage_display_allowed
 			})),
-			activeHubs: await HubManager.getInstance().getTeacherHubs(userId),
-			scoreboards: await ScoreboardManager.getInstance().getScoreboards(classroom.classroom.class_code as ClassCode)
+			activeHubs: await hubManager.getTeacherHubs(userId),
+			scoreboards: await scoreboardManager.getScoreboards(classroom.classroom.class_code as ClassCode)
 		} satisfies DetailedClassroomData
 	} catch (error) {
 		console.error(error)

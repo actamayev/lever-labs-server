@@ -9,7 +9,7 @@ import { PipUUID, ClassCode } from "@lever-labs/common-ts/types/utils"
 import { SocketEvents, SocketEventPayloadMap,
 	StudentJoinedHub, DeletedHub, UpdatedHubSlideId, StudentLeftHub } from "@lever-labs/common-ts/types/socket"
 import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
-import Singleton from "./singletons/singleton"
+import Singleton from "./singleton"
 import listenersMap from "../utils/constants/listeners-map"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import handleDisconnectHubHelper from "../utils/handle-disconnect-hub-helper"

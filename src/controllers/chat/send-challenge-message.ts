@@ -10,14 +10,14 @@ import buildChallengeLLMContext from "../../utils/llm/career-quest/build-challen
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import addChallengeMessage from "../../db-operations/write/challenge-message/add-challenge-message"
 
-export default async function sendChallengeMessage(req: Request, res: Response): Promise<void> {
+export default function sendChallengeMessage(req: Request, res: Response): void {
 	try {
 		const { userId } = req
 		const { challengeUUID } = req.params as { challengeUUID: ChallengeUUID }
 		const chatData = req.body as ProcessedChallengeGeneralMessage
 
 		// Create a new stream and get streamId
-		const { streamId, abortController } = await StreamManager.getInstance().createStream()
+		const { streamId, abortController } = StreamManager.getInstance().createStream()
 
 		// Immediately respond with streamId so client can use it to stop if needed
 		res.status(200).json({ streamId } satisfies StartChatSuccess)
