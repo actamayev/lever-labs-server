@@ -29,7 +29,7 @@ export class TeamStats {
 		timestamps: true,
 	}
 })
-export class Scoreboard {
+class Scoreboard {
 	@prop({ required: true, unique: true })
 	public scoreboardId!: ScoreboardUUID
 
