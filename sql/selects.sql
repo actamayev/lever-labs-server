@@ -33,8 +33,4 @@
 -- SELECT * FROM function_to_block_flashcard;
 -- SELECT * FROM fill_in_the_blank;
 -- SELECT * FROM fill_in_the_blank_block_bank;
--- INSERT 
 -- SELECT * FROM fill_in_the_blank_user_answer;
-
--- DELETE FROM sandbox_message;
--- DELETE FROM sandbox_chat;
