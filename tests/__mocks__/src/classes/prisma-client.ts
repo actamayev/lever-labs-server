@@ -38,7 +38,7 @@ type MockPrismaClient = {
 };
 
 // Mock PrismaClient
-export const mockPrismaClient: MockPrismaClient = {
+const mockPrismaClient: MockPrismaClient = {
 	credentials: {
 		create: jest.fn(),
 		findFirst: jest.fn(),
@@ -75,10 +75,10 @@ export const mockPrismaClient: MockPrismaClient = {
 }
 
 // Mock the PrismaClientClass
-export const mockGetPrismaClient = jest.fn().mockImplementation(() => Promise.resolve(mockPrismaClient))
+const mockGetPrismaClient = jest.fn().mockImplementation(() => Promise.resolve(mockPrismaClient))
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const mockPrismaClientClass = {
 	getPrismaClient: mockGetPrismaClient,
 }
 
-export default mockPrismaClientClass

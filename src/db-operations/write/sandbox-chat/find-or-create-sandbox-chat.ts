@@ -1,13 +1,14 @@
+import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function findOrCreateSandboxChat(sandboxProjectId: number): Promise<number> {
+export default async function findOrCreateSandboxChat(projectUUID: SandboxProjectUUID): Promise<number> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
 		// First, try to find an existing active sandbox chat
 		const existingChat = await prismaClient.sandbox_chat.findFirst({
 			where: {
-				sandbox_project_id: sandboxProjectId,
+				project_uuid: projectUUID,
 				is_active: true
 			},
 			select: {
@@ -22,7 +23,7 @@ export default async function findOrCreateSandboxChat(sandboxProjectId: number):
 		// If no active chat exists, create a new one
 		const newChat = await prismaClient.sandbox_chat.create({
 			data: {
-				sandbox_project_id: sandboxProjectId
+				project_uuid: projectUUID
 			},
 			select: {
 				sandbox_chat_id: true,

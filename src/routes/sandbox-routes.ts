@@ -16,7 +16,6 @@ import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
 import validateCppCode from "../middleware/request-validation/sandbox/validate-cpp-code"
 import confirmUserConnectedToPip from "../middleware/confirm/confirm-user-connected-to-pip"
 import validatePipUUIDInBody from "../middleware/request-validation/pip/validate-pip-uuid-in-body"
-import attachSandboxProjectIdFromUUID from "../middleware/attach/attach-sandbox-project-id-from-uuid"
 import validateEditSandboxProject from "../middleware/request-validation/sandbox/validate-edit-sandbox-project"
 import validateStarSandboxProject from "../middleware/request-validation/sandbox/validate-star-sandbox-project"
 import validateProjectUUIDInParams from "../middleware/request-validation/sandbox/validate-project-uuid-in-params"
@@ -32,7 +31,6 @@ sandboxRoutes.post(
 	"/edit-sandbox-project/:projectUUID",
 	validateProjectUUIDInParams,
 	validateEditSandboxProject,
-	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	editSandboxProject
 )
@@ -41,7 +39,6 @@ sandboxRoutes.post(
 	"/edit-sandbox-project-name/:projectUUID",
 	validateProjectUUIDInParams,
 	validateEditSandboxProjectName,
-	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	editSandboxProjectName
 )
@@ -50,7 +47,6 @@ sandboxRoutes.post(
 	"/edit-sandbox-project-notes/:projectUUID",
 	validateProjectUUIDInParams,
 	validateEditSandboxProjectNotes,
-	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	editSandboxProjectNotes
 )
@@ -59,7 +55,6 @@ sandboxRoutes.post(
 	"/star-sandbox-project/:projectUUID",
 	validateProjectUUIDInParams,
 	validateStarSandboxProject,
-	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	starSandboxProject
 )
@@ -67,7 +62,6 @@ sandboxRoutes.post(
 sandboxRoutes.post(
 	"/delete-sandbox-project/:projectUUID",
 	validateProjectUUIDInParams,
-	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	deleteSandboxProject
 )
@@ -77,7 +71,6 @@ sandboxRoutes.get("/retrieve-all-sandbox-projects", getAllSandboxProjects)
 sandboxRoutes.get(
 	"/retrieve-single-sandbox-project/:projectUUID",
 	validateProjectUUIDInParams,
-	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	getSingleSandboxProject
 )

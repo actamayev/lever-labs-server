@@ -2,7 +2,7 @@ import { prop, getModelForClass, modelOptions } from "@typegoose/typegoose"
 import { HubUUID, ClassCode, CareerUUID } from "@lever-labs/common-ts/types/utils"
 
 // Embedded subdocument for students
-export class StudentJoined {
+class StudentJoined {
 	@prop({ required: true })
 	public userId!: number
 

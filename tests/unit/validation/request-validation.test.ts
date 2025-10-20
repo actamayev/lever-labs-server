@@ -161,7 +161,7 @@ describe("Request Validation Middleware", () => {
 		it("should pass validation with valid C++ code data", () => {
 			// Arrange
 			mockRequest.body = {
-				pipUUID: "ABC12", // 5 alphanumeric characters
+				pipUUID: "Y9d4L", // 5 alphanumeric characters
 				cppCode: "#include <iostream>\nint main() { return 0; }",
 			}
 
@@ -220,7 +220,7 @@ describe("Request Validation Middleware", () => {
 		it("should pass validation with valid LED color data", () => {
 			// Arrange
 			mockRequest.body = {
-				pipUUID: "ABC12",
+				pipUUID: "Y9d4L",
 				topLeftColor: { r: 255, g: 0, b: 0 },
 				topRightColor: { r: 0, g: 255, b: 0 },
 				middleLeftColor: { r: 0, g: 0, b: 255 },
