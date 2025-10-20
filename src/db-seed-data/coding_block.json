@@ -379,7 +379,7 @@
 				"x": -430,
 				"y": -270,
 				"fields": {
-					"direction": "FORWARD",
+					"direction": "forward",
 					"seconds": 2,
 					"SECONDS_LABEL": "seconds",
 					"percentage": 80
@@ -401,7 +401,7 @@
 				"x": -430,
 				"y": -270,
 				"fields": {
-					"direction": "FORWARD",
+					"direction": "forward",
 				"seconds": 10,
 				"SECONDS_LABEL": "seconds",
 				"percentage": 80
@@ -487,7 +487,7 @@
 					"type": "drive_time",
 					"id": "TaI61JhOf{O2B!lpZ:w)",
 					"fields": {
-						"direction": "FORWARD",
+						"direction": "forward",
 						"seconds": 1,
 						"SECONDS_LABEL": "second",
 						"percentage": 70
@@ -526,7 +526,7 @@
 					"type": "drive_time",
 					"id": "TaI61JhOf{O2B!lpZ:w)",
 					"fields": {
-						"direction": "FORWARD",
+						"direction": "forward",
 						"seconds": 1,
 						"SECONDS_LABEL": "second",
 						"percentage": 70
@@ -583,7 +583,7 @@
 						"type": "drive_time",
 						"id": "TaI61JhOf{O2B!lpZ:w)",
 						"fields": {
-						"direction": "FORWARD",
+						"direction": "forward",
 						"seconds": 1,
 						"SECONDS_LABEL": "second",
 						"percentage": 60
@@ -623,7 +623,7 @@
 					"type": "drive_time",
 					"id": "TaI61JhOf{O2B!lpZ:w)",
 					"fields": {
-						"direction": "FORWARD",
+						"direction": "forward",
 						"seconds": 1,
 						"SECONDS_LABEL": "second",
 						"percentage": 60
@@ -718,7 +718,7 @@
 				"x": -477,
 				"y": -456,
 				"fields": {
-				"direction": "FORWARD",
+				"direction": "forward",
 				"distance": 5,
 				"INCHES_LABEL": "inches",
 				"percentage": 40
@@ -736,7 +736,7 @@
 						"type": "drive_distance",
 						"id": "EX?g0`T8._i[PQi$~NWI",
 						"fields": {
-						"direction": "BACKWARD",
+						"direction": "backward",
 						"distance": 5,
 						"INCHES_LABEL": "inches",
 						"percentage": 40
@@ -777,7 +777,7 @@
 						"type": "drive_distance",
 						"id": "B[@YPbzS/7QbKTYO?Sb~",
 						"fields": {
-						  "direction": "FORWARD",
+						  "direction": "forward",
 						  "distance": 10,
 						  "INCHES_LABEL": "inches",
 						  "percentage": 50
@@ -833,7 +833,7 @@
 				  "x": -477,
 				  "y": -456,
 				  "fields": {
-					"direction": "FORWARD",
+					"direction": "forward",
 					"distance": 10,
 					"INCHES_LABEL": "inches",
 					"percentage": 50
@@ -855,7 +855,7 @@
 				  "x": -470,
 				  "y": -570,
 				  "fields": {
-					"direction": "FORWARD",
+					"direction": "forward",
 					"seconds": 10,
 					"SECONDS_LABEL": "seconds",
 					"percentage": 50
@@ -940,7 +940,7 @@
 				  "x": -530,
 				  "y": -530,
 				  "fields": {
-					"direction": "BACKWARD",
+					"direction": "backward",
 					"seconds": 1,
 					"SECONDS_LABEL": "second",
 					"percentage": 50
@@ -998,7 +998,7 @@
 				  "x": -490,
 				  "y": -590,
 				  "fields": {
-					"direction": "FORWARD",
+					"direction": "forward",
 					"seconds": 0.5,
 					"SECONDS_LABEL": "seconds",
 					"percentage": 50
@@ -1020,7 +1020,7 @@
 				  "x": -590,
 				  "y": -430,
 				  "fields": {
-					"direction": "FORWARD",
+					"direction": "forward",
 					"distance": 5,
 					"INCHES_LABEL": "inches",
 					"percentage": 60
@@ -1038,7 +1038,7 @@
 						  "type": "drive_distance",
 						  "id": "12dWEeO7YJMfEwZZVMQg",
 						  "fields": {
-							"direction": "FORWARD",
+							"direction": "forward",
 							"distance": 5,
 							"INCHES_LABEL": "inches",
 							"percentage": 60
@@ -1064,7 +1064,7 @@
 				  "x": -590,
 				  "y": -430,
 				  "fields": {
-					"direction": "FORWARD",
+					"direction": "forward",
 					"distance": 5,
 					"INCHES_LABEL": "inches",
 					"percentage": 60
@@ -1074,7 +1074,7 @@
 					  "type": "drive_distance",
 					  "id": "12dWEeO7YJMfEwZZVMQg",
 					  "fields": {
-						"direction": "FORWARD",
+						"direction": "forward",
 						"distance": 5,
 						"INCHES_LABEL": "inches",
 						"percentage": 60
@@ -1124,7 +1124,7 @@
 				  "x": -550,
 				  "y": -470,
 				  "fields": {
-					"direction": "FORWARD",
+					"direction": "forward",
 					"seconds": 1,
 					"SECONDS_LABEL": "second",
 					"percentage": 70
@@ -1164,7 +1164,7 @@
 					  "type": "drive_time",
 					  "id": "SE0i%pd6`uL-q0AUwzL,",
 					  "fields": {
-						"direction": "FORWARD",
+						"direction": "forward",
 						"seconds": 1,
 						"SECONDS_LABEL": "second",
 						"percentage": 70
@@ -1303,7 +1303,7 @@
 						"type": "drive_time",
 						"id": "}j.W=!Syp|U!?wA72PAP",
 						"fields": {
-						  "direction": "FORWARD",
+						  "direction": "forward",
 						  "seconds": 1,
 						  "SECONDS_LABEL": "second",
 						  "percentage": 70
@@ -1342,7 +1342,7 @@
 						  "type": "drive",
 						  "id": "`}h|r,Eg26VW#T;Wncvj",
 						  "fields": {
-							"direction": "FORWARD",
+							"direction": "forward",
 							"percentage": 20
 						  }
 						}
@@ -1380,7 +1380,7 @@
 						  "type": "drive",
 						  "id": "`}h|r,Eg26VW#T;Wncvj",
 						  "fields": {
-							"direction": "FORWARD",
+							"direction": "forward",
 							"percentage": 30
 						  }
 						}
@@ -1404,7 +1404,7 @@
 				  "x": -490,
 				  "y": -410,
 				  "fields": {
-					"direction": "FORWARD",
+					"direction": "forward",
 					"percentage": 5
 				  },
 				  "next": {
@@ -1475,7 +1475,7 @@
 				  "x": -470,
 				  "y": -430,
 				  "fields": {
-					"direction": "FORWARD",
+					"direction": "forward",
 					"distance": 10,
 					"INCHES_LABEL": "inches",
 					"percentage": 60
@@ -1485,7 +1485,7 @@
 					  "type": "drive_distance",
 					  "id": "QCO9C/UkYGszkOO`x*mF",
 					  "fields": {
-						"direction": "FORWARD",
+						"direction": "forward",
 						"distance": 10,
 						"INCHES_LABEL": "inches",
 						"percentage": 60
@@ -1537,7 +1537,7 @@
 				  "x": -550,
 				  "y": -390,
 				  "fields": {
-					"direction": "FORWARD",
+					"direction": "forward",
 					"distance": 5,
 					"INCHES_LABEL": "inches",
 					"percentage": 30
@@ -1559,7 +1559,7 @@
 				  "x": -570,
 				  "y": -450,
 				  "fields": {
-					"direction": "FORWARD",
+					"direction": "forward",
 					"seconds": 5,
 					"SECONDS_LABEL": "seconds",
 					"percentage": 30
@@ -1581,7 +1581,7 @@
 				  "x": -550,
 				  "y": -310,
 				  "fields": {
-					"direction": "FORWARD",
+					"direction": "forward",
 					"distance": 30,
 					"INCHES_LABEL": "inches",
 					"percentage": 5
@@ -1663,7 +1663,7 @@
 				  "x": -470,
 				  "y": -470,
 				  "fields": {
-					"direction": "FORWARD",
+					"direction": "forward",
 					"distance": 10,
 					"INCHES_LABEL": "inches",
 					"percentage": 50
@@ -1712,7 +1712,7 @@
 					"x": -477,
 					"y": -456,
 					"fields": {
-					  "direction": "FORWARD",
+					  "direction": "forward",
 					  "distance": 10,
 					  "INCHES_LABEL": "inches",
 					  "percentage": 80

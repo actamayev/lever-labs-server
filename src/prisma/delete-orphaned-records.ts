@@ -24,11 +24,6 @@ export default async function deleteOrphanedRecords<T extends Record<string, any
 
 	// Find IDs to delete (in DB but not in source)
 	const idsToDelete = existingIds.filter((id: any) => !sourceIds.includes(id))
-	// if (tableName === "questions") {
-	// 	console.log("idsToDelete", idsToDelete)
-	// 	console.log("sourceIds", sourceIds)
-	// 	console.log("existingIds", existingIds)
-	// }
 
 	// Delete orphaned records
 	if (idsToDelete.length > 0) {

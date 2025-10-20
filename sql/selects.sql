@@ -32,5 +32,8 @@
 -- SELECT * FROM block_to_function_flashcard;
 -- SELECT * FROM function_to_block_flashcard;
 -- SELECT * FROM fill_in_the_blank;
-SELECT * FROM fill_in_the_blank_block_bank ORDER BY fill_in_the_blank_block_bank_id;
+-- SELECT * FROM fill_in_the_blank_block_bank ORDER BY fill_in_the_blank_block_bank_id;
 -- SELECT * FROM fill_in_the_blank_user_answer;
+SELECT * FROM sandbox_project
+WHERE sandbox_project::text LIKE '%BACKWARD%'
+ORDER BY created_at;
