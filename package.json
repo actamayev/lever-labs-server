@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "install:ci": "npm ci --legacy-peer-deps",
     "build": "tsc && npm run copy-seed-data",
     "copy-seed-data": "cp -r src/db-seed-data dist/src/",
     "start": "nodemon",
