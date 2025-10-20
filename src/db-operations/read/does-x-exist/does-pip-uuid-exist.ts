@@ -10,7 +10,7 @@ export default async function doesPipUUIDExist(pipUUID: PipUUID): Promise<boolea
 				uuid: pipUUID
 			},
 			select: {
-				pip_uuid_id: true
+				uuid: true
 			}
 		})
 

@@ -64,14 +64,11 @@ model login_history {
 }
 
 model pip_uuid {
-	pip_uuid_id                                            		Int       @id @default(autoincrement())
-	uuid														String		@unique
+	uuid														String		@id
 	hardware_version											String
 	pip_name													String?
 
 	created_at                                                  DateTime  @default(now())
-
-	@@index([uuid], name: "pip_uuid__uuid_idx")
 }
 
 model email_update_subscriber {
