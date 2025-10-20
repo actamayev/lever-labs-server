@@ -5,13 +5,13 @@ import PrismaClientClass from "../../../classes/prisma-client"
 import camelCaseSandboxProject from "../../../utils/sandbox/camel-case-sandbox-project"
 
 // eslint-disable-next-line max-lines-per-function
-export default async function retrieveSingleSandboxProjectData(sandboxProjectId: number): Promise<SandboxProject | null> {
+export default async function retrieveSingleSandboxProjectData(projectUUID: SandboxProjectUUID): Promise<SandboxProject | null> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
 		const sandboxData = await prismaClient.sandbox_project.findFirst({
 			where: {
-				sandbox_project_id: sandboxProjectId,
+				project_uuid: projectUUID,
 				is_active: true
 			},
 			select: {

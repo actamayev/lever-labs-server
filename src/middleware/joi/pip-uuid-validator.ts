@@ -1,8 +1,10 @@
 import Joi from "joi"
+import { ACCEPTABLE_PIP_ID_CHARACTERS } from "@lever-labs/common-ts/types/utils/constants"
 
-// Validator for pipUUID: 5 alphanumeric characters
+// Validator for pipUUID: 5 characters from the acceptable set
 const pipUUIDValidator = Joi.string()
-	.pattern(/^[a-zA-Z0-9]{5}$/)
+	// eslint-disable-next-line security/detect-non-literal-regexp
+	.pattern(new RegExp(`^[${ACCEPTABLE_PIP_ID_CHARACTERS}]{5}$`))
 	.required()
 
 export default pipUUIDValidator

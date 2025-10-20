@@ -1,13 +1,14 @@
 import { Response, Request } from "express"
 import updateSandboxProjectNotes from "../../db-operations/write/sandbox-project/update-sandbox-project-notes"
 import { ErrorResponse, SuccessResponse} from "@lever-labs/common-ts/types/api"
+import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
 
 export default async function editSandboxProjectNotes(req: Request, res: Response): Promise<void> {
 	try {
-		const { sandboxProjectId } = req
+		const { projectUUID } = req.params as { projectUUID: SandboxProjectUUID }
 		const { projectNotes } = req.body as { projectNotes: string }
 
-		await updateSandboxProjectNotes(sandboxProjectId, projectNotes)
+		await updateSandboxProjectNotes(projectUUID, projectNotes)
 
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return

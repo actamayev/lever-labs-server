@@ -32,11 +32,3 @@ afterEach(() => {
 	// Cleanup after each test
 	jest.restoreAllMocks()
 })
-
-// Export mock implementations that test files can use
-export const mockSecrets: Record<string, string> = {
-	"JWT_KEY": "test-jwt-secret-key",
-	"EMAIL_ENCRYPTION_KEY": "dGVzdC1lbmNyeXB0aW9uLWtleS0zMi1ieXRlcw==",
-	"GOOGLE_CLIENT_ID": "test-google-client-id",
-	"PIP_HARDWARE_VERSION": "1.0.0"
-}

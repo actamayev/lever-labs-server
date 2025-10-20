@@ -5,7 +5,6 @@ import attachChallengeChatId from "../middleware/attach/attach-challenge-chat-id
 import attachCareerIdFromUUID from "../middleware/attach/attach-career-id-from-uuid"
 import validateStreamId from "../middleware/request-validation/chat/validate-stream-id"
 import attachChallengeIdFromUUID from "../middleware/attach/attach-challenge-id-from-uuid"
-import attachSandboxProjectIdFromUUID from "../middleware/attach/attach-sandbox-project-id-from-uuid"
 import attachCareerConversationHistory from "../middleware/attach/attach-career-conversation-history"
 import attachSandboxConversationHistory from "../middleware/attach/attach-sandbox-conversation-history"
 import validateSendCareerMessage from "../middleware/request-validation/chat/validate-send-career-message"
@@ -90,7 +89,6 @@ chatRoutes.post(
 	"/send-sandbox-message/:projectUUID",
 	validateProjectUUIDInParams,
 	validateSendSandboxMessage,
-	attachSandboxProjectIdFromUUID,
 	attachSandboxChatId,
 	attachSandboxConversationHistory,
 	sendSandboxMessage
@@ -99,7 +97,6 @@ chatRoutes.post(
 chatRoutes.post(
 	"/delete-sandbox-chat/:projectUUID",
 	validateProjectUUIDInParams,
-	attachSandboxProjectIdFromUUID,
 	confirmSandboxProjectExistsAndValidUserId,
 	deleteSandboxChatController
 )

@@ -1,12 +1,13 @@
 import { Response, Request } from "express"
 import markSandboxProjectInactive from "../../db-operations/write/sandbox-project/mark-sandbox-project-inactive"
 import { ErrorResponse, SuccessResponse} from "@lever-labs/common-ts/types/api"
+import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
 
 export default async function deleteSandboxProject(req: Request, res: Response): Promise<void> {
 	try {
-		const { sandboxProjectId } = req
+		const { projectUUID } = req.params as { projectUUID: SandboxProjectUUID }
 
-		await markSandboxProjectInactive(sandboxProjectId)
+		await markSandboxProjectInactive(projectUUID)
 
 		res.status(200).json({ success: "" } satisfies SuccessResponse)
 		return

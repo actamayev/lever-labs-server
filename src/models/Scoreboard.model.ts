@@ -2,7 +2,7 @@ import { prop, getModelForClass, modelOptions } from "@typegoose/typegoose"
 import { ScoreboardUUID, ClassCode } from "@lever-labs/common-ts/types/utils"
 
 // Embedded subdocument for student in scoreboard
-export class StudentJoinedScoreboard {
+class StudentJoinedScoreboard {
 	@prop({ required: true })
 	public studentId!: number
 
@@ -29,7 +29,7 @@ export class TeamStats {
 		timestamps: true,
 	}
 })
-export class Scoreboard {
+class Scoreboard {
 	@prop({ required: true, unique: true })
 	public scoreboardId!: ScoreboardUUID
 

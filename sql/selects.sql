@@ -12,7 +12,7 @@
 
 -- SELECT *
 -- FROM pip_uuid
--- WHERE uuid ~ '[0Ooc1lIS5Z2B86bUVWwXxuvNG]'
+-- WHERE uuid ~ '[0Ooc1lIsS5zZ2B86bUVWwXxuvKkNG]'
 -- ORDER BY pip_uuid_id;
 
 -- SELECT * from profile_picture;
@@ -26,11 +26,8 @@
 -- SELECT * FROM function_to_block_answer_choice where function_to_block_flashcard_id = '336d9cd0-7971-46b6-855f-414ce0d5fc35';
 -- SELECT * FROM function_to_block_answer_choice;
 -- SELECT * FROM function_to_block_user_answer;
--- DELETE FROM function_to_block_user_answer where function_to_block_answer_choice_id = 79;
--- DELETE FROM function_to_block_user_answer where function_to_block_answer_choice_id = 80;
--- DELETE FROM function_to_block_user_answer where function_to_block_answer_choice_id = 81;
--- DELETE FROM function_to_block_answer_choice where function_to_block_flashcard_id = '336d9cd0-7971-46b6-855f-414ce0d5fc35';
 -- SELECT * FROM function_to_block_answer_choice;
+-- SELECT * FROM completed_user_lesson;
 
 -- SELECT * FROM block_to_function_flashcard;
 -- SELECT * FROM function_to_block_flashcard;
@@ -39,3 +36,5 @@
 -- INSERT 
 -- SELECT * FROM fill_in_the_blank_user_answer;
 
+-- DELETE FROM sandbox_message;
+-- DELETE FROM sandbox_chat;

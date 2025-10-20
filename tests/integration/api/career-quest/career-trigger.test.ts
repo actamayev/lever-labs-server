@@ -122,7 +122,7 @@ describe("POST /career-quest/career-trigger", () => {
 			.post("/career-quest/career-trigger")
 			.set("Cookie", auth.cookie)
 			.send({
-				pipUUID: "abc12",
+				pipUUID: "y9D4L",
 				careerType: CareerType.MEET_PIP,
 				triggerMessageType: 0
 			})

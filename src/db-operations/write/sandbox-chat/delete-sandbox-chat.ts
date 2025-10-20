@@ -1,12 +1,13 @@
+import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function deleteSandboxChat(sandboxProjectId: number): Promise<void> {
+export default async function deleteSandboxChat(sandboxProjectUUID: SandboxProjectUUID): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
 		await prismaClient.sandbox_chat.updateMany({
 			where: {
-				sandbox_project_id: sandboxProjectId,
+				project_uuid: sandboxProjectUUID,
 				is_active: true
 			},
 			data: {
