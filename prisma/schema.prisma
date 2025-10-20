@@ -80,10 +80,9 @@ model email_update_subscriber {
 }
 
 model sandbox_project {
-	sandbox_project_id											Int       @id @default(autoincrement())
+	project_uuid												String		@id
 	sandbox_json												Json
 	project_owner_id       										Int
-	project_uuid												String		@unique
 	project_name												String?
 	project_notes												String?
 	is_starred													Boolean @default(false)
@@ -97,7 +96,6 @@ model sandbox_project {
 	sandbox_chat												sandbox_chat[]
 
 	@@index([project_owner_id], name: "sandbox_project__project_owner_id_idx")
-	@@index([project_uuid], name: "sandbox_project__project_uuid_idx")
 }
 
 model profile_picture {
@@ -150,13 +148,13 @@ model career_chat {
 
 model sandbox_chat {
 	sandbox_chat_id       										Int      @id @default(autoincrement())
-	sandbox_project_id    										Int      // Multiple chats per sandbox project
+	project_uuid	    										String      // Multiple chats per sandbox project
 
 	created_at            										DateTime @default(now())
 	updated_at            										DateTime @default(now()) @updatedAt
 	is_active													Boolean @default(true)
 
-	sandbox_project       										sandbox_project @relation(fields: [sandbox_project_id], references: [sandbox_project_id])
+	sandbox_project       										sandbox_project @relation(fields: [project_uuid], references: [project_uuid])
 	messages              										sandbox_message[]
 }
 

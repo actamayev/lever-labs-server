@@ -5,7 +5,6 @@ declare global {
 			user: ExtendedCredentials
 			userId: number
 			readingBlockId: number
-			sandboxProjectId: number
 			bytecode: Float32Array
 
 			teacherId: number

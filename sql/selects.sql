@@ -36,3 +36,4 @@
 -- INSERT 
 -- SELECT * FROM fill_in_the_blank_user_answer;
 
+SELECT * FROM sandbox_chat;

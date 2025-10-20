@@ -1,6 +1,7 @@
+import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function retrieveUserIdFromSandboxProjectUUID(sandboxProjectId: number): Promise<number | undefined> {
+export default async function retrieveUserIdFromSandboxProjectUUID(projectUUID: SandboxProjectUUID): Promise<number | undefined> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -9,7 +10,7 @@ export default async function retrieveUserIdFromSandboxProjectUUID(sandboxProjec
 				project_owner_id: true
 			},
 			where: {
-				sandbox_project_id: sandboxProjectId
+				project_uuid: projectUUID
 			}
 		})
 

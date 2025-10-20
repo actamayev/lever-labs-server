@@ -1,12 +1,13 @@
 import { Request, Response } from "express"
 import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 import deleteSandboxChat from "../../db-operations/write/sandbox-chat/delete-sandbox-chat"
+import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
 
 export default async function deleteSandboxChatController(req: Request, res: Response): Promise<void> {
 	try {
-		const { sandboxProjectId } = req
+		const { projectUUID } = req.params as { projectUUID: SandboxProjectUUID }
 
-		await deleteSandboxChat(sandboxProjectId)
+		await deleteSandboxChat(projectUUID)
 
 		res.status(200).json({ success: "Sandbox chat deleted successfully"} satisfies SuccessResponse)
 		return

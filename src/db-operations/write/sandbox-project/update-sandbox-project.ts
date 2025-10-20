@@ -1,13 +1,14 @@
 import { BlocklyJson } from "@lever-labs/common-ts/types/sandbox"
 import PrismaClientClass from "../../../classes/prisma-client"
+import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
 
-export default async function updateSandboxProject(sandboxProjectId: number, newBlocklyJson: BlocklyJson): Promise<void> {
+export default async function updateSandboxProject(projectUUID: SandboxProjectUUID, newBlocklyJson: BlocklyJson): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
 		await prismaClient.sandbox_project.update({
 			where: {
-				sandbox_project_id: sandboxProjectId
+				project_uuid: projectUUID
 			},
 			data: {
 				sandbox_json: JSON.stringify(newBlocklyJson)

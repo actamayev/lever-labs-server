@@ -1,6 +1,7 @@
 import { ErrorResponse } from "@lever-labs/common-ts/types/api"
 import { Request, Response, NextFunction } from "express"
 import findOrCreateSandboxChat from "../../db-operations/write/sandbox-chat/find-or-create-sandbox-chat"
+import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
 
 export default async function attachSandboxChatId(
 	req: Request,
@@ -8,9 +9,9 @@ export default async function attachSandboxChatId(
 	next: NextFunction
 ): Promise<void> {
 	try {
-		const { sandboxProjectId } = req
+		const { projectUUID } = req.params as { projectUUID: SandboxProjectUUID }
 
-		const sandboxChatId = await findOrCreateSandboxChat(sandboxProjectId)
+		const sandboxChatId = await findOrCreateSandboxChat(projectUUID)
 
 		req.body.sandboxChatId = sandboxChatId
 		next()
