@@ -36,4 +36,5 @@
 -- INSERT 
 -- SELECT * FROM fill_in_the_blank_user_answer;
 
-SELECT * FROM sandbox_chat;
+-- DELETE FROM sandbox_message;
+-- DELETE FROM sandbox_chat;
