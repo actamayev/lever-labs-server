@@ -286,7 +286,7 @@ model career {
 }
 
 model challenge {
-	challenge_id												Int       @id @default(autoincrement())
+	challenge_id												Int       @id
 	challenge_name												String
 	challenge_uuid												String		@unique
 
@@ -381,7 +381,7 @@ model classroom_teacher_map {
     classroom_teacher_map_id    								Int       @id @default(autoincrement())
     teacher_id                  								Int
     classroom_id                								Int
-								
+
     created_at                  								DateTime  @default(now())
     updated_at                  								DateTime  @default(now()) @updatedAt
 								
@@ -421,7 +421,7 @@ enum QuestionType {
 }
 
 model question {
-	question_id												String       @id @default(uuid())
+	question_id												String       @id
 	question_type											QuestionType
 	
 	created_at												DateTime     @default(now())
@@ -436,8 +436,8 @@ model question {
 }
 
 model coding_block {
-	coding_block_id											Int       @id @default(autoincrement())
-	coding_block_json										Json @default("{}")
+	coding_block_id											Int       @id
+	coding_block_json										Json
 
 	created_at												DateTime  @default(now())
 	
@@ -446,7 +446,7 @@ model coding_block {
 }
 
 model lesson {
-	lesson_id												String    @id @default(uuid())
+	lesson_id												String    @id
 	lesson_name												String
 	lesson_description										String?
 	lesson_order											Int?
@@ -459,7 +459,7 @@ model lesson {
 }
 
 model lesson_question_map {
-	lesson_question_map_id									Int       @id @default(autoincrement())
+	lesson_question_map_id									Int       @id
 	lesson_id												String
 	question_id												String
 	order													Int
@@ -489,7 +489,7 @@ model completed_user_lesson {
 model block_to_function_flashcard {
 	question_id												String    @id
 	coding_block_id											Int
-	question_text											String @default("")
+	question_text											String
 	
 	question												question  @relation(fields: [question_id], references: [question_id], onDelete: Cascade)
 	coding_block											coding_block @relation(fields: [coding_block_id], references: [coding_block_id])
@@ -498,7 +498,7 @@ model block_to_function_flashcard {
 }
 
 model block_to_function_answer_choice {
-	block_to_function_answer_choice_id						Int       @id @default(autoincrement())
+	block_to_function_answer_choice_id						Int       @id
 	block_to_function_flashcard_id							String
 	function_description_text								String
 	is_correct												Boolean
@@ -534,7 +534,7 @@ model function_to_block_flashcard {
 }
 
 model function_to_block_answer_choice {
-	function_to_block_answer_choice_id						Int       @id @default(autoincrement())
+	function_to_block_answer_choice_id						Int       @id
 	function_to_block_flashcard_id							String
 	coding_block_id											Int
 	is_correct												Boolean
@@ -575,7 +575,7 @@ model fill_in_the_blank {
 }
 
 model fill_in_the_blank_block_bank {
-	fill_in_the_blank_block_bank_id							Int       @id @default(autoincrement())
+	fill_in_the_blank_block_bank_id							Int       @id
 	fill_in_the_blank_id									String
 	block_name_id											Int
 	
@@ -603,7 +603,7 @@ model fill_in_the_blank_user_answer {
 }
 
 model block_name {
-	block_name_id											Int       @id @default(autoincrement())
+	block_name_id											Int       @id
 	block_name												String	  @unique
 
 	created_at												DateTime  @default(now())
