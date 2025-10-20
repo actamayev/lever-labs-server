@@ -22,12 +22,9 @@ block_name_id ,block_name
            21 ,for_loop
            22 ,wait
            23 ,forever_loop
-           24 ,go_forward
-           25 ,go_backward
-           26 ,go_forward_time
-           27 ,go_backward_time
-           28 ,go_forward_distance
-           29 ,go_backward_distance
+           24 ,drive
+           26 ,drive_time
+           28 ,drive_distance
            30 ,stop
            31 ,turn
            32 ,imu_read
