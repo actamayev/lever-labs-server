@@ -11,7 +11,7 @@ export default async function updateSandboxProject(projectUUID: SandboxProjectUU
 				project_uuid: projectUUID
 			},
 			data: {
-				sandbox_json: JSON.stringify(newBlocklyJson)
+				sandbox_json: newBlocklyJson
 			}
 		})
 

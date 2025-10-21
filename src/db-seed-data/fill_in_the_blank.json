@@ -137,7 +137,7 @@
 	{
 	  "question_id": "d3226479-98d4-402d-89b0-f901b45a7b35",
 	  "initial_blockly_json": {},
-	  "reference_solution_cpp": "goForwardTime(0.5, 20);\n wait(2);\n goBackwardTime(0.5, 20);",
+	  "reference_solution_cpp": "drive_time('FORWARD', 0.5, 20);\n wait(2);\n drive_time(BACKWARD, 0.5, 20);",
 	  "question_text": "Make Pip drive forward for 0.5 seconds at 20 percent speed, wait 2 seconds, then backwards for 0.5 seconds at 20 percent speed."
 	},
 	{
