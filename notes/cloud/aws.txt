@@ -1,9 +1,9 @@
 To copy important files to AWS, run the following commands from the lever-labs-server root directory.
-Locally, run `npm run build`
+Locally, run `pnpm run build`
 
 Staging:
 	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./package.json ubuntu@34.229.209.115:/home/ubuntu/lever-labs
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./package-lock.json ubuntu@34.229.209.115:/home/ubuntu/lever-labs
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./pnpm-lock.yaml ubuntu@34.229.209.115:/home/ubuntu/lever-labs
 	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./.env.production ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src/.env.staging
 	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./ecosystem.config.js ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
 	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./.npmrc ubuntu@34.229.209.115:/home/ubuntu/lever-labs
@@ -22,7 +22,7 @@ Staging:
 
 Production:
 	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem ./package.json ubuntu@34.203.76.152:/home/ubuntu/lever-labs
-	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem ./package-lock.json ubuntu@34.203.76.152:/home/ubuntu/lever-labs
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem ./pnpm-lock.yaml ubuntu@34.203.76.152:/home/ubuntu/lever-labs
 	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem ./.env.production ubuntu@34.203.76.152:/home/ubuntu/lever-labs/dist/src/.env.production
 	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem ./ecosystem.config.js ubuntu@34.203.76.152:/home/ubuntu/lever-labs/dist/src
 	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem ./.npmrc ubuntu@34.203.76.152:/home/ubuntu/lever-labs
@@ -48,11 +48,11 @@ To SSH into AWS:
 For Database migrations, navigate to dist/src, and run:
 	npx prisma migrate deploy && npx prisma generate && pm2 restart 0 && pm2 logs;
 	If nothing is working after doing a migration, try restarting the pm2 `pm2 restart 0`
-	If there is new data to seed, run `npm run cloud-seed`
+	If there is new data to seed, run `pnpm run cloud-seed`
 
 Shortcuts:
 	Restart server after application update:
-		cd lever-labs/ && npm i --production && pm2 restart 0 && pm2 logs;
+		cd lever-labs/ && pnpm i --prod && pm2 restart 0 && pm2 logs;
 	DB (be in /dist/src folder)
 		npx prisma migrate deploy && npx prisma generate && pm2 restart 0 && pm2 logs;
 

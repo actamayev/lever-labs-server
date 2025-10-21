@@ -6,10 +6,10 @@ Might have to restart TS server for the changes to take effect in VS code (ie. a
 
 To add data to the reference configuration tables (this is data that has to be in the table when it's first built (ie. lessons, questions, answers)):
 	Edit the csv/json fils in `db-seed-data` folder, and
-	Run: `sudo npm run build` to copy the seed data to the dist folder
+	Run: `sudo pnpm run build` to copy the seed data to the dist folder
 	To seed locally, run: `npx prisma db seed`
 	To seed in cloud,
 		Copy the data from db-seed-data to the instance (see aws.txt)
 		ssh into the AWS instance
 		navigate to the dist/src folder
-		run `npm run cloud-seed`
+		run `pnpm run cloud-seed`
