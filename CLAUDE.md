@@ -27,16 +27,16 @@ src/
 
 ### Code Quality & Validation
 ```bash
-npm run validate          # Run both lint and type-check
-npm run lint             # ESLint check
-npm run lint:fix         # Fix ESLint issues
-npm run type-check       # TypeScript type checking
+pnpm run validate          # Run both lint and type-check
+pnpm run lint             # ESLint check
+pnpm run lint:fix         # Fix ESLint issues
+pnpm run type-check       # TypeScript type checking
 ```
 
 ### Build & Deploy
 ```bash
-npm run build           # TypeScript compile + copy seed data
-npm start               # Development with nodemon
+pnpm run build           # TypeScript compile + copy seed data
+pnpm start               # Development with nodemon
 ```
 
 ### Database Operations
@@ -48,7 +48,7 @@ npx prisma db seed        # Seed reference data locally
 
 # Production deployment (see notes/aws.txt)
 npx prisma migrate deploy && npx prisma generate && pm2 restart 0
-npm run cloud-seed       # Seed in cloud
+pnpm run cloud-seed       # Seed in cloud
 ```
 
 ## Critical Development Patterns
@@ -178,6 +178,6 @@ pm2 restart [app_id]   # Restart specific process
 ## Important Notes
 
 - **Environment Files**: Use `.env.local` for development, `.env` only during migrations
-- **Package Updates**: Run `sudo npm update @lever-labs/common-ts` for common library
+- **Package Updates**: Run `sudo pnpm update @lever-labs/common-ts` for common library
 - **Code Style**: Follow existing patterns, use kebab-case for files
 - **Security**: Never commit secrets, use AWS Secrets Manager

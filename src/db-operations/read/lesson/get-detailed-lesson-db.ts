@@ -111,8 +111,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 					blockToFunctionFlashcard: map.question.block_to_function_flashcard ? {
 						codingBlock: {
 							codingBlockId: map.question.block_to_function_flashcard.coding_block.coding_block_id,
-							// eslint-disable-next-line max-len
-							codingBlockJson: JSON.stringify(map.question.block_to_function_flashcard.coding_block.coding_block_json) as unknown as BlocklyJson,
+							codingBlockJson: map.question.block_to_function_flashcard.coding_block.coding_block_json as BlocklyJson,
 						},
 						// eslint-disable-next-line max-len
 						blockToFunctionAnswerChoice: map.question.block_to_function_flashcard.block_to_function_answer_choice.map(choice => ({
@@ -131,14 +130,14 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 							order: choice.order,
 							codingBlock: {
 								codingBlockId: choice.coding_block.coding_block_id,
-								codingBlockJson: JSON.stringify(choice.coding_block.coding_block_json) as unknown as BlocklyJson,
+								codingBlockJson: choice.coding_block.coding_block_json as BlocklyJson,
 							},
 							isCorrect: choice.is_correct
 						}))
 					} : null,
 					fillInTheBlank: map.question.fill_in_the_blank ? {
 						questionText: map.question.fill_in_the_blank.question_text,
-						initialBlocklyJson: JSON.stringify(map.question.fill_in_the_blank.initial_blockly_json) as unknown as BlocklyJson,
+						initialBlocklyJson: map.question.fill_in_the_blank.initial_blockly_json as BlocklyJson,
 						availableBlocks: map.question.fill_in_the_blank.fill_in_the_blank_block_bank.map(bank => ({
 							blockNameId: bank.block_name.block_name_id,
 							blockName: bank.block_name.block_name as BlockNames,
