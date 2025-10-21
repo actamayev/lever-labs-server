@@ -149,20 +149,20 @@ tests/
 
 ```bash
 # Run all tests
-npm test
+pnpm test
 
 # Run with coverage
-npm run test:coverage
+pnpm run test:coverage
 
 # Run specific test suites
-npm run test:unit
-npm run test:integration
+pnpm run test:unit
+pnpm run test:integration
 
 # Run specific test file
-npm test -- tests/unit/utils/simple-utils.test.ts
+pnpm test -- tests/unit/utils/simple-utils.test.ts
 
 # Watch mode for development
-npm run test:watch
+pnpm run test:watch
 ```
 
 ## Coverage Goals

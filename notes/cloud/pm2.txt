@@ -23,7 +23,7 @@ Helpful commands:
 
 To clear space:
 	- `pm2 flush`
-	- `npm cache clean --force`
+	- `pnpm cache clean --force`
 	- `rm -rf ~/.cache/prisma`
 	- `sudo journalctl --vacuum-time=7d`
 	- `sudo apt clean`
