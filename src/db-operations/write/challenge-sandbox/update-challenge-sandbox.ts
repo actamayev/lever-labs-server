@@ -17,10 +17,10 @@ export default async function updateChallengeSandbox(
 				}
 			},
 			update:{
-				challenge_sandbox_json: JSON.stringify(newBlocklyJson),
+				challenge_sandbox_json: newBlocklyJson,
 			},
 			create: {
-				challenge_sandbox_json: JSON.stringify(newBlocklyJson),
+				challenge_sandbox_json: newBlocklyJson,
 				user_id: userId,
 				challenge_id: challengeId
 			}

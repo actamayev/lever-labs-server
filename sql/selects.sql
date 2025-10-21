@@ -8,7 +8,7 @@
 -- SELECT * FROM challenge ORDER BY created_at;
 -- SELECT * FROM sandbox_project ORDER BY updated_at;
 
--- SELECT * FROM pip_uuid ORDER BY pip_uuid_id;
+SELECT * FROM pip_uuid;
 
 -- SELECT *
 -- FROM pip_uuid
@@ -32,9 +32,8 @@
 -- SELECT * FROM block_to_function_flashcard;
 -- SELECT * FROM function_to_block_flashcard;
 -- SELECT * FROM fill_in_the_blank;
--- SELECT * FROM fill_in_the_blank_block_bank;
--- INSERT 
+-- SELECT * FROM fill_in_the_blank_block_bank ORDER BY fill_in_the_blank_block_bank_id;
 -- SELECT * FROM fill_in_the_blank_user_answer;
-
--- DELETE FROM sandbox_message;
--- DELETE FROM sandbox_chat;
+-- SELECT * FROM challenge_sandbox
+-- WHERE challenge_sandbox_json::text LIKE '%backward%'
+-- ORDER BY created_at;
