@@ -34,6 +34,10 @@
 -- SELECT * FROM fill_in_the_blank;
 -- SELECT * FROM fill_in_the_blank_block_bank ORDER BY fill_in_the_blank_block_bank_id;
 -- SELECT * FROM fill_in_the_blank_user_answer;
-SELECT * FROM sandbox_project
+-- SELECT * FROM challenge_sandbox
+-- ORDER BY created_at;
+
+SELECT * FROM challenge_sandbox
+WHERE challenge_sandbox_json::text LIKE '%FORWARD%'
 ORDER BY created_at;
 
