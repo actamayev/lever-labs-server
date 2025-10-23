@@ -86,7 +86,7 @@
     "mongoose": "^8.19.1",
     "multer": "^2.0.1",
     "node-fetch": "^2.7.0",
-    "openai": "^5.7.0",
+    "openai": "^6.6.0",
     "papaparse": "^5.5.2",
     "socket.io": "^4.8.1",
     "validator": "^13.12.0",
