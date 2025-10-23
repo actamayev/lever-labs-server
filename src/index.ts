@@ -73,7 +73,7 @@ void (async (): Promise<void> => {
 
 setupRoutes(app)
 
-app.use("*", (_req, res) => {
+app.use((_req, res) => {
 	res.status(404).json({ error: "Route not found" })
 })
 

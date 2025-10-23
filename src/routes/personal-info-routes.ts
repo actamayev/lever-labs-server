@@ -54,7 +54,7 @@ personalInfoRoutes.post(
 personalInfoRoutes.post("/remove-current-profile-picture", jwtVerifyAttachUserId, removeCurrentProfilePicture)
 
 personalInfoRoutes.post(
-	"/update-name/:name?",
+	"/update-name{/:name}",
 	validateUpdateName,
 	jwtVerifyAttachUserId,
 	setName
