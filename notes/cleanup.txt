@@ -2,3 +2,6 @@ To check for no unused exports:
 	ts-unused-exports tsconfig.json
 To ensure no unused dependencies:
 	depcheck
+
+To kill process running on port 8080:
+	sudo lsof -ti:8080 | xargs sudo kill -9
