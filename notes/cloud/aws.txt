@@ -56,7 +56,7 @@ Shortcuts:
 	Restart server after application update:
 		cd lever-labs/ && pnpm i --prod && pm2 restart 0 && pm2 logs;
 	DB (be in /lever-labs folder)
-		npx prisma migrate deploy && npx prisma generate && pm2 restart 0 && pm2 logs;
+		pnpm dlx prisma migrate deploy && pnpm dlx prisma generate && pm2 restart 0 && pm2 logs;
 
 Other:
 - If getting this error:  `Error: @prisma/client did not initialize yet. Please run "prisma generate" and try to import it again.`, run:
