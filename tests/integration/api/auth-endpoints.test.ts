@@ -21,7 +21,7 @@ describe("Authentication API Integration Tests", () => {
 		setupRoutes(app)
 
 		// Add 404 handler
-		app.use("*", (_req, res) => {
+		app.use((_req, res) => {
 			res.status(404).json({ error: "Route not found" })
 		})
 	})
