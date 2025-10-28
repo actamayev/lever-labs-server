@@ -1,5 +1,5 @@
 -- SELECT * FROM credentials ORDER BY created_at;
-Select * from login_history;
+-- Select * from login_history;
 -- SELECT * FROM profile_picture;
 -- SELECT * FROM pip_uuid;
 -- SELECT * FROM career_quest_message;
@@ -41,4 +41,13 @@ Select * from login_history;
 -- SELECT * FROM challenge_sandbox
 -- ORDER BY created_at;
 -- SELECT * FROM question where question_id = '336d9cd0-7971-46b6-855f-414ce0d5fc35';
+
+-- SELECT * FROM action_to_code_multiple_choice_question;
+-- SELECT * FROM action_to_code_multiple_choice_answer_choice;
+-- SELECT * FROM action_to_code_multiple_choice_user_answer;
+
+-- SELECT * FROM action_to_code_open_ended_question;
+-- SELECT * FROM action_to_code_open_ended_question_block_bank;
+-- SELECT * FROM action_to_code_open_ended_question_user_answer;
+
 

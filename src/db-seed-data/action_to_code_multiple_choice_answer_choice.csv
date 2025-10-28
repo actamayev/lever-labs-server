@@ -1,0 +1,4 @@
+action_to_code_multiple_choice_answer_choice_id ,action_to_code_multiple_choice_id    ,coding_block_id ,is_correct ,order
+                                              1 ,dc65bd1d-2455-4588-ad86-38b7be714a5d ,              1 ,true       ,    0
+                                              2 ,dc65bd1d-2455-4588-ad86-38b7be714a5d ,              2 ,false       ,    1
+                                              3 ,dc65bd1d-2455-4588-ad86-38b7be714a5d ,              3 ,false       ,    2

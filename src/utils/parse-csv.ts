@@ -118,6 +118,30 @@ function isBlockNameData(data: unknown): data is BlockNameData {
 	)
 }
 
+function isActionToCodeMultipleChoiceAnswerChoiceData(data: unknown): data is ActionToCodeMultipleChoiceAnswerChoiceData {
+	const d = data as ActionToCodeMultipleChoiceAnswerChoiceData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.action_to_code_multiple_choice_answer_choice_id === "number" &&
+        typeof d.action_to_code_multiple_choice_id === "string" &&
+        typeof d.coding_block_id === "number" &&
+        typeof d.is_correct === "boolean" &&
+        typeof d.order === "number"
+	)
+}
+
+function isActionToCodeOpenEndedQuestionBlockBankData(data: unknown): data is ActionToCodeOpenEndedQuestionBlockBankData {
+	const d = data as ActionToCodeOpenEndedQuestionBlockBankData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.action_to_code_open_ended_question_block_bank_id === "number" &&
+        typeof d.action_to_code_open_ended_question_id === "string" &&
+        typeof d.block_name_id === "number"
+	)
+}
+
 function cleanObjectKeys<T extends { [K in keyof T]: unknown }>(
 	obj: Record<string, unknown>
 ): T {
@@ -223,6 +247,20 @@ export default function parseCSV(filePath: string): AllSeedData[] {
 				throw new Error(`Invalid block name data at row ${index + 1}: ${JSON.stringify(row)}`)
 			}
 			return row as BlockNameData
+		})
+	} else if (fileName === "action_to_code_multiple_choice_answer_choice.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isActionToCodeMultipleChoiceAnswerChoiceData(row)) {
+				throw new Error(`Invalid action to code multiple choice answer choice data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as ActionToCodeMultipleChoiceAnswerChoiceData
+		})
+	} else if (fileName === "action_to_code_open_ended_question_block_bank.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isActionToCodeOpenEndedQuestionBlockBankData(row)) {
+				throw new Error(`Invalid action to code open ended question block bank data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as ActionToCodeOpenEndedQuestionBlockBankData
 		})
 	}
 

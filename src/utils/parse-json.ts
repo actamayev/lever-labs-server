@@ -35,6 +35,30 @@ function isFunctionToBlockFlashcardData(data: unknown): data is FunctionToBlockF
 	)
 }
 
+function isActionToCodeMultipleChoiceQuestionData(data: unknown): data is ActionToCodeMultipleChoiceQuestionData {
+	const d = data as ActionToCodeMultipleChoiceQuestionData
+	return (
+		typeof d === "object" &&
+		d !== null &&
+		typeof d.question_id === "string" &&
+		typeof d.question_text === "string" &&
+		typeof d.reference_solution_cpp === "string"
+	)
+}
+
+function isActionToCodeOpenEndedQuestionData(data: unknown): data is ActionToCodeOpenEndedQuestionData {
+	const d = data as ActionToCodeOpenEndedQuestionData
+	return (
+		typeof d === "object" &&
+		d !== null &&
+		typeof d.question_id === "string" &&
+		typeof d.question_text === "string" &&
+		typeof d.initial_blockly_json === "object" &&
+		typeof d.reference_solution_cpp === "string"
+	)
+}
+
+// eslint-disable-next-line max-lines-per-function
 export default function parseJSON(filePath: string): AllSeedData[] {
 	// eslint-disable-next-line security/detect-non-literal-fs-filename
 	const jsonFile = readFileSync(path.join(__dirname, filePath), "utf-8")
@@ -68,6 +92,24 @@ export default function parseJSON(filePath: string): AllSeedData[] {
 				throw new Error(`Invalid function to block flashcard data at row ${index + 1}: ${JSON.stringify(row)}`)
 			}
 			return row as FunctionToBlockFlashcardData
+		})
+	}
+
+	if (fileName === "action_to_code_multiple_choice_question.json") {
+		return parsedData.map((row: unknown, index: number) => {
+			if (!isActionToCodeMultipleChoiceQuestionData(row)) {
+				throw new Error(`Invalid action to code multiple choice question data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as ActionToCodeMultipleChoiceQuestionData
+		})
+	}
+
+	if (fileName === "action_to_code_open_ended_question.json") {
+		return parsedData.map((row: unknown, index: number) => {
+			if (!isActionToCodeOpenEndedQuestionData(row)) {
+				throw new Error(`Invalid action to code open ended question data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as ActionToCodeOpenEndedQuestionData
 		})
 	}
 

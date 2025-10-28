@@ -83,6 +83,42 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 											}
 										}
 									}
+								},
+								action_to_code_multiple_choice_question: {
+									select: {
+										question_text: true,
+										reference_solution_cpp: true,
+										action_to_code_multiple_choice_answer_choice: {
+											select: {
+												action_to_code_multiple_choice_answer_choice_id: true,
+												order: true,
+												is_correct: true,
+												coding_block: {
+													select: {
+														coding_block_id: true,
+														coding_block_json: true
+													}
+												}
+											}
+										}
+									}
+								},
+								action_to_code_open_ended_question: {
+									select: {
+										question_text: true,
+										initial_blockly_json: true,
+										reference_solution_cpp: true,
+										action_to_code_open_ended_question_block_bank: {
+											select: {
+												block_name: {
+													select: {
+														block_name_id: true,
+														block_name: true
+													}
+												}
+											}
+										}
+									}
 								}
 							}
 						}
@@ -139,6 +175,30 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 						questionText: map.question.fill_in_the_blank.question_text,
 						initialBlocklyJson: map.question.fill_in_the_blank.initial_blockly_json as BlocklyJson,
 						availableBlocks: map.question.fill_in_the_blank.fill_in_the_blank_block_bank.map(bank => ({
+							blockNameId: bank.block_name.block_name_id,
+							blockName: bank.block_name.block_name as BlockNames,
+						}))
+					} : null,
+					actionToCodeMultipleChoice: map.question.action_to_code_multiple_choice_question ? {
+						questionText: map.question.action_to_code_multiple_choice_question.question_text,
+						referenceSolutionCpp: map.question.action_to_code_multiple_choice_question.reference_solution_cpp,
+						// eslint-disable-next-line max-len
+						actionToCodeMultipleChoiceAnswerChoice: map.question.action_to_code_multiple_choice_question.action_to_code_multiple_choice_answer_choice.map(choice => ({
+							actionToCodeMultipleChoiceAnswerChoiceId: choice.action_to_code_multiple_choice_answer_choice_id,
+							order: choice.order,
+							codingBlock: {
+								codingBlockId: choice.coding_block.coding_block_id,
+								codingBlockJson: choice.coding_block.coding_block_json as BlocklyJson,
+							},
+							isCorrect: choice.is_correct
+						}))
+					} : null,
+					actionToCodeOpenEnded: map.question.action_to_code_open_ended_question ? {
+						questionText: map.question.action_to_code_open_ended_question.question_text,
+						initialBlocklyJson: map.question.action_to_code_open_ended_question.initial_blockly_json as BlocklyJson,
+						referenceSolutionCpp: map.question.action_to_code_open_ended_question.reference_solution_cpp,
+						// eslint-disable-next-line max-len
+						availableBlocks: map.question.action_to_code_open_ended_question.action_to_code_open_ended_question_block_bank.map(bank => ({
 							blockNameId: bank.block_name.block_name_id,
 							blockName: bank.block_name.block_name as BlockNames,
 						}))

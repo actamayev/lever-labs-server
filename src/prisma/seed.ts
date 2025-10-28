@@ -383,13 +383,154 @@ async function seedBlockNames(): Promise<void> {
 	}))
 }
 
+async function seedActionToCodeMultipleChoiceQuestions(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const questions = parseJSON("../db-seed-data/action_to_code_multiple_choice_question.json") as ActionToCodeMultipleChoiceQuestionData[]
+
+	console.info("Seeding action to code multiple choice questions...")
+
+	// eslint-disable-next-line max-len
+	await deleteOrphanedRecords(prismaClient.action_to_code_multiple_choice_question, questions, "question_id", "action to code multiple choice questions")
+
+	await Promise.all(questions.map(question => {
+		if (!question.question_id || !question.question_text || !question.reference_solution_cpp) {
+			throw new Error(`Invalid action to code multiple choice question data: ${JSON.stringify(question)}`)
+		}
+		return prismaClient.action_to_code_multiple_choice_question.upsert({
+			where: { question_id: question.question_id },
+			update: {
+				question_text: question.question_text,
+				reference_solution_cpp: question.reference_solution_cpp
+			},
+			create: {
+				question_id: question.question_id,
+				question_text: question.question_text,
+				reference_solution_cpp: question.reference_solution_cpp
+			}
+		})
+	}))
+}
+
+async function seedActionToCodeMultipleChoiceAnswerChoices(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	// eslint-disable-next-line max-len
+	const choices = parseCSV("../db-seed-data/action_to_code_multiple_choice_answer_choice.csv") as ActionToCodeMultipleChoiceAnswerChoiceData[]
+
+	console.info("Seeding action to code multiple choice answer choices...")
+
+	await deleteOrphanedRecords(
+		prismaClient.action_to_code_multiple_choice_answer_choice,
+		choices,
+		"action_to_code_multiple_choice_answer_choice_id",
+		"action to code multiple choice answer choices"
+	)
+
+	await Promise.all(choices.map(choice => {
+		if (
+			!choice.action_to_code_multiple_choice_answer_choice_id ||
+			!choice.action_to_code_multiple_choice_id ||
+			!choice.coding_block_id ||
+			isUndefined(choice.is_correct) ||
+			isUndefined(choice.order)
+		) {
+			throw new Error(`Invalid action to code multiple choice answer choice data: ${JSON.stringify(choice)}`)
+		}
+		return prismaClient.action_to_code_multiple_choice_answer_choice.upsert({
+			where: { action_to_code_multiple_choice_answer_choice_id: choice.action_to_code_multiple_choice_answer_choice_id },
+			update: {
+				action_to_code_multiple_choice_id: choice.action_to_code_multiple_choice_id,
+				coding_block_id: choice.coding_block_id,
+				is_correct: choice.is_correct,
+				order: choice.order
+			},
+			create: {
+				action_to_code_multiple_choice_answer_choice_id: choice.action_to_code_multiple_choice_answer_choice_id,
+				action_to_code_multiple_choice_id: choice.action_to_code_multiple_choice_id,
+				coding_block_id: choice.coding_block_id,
+				is_correct: choice.is_correct,
+				order: choice.order
+			}
+		})
+	}))
+}
+
+async function seedActionToCodeOpenEndedQuestions(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const questions = parseJSON("../db-seed-data/action_to_code_open_ended_question.json") as ActionToCodeOpenEndedQuestionData[]
+
+	console.info("Seeding action to code open ended questions...")
+
+	await deleteOrphanedRecords(
+		prismaClient.action_to_code_open_ended_question,
+		questions,
+		"question_id",
+		"action to code open ended questions"
+	)
+
+	await Promise.all(questions.map(question => {
+		if (!question.question_id || !question.question_text || !question.initial_blockly_json || !question.reference_solution_cpp) {
+			throw new Error(`Invalid action to code open ended question data: ${JSON.stringify(question)}`)
+		}
+		return prismaClient.action_to_code_open_ended_question.upsert({
+			where: { question_id: question.question_id },
+			update: {
+				question_text: question.question_text,
+				initial_blockly_json: question.initial_blockly_json,
+				reference_solution_cpp: question.reference_solution_cpp
+			},
+			create: {
+				question_id: question.question_id,
+				question_text: question.question_text,
+				initial_blockly_json: question.initial_blockly_json,
+				reference_solution_cpp: question.reference_solution_cpp
+			}
+		})
+	}))
+}
+
+async function seedActionToCodeOpenEndedQuestionBlockBanks(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	// eslint-disable-next-line max-len
+	const blockBanks = parseCSV("../db-seed-data/action_to_code_open_ended_question_block_bank.csv") as ActionToCodeOpenEndedQuestionBlockBankData[]
+
+	console.info("Seeding action to code open ended question block banks...")
+
+	await deleteOrphanedRecords(
+		prismaClient.action_to_code_open_ended_question_block_bank,
+		blockBanks,
+		"action_to_code_open_ended_question_block_bank_id",
+		"action to code open ended question block banks"
+	)
+
+	await Promise.all(blockBanks.map(blockBank => {
+		if (
+			!blockBank.action_to_code_open_ended_question_block_bank_id ||
+			!blockBank.action_to_code_open_ended_question_id ||
+			!blockBank.block_name_id
+		) {
+			throw new Error(`Invalid action to code open ended question block bank data: ${JSON.stringify(blockBank)}`)
+		}
+		return prismaClient.action_to_code_open_ended_question_block_bank.upsert({
+			where: { action_to_code_open_ended_question_block_bank_id: blockBank.action_to_code_open_ended_question_block_bank_id },
+			update: {
+				action_to_code_open_ended_question_id: blockBank.action_to_code_open_ended_question_id,
+				block_name_id: blockBank.block_name_id
+			},
+			create: {
+				action_to_code_open_ended_question_block_bank_id: blockBank.action_to_code_open_ended_question_block_bank_id,
+				action_to_code_open_ended_question_id: blockBank.action_to_code_open_ended_question_id,
+				block_name_id: blockBank.block_name_id
+			}
+		})
+	}))
+}
+
 
 async function main(): Promise<void> {
 	try {
 		await seedCareers()
 		await seedChallenges()
 
-		await seedLessonQuestionMaps()
 
 		await seedFillInTheBlankBlockBanks()
 
@@ -398,15 +539,20 @@ async function main(): Promise<void> {
 		await seedBlockNames()
 		await seedLessons()
 		await seedQuestions()
+		await seedLessonQuestionMaps()
 
 		// Seed flashcard types (depends on questions and coding blocks)
 		await seedBlockToFunctionFlashcards()
 		await seedFunctionToBlockFlashcards()
 		await seedFillInTheBlanks()
+		await seedActionToCodeMultipleChoiceQuestions()
+		await seedActionToCodeOpenEndedQuestions()
 
-		// Seed answer choices and block banks (depends on flashcards)
+		// Seed answer choices and block banks (depends on flashcards and coding blocks)
 		await seedBlockToFunctionAnswerChoices()
 		await seedFunctionToBlockAnswerChoices()
+		await seedActionToCodeMultipleChoiceAnswerChoices()
+		await seedActionToCodeOpenEndedQuestionBlockBanks()
 
 		// Seed lesson-question relationships (depends on lessons and questions)
 

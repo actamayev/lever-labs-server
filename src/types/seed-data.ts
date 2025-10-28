@@ -85,6 +85,33 @@ declare global {
 		block_name: string
 	}
 
+	interface ActionToCodeMultipleChoiceQuestionData {
+		question_id: string
+		question_text: string
+		reference_solution_cpp: string
+	}
+
+	interface ActionToCodeMultipleChoiceAnswerChoiceData {
+		action_to_code_multiple_choice_answer_choice_id: number
+		action_to_code_multiple_choice_id: string
+		coding_block_id: number
+		is_correct: boolean
+		order: number
+	}
+
+	interface ActionToCodeOpenEndedQuestionData {
+		question_id: string
+		question_text: string
+		initial_blockly_json: BlocklyJson
+		reference_solution_cpp: string
+	}
+
+	interface ActionToCodeOpenEndedQuestionBlockBankData {
+		action_to_code_open_ended_question_block_bank_id: number
+		action_to_code_open_ended_question_id: string
+		block_name_id: number
+	}
+
 	type AllSeedData =
 		| CareerData
 		| ChallengeData
@@ -99,6 +126,10 @@ declare global {
 		| BlockToFunctionAnswerChoiceData
 		| FunctionToBlockAnswerChoiceData
 		| BlockNameData
+		| ActionToCodeMultipleChoiceQuestionData
+		| ActionToCodeMultipleChoiceAnswerChoiceData
+		| ActionToCodeOpenEndedQuestionData
+		| ActionToCodeOpenEndedQuestionBlockBankData
 }
 
 export {}
