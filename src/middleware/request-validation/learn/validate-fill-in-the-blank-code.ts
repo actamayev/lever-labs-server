@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse} from "@lever-labs/common-ts/types/api"
 
 const validateFillInTheBlankCodeSchema = Joi.object({
-	userCode: Joi.string().required(),
+	userCode: Joi.string().allow("").required(),
 	fillInTheBlankId: Joi.string().required()
 }).required().unknown(false)
 
