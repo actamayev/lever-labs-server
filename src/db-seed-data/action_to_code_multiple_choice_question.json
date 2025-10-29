@@ -1,7 +1,1 @@
-[
-	{
-		"question_id": "dc65bd1d-2455-4588-ad86-38b7be714a5d",
-		"question_text": "What's Pip doing?",
-		"reference_solution_cpp": "rgbLed.set_led_red();"
-	}
-]
+[ ]
