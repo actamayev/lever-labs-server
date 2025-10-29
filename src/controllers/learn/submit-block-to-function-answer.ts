@@ -7,13 +7,11 @@ import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
 export default async function submitBlockToFunctionAnswer(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
-		const { answerChoiceId, blockToFunctionFlashcardId } = req.body as {
-			answerChoiceId: number
-			blockToFunctionFlashcardId: QuestionUUID
-		}
+		const { questionId } = req.params as { questionId: QuestionUUID }
+		const { answerChoiceId } = req.body as { answerChoiceId: number }
 
 		await addBlockToFunctionUserAnswer(userId, answerChoiceId)
-		const correctAnswerChoiceId = await getCorrectBlockToFunctionAnswerChoiceId(blockToFunctionFlashcardId)
+		const correctAnswerChoiceId = await getCorrectBlockToFunctionAnswerChoiceId(questionId)
 
 		res.status(200).json({ correctAnswerId: correctAnswerChoiceId } satisfies CheckMCQResponse)
 		return

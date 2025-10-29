@@ -1,5 +1,6 @@
 import express from "express"
 import validateLessonId from "../middleware/request-validation/learn/validate-lesson-id"
+import validateQuestionId from "../middleware/request-validation/learn/validate-question-id"
 import validateFillInTheBlankCode from "../middleware/request-validation/learn/validate-fill-in-the-blank-code"
 import validateBlockToFunctionAnswer from "../middleware/request-validation/learn/validate-block-to-function-answer"
 import validateFunctionToBlockAnswer from "../middleware/request-validation/learn/validate-function-to-block-answer"
@@ -23,38 +24,37 @@ learnRoutes.get("/get-detailed-lesson/:lessonId", validateLessonId, getDetailedL
 
 learnRoutes.post("/mark-lesson-complete/:lessonId", validateLessonId, markLessonComplete)
 
-// TODO: None of the below endpoints use /lessonId. we should instead pass in questionId
 learnRoutes.post(
-	"/submit-block-to-function/:lessonId",
-	validateLessonId,
+	"/submit-block-to-function/:questionId",
+	validateQuestionId,
 	validateBlockToFunctionAnswer,
 	submitBlockToFunctionAnswer
 )
 
 learnRoutes.post(
-	"/submit-function-to-block/:lessonId",
-	validateLessonId,
+	"/submit-function-to-block/:questionId",
+	validateQuestionId,
 	validateFunctionToBlockAnswer,
 	submitFunctionToBlockAnswer
 )
 
 learnRoutes.post(
-	"/submit-fill-in-the-blank/:lessonId",
-	validateLessonId,
+	"/submit-fill-in-the-blank/:questionId",
+	validateQuestionId,
 	validateFillInTheBlankCode,
 	submitFillInTheBlankAnswer
 )
 
 learnRoutes.post(
-	"/submit-action-to-code-multiple-choice/:lessonId",
-	validateLessonId,
+	"/submit-action-to-code-multiple-choice/:questionId",
+	validateQuestionId,
 	validateActionToCodeMultipleChoiceAnswer,
 	submitActionToCodeMultipleChoiceAnswer
 )
 
 learnRoutes.post(
-	"/submit-action-to-code-open-ended/:lessonId",
-	validateLessonId,
+	"/submit-action-to-code-open-ended/:questionId",
+	validateQuestionId,
 	validateOpenEndedActionToCode,
 	submitOpenEndedActionToCodeQuestion
 )

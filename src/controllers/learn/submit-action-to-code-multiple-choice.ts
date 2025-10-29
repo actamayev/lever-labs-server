@@ -8,14 +8,12 @@ import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
 export default async function submitActionToCodeMultipleChoiceAnswer(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
-		const { answerChoiceId, actionToCodeMultipleChoiceId } = req.body as {
-			answerChoiceId: number
-			actionToCodeMultipleChoiceId: QuestionUUID
-		}
+		const { questionId } = req.params as { questionId: QuestionUUID }
+		const { answerChoiceId } = req.body as { answerChoiceId: number }
 
 		await addActionToCodeMultipleChoiceUserAnswer(userId, answerChoiceId)
 
-		const correctAnswerChoiceId = await getCorrectActionToCodeMultipleChoiceAnswerChoiceId(actionToCodeMultipleChoiceId)
+		const correctAnswerChoiceId = await getCorrectActionToCodeMultipleChoiceAnswerChoiceId(questionId)
 
 		res.status(200).json({ correctAnswerId: correctAnswerChoiceId } satisfies CheckMCQResponse)
 		return
