@@ -145,6 +145,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 					questionId: map.question.question_id as QuestionUUID,
 					questionType: map.question.question_type,
 					blockToFunctionFlashcard: map.question.block_to_function_flashcard ? {
+						questionText: map.question.block_to_function_flashcard.question_text,
 						codingBlock: {
 							codingBlockId: map.question.block_to_function_flashcard.coding_block.coding_block_id,
 							codingBlockJson: map.question.block_to_function_flashcard.coding_block.coding_block_json as BlocklyJson,
@@ -156,9 +157,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 								blockToFunctionAnswerChoiceId: choice.block_to_function_answer_choice_id,
 								order: index, // Randomized display order
 								functionDescriptionText: choice.function_description_text,
-								isCorrect: choice.is_correct
-							})),
-						questionText: map.question.block_to_function_flashcard.question_text
+							}))
 					} : null,
 					functionToBlockFlashcard: map.question.function_to_block_flashcard ? {
 						questionText: map.question.function_to_block_flashcard.question_text,
@@ -170,8 +169,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 								codingBlock: {
 									codingBlockId: choice.coding_block.coding_block_id,
 									codingBlockJson: choice.coding_block.coding_block_json as BlocklyJson,
-								},
-								isCorrect: choice.is_correct
+								}
 							}))
 					} : null,
 					fillInTheBlank: map.question.fill_in_the_blank ? {
@@ -194,8 +192,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 								codingBlock: {
 									codingBlockId: choice.coding_block.coding_block_id,
 									codingBlockJson: choice.coding_block.coding_block_json as BlocklyJson,
-								},
-								isCorrect: choice.is_correct
+								}
 							}))
 					} : null,
 					actionToCodeOpenEnded: map.question.action_to_code_open_ended_question ? {
