@@ -1,4 +1,5 @@
 -- SELECT * FROM credentials ORDER BY created_at;
+-- Select * from login_history;
 -- SELECT * FROM profile_picture;
 -- SELECT * FROM pip_uuid;
 -- SELECT * FROM career_quest_message;
@@ -34,10 +35,19 @@
 
 -- SELECT * FROM block_to_function_flashcard;
 -- SELECT * FROM function_to_block_flashcard;
-SELECT * FROM fill_in_the_blank;
+-- SELECT * FROM fill_in_the_blank;
 -- SELECT * FROM fill_in_the_blank_block_bank ORDER BY fill_in_the_blank_block_bank_id;
 -- SELECT * FROM fill_in_the_blank_user_answer;
 -- SELECT * FROM challenge_sandbox
 -- ORDER BY created_at;
 -- SELECT * FROM question where question_id = '336d9cd0-7971-46b6-855f-414ce0d5fc35';
+
+-- SELECT * FROM action_to_code_multiple_choice_question;
+-- SELECT * FROM action_to_code_multiple_choice_answer_choice;
+-- SELECT * FROM action_to_code_multiple_choice_user_answer;
+
+-- SELECT * FROM action_to_code_open_ended_question;
+-- SELECT * FROM action_to_code_open_ended_question_block_bank;
+-- SELECT * FROM action_to_code_open_ended_question_user_answer;
+
 

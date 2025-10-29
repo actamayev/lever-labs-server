@@ -4,13 +4,13 @@ import attachSandboxChatId from "../middleware/attach/attach-sandbox-chat-id"
 import attachChallengeChatId from "../middleware/attach/attach-challenge-chat-id"
 import attachCareerIdFromUUID from "../middleware/attach/attach-career-id-from-uuid"
 import validateStreamId from "../middleware/request-validation/chat/validate-stream-id"
+import validateUserCode from "../middleware/request-validation/learn/validate-user-code"
 import attachChallengeIdFromUUID from "../middleware/attach/attach-challenge-id-from-uuid"
 import attachCareerConversationHistory from "../middleware/attach/attach-career-conversation-history"
 import attachSandboxConversationHistory from "../middleware/attach/attach-sandbox-conversation-history"
 import validateSendCareerMessage from "../middleware/request-validation/chat/validate-send-career-message"
 import attachChallengeConversationHistory from "../middleware/attach/attach-challenge-conversation-history"
 import validateSendSandboxMessage from "../middleware/request-validation/chat/validate-send-sandbox-message"
-import validateCheckCareerQuestCode from "../middleware/request-validation/chat/validate-check-career-quest-code"
 import validateProjectUUIDInParams from "../middleware/request-validation/sandbox/validate-project-uuid-in-params"
 import validateSendChallengeMessage from "../middleware/request-validation/chat/validate-send-challenge-message"
 import validateRequestCareerQuestHint from "../middleware/request-validation/chat/validate-request-career-quest-hint"
@@ -47,7 +47,7 @@ chatRoutes.post(
 
 chatRoutes.post(
 	"/check-challenge-code/:challengeUUID",
-	validateCheckCareerQuestCode,
+	validateUserCode,
 	attachChallengeIdFromUUID,
 	attachChallengeChatId,
 	checkChallengeCode

@@ -10,3 +10,5 @@
 -- DELETE FROM challenge_sandbox;
 -- DELETE FROM career_user_progress;
 -- DELETE FROM user_seen_challenges;
+
+delete from completed_user_lesson;

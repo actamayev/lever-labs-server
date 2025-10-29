@@ -1,7 +1,7 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
 
-export default async function addFillInTheBlankUserAnswer(
+export default async function addOpenEndedActionToCodeUserAnswer(
 	userId: number,
 	questionId: QuestionUUID,
 	userCppAnswer: string,
@@ -10,10 +10,10 @@ export default async function addFillInTheBlankUserAnswer(
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		await prismaClient.fill_in_the_blank_user_answer.create({
+		await prismaClient.action_to_code_open_ended_question_user_answer.create({
 			data: {
 				user_id: userId,
-				fill_in_the_blank_id: questionId,
+				action_to_code_open_ended_question_id: questionId,
 				user_cpp_answer: userCppAnswer,
 				is_correct: isCorrect
 			}
