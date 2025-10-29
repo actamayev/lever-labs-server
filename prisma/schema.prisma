@@ -50,6 +50,8 @@ model credentials {
 	block_to_function_user_answer								block_to_function_user_answer[]
 	function_to_block_user_answer								function_to_block_user_answer[]
 	fill_in_the_blank_user_answer								fill_in_the_blank_user_answer[]
+	action_to_code_open_ended_question_user_answer				action_to_code_open_ended_question_user_answer[]
+	action_to_code_multiple_choice_user_answer					action_to_code_multiple_choice_user_answer[]
 	completed_user_lesson										completed_user_lesson[]
 }
 
@@ -413,6 +415,8 @@ enum QuestionType {
 	BLOCK_TO_FUNCTION
 	FUNCTION_TO_BLOCK
 	FILL_IN_BLANK
+	ACTION_TO_CODE_MULTIPLE_CHOICE
+	ACTION_TO_CODE_OPEN_ENDED
 }
 
 model question {
@@ -426,6 +430,8 @@ model question {
 	block_to_function_flashcard								block_to_function_flashcard?
 	function_to_block_flashcard								function_to_block_flashcard?
 	fill_in_the_blank										fill_in_the_blank?
+	action_to_code_multiple_choice_question					action_to_code_multiple_choice_question?
+	action_to_code_open_ended_question						action_to_code_open_ended_question?
 	
 	lesson_question_map										lesson_question_map[]
 }
@@ -438,6 +444,7 @@ model coding_block {
 	
 	block_to_function_flashcard								block_to_function_flashcard[]
 	function_to_block_answer_choice							function_to_block_answer_choice[]
+	action_to_code_multiple_choice_answer_choice			action_to_code_multiple_choice_answer_choice[]
 }
 
 model lesson {
@@ -497,7 +504,6 @@ model block_to_function_answer_choice {
 	block_to_function_flashcard_id							String
 	function_description_text								String
 	is_correct												Boolean
-	order													Int
 	
 	block_to_function_flashcard								block_to_function_flashcard @relation(fields: [block_to_function_flashcard_id], references: [question_id], onDelete: Cascade)
 	block_to_function_user_answer							block_to_function_user_answer[]
@@ -533,7 +539,6 @@ model function_to_block_answer_choice {
 	function_to_block_flashcard_id							String
 	coding_block_id											Int
 	is_correct												Boolean
-	order													Int
 	
 	function_to_block_flashcard								function_to_block_flashcard @relation(fields: [function_to_block_flashcard_id], references: [question_id], onDelete: Cascade)
 	coding_block											coding_block @relation(fields: [coding_block_id], references: [coding_block_id])
@@ -559,9 +564,9 @@ model function_to_block_user_answer {
 
 model fill_in_the_blank {
 	question_id												String    @id
+	question_text											String
 	initial_blockly_json									Json
 	reference_solution_cpp									String
-	question_text											String
 	
 	question												question  @relation(fields: [question_id], references: [question_id], onDelete: Cascade)
 	
@@ -579,6 +584,7 @@ model fill_in_the_blank_block_bank {
 	
 	@@index([fill_in_the_blank_id])
 	@@index([block_name_id])
+	@@unique([fill_in_the_blank_id, block_name_id])
 }
 
 model fill_in_the_blank_user_answer {
@@ -597,6 +603,7 @@ model fill_in_the_blank_user_answer {
 	@@index([fill_in_the_blank_id])
 }
 
+// This table is for blocks that go into the toolbox (blockly)
 model block_name {
 	block_name_id											Int       @id
 	block_name												String	  @unique
@@ -604,4 +611,84 @@ model block_name {
 	created_at												DateTime  @default(now())
 
 	fill_in_the_blank_block_bank							fill_in_the_blank_block_bank[]
+	action_to_code_open_ended_question_block_bank			action_to_code_open_ended_question_block_bank[]
+}
+
+model action_to_code_multiple_choice_question {
+	question_id												String    @id
+	question_text											String
+	reference_solution_cpp									String
+
+	question												question  @relation(fields: [question_id], references: [question_id], onDelete: Cascade)
+
+	action_to_code_multiple_choice_answer_choice			action_to_code_multiple_choice_answer_choice[]
+}
+
+model action_to_code_multiple_choice_answer_choice {
+	action_to_code_multiple_choice_answer_choice_id			Int       @id
+	action_to_code_multiple_choice_id						String
+	coding_block_id											Int
+	is_correct												Boolean
+	
+	action_to_code_multiple_choice_question					action_to_code_multiple_choice_question @relation(fields: [action_to_code_multiple_choice_id], references: [question_id], onDelete: Cascade)
+	coding_block											coding_block @relation(fields: [coding_block_id], references: [coding_block_id])
+	action_to_code_multiple_choice_user_answer				action_to_code_multiple_choice_user_answer[]
+	
+	@@index([action_to_code_multiple_choice_id])
+	@@index([coding_block_id])
+}
+
+model action_to_code_multiple_choice_user_answer {
+	action_to_code_multiple_choice_user_answer_id			Int       @id @default(autoincrement())
+	action_to_code_multiple_choice_answer_choice_id			Int
+	user_id													Int
+	
+	created_at												DateTime  @default(now())
+	
+	answer_choice											action_to_code_multiple_choice_answer_choice @relation(fields: [action_to_code_multiple_choice_answer_choice_id], references: [action_to_code_multiple_choice_answer_choice_id])
+	user													credentials @relation(fields: [user_id], references: [user_id])
+	
+	@@index([user_id])
+	@@index([action_to_code_multiple_choice_answer_choice_id])
+}
+
+
+model action_to_code_open_ended_question {
+	question_id												String    @id
+	question_text											String
+	initial_blockly_json									Json
+	reference_solution_cpp									String
+
+	question												question  @relation(fields: [question_id], references: [question_id], onDelete: Cascade)
+	action_to_code_open_ended_question_block_bank			action_to_code_open_ended_question_block_bank[]
+	action_to_code_open_ended_question_user_answer			action_to_code_open_ended_question_user_answer[]
+}
+
+model action_to_code_open_ended_question_block_bank {
+	action_to_code_open_ended_question_block_bank_id		Int       @id
+	action_to_code_open_ended_question_id					String
+	block_name_id											Int
+	
+	action_to_code_open_ended_question						action_to_code_open_ended_question @relation(fields: [action_to_code_open_ended_question_id], references: [question_id], onDelete: Cascade)
+	block_name												block_name @relation(fields: [block_name_id], references: [block_name_id])
+	
+	@@index([action_to_code_open_ended_question_id])
+	@@index([block_name_id])
+	@@unique([action_to_code_open_ended_question_id, block_name_id])
+}
+
+model action_to_code_open_ended_question_user_answer {
+	action_to_code_open_ended_question_user_answer_id		Int       @id @default(autoincrement())
+	action_to_code_open_ended_question_id					String
+	user_id													Int
+	user_cpp_answer											String
+	is_correct												Boolean
+	
+	created_at												DateTime  @default(now())
+	
+	action_to_code_open_ended_question						action_to_code_open_ended_question @relation(fields: [action_to_code_open_ended_question_id], references: [question_id])
+	user													credentials @relation(fields: [user_id], references: [user_id])
+	
+	@@index([user_id])
+	@@index([action_to_code_open_ended_question_id])
 }

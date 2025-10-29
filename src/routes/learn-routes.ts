@@ -1,8 +1,10 @@
 import express from "express"
 import validateLessonId from "../middleware/request-validation/learn/validate-lesson-id"
+import validateQuestionId from "../middleware/request-validation/learn/validate-question-id"
+import validateUserCode from "../middleware/request-validation/learn/validate-user-code"
 import validateBlockToFunctionAnswer from "../middleware/request-validation/learn/validate-block-to-function-answer"
 import validateFunctionToBlockAnswer from "../middleware/request-validation/learn/validate-function-to-block-answer"
-import validateCheckCareerQuestCode from "../middleware/request-validation/chat/validate-check-career-quest-code"
+import validateActionToCodeMultipleChoiceAnswer from "../middleware/request-validation/learn/validate-action-to-code-multiple-choice-answer"
 
 import getAllLessons from "../controllers/learn/get-all-lessons"
 import getDetailedLesson from "../controllers/learn/get-detailed-lesson"
@@ -10,6 +12,8 @@ import markLessonComplete from "../controllers/learn/mark-lesson-complete"
 import submitBlockToFunctionAnswer from "../controllers/learn/submit-block-to-function-answer"
 import submitFillInTheBlankAnswer from "../controllers/learn/submit-fill-in-the-blank-answer"
 import submitFunctionToBlockAnswer from "../controllers/learn/submit-function-to-block-answer"
+import submitActionToCodeMultipleChoiceAnswer from "../controllers/learn/submit-action-to-code-multiple-choice"
+import submitOpenEndedActionToCodeQuestion from "../controllers/learn/submit-open-ended-action-to-code-question"
 
 const learnRoutes = express.Router()
 
@@ -20,26 +24,38 @@ learnRoutes.get("/get-detailed-lesson/:lessonId", validateLessonId, getDetailedL
 learnRoutes.post("/mark-lesson-complete/:lessonId", validateLessonId, markLessonComplete)
 
 learnRoutes.post(
-	"/submit-block-to-function/:lessonId",
-	validateLessonId,
+	"/submit-block-to-function/:questionId",
+	validateQuestionId,
 	validateBlockToFunctionAnswer,
 	submitBlockToFunctionAnswer
 )
 
 learnRoutes.post(
-	"/submit-function-to-block/:lessonId",
-	validateLessonId,
+	"/submit-function-to-block/:questionId",
+	validateQuestionId,
 	validateFunctionToBlockAnswer,
 	submitFunctionToBlockAnswer
 )
 
-// TODO: For simple questions, we can just submit the answer choice id.
-// For more complex questions, we need to submit the full answer to the LLM
 learnRoutes.post(
-	"/submit-fill-in-the-blank/:lessonId",
-	validateLessonId,
-	validateCheckCareerQuestCode,
+	"/submit-fill-in-the-blank/:questionId",
+	validateQuestionId,
+	validateUserCode,
 	submitFillInTheBlankAnswer
+)
+
+learnRoutes.post(
+	"/submit-action-to-code-multiple-choice/:questionId",
+	validateQuestionId,
+	validateActionToCodeMultipleChoiceAnswer,
+	submitActionToCodeMultipleChoiceAnswer
+)
+
+learnRoutes.post(
+	"/submit-action-to-code-open-ended/:questionId",
+	validateQuestionId,
+	validateUserCode,
+	submitOpenEndedActionToCodeQuestion
 )
 
 export default learnRoutes
