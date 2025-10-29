@@ -1,19 +1,23 @@
 import { Response, Request } from "express"
-import { ErrorResponse, CheckAnswerResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, CheckMCQResponse } from "@lever-labs/common-ts/types/api"
 import addActionToCodeMultipleChoiceUserAnswer from "../../db-operations/write/user-answer/add-action-to-code-multiple-choice-user-answer"
-import checkActionToCodeMultipleChoiceAnswerChoice
+import getCorrectActionToCodeMultipleChoiceAnswerChoiceId
 	from "../../db-operations/read/action-to-code/check-action-to-code-multiple-choice-answer-choice"
+import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
 
 export default async function submitActionToCodeMultipleChoiceAnswer(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
-		const { answerChoiceId } = req.body as { answerChoiceId: number }
+		const { answerChoiceId, actionToCodeMultipleChoiceId } = req.body as {
+			answerChoiceId: number
+			actionToCodeMultipleChoiceId: QuestionUUID
+		}
 
 		await addActionToCodeMultipleChoiceUserAnswer(userId, answerChoiceId)
 
-		const isCorrect = await checkActionToCodeMultipleChoiceAnswerChoice(answerChoiceId)
+		const correctAnswerChoiceId = await getCorrectActionToCodeMultipleChoiceAnswerChoiceId(actionToCodeMultipleChoiceId)
 
-		res.status(200).json({ isCorrect } satisfies CheckAnswerResponse)
+		res.status(200).json({ correctAnswerId: correctAnswerChoiceId } satisfies CheckMCQResponse)
 		return
 	} catch (error) {
 		console.error(error)

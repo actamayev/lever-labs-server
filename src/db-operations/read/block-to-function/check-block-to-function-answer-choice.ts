@@ -1,19 +1,21 @@
 import { isNull } from "lodash"
 import PrismaClientClass from "../../../classes/prisma-client"
+import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
 
-export default async function checkBlockToFunctionAnswerChoice(answerChoiceId: number): Promise<boolean> {
+export default async function getCorrectBlockToFunctionAnswerChoiceId(questionId: QuestionUUID): Promise<number | null> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
-		const answerChoice = await prismaClient.block_to_function_answer_choice.findUnique({
+		const correctAnswerChoice = await prismaClient.block_to_function_answer_choice.findFirst({
 			where: {
-				block_to_function_answer_choice_id: answerChoiceId,
+				block_to_function_flashcard_id: questionId,
+				is_correct: true
 			},
 			select: {
-				is_correct: true
+				block_to_function_answer_choice_id: true
 			}
 		})
-		if (isNull(answerChoice)) return false
-		return answerChoice.is_correct
+		if (isNull(correctAnswerChoice)) return null
+		return correctAnswerChoice.block_to_function_answer_choice_id
 	} catch (error) {
 		console.error(error)
 		throw error

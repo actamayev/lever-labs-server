@@ -23,6 +23,7 @@ learnRoutes.get("/get-detailed-lesson/:lessonId", validateLessonId, getDetailedL
 
 learnRoutes.post("/mark-lesson-complete/:lessonId", validateLessonId, markLessonComplete)
 
+// TODO: None of the below endpoints use /lessonId. we should instead pass in questionId
 learnRoutes.post(
 	"/submit-block-to-function/:lessonId",
 	validateLessonId,

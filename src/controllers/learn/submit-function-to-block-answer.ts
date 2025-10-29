@@ -1,17 +1,21 @@
 import { Response, Request } from "express"
-import { ErrorResponse, CheckAnswerResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, CheckMCQResponse } from "@lever-labs/common-ts/types/api"
 import addFunctionToBlockUserAnswer from "../../db-operations/write/user-answer/add-function-to-block-user-answer"
-import checkFunctionToBlockAnswerChoice from "../../db-operations/read/function-to-block/check-function-to-block-answer-choice"
+import getCorrectFunctionToBlockAnswerChoiceId from "../../db-operations/read/function-to-block/check-function-to-block-answer-choice"
+import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
 
 export default async function submitFunctionToBlockAnswer(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
-		const { answerChoiceId } = req.body as { answerChoiceId: number }
+		const { answerChoiceId, functionToBlockFlashcardId } = req.body as {
+			answerChoiceId: number
+			functionToBlockFlashcardId: QuestionUUID
+		}
 
 		await addFunctionToBlockUserAnswer(userId, answerChoiceId)
-		const isCorrect = await checkFunctionToBlockAnswerChoice(answerChoiceId)
+		const correctAnswerChoiceId = await getCorrectFunctionToBlockAnswerChoiceId(functionToBlockFlashcardId)
 
-		res.status(200).json({ isCorrect } satisfies CheckAnswerResponse)
+		res.status(200).json({ correctAnswerId: correctAnswerChoiceId } satisfies CheckMCQResponse)
 		return
 	} catch (error) {
 		console.error(error)

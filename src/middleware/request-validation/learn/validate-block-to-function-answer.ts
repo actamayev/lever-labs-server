@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse } from "@lever-labs/common-ts/types/api"
 
 const blockToFunctionAnswerSchema = Joi.object({
+	blockToFunctionFlashcardId: Joi.string().uuid({ version: "uuidv4" }).required(),
 	answerChoiceId: Joi.number().integer().positive().required()
 }).required()
 
