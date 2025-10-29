@@ -1,7 +1,7 @@
 [
 	{
 		"question_id": "6ea3c0c0-1c58-43a8-b731-209fcbeca3f6",
-		"question_text": "Re-create my action in code",
+		"question_text": "Re-create the program Pip is running",
 		"initial_blockly_json": {},
 		"reference_solution_cpp": "rgbLed.set_led_red();"
 	}
