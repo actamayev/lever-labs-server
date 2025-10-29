@@ -37,7 +37,6 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 										block_to_function_answer_choice: {
 											select: {
 												block_to_function_answer_choice_id: true,
-												order: true,
 												function_description_text: true,
 												is_correct: true
 											}
@@ -56,7 +55,6 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 										function_to_block_answer_choice: {
 											select: {
 												function_to_block_answer_choice_id: true,
-												order: true,
 												is_correct: true,
 												coding_block: {
 													select: {
@@ -91,7 +89,6 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 										action_to_code_multiple_choice_answer_choice: {
 											select: {
 												action_to_code_multiple_choice_answer_choice_id: true,
-												order: true,
 												is_correct: true,
 												coding_block: {
 													select: {
@@ -99,6 +96,9 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 														coding_block_json: true
 													}
 												}
+											},
+											orderBy: {
+												action_to_code_multiple_choice_answer_choice_id: "asc"
 											}
 										}
 									}
@@ -149,27 +149,30 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 							codingBlockId: map.question.block_to_function_flashcard.coding_block.coding_block_id,
 							codingBlockJson: map.question.block_to_function_flashcard.coding_block.coding_block_json as BlocklyJson,
 						},
-						// eslint-disable-next-line max-len
-						blockToFunctionAnswerChoice: map.question.block_to_function_flashcard.block_to_function_answer_choice.map(choice => ({
-							blockToFunctionAnswerChoiceId: choice.block_to_function_answer_choice_id,
-							order: choice.order,
-							functionDescriptionText: choice.function_description_text,
-							isCorrect: choice.is_correct
-						})),
+
+						blockToFunctionAnswerChoice: map.question.block_to_function_flashcard.block_to_function_answer_choice
+							.sort(() => Math.random() - 0.5) // Randomize the order server-side
+							.map((choice, index) => ({
+								blockToFunctionAnswerChoiceId: choice.block_to_function_answer_choice_id,
+								order: index, // Randomized display order
+								functionDescriptionText: choice.function_description_text,
+								isCorrect: choice.is_correct
+							})),
 						questionText: map.question.block_to_function_flashcard.question_text
 					} : null,
 					functionToBlockFlashcard: map.question.function_to_block_flashcard ? {
 						questionText: map.question.function_to_block_flashcard.question_text,
-						// eslint-disable-next-line max-len
-						functionToBlockAnswerChoice: map.question.function_to_block_flashcard.function_to_block_answer_choice.map(choice => ({
-							functionToBlockAnswerChoiceId: choice.function_to_block_answer_choice_id,
-							order: choice.order,
-							codingBlock: {
-								codingBlockId: choice.coding_block.coding_block_id,
-								codingBlockJson: choice.coding_block.coding_block_json as BlocklyJson,
-							},
-							isCorrect: choice.is_correct
-						}))
+						functionToBlockAnswerChoice: map.question.function_to_block_flashcard.function_to_block_answer_choice
+							.sort(() => Math.random() - 0.5) // Randomize the order server-side
+							.map((choice, index) => ({
+								functionToBlockAnswerChoiceId: choice.function_to_block_answer_choice_id,
+								order: index, // Randomized display order
+								codingBlock: {
+									codingBlockId: choice.coding_block.coding_block_id,
+									codingBlockJson: choice.coding_block.coding_block_json as BlocklyJson,
+								},
+								isCorrect: choice.is_correct
+							}))
 					} : null,
 					fillInTheBlank: map.question.fill_in_the_blank ? {
 						questionText: map.question.fill_in_the_blank.question_text,
@@ -183,15 +186,17 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 						questionText: map.question.action_to_code_multiple_choice_question.question_text,
 						referenceSolutionCpp: map.question.action_to_code_multiple_choice_question.reference_solution_cpp,
 						// eslint-disable-next-line max-len
-						actionToCodeMultipleChoiceAnswerChoice: map.question.action_to_code_multiple_choice_question.action_to_code_multiple_choice_answer_choice.map(choice => ({
-							actionToCodeMultipleChoiceAnswerChoiceId: choice.action_to_code_multiple_choice_answer_choice_id,
-							order: choice.order,
-							codingBlock: {
-								codingBlockId: choice.coding_block.coding_block_id,
-								codingBlockJson: choice.coding_block.coding_block_json as BlocklyJson,
-							},
-							isCorrect: choice.is_correct
-						}))
+						actionToCodeMultipleChoiceAnswerChoice: map.question.action_to_code_multiple_choice_question.action_to_code_multiple_choice_answer_choice
+							.sort(() => Math.random() - 0.5) // Randomize the order server-side
+							.map((choice, index) => ({
+								actionToCodeMultipleChoiceAnswerChoiceId: choice.action_to_code_multiple_choice_answer_choice_id,
+								order: index, // Randomized display order
+								codingBlock: {
+									codingBlockId: choice.coding_block.coding_block_id,
+									codingBlockJson: choice.coding_block.coding_block_json as BlocklyJson,
+								},
+								isCorrect: choice.is_correct
+							}))
 					} : null,
 					actionToCodeOpenEnded: map.question.action_to_code_open_ended_question ? {
 						questionText: map.question.action_to_code_open_ended_question.question_text,

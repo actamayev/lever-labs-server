@@ -504,7 +504,6 @@ model block_to_function_answer_choice {
 	block_to_function_flashcard_id							String
 	function_description_text								String
 	is_correct												Boolean
-	order													Int
 	
 	block_to_function_flashcard								block_to_function_flashcard @relation(fields: [block_to_function_flashcard_id], references: [question_id], onDelete: Cascade)
 	block_to_function_user_answer							block_to_function_user_answer[]
@@ -540,7 +539,6 @@ model function_to_block_answer_choice {
 	function_to_block_flashcard_id							String
 	coding_block_id											Int
 	is_correct												Boolean
-	order													Int
 	
 	function_to_block_flashcard								function_to_block_flashcard @relation(fields: [function_to_block_flashcard_id], references: [question_id], onDelete: Cascade)
 	coding_block											coding_block @relation(fields: [coding_block_id], references: [coding_block_id])
@@ -631,7 +629,6 @@ model action_to_code_multiple_choice_answer_choice {
 	action_to_code_multiple_choice_id						String
 	coding_block_id											Int
 	is_correct												Boolean
-	order													Int
 	
 	action_to_code_multiple_choice_question					action_to_code_multiple_choice_question @relation(fields: [action_to_code_multiple_choice_id], references: [question_id], onDelete: Cascade)
 	coding_block											coding_block @relation(fields: [coding_block_id], references: [coding_block_id])

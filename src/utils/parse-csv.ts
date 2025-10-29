@@ -90,8 +90,7 @@ function isBlockToFunctionAnswerChoiceData(data: unknown): data is BlockToFuncti
         typeof d.block_to_function_answer_choice_id === "number" &&
         typeof d.block_to_function_flashcard_id === "string" &&
         typeof d.function_description_text === "string" &&
-        typeof d.is_correct === "boolean" &&
-        typeof d.order === "number"
+        typeof d.is_correct === "boolean"
 	)
 }
 
@@ -103,8 +102,7 @@ function isFunctionToBlockAnswerChoiceData(data: unknown): data is FunctionToBlo
         typeof d.function_to_block_answer_choice_id === "number" &&
         typeof d.function_to_block_flashcard_id === "string" &&
         typeof d.coding_block_id === "number" &&
-        typeof d.is_correct === "boolean" &&
-        typeof d.order === "number"
+        typeof d.is_correct === "boolean"
 	)
 }
 
@@ -126,8 +124,7 @@ function isActionToCodeMultipleChoiceAnswerChoiceData(data: unknown): data is Ac
         typeof d.action_to_code_multiple_choice_answer_choice_id === "number" &&
         typeof d.action_to_code_multiple_choice_id === "string" &&
         typeof d.coding_block_id === "number" &&
-        typeof d.is_correct === "boolean" &&
-        typeof d.order === "number"
+        typeof d.is_correct === "boolean"
 	)
 }
 

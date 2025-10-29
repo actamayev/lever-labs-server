@@ -69,7 +69,6 @@ declare global {
 		block_to_function_flashcard_id: string
 		function_description_text: string
 		is_correct: boolean
-		order: number
 	}
 
 	interface FunctionToBlockAnswerChoiceData {
@@ -77,7 +76,6 @@ declare global {
 		function_to_block_flashcard_id: string
 		coding_block_id: number
 		is_correct: boolean
-		order: number
 	}
 
 	interface BlockNameData {
@@ -96,7 +94,6 @@ declare global {
 		action_to_code_multiple_choice_id: string
 		coding_block_id: number
 		is_correct: boolean
-		order: number
 	}
 
 	interface ActionToCodeOpenEndedQuestionData {

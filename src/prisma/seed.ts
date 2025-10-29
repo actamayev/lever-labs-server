@@ -297,8 +297,7 @@ async function seedBlockToFunctionAnswerChoices(): Promise<void> {
 			!choice.block_to_function_answer_choice_id ||
 			!choice.block_to_function_flashcard_id ||
 			!choice.function_description_text ||
-			isUndefined(choice.is_correct) ||
-			isUndefined(choice.order)
+			isUndefined(choice.is_correct)
 		) {
 			throw new Error(`Invalid block to function answer choice data: ${JSON.stringify(choice)}`)
 		}
@@ -307,15 +306,13 @@ async function seedBlockToFunctionAnswerChoices(): Promise<void> {
 			update: {
 				block_to_function_flashcard_id: choice.block_to_function_flashcard_id,
 				function_description_text: choice.function_description_text,
-				is_correct: choice.is_correct,
-				order: choice.order
+				is_correct: choice.is_correct
 			},
 			create: {
 				block_to_function_answer_choice_id: choice.block_to_function_answer_choice_id,
 				block_to_function_flashcard_id: choice.block_to_function_flashcard_id,
 				function_description_text: choice.function_description_text,
-				is_correct: choice.is_correct,
-				order: choice.order
+				is_correct: choice.is_correct
 			}
 		})
 	}))
@@ -339,8 +336,7 @@ async function seedFunctionToBlockAnswerChoices(): Promise<void> {
 			!choice.function_to_block_answer_choice_id ||
 			!choice.function_to_block_flashcard_id ||
 			!choice.coding_block_id ||
-			isUndefined(choice.is_correct) ||
-			isUndefined(choice.order)
+			isUndefined(choice.is_correct)
 		) {
 			throw new Error(`Invalid function to block answer choice data: ${JSON.stringify(choice)}`)
 		}
@@ -349,15 +345,13 @@ async function seedFunctionToBlockAnswerChoices(): Promise<void> {
 			update: {
 				function_to_block_flashcard_id: choice.function_to_block_flashcard_id,
 				coding_block_id: choice.coding_block_id,
-				is_correct: choice.is_correct,
-				order: choice.order
+				is_correct: choice.is_correct
 			},
 			create: {
 				function_to_block_answer_choice_id: choice.function_to_block_answer_choice_id,
 				function_to_block_flashcard_id: choice.function_to_block_flashcard_id,
 				coding_block_id: choice.coding_block_id,
-				is_correct: choice.is_correct,
-				order: choice.order
+				is_correct: choice.is_correct
 			}
 		})
 	}))
@@ -430,8 +424,7 @@ async function seedActionToCodeMultipleChoiceAnswerChoices(): Promise<void> {
 			!choice.action_to_code_multiple_choice_answer_choice_id ||
 			!choice.action_to_code_multiple_choice_id ||
 			!choice.coding_block_id ||
-			isUndefined(choice.is_correct) ||
-			isUndefined(choice.order)
+			isUndefined(choice.is_correct)
 		) {
 			throw new Error(`Invalid action to code multiple choice answer choice data: ${JSON.stringify(choice)}`)
 		}
@@ -440,15 +433,13 @@ async function seedActionToCodeMultipleChoiceAnswerChoices(): Promise<void> {
 			update: {
 				action_to_code_multiple_choice_id: choice.action_to_code_multiple_choice_id,
 				coding_block_id: choice.coding_block_id,
-				is_correct: choice.is_correct,
-				order: choice.order
+				is_correct: choice.is_correct
 			},
 			create: {
 				action_to_code_multiple_choice_answer_choice_id: choice.action_to_code_multiple_choice_answer_choice_id,
 				action_to_code_multiple_choice_id: choice.action_to_code_multiple_choice_id,
 				coding_block_id: choice.coding_block_id,
-				is_correct: choice.is_correct,
-				order: choice.order
+				is_correct: choice.is_correct
 			}
 		})
 	}))
