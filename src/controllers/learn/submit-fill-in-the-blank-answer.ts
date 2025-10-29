@@ -6,17 +6,16 @@ import OpenAiClientClass from "../../classes/openai-client"
 import buildCheckFITBLLMContext, { fitbCheckResponseFormat } from "../../utils/llm/learn/build-check-fitb-llm-context"
 import { getRandomCorrectResponse, getRandomIncorrectResponse } from "../../utils/career-quest-responses"
 import retrieveFillInTheBlankQuestion from "../../db-operations/read/fill-in-the-blank/retrieve-fill-in-the-blank-question"
+import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
 
-// eslint-disable-next-line max-lines-per-function
 export default async function submitFillInTheBlankAnswer(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
-		const { fillInTheBlankId, userCode } = req.body as {
-			fillInTheBlankId: string; userCode: string
-		}
+		const { questionId } = req.params as { questionId: QuestionUUID }
+		const { userCode } = req.body as { userCode: string }
 
 		// Fetch reference solution and question text
-		const fitb = await retrieveFillInTheBlankQuestion(fillInTheBlankId)
+		const fitb = await retrieveFillInTheBlankQuestion(questionId)
 		if (!fitb) {
 			res.status(400).json({ error: "Invalid fill in the blank id" } satisfies ErrorResponse)
 			return
@@ -49,7 +48,7 @@ export default async function submitFillInTheBlankAnswer(req: Request, res: Resp
 		}
 
 		// Save to DB
-		await addFillInTheBlankUserAnswer(userId, fillInTheBlankId, userCode, result.isCorrect)
+		await addFillInTheBlankUserAnswer(userId, questionId, userCode, result.isCorrect)
 
 		// Return response
 		res.status(200).json({ isCorrect: result.isCorrect, feedback } satisfies CheckCodeResponse)

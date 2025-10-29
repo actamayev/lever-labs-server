@@ -7,17 +7,16 @@ import buildCheckOpenEndedActionToCodeQuestionLLMContext,
 import { getRandomCorrectResponse, getRandomIncorrectResponse } from "../../utils/career-quest-responses"
 import addOpenEndedActionToCodeUserAnswer from "../../db-operations/write/user-answer/add-open-ended-action-to-code-user-answer"
 import retrieveOpenEndedActionToCodeQuestion from "../../db-operations/read/action-to-code/retrieve-open-ended-action-to-code-question"
+import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
 
-// eslint-disable-next-line max-lines-per-function
 export default async function submitOpenEndedActionToCodeAnswer(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
-		const { actionToCodeOpenEndedId, userCode } = req.body as {
-			actionToCodeOpenEndedId: string; userCode: string
-		}
+		const { questionId } = req.params as { questionId: QuestionUUID }
+		const { userCode } = req.body as { userCode: string }
 
 		// Fetch reference solution and question text
-		const openEndedActionToCodeQuestion = await retrieveOpenEndedActionToCodeQuestion(actionToCodeOpenEndedId)
+		const openEndedActionToCodeQuestion = await retrieveOpenEndedActionToCodeQuestion(questionId)
 		if (!openEndedActionToCodeQuestion) {
 			res.status(400).json({ error: "Invalid open ended action to code id" } satisfies ErrorResponse)
 			return
@@ -50,7 +49,7 @@ export default async function submitOpenEndedActionToCodeAnswer(req: Request, re
 		}
 
 		// Save to DB
-		await addOpenEndedActionToCodeUserAnswer(userId, actionToCodeOpenEndedId, userCode, result.isCorrect)
+		await addOpenEndedActionToCodeUserAnswer(userId, questionId, userCode, result.isCorrect)
 
 		// Return response
 		res.status(200).json({ isCorrect: result.isCorrect, feedback } satisfies CheckCodeResponse)

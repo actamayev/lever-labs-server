@@ -1,10 +1,9 @@
 import express from "express"
 import validateLessonId from "../middleware/request-validation/learn/validate-lesson-id"
 import validateQuestionId from "../middleware/request-validation/learn/validate-question-id"
-import validateFillInTheBlankCode from "../middleware/request-validation/learn/validate-fill-in-the-blank-code"
+import validateUserCode from "../middleware/request-validation/learn/validate-user-code"
 import validateBlockToFunctionAnswer from "../middleware/request-validation/learn/validate-block-to-function-answer"
 import validateFunctionToBlockAnswer from "../middleware/request-validation/learn/validate-function-to-block-answer"
-import validateOpenEndedActionToCode from "../middleware/request-validation/learn/validate-open-ended-action-to-code"
 import validateActionToCodeMultipleChoiceAnswer from "../middleware/request-validation/learn/validate-action-to-code-multiple-choice-answer"
 
 import getAllLessons from "../controllers/learn/get-all-lessons"
@@ -41,7 +40,7 @@ learnRoutes.post(
 learnRoutes.post(
 	"/submit-fill-in-the-blank/:questionId",
 	validateQuestionId,
-	validateFillInTheBlankCode,
+	validateUserCode,
 	submitFillInTheBlankAnswer
 )
 
@@ -55,7 +54,7 @@ learnRoutes.post(
 learnRoutes.post(
 	"/submit-action-to-code-open-ended/:questionId",
 	validateQuestionId,
-	validateOpenEndedActionToCode,
+	validateUserCode,
 	submitOpenEndedActionToCodeQuestion
 )
 

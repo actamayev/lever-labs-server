@@ -1,8 +1,9 @@
 import PrismaClientClass from "../../../classes/prisma-client"
+import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
 
 export default async function addOpenEndedActionToCodeUserAnswer(
 	userId: number,
-	openEndedActionToCodeQuestionId: string,
+	questionId: QuestionUUID,
 	userCppAnswer: string,
 	isCorrect: boolean
 ): Promise<void> {
@@ -12,7 +13,7 @@ export default async function addOpenEndedActionToCodeUserAnswer(
 		await prismaClient.action_to_code_open_ended_question_user_answer.create({
 			data: {
 				user_id: userId,
-				action_to_code_open_ended_question_id: openEndedActionToCodeQuestionId,
+				action_to_code_open_ended_question_id: questionId,
 				user_cpp_answer: userCppAnswer,
 				is_correct: isCorrect
 			}
