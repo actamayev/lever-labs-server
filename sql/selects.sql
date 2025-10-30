@@ -1,13 +1,13 @@
 -- SELECT * FROM credentials ORDER BY created_at;
 -- Select * from login_history;
-SELECT * FROM profile_picture;
+-- SELECT * FROM profile_picture;
 -- SELECT * FROM pip_uuid;
 -- SELECT * FROM career_quest_message;
 -- SELECT * FROM career_user_progress;
 -- SELECT * FROM teacher;
 -- SELECT * FROM student;
 -- SELECT * FROM challenge ORDER BY created_at;
--- SELECT * FROM sandbox_project ORDER BY updated_at;
+SELECT * FROM sandbox_project ORDER BY updated_at;
 
 -- SELECT * FROM pip_uuid ORDER BY created_at;
 
