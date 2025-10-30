@@ -7,7 +7,7 @@
 -- SELECT * FROM teacher;
 -- SELECT * FROM student;
 -- SELECT * FROM challenge ORDER BY created_at;
--- SELECT * FROM sandbox_project ORDER BY updated_at;
+SELECT * FROM sandbox_project ORDER BY updated_at;
 
 -- SELECT * FROM pip_uuid ORDER BY created_at;
 

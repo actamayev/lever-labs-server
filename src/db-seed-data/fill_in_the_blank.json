@@ -39,8 +39,8 @@
 		  ]
 		}
 	  },
-	  "reference_solution_cpp": "while(true) {\nif (is_right_button_pressed()) {\n rgbLed.set_led_white();\n} else {\nrgbLed.turn_led_off();\n}",
-	  "question_text": "When my button is pressed, turn my LEDs white. When my button isn't pressed, turn my LEDs off. "
+	  "reference_solution_cpp": "while(true) {\nif (right_button.is_pressed()) {\n all_leds.set_color(WHITE);\n} else {\nall_leds.set_color(OFF);\n}",
+	  "question_text": "When my right button is pressed, turn my LEDs white. When my right button isn't pressed, turn my LEDs off. "
 	},
 	{
 	  "question_id": "ee79d412-4992-4c45-9cda-c241427e31d9",
@@ -82,8 +82,8 @@
 		  ]
 		}
 	  },
-	  "reference_solution_cpp": "while(true) {\n    if (is_right_button_pressed()) {\n rgbLed.turn_led_off();\n    } else {\n        rgbLed.set_led_yellow();\n    }\n}",
-	  "question_text": "When my button is pressed, turn my LEDs off. When my button isn't pressed, turn my LEDs yellow."
+	  "reference_solution_cpp": "while(true) {\n    if (right_button.is_pressed()) {\n all_leds.set_color(OFF);\n    } else {\n        all_leds.set_color(YELLOW);\n    }\n}",
+	  "question_text": "When my right button is pressed, turn my LEDs off. When my right button isn't pressed, turn my LEDs yellow."
 	},
 	{
 	  "question_id": "83f52273-c4e9-43de-8a08-76d14de7b1d9",
@@ -125,25 +125,25 @@
 		  ]
 		}
 	  },
-	  "reference_solution_cpp": "while(true) {\n    if (is_right_button_pressed()) {\n        play_tone(\"E\");\n        rgbLed.set_led_white();\n    } else {\n        rgbLed.set_led_red();\n    }\n}",
-	  "question_text": "When my button is pressed, play the tone E, and turn my LEDs white. When the button is not pressed, turn my LEDs red."
+	  "reference_solution_cpp": "while(true) {\n    if (right_button.is_pressed()) {\n        speaker.play_tone(\"E\");\n        all_leds.set_color(WHITE);\n    } else {\n        all_leds.set_color(RED);\n    }\n}",
+	  "question_text": "When my right button is pressed, play the tone E, and turn my LEDs white. When the right button is not pressed, turn my LEDs red."
 	},
 	{
 	  "question_id": "ae676256-538b-4859-9f7c-87353977f4da",
 	  "initial_blockly_json": {},
-	  "reference_solution_cpp": "turn(CLOCKWISE, 180);\n turn(COUNTERCLOCKWISE, 180);",
+	  "reference_solution_cpp": "motors.turn(CLOCKWISE, 180);\n motors.turn(COUNTERCLOCKWISE, 180);",
 	  "question_text": "Make Pip turn 180 degrees clockwise and then 180 degrees counter clockwise"
 	},
 	{
 	  "question_id": "d3226479-98d4-402d-89b0-f901b45a7b35",
 	  "initial_blockly_json": {},
-	  "reference_solution_cpp": "drive_time(FORWARD, 0.5, 20);\n wait(2);\n drive_time(BACKWARD, 0.5, 20);",
+	  "reference_solution_cpp": "motors.drive_time(FORWARD, 0.5, 20);\n wait(2);\n motors.drive_time(BACKWARD, 0.5, 20);",
 	  "question_text": "Make Pip drive forward for 0.5 seconds at 20 percent speed, wait 2 seconds, then backwards for 0.5 seconds at 20 percent speed."
 	},
 	{
 	  "question_id": "696c0bdf-d52b-4842-823d-f89090974254",
 	  "initial_blockly_json": {},
-	  "reference_solution_cpp": "while(true) {\n    if (is_object_red()) {\n        play_tone(\"A\");\n    } else if (is_object_yellow()) {\n        play_tone(\"B\");\n    } else if (is_object_blue()) {\n        play_tone(\"C\");\n    } else {\n        play_tone(\"D\");\n    }\n}",
+	  "reference_solution_cpp": "while(true) {\n    if (color_sensor.is_object(RED)) {\n       speaker.play_tone(\"A\");\n    } else if (color_sensor.is_object(YELLOW)) {\n        speaker.play_tone(\"B\");\n    } else if (color_sensor.is_object(BLUE)) {\n        speaker.play_tone(\"C\");\n    } else {\n        speaker.play_tone(\"D\");\n    }\n}",
 	  "question_text": "Make Pip play different tone when Pip sees different colors (Red, Yellow, Blue, Other)"
 	},
 	{
