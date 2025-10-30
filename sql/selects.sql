@@ -1,6 +1,6 @@
 -- SELECT * FROM credentials ORDER BY created_at;
 -- Select * from login_history;
--- SELECT * FROM profile_picture;
+SELECT * FROM profile_picture;
 -- SELECT * FROM pip_uuid;
 -- SELECT * FROM career_quest_message;
 -- SELECT * FROM career_user_progress;

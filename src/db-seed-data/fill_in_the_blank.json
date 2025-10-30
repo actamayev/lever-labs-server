@@ -39,7 +39,7 @@
 		  ]
 		}
 	  },
-	  "reference_solution_cpp": "while(true) {\nif (is_right_button_pressed()) {\n rgbLed.set_led_white();\n} else {\nrgbLed.turn_led_off();\n}",
+	  "reference_solution_cpp": "while(true) {\nif (right_button.is_pressed()) {\n rgbLed.set_led_white();\n} else {\nrgbLed.turn_led_off();\n}",
 	  "question_text": "When my button is pressed, turn my LEDs white. When my button isn't pressed, turn my LEDs off. "
 	},
 	{
@@ -82,7 +82,7 @@
 		  ]
 		}
 	  },
-	  "reference_solution_cpp": "while(true) {\n    if (is_right_button_pressed()) {\n rgbLed.turn_led_off();\n    } else {\n        rgbLed.set_led_yellow();\n    }\n}",
+	  "reference_solution_cpp": "while(true) {\n    if (right_button.is_pressed()) {\n rgbLed.turn_led_off();\n    } else {\n        rgbLed.set_led_yellow();\n    }\n}",
 	  "question_text": "When my button is pressed, turn my LEDs off. When my button isn't pressed, turn my LEDs yellow."
 	},
 	{
@@ -125,7 +125,7 @@
 		  ]
 		}
 	  },
-	  "reference_solution_cpp": "while(true) {\n    if (is_right_button_pressed()) {\n        play_tone(\"E\");\n        rgbLed.set_led_white();\n    } else {\n        rgbLed.set_led_red();\n    }\n}",
+	  "reference_solution_cpp": "while(true) {\n    if (right_button.is_pressed()) {\n        speaker.play_tone(\"E\");\n        rgbLed.set_led_white();\n    } else {\n        rgbLed.set_led_red();\n    }\n}",
 	  "question_text": "When my button is pressed, play the tone E, and turn my LEDs white. When the button is not pressed, turn my LEDs red."
 	},
 	{
@@ -143,7 +143,7 @@
 	{
 	  "question_id": "696c0bdf-d52b-4842-823d-f89090974254",
 	  "initial_blockly_json": {},
-	  "reference_solution_cpp": "while(true) {\n    if (is_object_red()) {\n        play_tone(\"A\");\n    } else if (is_object_yellow()) {\n        play_tone(\"B\");\n    } else if (is_object_blue()) {\n        play_tone(\"C\");\n    } else {\n        play_tone(\"D\");\n    }\n}",
+	  "reference_solution_cpp": "while(true) {\n    if (is_object_red()) {\n       speaker.play_tone(\"A\");\n    } else if (is_object_yellow()) {\n        speaker.play_tone(\"B\");\n    } else if (is_object_blue()) {\n        speaker.play_tone(\"C\");\n    } else {\n        speaker.play_tone(\"D\");\n    }\n}",
 	  "question_text": "Make Pip play different tone when Pip sees different colors (Red, Yellow, Blue, Other)"
 	},
 	{
