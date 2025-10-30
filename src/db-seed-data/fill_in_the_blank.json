@@ -40,7 +40,7 @@
 		}
 	  },
 	  "reference_solution_cpp": "while(true) {\nif (right_button.is_pressed()) {\n all_leds.set_color(WHITE);\n} else {\nall_leds.set_color(OFF);\n}",
-	  "question_text": "When my button is pressed, turn my LEDs white. When my button isn't pressed, turn my LEDs off. "
+	  "question_text": "When my right button is pressed, turn my LEDs white. When my right button isn't pressed, turn my LEDs off. "
 	},
 	{
 	  "question_id": "ee79d412-4992-4c45-9cda-c241427e31d9",
@@ -83,7 +83,7 @@
 		}
 	  },
 	  "reference_solution_cpp": "while(true) {\n    if (right_button.is_pressed()) {\n all_leds.set_color(OFF);\n    } else {\n        all_leds.set_color(YELLOW);\n    }\n}",
-	  "question_text": "When my button is pressed, turn my LEDs off. When my button isn't pressed, turn my LEDs yellow."
+	  "question_text": "When my right button is pressed, turn my LEDs off. When my right button isn't pressed, turn my LEDs yellow."
 	},
 	{
 	  "question_id": "83f52273-c4e9-43de-8a08-76d14de7b1d9",
@@ -126,7 +126,7 @@
 		}
 	  },
 	  "reference_solution_cpp": "while(true) {\n    if (right_button.is_pressed()) {\n        speaker.play_tone(\"E\");\n        all_leds.set_color(WHITE);\n    } else {\n        all_leds.set_color(RED);\n    }\n}",
-	  "question_text": "When my button is pressed, play the tone E, and turn my LEDs white. When the button is not pressed, turn my LEDs red."
+	  "question_text": "When my right button is pressed, play the tone E, and turn my LEDs white. When the right button is not pressed, turn my LEDs red."
 	},
 	{
 	  "question_id": "ae676256-538b-4859-9f7c-87353977f4da",
