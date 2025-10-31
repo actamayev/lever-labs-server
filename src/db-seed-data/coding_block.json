@@ -2463,5 +2463,52 @@
 			  ]
 			}
 		  }
+	},
+	{
+		"coding_block_id": 84,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "for_loop",
+				  "id": "@~thSs4g]BpCRgNZzio_",
+				  "x": -270,
+				  "y": -670,
+				  "inputs": {
+					"TIMES": {
+					  "block": {
+						"type": "math_number",
+						"id": "iA`.+zI2jR*/o({ytiOv",
+						"fields": {
+						  "NUMBER_NUM": 5
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 85,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "wait",
+				  "id": "scu:u6PW[i%FL@(!JSyp",
+				  "x": -170,
+				  "y": -550,
+				  "fields": {
+					"wait": 5,
+					"SECONDS_LABEL": "seconds"
+				  }
+				}
+			  ]
+			}
+		  }
 	}
 ]

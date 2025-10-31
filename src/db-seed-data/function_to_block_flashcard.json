@@ -134,5 +134,9 @@
 	{
 		"question_id": "c479c80a-f42b-48fe-b66b-8fe4c8a40c33",
 		"question_text": "Which block checks if there's something within 5 inches of Pip?"
+	},
+	{
+		"question_id": "8e80d309-52a6-42ad-9a58-2e7d39b9bfe2",
+		"question_text": "Which block would make Pip repeat an action exactly 5 times?"
 	}
 ]

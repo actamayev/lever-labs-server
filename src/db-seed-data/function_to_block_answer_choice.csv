@@ -101,3 +101,6 @@ function_to_block_answer_choice_id ,function_to_block_flashcard_id       ,coding
                                103 ,c479c80a-f42b-48fe-b66b-8fe4c8a40c33 ,             80 ,false
                                104 ,c479c80a-f42b-48fe-b66b-8fe4c8a40c33 ,             81 ,true
                                105 ,c479c80a-f42b-48fe-b66b-8fe4c8a40c33 ,             82 ,false
+                               106 ,8e80d309-52a6-42ad-9a58-2e7d39b9bfe2 ,             53 ,false
+                               107 ,8e80d309-52a6-42ad-9a58-2e7d39b9bfe2 ,             84 ,true
+                               108 ,8e80d309-52a6-42ad-9a58-2e7d39b9bfe2 ,             85 ,false
