@@ -88,4 +88,7 @@ function_to_block_answer_choice_id ,function_to_block_flashcard_id       ,coding
                                 90 ,46de05b0-9d31-41f1-9c40-547c2636bd77 ,             62 ,false
                                 91 ,5738e467-6588-4ba0-94a4-b18058bebf91 ,             64 ,true
                                 92 ,5738e467-6588-4ba0-94a4-b18058bebf91 ,             65 ,false
-                                93 ,5738e467-6588-4ba0-94a4-b18058bebf91 ,             6 ,false
+                                93 ,5738e467-6588-4ba0-94a4-b18058bebf91 ,              6 ,false
+                                94 ,06a52833-ee83-4e80-a8ce-65dfba48e70d ,             38 ,false
+                                95 ,06a52833-ee83-4e80-a8ce-65dfba48e70d ,             11 ,true
+                                96 ,06a52833-ee83-4e80-a8ce-65dfba48e70d ,              3 ,false

@@ -118,5 +118,9 @@
 	{
 		"question_id": "5738e467-6588-4ba0-94a4-b18058bebf91",
 		"question_text": "Which block checks if there's something in front of Pip?"
+	},
+	{
+		"question_id": "06a52833-ee83-4e80-a8ce-65dfba48e70d",
+		"question_text": "Which block would make Pip play the tone B?"
 	}
 ]
