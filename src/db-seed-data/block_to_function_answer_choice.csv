@@ -107,6 +107,9 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                106 ,7aa502a3-6cda-4447-a716-d223f622be92 ,If object is less than 5 inches OR more than 10 inches                                                  ,false
                                107 ,7aa502a3-6cda-4447-a716-d223f622be92 ,If object is between 5 and 10 inches                                                                    ,true
                                108 ,7aa502a3-6cda-4447-a716-d223f622be92 ,If object is exactly 5 or 10 inches away                                                                ,false
-                               109 ,e1927b07-b34c-44cb-9c68-da1127d30a8e ,2 different outcomes                                                                ,false
-                               110 ,e1927b07-b34c-44cb-9c68-da1127d30a8e ,3 different outcomes                                                                ,false
-                               111 ,e1927b07-b34c-44cb-9c68-da1127d30a8e ,4 different outcomes                                                                ,true
+                               109 ,e1927b07-b34c-44cb-9c68-da1127d30a8e ,2 different outcomes                                                                                    ,false
+                               110 ,e1927b07-b34c-44cb-9c68-da1127d30a8e ,3 different outcomes                                                                                    ,false
+                               111 ,e1927b07-b34c-44cb-9c68-da1127d30a8e ,4 different outcomes                                                                                    ,true
+                               112 ,09c540bd-8069-4765-99d8-a56f5cb51a83 ,"Turns LEDs red, yellow, or green based on three distance ranges, off if farther than 10 inches"        ,true
+                               113 ,09c540bd-8069-4765-99d8-a56f5cb51a83 ,Turns LEDs off for any distance                                                                         ,false
+                               114 ,09c540bd-8069-4765-99d8-a56f5cb51a83 ,Only checks if object is within 3 inches                                                                ,false
