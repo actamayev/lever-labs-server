@@ -83,3 +83,6 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                 82, 0f6faf83-706d-4f6c-9889-9dafd94d848d, Turns LEDs white once when button is pressed, false
                                 83, 0f6faf83-706d-4f6c-9889-9dafd94d848d, Turns LEDs white forever when button is pressed , true
                                 84, 0f6faf83-706d-4f6c-9889-9dafd94d848d, Turns LEDs off when button is pressed, false
+                                85, b415eb9f-562c-41e0-8a58-15796ca6a5b2, Makes Pip move forward forever at 50% speed, false
+                                86, b415eb9f-562c-41e0-8a58-15796ca6a5b2, Makes Pip move forward 10 inches at 50% speed, true
+                                87, b415eb9f-562c-41e0-8a58-15796ca6a5b2, Makes Pip move forward for 10 seconds at 50% speed, false
