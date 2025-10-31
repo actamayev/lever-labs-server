@@ -86,8 +86,8 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                 85 ,b415eb9f-562c-41e0-8a58-15796ca6a5b2 ,Makes Pip move forward forever at 50% speed                                                                  ,false
                                 86 ,b415eb9f-562c-41e0-8a58-15796ca6a5b2 ,Makes Pip move forward 10 inches at 50% speed                                                                ,true
                                 87 ,b415eb9f-562c-41e0-8a58-15796ca6a5b2 ,Makes Pip move forward for 10 seconds at 50% speed                                                           ,false
-                                88 ,824a13c5-a07c-4100-87a9-93bb58ce9eb9 ,"Block A drives forever, Block B drives 5 inches"                                                            ,false
-                                89 ,824a13c5-a07c-4100-87a9-93bb58ce9eb9 ,"Block A drives 5 inches then stops, Block B drives forward until told to stop"                              ,true
+                                88 ,824a13c5-a07c-4100-87a9-93bb58ce9eb9 ,"The top block drives 5 inches, then stops. The bottom block drives forever"                                 ,false
+                                89 ,824a13c5-a07c-4100-87a9-93bb58ce9eb9 ,"The top block drives forward until told to stop. The bottom block drives 5 inches then stops"               ,true
                                 90 ,824a13c5-a07c-4100-87a9-93bb58ce9eb9 ,They do the same thing                                                                                       ,false
                                 91 ,914f3efc-530e-495f-abf9-9608eeca06e9 ,If there's any object in front of Pip                                                                        ,false
                                 92 ,914f3efc-530e-495f-abf9-9608eeca06e9 ,If there's an object less than 5 inches from Pip                                                             ,true
