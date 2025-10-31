@@ -523,8 +523,6 @@ async function main(): Promise<void> {
 		await seedChallenges()
 
 
-		await seedFillInTheBlankBlockBanks()
-
 		// Seed lesson system
 		await seedCodingBlocks()
 		await seedBlockNames()
@@ -536,6 +534,7 @@ async function main(): Promise<void> {
 		await seedBlockToFunctionFlashcards()
 		await seedFunctionToBlockFlashcards()
 		await seedFillInTheBlanks()
+		await seedFillInTheBlankBlockBanks()
 		await seedActionToCodeMultipleChoiceQuestions()
 		await seedActionToCodeOpenEndedQuestions()
 
