@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import isEmpty from "lodash/isEmpty"
+
 /**
  * Deletes records from the database that don't exist in the source data
  * @param model - Prisma model delegate (e.g., prismaClient.career)
@@ -26,14 +28,13 @@ export default async function deleteOrphanedRecords<T extends Record<string, any
 	const idsToDelete = existingIds.filter((id: any) => !sourceIds.includes(id))
 
 	// Delete orphaned records
-	if (idsToDelete.length > 0) {
-		await model.deleteMany({
-			where: {
-				[idField]: {
-					in: idsToDelete
-				}
+	if (isEmpty(idsToDelete)) return
+	await model.deleteMany({
+		where: {
+			[idField]: {
+				in: idsToDelete
 			}
-		})
-		console.info(`🗑️  Deleted ${idsToDelete.length} orphaned ${tableName} record(s)`)
-	}
+		}
+	})
+	console.info(`🗑️  Deleted ${idsToDelete.length} orphaned ${tableName} record(s)`)
 }
