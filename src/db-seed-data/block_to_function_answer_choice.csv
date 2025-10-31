@@ -92,3 +92,6 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                 91 ,914f3efc-530e-495f-abf9-9608eeca06e9 ,If there's any object in front of Pip                                                      ,false
                                 92 ,914f3efc-530e-495f-abf9-9608eeca06e9 ,If there's an object less than 5 inches from Pip                                           ,true
                                 93 ,914f3efc-530e-495f-abf9-9608eeca06e9 ,If there's an object more than 5 inches from Pip                                           ,false
+                                94 ,4c5ebb77-93b5-4f6b-bd6e-91eee012f828 ,Checks if object is exactly 10 inches away                                                 ,false
+                                95 ,4c5ebb77-93b5-4f6b-bd6e-91eee012f828 ,Checks if object is less than 10 inches away                                               ,false
+                                96 ,4c5ebb77-93b5-4f6b-bd6e-91eee012f828 ,Checks if object is more than 10 inches away                                               ,true
