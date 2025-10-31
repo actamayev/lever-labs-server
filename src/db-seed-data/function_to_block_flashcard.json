@@ -142,5 +142,9 @@
 	{
 		"question_id": "55dfd180-2374-4c17-b0d2-bc0d7a1abea4",
 		"question_text": "Which block would make Pip play the tone F?"
+	},
+	{
+		"question_id": "930a8904-f5ac-4307-9650-f60327bba7d0",
+		"question_text": "Which block sequence would make Pip drive backward at 10% speed until you tell it to stop?"
 	}
 ]
