@@ -3,5 +3,10 @@
 		"question_id": "7f77e501-8eed-4e18-8a5c-5796081cc35d",
 		"question_text": "Watch what Pip does, then recreate the code!",
 		"reference_solution_cpp": "while(true) {\n all_leds.set_color(BLUE);\n wait(1);\n all_leds.set_color(GREEN);\n wait(1);\n }"
+	},
+	{
+		"question_id": "ceb4ca88-c2ea-4497-9fdb-a07bf40c13c9",
+		"question_text": "Watch what Pip does, then recreate the code!",
+		"reference_solution_cpp": "while(true) { if (front_distance_sensor.is_object_in_front()) { all_leds.set_color(WHITE); } else { all_leds.set_color(OFF); } }"
 	}
 ]
