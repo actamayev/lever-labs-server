@@ -1,4 +1,7 @@
 action_to_code_multiple_choice_answer_choice_id ,action_to_code_multiple_choice_id    ,coding_block_id ,is_correct
-1, f8d41eef-65b0-40ef-b98a-f21dadfc6342, 66, true
-2, f8d41eef-65b0-40ef-b98a-f21dadfc6342, 67, false
-3, f8d41eef-65b0-40ef-b98a-f21dadfc6342, 68, false
+                                              1 ,f8d41eef-65b0-40ef-b98a-f21dadfc6342 ,             66 ,true
+                                              2 ,f8d41eef-65b0-40ef-b98a-f21dadfc6342 ,             67 ,false
+                                              3 ,f8d41eef-65b0-40ef-b98a-f21dadfc6342 ,             68 ,false
+                                              4 ,fca32f5f-066c-4d53-8bbd-9fadaf32426d ,             73 ,true
+                                              5 ,fca32f5f-066c-4d53-8bbd-9fadaf32426d ,             74 ,false
+                                              6 ,fca32f5f-066c-4d53-8bbd-9fadaf32426d ,             75 ,false
