@@ -95,3 +95,6 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                 94 ,4c5ebb77-93b5-4f6b-bd6e-91eee012f828 ,Checks if object is exactly 10 inches away                                                 ,false
                                 95 ,4c5ebb77-93b5-4f6b-bd6e-91eee012f828 ,Checks if object is less than 10 inches away                                               ,false
                                 96 ,4c5ebb77-93b5-4f6b-bd6e-91eee012f828 ,Checks if object is more than 10 inches away                                               ,true
+                                97 ,c31a671b-b8b7-4b4f-bc28-67d8a7f988e8 ,Pip drives forward 25 inches                                                               ,false
+                                98 ,c31a671b-b8b7-4b4f-bc28-67d8a7f988e8 ,"Pip drives forward at 25% speed for 2 seconds, then stops"                                ,true
+                                99 ,c31a671b-b8b7-4b4f-bc28-67d8a7f988e8 ,Pip drives forward 2 inches at 25% speed                                                   ,false
