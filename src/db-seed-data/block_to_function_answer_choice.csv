@@ -101,3 +101,6 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                100 ,55dfd180-2374-4c17-b0d2-bc0d7a1abea4 ,"Turns LEDs red if object is within 3 inches, blue if between 3-8 inches, off if farther than 8 inches" ,true
                                101 ,55dfd180-2374-4c17-b0d2-bc0d7a1abea4 ,"Turns LEDs red if object is exactly 3 inches away, blue if exactly 8 inches away"                      ,false
                                102 ,55dfd180-2374-4c17-b0d2-bc0d7a1abea4 ,"Turns LEDs blue for any object, red only if within 3 inches"                                           ,false
+                               103 ,930a8904-f5ac-4307-9650-f60327bba7d0 ,They do the same thing                                                                                  ,false
+                               104 ,930a8904-f5ac-4307-9650-f60327bba7d0 ,"Block A checks one condition, Block B checks two conditions and has three possible outcomes"           ,true
+                               105 ,930a8904-f5ac-4307-9650-f60327bba7d0 ,Block B is faster than Block A                                                                          ,false
