@@ -33,3 +33,4 @@ block_name_id ,block_name
            35 ,color_sensor_read
            36 ,play_sound
            37 ,play_tone
+           38 ,get_front_distance_sensor_distance

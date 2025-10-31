@@ -1,5 +1,5 @@
 To copy important files to AWS, run the following commands from the lever-labs-server root directory.
-Locally, run `pnpm run build`
+Locally, run `sudo pnpm run build`
 
 Staging:
 	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./package.json ubuntu@34.229.209.115:/home/ubuntu/lever-labs

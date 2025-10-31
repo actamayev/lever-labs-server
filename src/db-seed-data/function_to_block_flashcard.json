@@ -114,5 +114,41 @@
 	{
 	  "question_id": "46de05b0-9d31-41f1-9c40-547c2636bd77",
 	  "question_text": "Which block sequence makes Pip execute a repeating motion pattern?"
+	},
+	{
+		"question_id": "5738e467-6588-4ba0-94a4-b18058bebf91",
+		"question_text": "Which block checks if there's something in front of Pip?"
+	},
+	{
+		"question_id": "06a52833-ee83-4e80-a8ce-65dfba48e70d",
+		"question_text": "Which block would make Pip play the tone B?"
+	},
+	{
+		"question_id": "a4cc4b7b-e6d5-4e94-af51-058866ac900d",
+		"question_text": "Which block would Pip use if he needed to get the precise distance (in inches) of an object in front of him?"
+	},
+	{
+		"question_id": "3a884988-5e2b-4235-a4d1-b73f234e07ff",
+		"question_text": "Which block sequence turns Pip's LEDs off when the right button is pressed, and makes them blue when it isn't pressed?"
+	},
+	{
+		"question_id": "c479c80a-f42b-48fe-b66b-8fe4c8a40c33",
+		"question_text": "Which block checks if there's something within 5 inches of Pip?"
+	},
+	{
+		"question_id": "8e80d309-52a6-42ad-9a58-2e7d39b9bfe2",
+		"question_text": "Which block would make Pip repeat an action exactly 5 times?"
+	},
+	{
+		"question_id": "1661eae1-fc8b-4938-8a8b-65dcea5302e3",
+		"question_text": "Which block sequence would make Pip drive backward at 10% speed until you tell it to stop?"
+	},
+	{
+		"question_id": "8f34a829-7cbf-4c61-a2df-d6b48a1c78af",
+		"question_text": "Which code checks if the right button is pressed AND there's an object in front of Pip?"
+	},
+	{
+		"question_id": "18b9e3cd-2782-49d7-8a3d-f7fb9f2554b1",
+		"question_text": "Which block would make Pip slowly move forward at 12% speed continuously?"
 	}
 ]
