@@ -92,3 +92,6 @@ function_to_block_answer_choice_id ,function_to_block_flashcard_id       ,coding
                                 94 ,06a52833-ee83-4e80-a8ce-65dfba48e70d ,             38 ,false
                                 95 ,06a52833-ee83-4e80-a8ce-65dfba48e70d ,             11 ,true
                                 96 ,06a52833-ee83-4e80-a8ce-65dfba48e70d ,              3 ,false
+                                97 ,a4cc4b7b-e6d5-4e94-af51-058866ac900d ,             65 ,false
+                                98 ,a4cc4b7b-e6d5-4e94-af51-058866ac900d ,             71 ,true
+                                99 ,a4cc4b7b-e6d5-4e94-af51-058866ac900d ,              6 ,false

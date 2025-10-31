@@ -122,5 +122,9 @@
 	{
 		"question_id": "06a52833-ee83-4e80-a8ce-65dfba48e70d",
 		"question_text": "Which block would make Pip play the tone B?"
+	},
+	{
+		"question_id": "a4cc4b7b-e6d5-4e94-af51-058866ac900d",
+		"question_text": "Which block would Pip use if he needed to get the precise distance (in inches) of an object in front of him?"
 	}
 ]

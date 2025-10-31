@@ -1939,5 +1939,21 @@
 			  ]
 			}
 		  }
+	},
+	{
+		"coding_block_id": 71,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "get_front_distance_sensor_distance",
+				  "id": "Wx`F^G7ZuO?KB[fTE#UE",
+				  "x": -565,
+				  "y": -635
+				}
+			  ]
+			}
+		  }
 	}
 ]
