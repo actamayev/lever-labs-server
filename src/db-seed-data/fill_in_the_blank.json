@@ -279,7 +279,7 @@
 			  ]
 			}
 		  },
-		"reference_solution_cpp": "while(true) { if (front_distance_sensor.get_distance() < 5) { all_leds.set_color(RED); } else { all_leds.set_color(OFF); } }",
+		"reference_solution_cpp": "while(true) { if (front_distance_sensor.get_distance() < 5) { all_leds.set_color(BLUE); } else if (front_distance_sensor.get_distance() < 7) { all_leds.set_color(GREEN); } else { all_leds.set_color(WHITE); } }",
 		"question_text": "Write a program that: Turns Pip's LEDs blue when there is an object within 5 inches in front of Pip, Turns Pip's LEDs green when there is an object between 5 and 7 inches, Turns Pip's LEDs off when there's no object after 7 inches"
 	}
 ]
