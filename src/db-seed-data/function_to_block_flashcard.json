@@ -146,5 +146,9 @@
 	{
 		"question_id": "930a8904-f5ac-4307-9650-f60327bba7d0",
 		"question_text": "Which block sequence would make Pip drive backward at 10% speed until you tell it to stop?"
+	},
+	{
+		"question_id": "8f34a829-7cbf-4c61-a2df-d6b48a1c78af",
+		"question_text": "Which code checks if the right button is pressed AND there's an object in front of Pip?"
 	}
 ]
