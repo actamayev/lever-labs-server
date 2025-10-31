@@ -3296,5 +3296,69 @@
 			  ]
 			}
 		  }
+	},
+	{
+		"coding_block_id": 99,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "drive_distance",
+				  "id": "R]B?3B=+zhay|4L{KJj,",
+				  "x": -350,
+				  "y": -570,
+				  "fields": {
+					"direction": "forward",
+					"distance": 12,
+					"INCHES_LABEL": "inches",
+					"percentage": 12
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 100,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "drive",
+				  "id": "w_O?3t(Hx;4O52%_vL+h",
+				  "x": -370,
+				  "y": -690,
+				  "fields": {
+					"direction": "forward",
+					"percentage": 12
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 101,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "drive_time",
+				  "id": "`T(zM(|+QpH[sNQc1e0I",
+				  "x": -310,
+				  "y": -590,
+				  "fields": {
+					"direction": "forward",
+					"seconds": 12,
+					"SECONDS_LABEL": "seconds",
+					"percentage": 12
+				  }
+				}
+			  ]
+			}
+		  }
 	}
 ]

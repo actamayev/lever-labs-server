@@ -150,5 +150,9 @@
 	{
 		"question_id": "8f34a829-7cbf-4c61-a2df-d6b48a1c78af",
 		"question_text": "Which code checks if the right button is pressed AND there's an object in front of Pip?"
+	},
+	{
+		"question_id": "18b9e3cd-2782-49d7-8a3d-f7fb9f2554b1",
+		"question_text": "Which block would make Pip slowly move forward at 12% speed continuously?"
 	}
 ]
