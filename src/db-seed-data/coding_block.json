@@ -1907,5 +1907,37 @@
 			  ]
 			}
 		  }
+	},
+	{
+		"coding_block_id": 70,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "drive",
+				  "id": "DrG:VhT4U~iM=(j:/-CD",
+				  "x": -230,
+				  "y": -570,
+				  "fields": {
+					"direction": "forward",
+					"percentage": 30
+				  }
+				},
+				{
+				  "type": "drive_distance",
+				  "id": "ndS]8OrmGfTB]%p!5QoG",
+				  "x": 30,
+				  "y": -570,
+				  "fields": {
+					"direction": "forward",
+					"distance": 5,
+					"INCHES_LABEL": "inches",
+					"percentage": 30
+				  }
+				}
+			  ]
+			}
+		  }
 	}
 ]
