@@ -209,5 +209,77 @@
 		  },
 		"reference_solution_cpp": "while(true) { if (front_distance_sensor.get_distance() < 5) { all_leds.set_color(RED); } else { all_leds.set_color(OFF); } }",
 		"question_text": "Write a program that turns Pip's LEDs red when there is an object within 5 inches in front of Pip. If there's no object within 5 inches, turn the LEDs off."
+	},
+	{
+		"question_id": "151bf057-81f5-47b3-b538-a14e24d3b113",
+		"initial_blockly_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "forever_loop",
+				  "id": "mvL0Xg7hup{z2amaHQV[",
+				  "x": -650,
+				  "y": -750,
+				  "inputs": {
+					"LOOP_BODY": {
+					  "block": {
+						"type": "controls_if_else",
+						"id": ":g^wjuMgn.3i:^|NB622",
+						"inputs": {
+						  "IF1": {
+							"block": {
+							  "type": "logic_compare",
+							  "id": "UKMT;9d]z#Cl?H4]5N]h",
+							  "fields": {
+								"COMPARE_OP": "LT"
+							  },
+							  "inputs": {
+								"COMPARE_A": {
+								  "block": {
+									"type": "get_front_distance_sensor_distance",
+									"id": "K(L9ZgKv-5/.LSwu!um4"
+								  }
+								},
+								"COMPARE_B": {
+								  "block": {
+									"type": "math_number",
+									"id": "1THi]_dk_aVgsF+V6s#a",
+									"fields": {
+									  "NUMBER_NUM": 5
+									}
+								  }
+								}
+							  }
+							}
+						  },
+						  "DO1": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "LfL;,`Nv5ylP*ycUGWLB",
+							  "fields": {
+								"led_color": "RED"
+							  }
+							}
+						  },
+						  "ELSE": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "T.WS,W8.Bx^4yw.IB55,",
+							  "fields": {
+								"led_color": "OFF"
+							  }
+							}
+						  }
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		  },
+		"reference_solution_cpp": "while(true) { if (front_distance_sensor.get_distance() < 5) { all_leds.set_color(RED); } else { all_leds.set_color(OFF); } }",
+		"question_text": "Write a program that: Turns Pip's LEDs blue when there is an object within 5 inches in front of Pip, Turns Pip's LEDs green when there is an object between 5 and 7 inches, Turns Pip's LEDs off when there's no object after 7 inches"
 	}
 ]
