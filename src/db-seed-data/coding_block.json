@@ -1857,5 +1857,55 @@
 			  ]
 			}
 		  }
+	},
+	{
+		"coding_block_id": 69,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "forever_loop",
+				  "id": "(/-54$j#Ek%|L~5~tu9~",
+				  "x": -410,
+				  "y": -510,
+				  "inputs": {
+					"LOOP_BODY": {
+					  "block": {
+						"type": "controls_if_else",
+						"id": "%Pn~ZwLmzGy*H^e!~L-x",
+						"inputs": {
+						  "IF1": {
+							"block": {
+							  "type": "right_button_press",
+							  "id": "cS7mJgA{r`srrz9[On7)"
+							}
+						  },
+						  "DO1": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "-b_nbsEv}_;:F9]@GS1x",
+							  "fields": {
+								"led_color": "WHITE"
+							  }
+							}
+						  },
+						  "ELSE": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "DBpD^:w#!Ds8#:5+VM@e",
+							  "fields": {
+								"led_color": "OFF"
+							  }
+							}
+						  }
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		  }
 	}
 ]

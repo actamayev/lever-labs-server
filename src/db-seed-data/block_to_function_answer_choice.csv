@@ -80,3 +80,6 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                 79 ,d99dfd76-b88a-4b52-96f0-5b8d8846bcdc ,"Moves forward, rotates counterclockwise, and repeats this motion pattern"                 ,true      
                                 80 ,d99dfd76-b88a-4b52-96f0-5b8d8846bcdc ,Moves forward once and stops                                                               ,false     
                                 81 ,d99dfd76-b88a-4b52-96f0-5b8d8846bcdc ,Flashes LEDs without motion                                                                ,false     
+                                82, 0f6faf83-706d-4f6c-9889-9dafd94d848d, Turns LEDs white once when button is pressed, false
+                                83, 0f6faf83-706d-4f6c-9889-9dafd94d848d, Turns LEDs white forever when button is pressed , true
+                                84, 0f6faf83-706d-4f6c-9889-9dafd94d848d, Turns LEDs off when button is pressed, false
