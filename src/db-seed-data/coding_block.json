@@ -2141,5 +2141,147 @@
 			  ]
 			}
 		  }
+	},
+	{
+		"coding_block_id": 76,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "forever_loop",
+				  "id": "a}fd{syG[1^k%aa(D;B{",
+				  "x": -210,
+				  "y": -630,
+				  "inputs": {
+					"LOOP_BODY": {
+					  "block": {
+						"type": "controls_if_else",
+						"id": "w*Vj8ms8=`.-^M9,qV:,",
+						"inputs": {
+						  "IF1": {
+							"block": {
+							  "type": "right_button_press",
+							  "id": "0?KYfYIk)loL^c=;DXYr"
+							}
+						  },
+						  "DO1": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "Hu2QfV^9G6CO|kOo@B{w",
+							  "fields": {
+								"led_color": "OFF"
+							  }
+							}
+						  },
+						  "ELSE": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "|M)^W,/svSW2fx@fuo`M",
+							  "fields": {
+								"led_color": "BLUE"
+							  }
+							}
+						  }
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		}
+	},
+	{
+		"coding_block_id": 77,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "controls_if_else",
+				  "id": "w*Vj8ms8=`.-^M9,qV:,",
+				  "x": -190,
+				  "y": -450,
+				  "inputs": {
+					"IF1": {
+					  "block": {
+						"type": "right_button_press",
+						"id": "0?KYfYIk)loL^c=;DXYr"
+					  }
+					},
+					"DO1": {
+					  "block": {
+						"type": "control_all_leds",
+						"id": "Hu2QfV^9G6CO|kOo@B{w",
+						"fields": {
+						  "led_color": "BLUE"
+						}
+					  }
+					},
+					"ELSE": {
+					  "block": {
+						"type": "control_all_leds",
+						"id": "|M)^W,/svSW2fx@fuo`M",
+						"fields": {
+						  "led_color": "OFF"
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 78,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "forever_loop",
+				  "id": "a}fd{syG[1^k%aa(D;B{",
+				  "x": -210,
+				  "y": -630,
+				  "inputs": {
+					"LOOP_BODY": {
+					  "block": {
+						"type": "controls_if_else",
+						"id": "w*Vj8ms8=`.-^M9,qV:,",
+						"inputs": {
+						  "IF1": {
+							"block": {
+							  "type": "right_button_press",
+							  "id": "0?KYfYIk)loL^c=;DXYr"
+							}
+						  },
+						  "DO1": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "Hu2QfV^9G6CO|kOo@B{w",
+							  "fields": {
+								"led_color": "BLUE"
+							  }
+							}
+						  },
+						  "ELSE": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "|M)^W,/svSW2fx@fuo`M",
+							  "fields": {
+								"led_color": "OFF"
+							  }
+							}
+						  }
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		}
 	}
 ]

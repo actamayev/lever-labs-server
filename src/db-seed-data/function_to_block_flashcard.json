@@ -126,5 +126,9 @@
 	{
 		"question_id": "a4cc4b7b-e6d5-4e94-af51-058866ac900d",
 		"question_text": "Which block would Pip use if he needed to get the precise distance (in inches) of an object in front of him?"
+	},
+	{
+		"question_id": "3a884988-5e2b-4235-a4d1-b73f234e07ff",
+		"question_text": "Which block sequence turns Pip's LEDs off when the right button is pressed, and makes them blue when it isn't pressed?"
 	}
 ]
