@@ -80,8 +80,8 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                 79 ,d99dfd76-b88a-4b52-96f0-5b8d8846bcdc ,"Moves forward, rotates counterclockwise, and repeats this motion pattern"                                   ,true
                                 80 ,d99dfd76-b88a-4b52-96f0-5b8d8846bcdc ,Moves forward once and stops                                                                                 ,false
                                 81 ,d99dfd76-b88a-4b52-96f0-5b8d8846bcdc ,Flashes LEDs without motion                                                                                  ,false
-                                82 ,ee124825-a425-4e9a-b101-cafb6f7f89bf ,Turns LEDs white once when button is pressed                                                                 ,false
-                                83 ,ee124825-a425-4e9a-b101-cafb6f7f89bf ,Turns LEDs white forever when button is pressed                                                              ,true
+                                82 ,ee124825-a425-4e9a-b101-cafb6f7f89bf ,Turns LEDs green when button is pressed                                                                      ,false
+                                83 ,ee124825-a425-4e9a-b101-cafb6f7f89bf ,Turns LEDs white when button is pressed                                                                      ,true
                                 84 ,ee124825-a425-4e9a-b101-cafb6f7f89bf ,Turns LEDs off when button is pressed                                                                        ,false
                                 85 ,b415eb9f-562c-41e0-8a58-15796ca6a5b2 ,Makes Pip move forward forever at 50% speed                                                                  ,false
                                 86 ,b415eb9f-562c-41e0-8a58-15796ca6a5b2 ,Makes Pip move forward 10 inches at 50% speed                                                                ,true
