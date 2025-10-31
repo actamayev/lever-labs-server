@@ -116,3 +116,6 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                115 ,2d18e4f4-79fe-4509-b630-cfc896df44bc ,They all make Pip turn in different directions                                                               ,false
                                116 ,2d18e4f4-79fe-4509-b630-cfc896df44bc ,"They all make Pip move forward, but stop in different ways ✓ (Correct - by distance, by time, or manually)" ,true
                                117 ,2d18e4f4-79fe-4509-b630-cfc896df44bc ,They all do exactly the same thing                                                                           ,false
+                               118 ,c44d5ccd-7064-4f27-94d4-59e4edbd1e87 ,"Makes Pip back away when something is within 5 inches, stop when nothing is close"                          ,true
+                               119 ,c44d5ccd-7064-4f27-94d4-59e4edbd1e87 ,Makes Pip move forward when something is within 5 inches                                                     ,false
+                               120 ,c44d5ccd-7064-4f27-94d4-59e4edbd1e87 ,Makes Pip turn when something is within 5 inches                                                             ,false
