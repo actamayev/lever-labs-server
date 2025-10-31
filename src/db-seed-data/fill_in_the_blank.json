@@ -157,5 +157,57 @@
 		"initial_blockly_json": {},
 		"reference_solution_cpp": "while(true) { if (front_distance_sensor.is_object_in_front()) { all_leds.set_color(RED); } else { all_leds.set_color(OFF); } }",
 		"question_text": "Write a program that turns Pip's LEDs red when there is an object in front of Pip. If there's no object in front, turn the LEDs off."
+	},
+	{
+		"question_id": "b95a324b-8fef-4e0e-81df-21f9ad4156a7",
+		"initial_blockly_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "forever_loop",
+				  "id": "uCJ%%[^WPZ)rP$?ELT4N",
+				  "x": -230,
+				  "y": -650,
+				  "inputs": {
+					"LOOP_BODY": {
+					  "block": {
+						"type": "controls_if_else",
+						"id": ":~Gi!UCqXa0BrB*7GcW9",
+						"inputs": {
+						  "IF1": {
+							"block": {
+							  "type": "center_tof_read",
+							  "id": "J2+14Qi2F+E4ur{T./0X"
+							}
+						  },
+						  "DO1": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "(hB=_s/ZGQ9Tk{+201@q",
+							  "fields": {
+								"led_color": "RED"
+							  }
+							}
+						  },
+						  "ELSE": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "d$3ijepfn9:{VaWVk-(T",
+							  "fields": {
+								"led_color": "OFF"
+							  }
+							}
+						  }
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		  },
+		"reference_solution_cpp": "while(true) { if (front_distance_sensor.get_distance() < 5) { all_leds.set_color(RED); } else { all_leds.set_color(OFF); } }",
+		"question_text": "Write a program that turns Pip's LEDs red when there is an object within 5 inches in front of Pip. If there's no object within 5 inches, turn the LEDs off."
 	}
 ]
