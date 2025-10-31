@@ -395,18 +395,18 @@
 		"blocks": {
 			"languageVersion": 0,
 			"blocks": [
-			{
-				"type": "drive_time",
-				"id": "jx@.=_T3|fuKf?j{-bLq",
-				"x": -430,
-				"y": -270,
-				"fields": {
-					"direction": "forward",
-				"seconds": 10,
-				"SECONDS_LABEL": "seconds",
-				"percentage": 80
+				{
+					"type": "drive_time",
+					"id": "jx@.=_T3|fuKf?j{-bLq",
+					"x": -430,
+					"y": -270,
+					"fields": {
+						"direction": "forward",
+						"seconds": 10,
+						"SECONDS_LABEL": "seconds",
+						"percentage": 80
+					}
 				}
-			}
 			]
 		}
 		}

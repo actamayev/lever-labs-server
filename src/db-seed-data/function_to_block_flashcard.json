@@ -138,5 +138,9 @@
 	{
 		"question_id": "8e80d309-52a6-42ad-9a58-2e7d39b9bfe2",
 		"question_text": "Which block would make Pip repeat an action exactly 5 times?"
+	},
+	{
+		"question_id": "55dfd180-2374-4c17-b0d2-bc0d7a1abea4",
+		"question_text": "Which block would make Pip play the tone F?"
 	}
 ]
