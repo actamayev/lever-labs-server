@@ -140,10 +140,6 @@
 		"question_text": "Which block would make Pip repeat an action exactly 5 times?"
 	},
 	{
-		"question_id": "55dfd180-2374-4c17-b0d2-bc0d7a1abea4",
-		"question_text": "Which block would make Pip play the tone F?"
-	},
-	{
 		"question_id": "1661eae1-fc8b-4938-8a8b-65dcea5302e3",
 		"question_text": "Which block sequence would make Pip drive backward at 10% speed until you tell it to stop?"
 	},
