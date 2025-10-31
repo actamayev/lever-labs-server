@@ -7,7 +7,7 @@
 -- SELECT * FROM teacher;
 -- SELECT * FROM student;
 -- SELECT * FROM challenge ORDER BY created_at;
-SELECT * FROM sandbox_project ORDER BY updated_at;
+-- SELECT * FROM sandbox_project ORDER BY updated_at;
 
 -- SELECT * FROM pip_uuid ORDER BY created_at;
 
@@ -50,4 +50,4 @@ SELECT * FROM sandbox_project ORDER BY updated_at;
 -- SELECT * FROM action_to_code_open_ended_question_block_bank;
 -- SELECT * FROM action_to_code_open_ended_question_user_answer;
 
-
+delete from function_to_block_flashcard where question_id = '55dfd180-2374-4c17-b0d2-bc0d7a1abea4';
