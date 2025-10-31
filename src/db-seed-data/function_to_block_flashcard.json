@@ -130,5 +130,9 @@
 	{
 		"question_id": "3a884988-5e2b-4235-a4d1-b73f234e07ff",
 		"question_text": "Which block sequence turns Pip's LEDs off when the right button is pressed, and makes them blue when it isn't pressed?"
+	},
+	{
+		"question_id": "c479c80a-f42b-48fe-b66b-8fe4c8a40c33",
+		"question_text": "Which block checks if there's something within 5 inches of Pip?"
 	}
 ]

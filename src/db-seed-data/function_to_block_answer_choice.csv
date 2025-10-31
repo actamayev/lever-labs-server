@@ -98,3 +98,6 @@ function_to_block_answer_choice_id ,function_to_block_flashcard_id       ,coding
                                100 ,3a884988-5e2b-4235-a4d1-b73f234e07ff ,             76 ,true
                                101 ,3a884988-5e2b-4235-a4d1-b73f234e07ff ,             77 ,false
                                102 ,3a884988-5e2b-4235-a4d1-b73f234e07ff ,             78 ,false
+                               103 ,c479c80a-f42b-48fe-b66b-8fe4c8a40c33 ,             80 ,false
+                               104 ,c479c80a-f42b-48fe-b66b-8fe4c8a40c33 ,             81 ,true
+                               105 ,c479c80a-f42b-48fe-b66b-8fe4c8a40c33 ,             82 ,false
