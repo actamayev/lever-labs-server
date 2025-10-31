@@ -388,5 +388,147 @@
 		  },
 		"reference_solution_cpp": "while(true) { if (front_distance_sensor.get_distance() < 5) { all_leds.set_color(RED); } else if (front_distance_sensor.get_distance() < 7) { all_leds.set_color(BLUE); } else if (front_distance_sensor.get_distance() < 15) { all_leds.set_color(GREEN); } else { all_leds.set_color(OFF); } }",
 		"question_text": "Write a program that: Turns Pip's LEDs red when there is an object within 5 inches, Turns Pip's LEDs blue when there is an object between 5 and 7 inches, Turns Pip's LEDs green when there is an object between 7 and 15 inches, Turns Pip's LEDs off when there's no object after 15 inches"
+	},
+	{
+		"question_id": "5feae8d4-132b-49fc-8161-0e0172086da0",
+		"initial_blockly_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "forever_loop",
+				  "id": "mvL0Xg7hup{z2amaHQV[",
+				  "x": -630,
+				  "y": -670,
+				  "inputs": {
+					"LOOP_BODY": {
+					  "block": {
+						"type": "controls_if_2elseif",
+						"id": "a$v^A$P7iuHG2@zw[vF;",
+						"inputs": {
+						  "IF1": {
+							"block": {
+							  "type": "logic_compare",
+							  "id": ";5W(XU#oB.Fc0ZE/)#s6",
+							  "fields": {
+								"COMPARE_OP": "LT"
+							  },
+							  "inputs": {
+								"COMPARE_A": {
+								  "block": {
+									"type": "get_front_distance_sensor_distance",
+									"id": "5e;b=cG^ck|IH4Q|s;k`"
+								  }
+								},
+								"COMPARE_B": {
+								  "block": {
+									"type": "math_number",
+									"id": "P/kch6b]}UNNG/;#Ij:S",
+									"fields": {
+									  "NUMBER_NUM": 5
+									}
+								  }
+								}
+							  }
+							}
+						  },
+						  "DO1": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "(r5cK|tjj%nDXG;HYhHc",
+							  "fields": {
+								"led_color": "RED"
+							  }
+							}
+						  },
+						  "IF2": {
+							"block": {
+							  "type": "logic_compare",
+							  "id": "(4K)}GrxI/xdF__%-$pV",
+							  "fields": {
+								"COMPARE_OP": "LT"
+							  },
+							  "inputs": {
+								"COMPARE_A": {
+								  "block": {
+									"type": "get_front_distance_sensor_distance",
+									"id": "WpG~ow^/U7:L?nVjEv$N"
+								  }
+								},
+								"COMPARE_B": {
+								  "block": {
+									"type": "math_number",
+									"id": "pK`T5rj8py%SxU3)%~f2",
+									"fields": {
+									  "NUMBER_NUM": 7
+									}
+								  }
+								}
+							  }
+							}
+						  },
+						  "DO2": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "[br(M,6+|MwqHBn@E]Mh",
+							  "fields": {
+								"led_color": "BLUE"
+							  }
+							}
+						  },
+						  "IF3": {
+							"block": {
+							  "type": "logic_compare",
+							  "id": "KMo{16_BACmVC$G+3,e*",
+							  "fields": {
+								"COMPARE_OP": "LT"
+							  },
+							  "inputs": {
+								"COMPARE_A": {
+								  "block": {
+									"type": "get_front_distance_sensor_distance",
+									"id": "-pY)iiO[F!0ZG`{.s}.s"
+								  }
+								},
+								"COMPARE_B": {
+								  "block": {
+									"type": "math_number",
+									"id": "xI{NmA7}C8UW)^eNfmOq",
+									"fields": {
+									  "NUMBER_NUM": 15
+									}
+								  }
+								}
+							  }
+							}
+						  },
+						  "DO3": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "OL0NFNx${roSe*1Q6MLm",
+							  "fields": {
+								"led_color": "GREEN"
+							  }
+							}
+						  },
+						  "ELSE": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "3.m.w]/qn(q(t~jHoU_+",
+							  "fields": {
+								"led_color": "OFF"
+							  }
+							}
+						  }
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		  },
+		"reference_solution_cpp": "while(true) { if (front_distance_sensor.get_distance() < 5) { motors.drive(BACKWARD, 12); } else if (front_distance_sensor.get_distance() < 7) { motors.stop(); } else if (front_distance_sensor.get_distance() < 15) { motors.drive(FORWARD, 12); } else { motors.stop(); } }",
+		"question_text": "Write a program that makes Pip follow your hand: If your hand is less than 5 inches from Pip, Pip should slowly back away at 12% speed, If your hand is between 5 and 7 inches from Pip, Pip should stop (not move), If your hand is between 7 and 15 inches from Pip, Pip should slowly move forward at 12% speed, If your hand is more than 15 inches away from Pip, Pip shouldn't move (stop)"
 	}
 ]
