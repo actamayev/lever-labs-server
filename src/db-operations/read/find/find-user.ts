@@ -48,7 +48,7 @@ export async function findUserById(userId: number): Promise<ExtendedCredentials 
 			}
 		})
 
-		if (isNull(user) || validateExtendedCredentials(user) === false) return null
+		if (isNull(user) || !validateExtendedCredentials(user)) return null
 
 		return user
 	} catch (error) {
@@ -107,7 +107,7 @@ export async function findUserByWhereCondition(
 			}
 		})
 
-		if (isNull(user) || validateExtendedCredentials(user) === false) return null
+		if (isNull(user) || !validateExtendedCredentials(user)) return null
 
 		return user
 	} catch (error) {

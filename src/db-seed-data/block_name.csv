@@ -18,7 +18,6 @@ block_name_id ,block_name
            17 ,logic_negate
            18 ,math_number
            19 ,math_arithmetic
-           20 ,math_single
            21 ,for_loop
            22 ,wait
            23 ,forever_loop
