@@ -2519,14 +2519,14 @@
 			  "blocks": [
 				{
 				  "type": "controls_if_elseif",
-				  "id": "YvDUts-Z^]o7.n=9vhu%",
-				  "x": -270,
-				  "y": -630,
+				  "id": "%A5Xyo,)HJ+NfE]gLf]z",
+				  "x": -750,
+				  "y": -510,
 				  "inputs": {
 					"IF1": {
 					  "block": {
 						"type": "logic_compare",
-						"id": "t`KnJqz6r$YUfpai1!j!",
+						"id": "-oqRdS2oeZ6^6NqG,%Jv",
 						"fields": {
 						  "COMPARE_OP": "LT"
 						},
@@ -2534,13 +2534,13 @@
 						  "COMPARE_A": {
 							"block": {
 							  "type": "get_front_distance_sensor_distance",
-							  "id": "{gYXQyMOEGGjR:/qq8dI"
+							  "id": "j0/!49gUguEKl4oCwU*o"
 							}
 						  },
 						  "COMPARE_B": {
 							"block": {
 							  "type": "math_number",
-							  "id": "FQ,2Hv{O~;9]xkig~C(F",
+							  "id": "zf9HP#Tcj=[H7jH$3iF?",
 							  "fields": {
 								"NUMBER_NUM": 3
 							  }
@@ -2552,7 +2552,7 @@
 					"DO1": {
 					  "block": {
 						"type": "control_all_leds",
-						"id": ";J)~yQpz/=yPhXvY%[pz",
+						"id": "o-:Rv-wVkcTx-zmCD9MT",
 						"fields": {
 						  "led_color": "RED"
 						}
@@ -2560,24 +2560,61 @@
 					},
 					"IF2": {
 					  "block": {
-						"type": "logic_compare",
-						"id": "TXe[8117iFkayjK^KhZk",
+						"type": "logic_operation",
+						"id": "=.ZSE}r!pTqhY]a5u6W;",
 						"fields": {
-						  "COMPARE_OP": "LT"
+						  "OPERATION_OP": "AND"
 						},
 						"inputs": {
-						  "COMPARE_A": {
+						  "OPERATION_A": {
 							"block": {
-							  "type": "get_front_distance_sensor_distance",
-							  "id": "Pd-PR;XNA*]!H;^b:=m="
+							  "type": "logic_compare",
+							  "id": "w8dCFb;}5:v6]N5G_+|T",
+							  "fields": {
+								"COMPARE_OP": "GT"
+							  },
+							  "inputs": {
+								"COMPARE_A": {
+								  "block": {
+									"type": "get_front_distance_sensor_distance",
+									"id": "e3V8u5CHq:`MfuPXN;d^"
+								  }
+								},
+								"COMPARE_B": {
+								  "block": {
+									"type": "math_number",
+									"id": "#6kTg[l4l{{]3KT^ls}C",
+									"fields": {
+									  "NUMBER_NUM": 3
+									}
+								  }
+								}
+							  }
 							}
 						  },
-						  "COMPARE_B": {
+						  "OPERATION_B": {
 							"block": {
-							  "type": "math_number",
-							  "id": "YVlV:^*|DGS^r,xycil2",
+							  "type": "logic_compare",
+							  "id": "uYz]AUJ,bKaKnUrL+p(,",
 							  "fields": {
-								"NUMBER_NUM": 8
+								"COMPARE_OP": "LT"
+							  },
+							  "inputs": {
+								"COMPARE_A": {
+								  "block": {
+									"type": "get_front_distance_sensor_distance",
+									"id": "n9L!qYRr@fD~7K}S6|@^"
+								  }
+								},
+								"COMPARE_B": {
+								  "block": {
+									"type": "math_number",
+									"id": "RN*IJWgO@{)9qOLg1ov-",
+									"fields": {
+									  "NUMBER_NUM": 8
+									}
+								  }
+								}
 							  }
 							}
 						  }
@@ -2587,7 +2624,7 @@
 					"DO2": {
 					  "block": {
 						"type": "control_all_leds",
-						"id": "{`13F;0s0-tN9!rL9Fh2",
+						"id": "ABPuT]gbZ)ksf+.Lw!ng",
 						"fields": {
 						  "led_color": "BLUE"
 						}
@@ -2596,7 +2633,7 @@
 					"ELSE": {
 					  "block": {
 						"type": "control_all_leds",
-						"id": "-v2#H2}$Y}o=8_fK1]uh",
+						"id": "mgF~doy,0V%OaB*KNjJm",
 						"fields": {
 						  "led_color": "OFF"
 						}
@@ -2606,7 +2643,7 @@
 				}
 			  ]
 			}
-		  }
+		}
 	},
 	{
 		"coding_block_id": 87,
