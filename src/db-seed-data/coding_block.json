@@ -2714,7 +2714,7 @@
 									"id": "w8dCFb;}5:v6]N5G_+|T",
 									"inline": true,
 									"fields": {
-									  "COMPARE_OP": "GT"
+									  "COMPARE_OP": "GTE"
 									},
 									"inputs": {
 									  "COMPARE_A": {
@@ -2928,7 +2928,7 @@
 									"id": "w8dCFb;}5:v6]N5G_+|T",
 									"inline": true,
 									"fields": {
-									  "COMPARE_OP": "GT"
+									  "COMPARE_OP": "GTE"
 									},
 									"inputs": {
 									  "COMPARE_A": {
@@ -3047,7 +3047,7 @@
 						"type": "logic_compare",
 						"id": "S*U24-[0_:FvW4daC2{}",
 						"fields": {
-						  "COMPARE_OP": "GT"
+						  "COMPARE_OP": "GTE"
 						},
 						"inputs": {
 						  "COMPARE_A": {
