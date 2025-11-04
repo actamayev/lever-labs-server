@@ -208,7 +208,7 @@
 			}
 		  },
 		"reference_solution_cpp": "while(true) { if (front_distance_sensor.get_distance() < 5) { all_leds.set_color(RED); } else { all_leds.set_color(OFF); } }",
-		"question_text": "Write a program that turns Pip's LEDs red when there is an object within 5 inches in front of Pip. If there's no object within 5 inches, turn the LEDs off."
+		"question_text": "Write a program that turns Pip's LEDs red when there is an object less than 5 inches in front of Pip. If the object is 5 inches or farther away, turn the LEDs off."
 	},
 	{
 		"question_id": "151bf057-81f5-47b3-b538-a14e24d3b113",
@@ -279,8 +279,8 @@
 			  ]
 			}
 		  },
-		"reference_solution_cpp": "while(true) { if (front_distance_sensor.get_distance() < 5) { all_leds.set_color(BLUE); } else if (front_distance_sensor.get_distance() < 7) { all_leds.set_color(GREEN); } else { all_leds.set_color(WHITE); } }",
-		"question_text": "Write a program that: Turns Pip's LEDs blue when there is an object within 5 inches in front of Pip, Turns Pip's LEDs green when there is an object between 5 and 7 inches, Turns Pip's LEDs off when there's no object after 7 inches"
+		"reference_solution_cpp": "while(true) { if (front_distance_sensor.get_distance() < 5) { all_leds.set_color(BLUE); } else if (front_distance_sensor.get_distance() < 7) { all_leds.set_color(GREEN); } else { all_leds.set_color(OFF); } }",
+		"question_text": "Write a program that: Turns Pip's LEDs blue when distance is less than 5 inches, Turns Pip's LEDs green when distance is between 5 inches (inclusive) and 7 inches (exclusive), Turns Pip's LEDs off when distance is 7 inches or more"
 	},
 	{
 		"question_id": "1b2a1b63-7bae-45ff-ab9d-4b76cd49a1a9",
@@ -387,7 +387,7 @@
 			}
 		  },
 		"reference_solution_cpp": "while(true) { if (front_distance_sensor.get_distance() < 5) { all_leds.set_color(RED); } else if (front_distance_sensor.get_distance() < 7) { all_leds.set_color(BLUE); } else if (front_distance_sensor.get_distance() < 15) { all_leds.set_color(GREEN); } else { all_leds.set_color(OFF); } }",
-		"question_text": "Write a program that: Turns Pip's LEDs red when there is an object within 5 inches, Turns Pip's LEDs blue when there is an object between 5 and 7 inches, Turns Pip's LEDs green when there is an object between 7 and 15 inches, Turns Pip's LEDs off when there's no object after 15 inches"
+		"question_text": "Write a program that: Turns Pip's LEDs red when distance is less than 5 inches, Turns Pip's LEDs blue when distance is between 5 inches (inclusive) and 7 inches (exclusive), Turns Pip's LEDs green when distance is between 7 inches (inclusive) and 15 inches (exclusive), Turns Pip's LEDs off when distance is 15 inches or more"
 	},
 	{
 		"question_id": "5feae8d4-132b-49fc-8161-0e0172086da0",
@@ -529,6 +529,6 @@
 			}
 		  },
 		"reference_solution_cpp": "while(true) { if (front_distance_sensor.get_distance() < 5) { motors.drive(BACKWARD, 12); } else if (front_distance_sensor.get_distance() < 7) { motors.stop(); } else if (front_distance_sensor.get_distance() < 15) { motors.drive(FORWARD, 12); } else { motors.stop(); } }",
-		"question_text": "Write a program that makes Pip follow your hand: If your hand is less than 5 inches from Pip, Pip should slowly back away at 12% speed, If your hand is between 5 and 7 inches from Pip, Pip should stop (not move), If your hand is between 7 and 15 inches from Pip, Pip should slowly move forward at 12% speed, If your hand is more than 15 inches away from Pip, Pip shouldn't move (stop)"
+		"question_text": "Write a program that makes Pip follow your hand: If distance is less than 5 inches, Pip should back away at 12% speed, If distance is between 5 inches (inclusive) and 7 inches (exclusive), Pip should stop, If distance is between 7 inches (inclusive) and 15 inches (exclusive), Pip should move forward at 12% speed, If distance is 15 inches or more, Pip should stop"
 	}
 ]
