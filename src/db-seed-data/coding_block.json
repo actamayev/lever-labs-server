@@ -2520,8 +2520,8 @@
 				{
 				  "type": "controls_if_elseif",
 				  "id": "%A5Xyo,)HJ+NfE]gLf]z",
-				  "x": -750,
-				  "y": -510,
+				  "x": -850,
+				  "y": -550,
 				  "inputs": {
 					"IF1": {
 					  "block": {
@@ -2562,6 +2562,7 @@
 					  "block": {
 						"type": "logic_operation",
 						"id": "=.ZSE}r!pTqhY]a5u6W;",
+						"inline": false,
 						"fields": {
 						  "OPERATION_OP": "AND"
 						},
@@ -2570,6 +2571,7 @@
 							"block": {
 							  "type": "logic_compare",
 							  "id": "w8dCFb;}5:v6]N5G_+|T",
+							  "inline": true,
 							  "fields": {
 								"COMPARE_OP": "GT"
 							  },
@@ -2643,7 +2645,7 @@
 				}
 			  ]
 			}
-		}
+		  }
 	},
 	{
 		"coding_block_id": 87,
