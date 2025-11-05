@@ -139,6 +139,39 @@ function isActionToCodeOpenEndedQuestionBlockBankData(data: unknown): data is Ac
 	)
 }
 
+function isMatchingQuestionData(data: unknown): data is MatchingQuestionData {
+	const d = data as MatchingQuestionData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.question_id === "string" &&
+        typeof d.question_text === "string"
+	)
+}
+
+function isMatchingAnswerChoiceTextData(data: unknown): data is MatchingAnswerChoiceTextData {
+	const d = data as MatchingAnswerChoiceTextData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.matching_answer_choice_text_id === "number" &&
+        typeof d.answer_choice_text === "string"
+	)
+}
+
+function isMatchingAnswerChoicePairData(data: unknown): data is MatchingAnswerChoicePairData {
+	const d = data as MatchingAnswerChoicePairData
+	return (
+		typeof d === "object" &&
+        d !== null &&
+        typeof d.matching_answer_choice_pair_id === "number" &&
+        typeof d.matching_question_id === "string" &&
+        typeof d.coding_block_id === "number" &&
+        typeof d.matching_answer_choice_text_id === "number" &&
+        typeof d.is_correct === "boolean"
+	)
+}
+
 function cleanObjectKeys<T extends { [K in keyof T]: unknown }>(
 	obj: Record<string, unknown>
 ): T {
@@ -258,6 +291,27 @@ export default function parseCSV(filePath: string): AllSeedData[] {
 				throw new Error(`Invalid action to code open ended question block bank data at row ${index + 1}: ${JSON.stringify(row)}`)
 			}
 			return row as ActionToCodeOpenEndedQuestionBlockBankData
+		})
+	} else if (fileName === "matching_question.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isMatchingQuestionData(row)) {
+				throw new Error(`Invalid matching question data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as MatchingQuestionData
+		})
+	} else if (fileName === "matching_answer_choice_text.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isMatchingAnswerChoiceTextData(row)) {
+				throw new Error(`Invalid matching answer choice text data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as MatchingAnswerChoiceTextData
+		})
+	} else if (fileName === "matching_answer_choice_pair.csv") {
+		return cleanedData.map((row, index) => {
+			if (!isMatchingAnswerChoicePairData(row)) {
+				throw new Error(`Invalid matching answer choice pair data at row ${index + 1}: ${JSON.stringify(row)}`)
+			}
+			return row as MatchingAnswerChoicePairData
 		})
 	}
 

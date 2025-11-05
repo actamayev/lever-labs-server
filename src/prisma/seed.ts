@@ -516,6 +516,99 @@ async function seedActionToCodeOpenEndedQuestionBlockBanks(): Promise<void> {
 	}))
 }
 
+async function seedMatchingQuestions(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const matchingQuestions = parseCSV("../db-seed-data/matching_question.csv") as MatchingQuestionData[]
+
+	console.info("Seeding matching questions...")
+
+	await deleteOrphanedRecords(prismaClient.matching_question, matchingQuestions, "question_id", "matching questions")
+
+	await Promise.all(matchingQuestions.map(question => {
+		if (!question.question_id || !question.question_text) {
+			throw new Error(`Invalid matching question data: ${JSON.stringify(question)}`)
+		}
+		return prismaClient.matching_question.upsert({
+			where: { question_id: question.question_id },
+			update: { question_text: question.question_text },
+			create: {
+				question_id: question.question_id,
+				question_text: question.question_text
+			}
+		})
+	}))
+}
+
+async function seedMatchingAnswerChoiceTexts(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const answerChoiceTexts = parseCSV("../db-seed-data/matching_answer_choice_text.csv") as MatchingAnswerChoiceTextData[]
+
+	console.info("Seeding matching answer choice texts...")
+
+	await deleteOrphanedRecords(
+		prismaClient.matching_answer_choice_text,
+		answerChoiceTexts,
+		"matching_answer_choice_text_id",
+		"matching answer choice texts"
+	)
+
+	await Promise.all(answerChoiceTexts.map(answerChoiceText => {
+		if (!answerChoiceText.matching_answer_choice_text_id || !answerChoiceText.answer_choice_text) {
+			throw new Error(`Invalid matching answer choice text data: ${JSON.stringify(answerChoiceText)}`)
+		}
+		return prismaClient.matching_answer_choice_text.upsert({
+			where: { matching_answer_choice_text_id: answerChoiceText.matching_answer_choice_text_id },
+			update: { answer_choice_text: answerChoiceText.answer_choice_text },
+			create: {
+				matching_answer_choice_text_id: answerChoiceText.matching_answer_choice_text_id,
+				answer_choice_text: answerChoiceText.answer_choice_text
+			}
+		})
+	}))
+}
+
+async function seedMatchingAnswerChoicePairs(): Promise<void> {
+	const prismaClient = await PrismaClientClass.getPrismaClient()
+	const pairs = parseCSV("../db-seed-data/matching_answer_choice_pair.csv") as MatchingAnswerChoicePairData[]
+
+	console.info("Seeding matching answer choice pairs...")
+
+	await deleteOrphanedRecords(
+		prismaClient.matching_answer_choice_pair,
+		pairs,
+		"matching_answer_choice_pair_id",
+		"matching answer choice pairs"
+	)
+
+	await Promise.all(pairs.map(pair => {
+		if (
+			!pair.matching_answer_choice_pair_id ||
+			!pair.matching_question_id ||
+			!pair.coding_block_id ||
+			!pair.matching_answer_choice_text_id ||
+			isUndefined(pair.is_correct)
+		) {
+			throw new Error(`Invalid matching answer choice pair data: ${JSON.stringify(pair)}`)
+		}
+		return prismaClient.matching_answer_choice_pair.upsert({
+			where: { matching_answer_choice_pair_id: pair.matching_answer_choice_pair_id },
+			update: {
+				matching_question_id: pair.matching_question_id,
+				coding_block_id: pair.coding_block_id,
+				matching_answer_choice_text_id: pair.matching_answer_choice_text_id,
+				is_correct: pair.is_correct
+			},
+			create: {
+				matching_answer_choice_pair_id: pair.matching_answer_choice_pair_id,
+				matching_question_id: pair.matching_question_id,
+				coding_block_id: pair.coding_block_id,
+				matching_answer_choice_text_id: pair.matching_answer_choice_text_id,
+				is_correct: pair.is_correct
+			}
+		})
+	}))
+}
+
 
 async function main(): Promise<void> {
 	try {
@@ -537,12 +630,17 @@ async function main(): Promise<void> {
 		await seedFillInTheBlankBlockBanks()
 		await seedActionToCodeMultipleChoiceQuestions()
 		await seedActionToCodeOpenEndedQuestions()
+		await seedMatchingQuestions()
+
+		// Seed answer choice texts first (independent)
+		await seedMatchingAnswerChoiceTexts()
 
 		// Seed answer choices and block banks (depends on flashcards and coding blocks)
 		await seedBlockToFunctionAnswerChoices()
 		await seedFunctionToBlockAnswerChoices()
 		await seedActionToCodeMultipleChoiceAnswerChoices()
 		await seedActionToCodeOpenEndedQuestionBlockBanks()
+		await seedMatchingAnswerChoicePairs()
 
 		// Seed lesson-question relationships (depends on lessons and questions)
 

@@ -119,6 +119,29 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 											}
 										}
 									}
+								},
+								matching_question: {
+									select: {
+										question_text: true,
+										matching_answer_choice_pair: {
+											select: {
+												matching_answer_choice_pair_id: true,
+												is_correct: true,
+												coding_block: {
+													select: {
+														coding_block_id: true,
+														coding_block_json: true
+													}
+												},
+												matching_answer_choice_text: {
+													select: {
+														matching_answer_choice_text_id: true,
+														answer_choice_text: true
+													}
+												}
+											}
+										}
+									}
 								}
 							}
 						}
@@ -204,6 +227,23 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 							blockNameId: bank.block_name.block_name_id,
 							blockName: bank.block_name.block_name as BlockNames,
 						}))
+					} : null,
+					matching: map.question.matching_question ? {
+						questionText: map.question.matching_question.question_text,
+						matchingAnswerChoice: map.question.matching_question.matching_answer_choice_pair
+							.sort(() => Math.random() - 0.5) // Randomize the order server-side
+							.map((pair, index) => ({
+								matchingAnswerChoicePairId: pair.matching_answer_choice_pair_id,
+								order: index, // Randomized display order
+								matchingAnswerChoiceText: {
+									matchingAnswerChoiceTextId: pair.matching_answer_choice_text.matching_answer_choice_text_id,
+									answerChoiceText: pair.matching_answer_choice_text.answer_choice_text
+								},
+								codingBlock: {
+									codingBlockId: pair.coding_block.coding_block_id,
+									codingBlockJson: pair.coding_block.coding_block_json as BlocklyJson,
+								}
+							}))
 					} : null
 				}
 			}) satisfies LessonQuestionMap)

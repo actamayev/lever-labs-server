@@ -109,6 +109,24 @@ declare global {
 		block_name_id: number
 	}
 
+	interface MatchingQuestionData {
+		question_id: string
+		question_text: string
+	}
+
+	interface MatchingAnswerChoiceTextData {
+		matching_answer_choice_text_id: number
+		answer_choice_text: string
+	}
+
+	interface MatchingAnswerChoicePairData {
+		matching_answer_choice_pair_id: number
+		matching_question_id: string
+		coding_block_id: number
+		matching_answer_choice_text_id: number
+		is_correct: boolean
+	}
+
 	type AllSeedData =
 		| CareerData
 		| ChallengeData
@@ -127,6 +145,9 @@ declare global {
 		| ActionToCodeMultipleChoiceAnswerChoiceData
 		| ActionToCodeOpenEndedQuestionData
 		| ActionToCodeOpenEndedQuestionBlockBankData
+		| MatchingQuestionData
+		| MatchingAnswerChoiceTextData
+		| MatchingAnswerChoicePairData
 }
 
 export {}
