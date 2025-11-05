@@ -52,6 +52,7 @@ model credentials {
 	fill_in_the_blank_user_answer								fill_in_the_blank_user_answer[]
 	action_to_code_open_ended_question_user_answer				action_to_code_open_ended_question_user_answer[]
 	action_to_code_multiple_choice_user_answer					action_to_code_multiple_choice_user_answer[]
+	matching_question_user_answer								matching_question_user_answer[]
 	completed_user_lesson										completed_user_lesson[]
 }
 
@@ -417,6 +418,7 @@ enum QuestionType {
 	FILL_IN_BLANK
 	ACTION_TO_CODE_MULTIPLE_CHOICE
 	ACTION_TO_CODE_OPEN_ENDED
+	MATCHING
 }
 
 model question {
@@ -432,6 +434,7 @@ model question {
 	fill_in_the_blank										fill_in_the_blank?
 	action_to_code_multiple_choice_question					action_to_code_multiple_choice_question?
 	action_to_code_open_ended_question						action_to_code_open_ended_question?
+	matching_question										matching_question?
 	
 	lesson_question_map										lesson_question_map[]
 }
@@ -445,6 +448,7 @@ model coding_block {
 	block_to_function_flashcard								block_to_function_flashcard[]
 	function_to_block_answer_choice							function_to_block_answer_choice[]
 	action_to_code_multiple_choice_answer_choice			action_to_code_multiple_choice_answer_choice[]
+	matching_answer_choice									matching_answer_choice[]
 }
 
 model lesson {
@@ -691,4 +695,43 @@ model action_to_code_open_ended_question_user_answer {
 	
 	@@index([user_id])
 	@@index([action_to_code_open_ended_question_id])
+}
+
+model matching_question {
+	question_id												String       @id
+	question_text											String
+
+	question												question  @relation(fields: [question_id], references: [question_id], onDelete: Cascade)
+
+	matching_answer_choice									matching_answer_choice[]
+}
+
+model matching_answer_choice {
+	matching_answer_choice_id								Int 		@id
+	matching_question_id									String
+	coding_block_id											Int
+	block_description										String
+
+	is_correct												Boolean
+
+	matching_question										matching_question @relation(fields: [matching_question_id], references: [question_id], onDelete: Cascade)
+	coding_block											coding_block @relation(fields: [coding_block_id], references: [coding_block_id])
+	matching_question_user_answer							matching_question_user_answer[]
+
+	@@index([matching_question_id])
+	@@index([coding_block_id])
+}
+
+model matching_question_user_answer {
+	matching_question_user_answer_id						Int       @id @default(autoincrement())
+	matching_answer_choice_id								Int
+	user_id													Int
+	
+	created_at												DateTime  @default(now())
+	
+	answer_choice											matching_answer_choice @relation(fields: [matching_answer_choice_id], references: [matching_answer_choice_id])
+	user													credentials @relation(fields: [user_id], references: [user_id])
+	
+	@@index([user_id])
+	@@index([matching_answer_choice_id])
 }
