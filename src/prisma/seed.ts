@@ -607,39 +607,36 @@ async function seedMatchingAnswerChoicePairs(): Promise<void> {
 }
 
 
-async function main(): Promise<void> {
+async function main(reverse: boolean = false): Promise<void> {
 	try {
-		await seedCareers()
-		await seedChallenges()
+		const seedingFunctions = [
+			seedCareers,
+			seedChallenges,
+			seedCodingBlocks,
+			seedBlockNames,
+			seedLessons,
+			seedQuestions,
+			seedLessonQuestionMaps,
+			seedBlockToFunctionFlashcards,
+			seedFunctionToBlockFlashcards,
+			seedFillInTheBlanks,
+			seedFillInTheBlankBlockBanks,
+			seedActionToCodeMultipleChoiceQuestions,
+			seedActionToCodeOpenEndedQuestions,
+			seedMatchingQuestions,
+			seedMatchingAnswerChoiceTexts,
+			seedBlockToFunctionAnswerChoices,
+			seedFunctionToBlockAnswerChoices,
+			seedActionToCodeMultipleChoiceAnswerChoices,
+			seedActionToCodeOpenEndedQuestionBlockBanks,
+			seedMatchingAnswerChoicePairs
+		]
 
+		const functionsToRun = reverse ? seedingFunctions.reverse() : seedingFunctions
 
-		// Seed lesson system
-		await seedCodingBlocks()
-		await seedBlockNames()
-		await seedLessons()
-		await seedQuestions()
-		await seedLessonQuestionMaps()
-
-		// Seed flashcard types (depends on questions and coding blocks)
-		await seedBlockToFunctionFlashcards()
-		await seedFunctionToBlockFlashcards()
-		await seedFillInTheBlanks()
-		await seedFillInTheBlankBlockBanks()
-		await seedActionToCodeMultipleChoiceQuestions()
-		await seedActionToCodeOpenEndedQuestions()
-		await seedMatchingQuestions()
-
-		// Seed answer choice texts first (independent)
-		await seedMatchingAnswerChoiceTexts()
-
-		// Seed answer choices and block banks (depends on flashcards and coding blocks)
-		await seedBlockToFunctionAnswerChoices()
-		await seedFunctionToBlockAnswerChoices()
-		await seedActionToCodeMultipleChoiceAnswerChoices()
-		await seedActionToCodeOpenEndedQuestionBlockBanks()
-		await seedMatchingAnswerChoicePairs()
-
-		// Seed lesson-question relationships (depends on lessons and questions)
+		for (const seedFunction of functionsToRun) {
+			await seedFunction()
+		}
 
 		console.info("Seeding completed successfully")
 	} catch (error) {

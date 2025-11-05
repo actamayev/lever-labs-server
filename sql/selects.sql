@@ -3,7 +3,7 @@
 -- SELECT * FROM profile_picture;
 -- SELECT * FROM pip_uuid;
 -- SELECT * FROM career_quest_message;
-SELECT * FROM email_update_subscriber order by created_at;
+-- SELECT * FROM email_update_subscriber order by created_at;
 -- SELECT * FROM teacher;
 -- SELECT * FROM student;
 -- SELECT * FROM challenge ORDER BY created_at;
@@ -49,3 +49,4 @@ SELECT * FROM email_update_subscriber order by created_at;
 -- SELECT * FROM action_to_code_open_ended_question;
 -- SELECT * FROM action_to_code_open_ended_question_block_bank;
 -- SELECT * FROM action_to_code_open_ended_question_user_answer;
+-- SELECT * FROM matching_question_user_answer;
