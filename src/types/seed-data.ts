@@ -124,7 +124,6 @@ declare global {
 		matching_question_id: string
 		coding_block_id: number
 		matching_answer_choice_text_id: number
-		is_correct: boolean
 	}
 
 	type AllSeedData =

@@ -167,8 +167,7 @@ function isMatchingAnswerChoicePairData(data: unknown): data is MatchingAnswerCh
         typeof d.matching_answer_choice_pair_id === "number" &&
         typeof d.matching_question_id === "string" &&
         typeof d.coding_block_id === "number" &&
-        typeof d.matching_answer_choice_text_id === "number" &&
-        typeof d.is_correct === "boolean"
+        typeof d.matching_answer_choice_text_id === "number"
 	)
 }
 

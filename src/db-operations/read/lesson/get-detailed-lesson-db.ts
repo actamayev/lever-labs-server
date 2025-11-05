@@ -126,7 +126,6 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 										matching_answer_choice_pair: {
 											select: {
 												matching_answer_choice_pair_id: true,
-												is_correct: true,
 												coding_block: {
 													select: {
 														coding_block_id: true,

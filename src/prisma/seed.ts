@@ -585,8 +585,7 @@ async function seedMatchingAnswerChoicePairs(): Promise<void> {
 			!pair.matching_answer_choice_pair_id ||
 			!pair.matching_question_id ||
 			!pair.coding_block_id ||
-			!pair.matching_answer_choice_text_id ||
-			isUndefined(pair.is_correct)
+			!pair.matching_answer_choice_text_id
 		) {
 			throw new Error(`Invalid matching answer choice pair data: ${JSON.stringify(pair)}`)
 		}
@@ -595,15 +594,13 @@ async function seedMatchingAnswerChoicePairs(): Promise<void> {
 			update: {
 				matching_question_id: pair.matching_question_id,
 				coding_block_id: pair.coding_block_id,
-				matching_answer_choice_text_id: pair.matching_answer_choice_text_id,
-				is_correct: pair.is_correct
+				matching_answer_choice_text_id: pair.matching_answer_choice_text_id
 			},
 			create: {
 				matching_answer_choice_pair_id: pair.matching_answer_choice_pair_id,
 				matching_question_id: pair.matching_question_id,
 				coding_block_id: pair.coding_block_id,
-				matching_answer_choice_text_id: pair.matching_answer_choice_text_id,
-				is_correct: pair.is_correct
+				matching_answer_choice_text_id: pair.matching_answer_choice_text_id
 			}
 		})
 	}))

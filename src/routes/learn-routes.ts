@@ -5,6 +5,7 @@ import validateUserCode from "../middleware/request-validation/learn/validate-us
 import validateBlockToFunctionAnswer from "../middleware/request-validation/learn/validate-block-to-function-answer"
 import validateFunctionToBlockAnswer from "../middleware/request-validation/learn/validate-function-to-block-answer"
 import validateActionToCodeMultipleChoiceAnswer from "../middleware/request-validation/learn/validate-action-to-code-multiple-choice-answer"
+import validateMatchingAnswer from "../middleware/request-validation/learn/validate-matching-answer"
 
 import getAllLessons from "../controllers/learn/get-all-lessons"
 import getDetailedLesson from "../controllers/learn/get-detailed-lesson"
@@ -14,6 +15,7 @@ import submitFillInTheBlankAnswer from "../controllers/learn/submit-fill-in-the-
 import submitFunctionToBlockAnswer from "../controllers/learn/submit-function-to-block-answer"
 import submitActionToCodeMultipleChoiceAnswer from "../controllers/learn/submit-action-to-code-multiple-choice"
 import submitOpenEndedActionToCodeQuestion from "../controllers/learn/submit-open-ended-action-to-code-question"
+import submitMatchingAnswer from "../controllers/learn/submit-matching-answer"
 
 const learnRoutes = express.Router()
 
@@ -56,6 +58,13 @@ learnRoutes.post(
 	validateQuestionId,
 	validateUserCode,
 	submitOpenEndedActionToCodeQuestion
+)
+
+learnRoutes.post(
+	"/submit-matching/:questionId",
+	validateQuestionId,
+	validateMatchingAnswer,
+	submitMatchingAnswer
 )
 
 export default learnRoutes
