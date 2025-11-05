@@ -61,7 +61,7 @@ learnRoutes.post(
 )
 
 learnRoutes.post(
-	"/submit-matching/:questionId",
+	"/submit-matching-answer/:questionId",
 	validateQuestionId,
 	validateMatchingAnswer,
 	submitMatchingAnswer

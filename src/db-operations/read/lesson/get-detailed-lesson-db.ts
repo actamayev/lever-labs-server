@@ -230,7 +230,6 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 					matching: map.question.matching_question ? {
 						questionText: map.question.matching_question.question_text,
 						matchingAnswerChoice: map.question.matching_question.matching_answer_choice_pair
-							.sort(() => Math.random() - 0.5) // Randomize the order server-side
 							.map((pair, index) => ({
 								matchingAnswerChoicePairId: pair.matching_answer_choice_pair_id,
 								order: index, // Randomized display order
