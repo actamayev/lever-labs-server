@@ -11,5 +11,7 @@ To add data to the reference configuration tables (this is data that has to be i
 	To seed in cloud,
 		Copy the data from db-seed-data to the instance (see aws.txt)
 		ssh into the AWS instance
-		navigate to the dist/src folder
+		navigate to the /lever-labs folder
 		run `pnpm run cloud-seed`
+
+To trim trailing whitespace from the schema.prisma file, run: `./trim-schema-whitespace.sh`
