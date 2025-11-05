@@ -5,12 +5,12 @@ type ExtendedInteractionType = InteractionType | "checkCode"
 export default function selectModel(interactionType: ExtendedInteractionType): string {
 	switch (interactionType) {
 	case "checkCode":
-		return "openai/gpt-5-codex"
+		return "x-ai/grok-code-fast-1"
 	case "hint":
-		return "openai/gpt-5-codex"
+		return "x-ai/grok-code-fast-1"
 	case "generalQuestion":
-		return "openai/gpt-5-codex"
+		return "x-ai/grok-code-fast-1"
 	default:
-		return "openai/gpt-5-codex"
+		return "x-ai/grok-code-fast-1"
 	}
 }

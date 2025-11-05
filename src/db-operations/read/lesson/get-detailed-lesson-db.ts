@@ -1,5 +1,7 @@
 import { isEmpty } from "lodash"
-import { DetailedLesson, LessonQuestionMap } from "@lever-labs/common-ts/types/learn"
+import { ActionToCodeMultipleChoiceAnswerChoice, BlockBankData,
+	BlockToFunctionAnswerChoice, DetailedLesson,
+	FunctionToBlockAnswerChoice, LessonQuestionMap, MatchingAnswerChoice } from "@lever-labs/common-ts/types/learn"
 import PrismaClientClass from "../../../classes/prisma-client"
 import { QuestionUUID, LessonUUID } from "@lever-labs/common-ts/types/utils"
 import { BlockNames } from "@lever-labs/common-ts/types/blockly/blockly"
@@ -119,6 +121,28 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 											}
 										}
 									}
+								},
+								matching_question: {
+									select: {
+										question_text: true,
+										matching_answer_choice_pair: {
+											select: {
+												matching_answer_choice_pair_id: true,
+												coding_block: {
+													select: {
+														coding_block_id: true,
+														coding_block_json: true
+													}
+												},
+												matching_answer_choice_text: {
+													select: {
+														matching_answer_choice_text_id: true,
+														answer_choice_text: true
+													}
+												}
+											}
+										}
+									}
 								}
 							}
 						}
@@ -157,7 +181,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 								blockToFunctionAnswerChoiceId: choice.block_to_function_answer_choice_id,
 								order: index, // Randomized display order
 								functionDescriptionText: choice.function_description_text,
-							}))
+							} satisfies BlockToFunctionAnswerChoice))
 					} : null,
 					functionToBlockFlashcard: map.question.function_to_block_flashcard ? {
 						questionText: map.question.function_to_block_flashcard.question_text,
@@ -170,7 +194,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 									codingBlockId: choice.coding_block.coding_block_id,
 									codingBlockJson: choice.coding_block.coding_block_json as BlocklyJson,
 								}
-							}))
+							} satisfies FunctionToBlockAnswerChoice))
 					} : null,
 					fillInTheBlank: map.question.fill_in_the_blank ? {
 						questionText: map.question.fill_in_the_blank.question_text,
@@ -178,7 +202,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 						availableBlocks: map.question.fill_in_the_blank.fill_in_the_blank_block_bank.map(bank => ({
 							blockNameId: bank.block_name.block_name_id,
 							blockName: bank.block_name.block_name as BlockNames,
-						}))
+						} satisfies BlockBankData))
 					} : null,
 					actionToCodeMultipleChoice: map.question.action_to_code_multiple_choice_question ? {
 						questionText: map.question.action_to_code_multiple_choice_question.question_text,
@@ -193,7 +217,7 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 									codingBlockId: choice.coding_block.coding_block_id,
 									codingBlockJson: choice.coding_block.coding_block_json as BlocklyJson,
 								}
-							}))
+							} satisfies ActionToCodeMultipleChoiceAnswerChoice))
 					} : null,
 					actionToCodeOpenEnded: map.question.action_to_code_open_ended_question ? {
 						questionText: map.question.action_to_code_open_ended_question.question_text,
@@ -203,7 +227,22 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 						availableBlocks: map.question.action_to_code_open_ended_question.action_to_code_open_ended_question_block_bank.map(bank => ({
 							blockNameId: bank.block_name.block_name_id,
 							blockName: bank.block_name.block_name as BlockNames,
-						}))
+						} satisfies BlockBankData))
+					} : null,
+					matching: map.question.matching_question ? {
+						questionText: map.question.matching_question.question_text,
+						matchingAnswerChoice: map.question.matching_question.matching_answer_choice_pair
+							.map((pair) => ({
+								matchingAnswerChoicePairId: pair.matching_answer_choice_pair_id,
+								matchingAnswerChoiceText: {
+									matchingAnswerChoiceTextId: pair.matching_answer_choice_text.matching_answer_choice_text_id,
+									answerChoiceText: pair.matching_answer_choice_text.answer_choice_text
+								},
+								codingBlock: {
+									codingBlockId: pair.coding_block.coding_block_id,
+									codingBlockJson: pair.coding_block.coding_block_json as BlocklyJson,
+								}
+							} satisfies MatchingAnswerChoice))
 					} : null
 				}
 			}) satisfies LessonQuestionMap)
