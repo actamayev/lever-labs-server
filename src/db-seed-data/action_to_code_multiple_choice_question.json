@@ -13,5 +13,10 @@
 		"question_id": "83485b07-2714-4e70-945e-a13c4f3d2a38",
 		"question_text": "Watch what Pip does, then select the matching code!",
 		"reference_solution_cpp": "while(true) { if (front_distance_sensor.get_distance() < 3) { all_leds.set_color(RED); } else if (front_distance_sensor.get_distance() < 6) { all_leds.set_color(GREEN); } else { all_leds.set_color(OFF); } }"
+	},
+	{
+		"question_id": "4535deac-4531-47d4-a52b-bfe74be7fcb7",
+		"question_text": "Watch what Pip does, then select the matching code!",
+		"reference_solution_cpp": "motors.spin(CLOCKWISE, 30); wait(1); motors.spin(COUNTERCLOCKWISE, 30); wait(1); motors.stop();"
 	}
 ]
