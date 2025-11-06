@@ -154,5 +154,9 @@
 	{
 		"question_id": "dbc0c04e-fb92-4a82-bf69-72740a2974e3",
 		"question_text": "Which block would turn Pip's LEDs green?"
+	},
+	{
+		"question_id": "97758678-4d5f-441d-85b1-f2a67e0bcda9",
+		"question_text": "Which block checks if there's an object near the left side of Pip?"
 	}
 ]
