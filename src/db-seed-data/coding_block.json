@@ -3655,6 +3655,69 @@
 				}
 			  ]
 			}
-		  }
+		}
+	},
+	{
+		"coding_block_id": 107,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "controls_if_elseif",
+				  "id": "v1MS}sf:Fo/+[0Q$/,sC",
+				  "x": -590,
+				  "y": -550,
+				  "inputs": {
+					"IF1": {
+					  "block": {
+						"type": "side_tof_read",
+						"id": "!*+7!sGX=@v=K/K|luN2",
+						"fields": {
+						  "side_tof_value": "RIGHT"
+						}
+					  }
+					},
+					"DO1": {
+					  "block": {
+						"type": "control_all_leds",
+						"id": "_f+O0L@VrZSsQ2d=Nxy~",
+						"fields": {
+						  "led_color": "RED"
+						}
+					  }
+					},
+					"IF2": {
+					  "block": {
+						"type": "side_tof_read",
+						"id": "JL+;,fA$ZTXN%VQB@y?o",
+						"fields": {
+						  "side_tof_value": "LEFT"
+						}
+					  }
+					},
+					"DO2": {
+					  "block": {
+						"type": "control_all_leds",
+						"id": "/BvN$c}G]N7wK^v?63i4",
+						"fields": {
+						  "led_color": "YELLOW"
+						}
+					  }
+					},
+					"ELSE": {
+					  "block": {
+						"type": "control_all_leds",
+						"id": "tUQ]Fv=vvB_z$q~|OL_T",
+						"fields": {
+						  "led_color": "OFF"
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		}
 	}
 ]
