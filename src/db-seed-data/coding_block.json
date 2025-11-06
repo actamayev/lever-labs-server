@@ -3545,5 +3545,24 @@
 			  ]
 			}
 		  }
+	},
+	{
+		"coding_block_id": 103,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "side_tof_read",
+				  "id": "`T%p/2!RD2l7*CQN=Ll-",
+				  "x": -679,
+				  "y": -397,
+				  "fields": {
+					"side_tof_value": "RIGHT"
+				  }
+				}
+			  ]
+			}
+		  }
 	}
 ]

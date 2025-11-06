@@ -122,3 +122,6 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                121 ,f28aa099-e2b2-415c-8220-ae764bce8c43 ,Drives Pip backward at 10% speed                                                                             ,true
                                122 ,f28aa099-e2b2-415c-8220-ae764bce8c43 ,Drives Pip forward at 10% speed                                                                              ,false
                                123 ,f28aa099-e2b2-415c-8220-ae764bce8c43 ,Drives Pip backward for 10 seconds                                                                           ,false
+                               124 ,5e4f26e7-d03e-4830-9e5a-c5ab34eea211 ,If there's an object near the right side of Pip                                                              ,true
+                               125 ,5e4f26e7-d03e-4830-9e5a-c5ab34eea211 ,The exact distance to an object on the right                                                                 ,false
+                               126 ,5e4f26e7-d03e-4830-9e5a-c5ab34eea211 ,If there's an object in front of Pip                                                                         ,false
