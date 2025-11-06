@@ -644,5 +644,23 @@
 		  },
 		"reference_solution_cpp": "while(true) { if (front_distance_sensor.get_distance() < 5) { motors.drive(BACKWARD, 12); } else if (front_distance_sensor.get_distance() < 7) { motors.stop(); } else if (front_distance_sensor.get_distance() < 15) { motors.drive(FORWARD, 12); } else { motors.stop(); } }",
 		"question_text": "Write a program that makes Pip follow your hand: If distance is less than 5 inches, Pip should back away at 12% speed, If distance is between 5 inches (inclusive) and 7 inches (exclusive), Pip should stop, If distance is between 7 inches (inclusive) and 15 inches (exclusive), Pip should move forward at 12% speed, If distance is 15 inches or more, Pip should stop"
+	},
+	{
+		"question_id": "a23a8a22-3e07-4163-8c42-1642c6611587",
+		"initial_blockly_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "forever_loop",
+				  "id": "UG=$//[61tm3H^~{t(UV",
+				  "x": -590,
+				  "y": -470
+				}
+			  ]
+			}
+		},
+		"reference_solution_cpp": "while(true) { if (right_distance_sensor.is_object_near()) { all_leds.set_color(RED); } else { all_leds.set_color(OFF); } }",
+		"question_text": "Write a program that turns Pip's LEDs red when Pip detects an object on the right, and turns them off otherwise"
 	}
 ]
