@@ -119,3 +119,6 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                118 ,c44d5ccd-7064-4f27-94d4-59e4edbd1e87 ,"Makes Pip back away when something is within 5 inches, stop when nothing is close"                          ,true
                                119 ,c44d5ccd-7064-4f27-94d4-59e4edbd1e87 ,Makes Pip move forward when something is within 5 inches                                                     ,false
                                120 ,c44d5ccd-7064-4f27-94d4-59e4edbd1e87 ,Makes Pip turn when something is within 5 inches                                                             ,false
+                               121 ,f28aa099-e2b2-415c-8220-ae764bce8c43 ,Drives Pip backward at 10% speed                                                                             ,true
+                               122 ,f28aa099-e2b2-415c-8220-ae764bce8c43 ,Drives Pip forward at 10% speed                                                                              ,false
+                               123 ,f28aa099-e2b2-415c-8220-ae764bce8c43 ,Drives Pip backward for 10 seconds                                                                           ,false
