@@ -125,3 +125,6 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                124 ,5e4f26e7-d03e-4830-9e5a-c5ab34eea211 ,If there's an object near the right side of Pip                                                              ,true
                                125 ,5e4f26e7-d03e-4830-9e5a-c5ab34eea211 ,The exact distance to an object on the right                                                                 ,false
                                126 ,5e4f26e7-d03e-4830-9e5a-c5ab34eea211 ,If there's an object in front of Pip                                                                         ,false
+                               127 ,d3e60ff7-46cb-49f0-81b9-84f7c0187e32 ,LEDs turn off                                                                                                ,true
+                               128 ,d3e60ff7-46cb-49f0-81b9-84f7c0187e32 ,LEDs turn blue                                                                                               ,false
+                               129 ,d3e60ff7-46cb-49f0-81b9-84f7c0187e32 ,Nothing happens                                                                                              ,false
