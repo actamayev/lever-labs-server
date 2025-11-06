@@ -150,5 +150,9 @@
 	{
 		"question_id": "18b9e3cd-2782-49d7-8a3d-f7fb9f2554b1",
 		"question_text": "Which block would make Pip move forward at 12% speed continuously?"
+	},
+	{
+		"question_id": "dbc0c04e-fb92-4a82-bf69-72740a2974e3",
+		"question_text": "Which block would turn Pip's LEDs green?"
 	}
 ]
