@@ -158,5 +158,9 @@
 	{
 		"question_id": "97758678-4d5f-441d-85b1-f2a67e0bcda9",
 		"question_text": "Which block checks if there's an object near the left side of Pip?"
+	},
+	{
+		"question_id": "8571887d-ee8f-468e-8b91-c15f0ee6ea4a",
+		"question_text": "Which block measures the distance in inches from Pip's front sensor?"
 	}
 ]
