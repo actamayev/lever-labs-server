@@ -1,6 +1,11 @@
 matching_answer_choice_text_id ,answer_choice_text
-1, Turns LEDs red
-2, Pauses for 2 seconds
-3, Detects objects on the right side
-4, Detects objects on the left side
-5, Stops all motors
+                             1 ,Turns LEDs red
+                             2 ,Pauses for 2 seconds
+                             3 ,Detects objects on the right side
+                             4 ,Detects objects on the left side
+                             5 ,Stops all motors
+                             6 ,Turns LEDs red
+                             7 ,Pauses for 2 seconds
+                             8 ,Detects objects on the right side
+                             9 ,Drives forward for 10 seconds at 50% speed
+                            10 ,Checks if right button is being pressed
