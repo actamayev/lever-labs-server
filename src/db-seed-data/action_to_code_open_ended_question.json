@@ -10,5 +10,11 @@
 		"question_text": "Watch what Pip does, then recreate the code!",
 		"reference_solution_cpp": "while(true) { if (front_distance_sensor.is_object_in_front()) { all_leds.set_color(WHITE); } else { all_leds.set_color(OFF); } }",
 		"initial_blockly_json": {}
+	},
+	{
+		"question_id": "afa48310-b446-43bd-a532-d31fe8afe247",
+		"question_text": "Watch what Pip does, then recreate the code!",
+		"reference_solution_cpp": "all_leds.set_color(YELLOW);wait(1);all_leds.set_color(BLUE);wait(1);all_leds.set_color(OFF);",
+		"initial_blockly_json": {}
 	}
 ]
