@@ -1,1 +1,6 @@
 matching_answer_choice_pair_id ,matching_question_id                 ,coding_block_id ,matching_answer_choice_text_id
+                             1 ,276d9cf5-59db-4168-87a7-50bf961b9b3a ,              1 ,                             1
+                             2 ,276d9cf5-59db-4168-87a7-50bf961b9b3a ,            104 ,                             2
+                             3 ,276d9cf5-59db-4168-87a7-50bf961b9b3a ,            103 ,                             3
+                             4 ,276d9cf5-59db-4168-87a7-50bf961b9b3a ,            105 ,                             4
+                             5 ,276d9cf5-59db-4168-87a7-50bf961b9b3a ,             38 ,                             5

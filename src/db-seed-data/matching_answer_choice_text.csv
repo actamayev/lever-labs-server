@@ -1,1 +1,6 @@
 matching_answer_choice_text_id ,answer_choice_text
+1, Turns LEDs red
+2, Pauses for 2 seconds
+3, Detects objects on the right side
+4, Detects objects on the left side
+5, Stops all motors
