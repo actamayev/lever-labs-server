@@ -3545,5 +3545,589 @@
 			  ]
 			}
 		  }
+	},
+	{
+		"coding_block_id": 103,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "side_tof_read",
+				  "id": "`T%p/2!RD2l7*CQN=Ll-",
+				  "x": -679,
+				  "y": -397,
+				  "fields": {
+					"side_tof_value": "RIGHT"
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 104,
+		"coding_block_json": {
+		"blocks": {
+			"languageVersion": 0,
+			"blocks": [
+			{
+				"type": "wait",
+				"id": "(RP=pNxFZI%!m=~TSZgO",
+				"x": -350,
+				"y": -330,
+				"fields": {
+				"wait": 2,
+				"SECONDS_LABEL": "seconds"
+				}
+			}
+			]
+		}
+		}
+	},
+	{
+		"coding_block_id": 105,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "side_tof_read",
+				  "id": "`T%p/2!RD2l7*CQN=Ll-",
+				  "x": -679,
+				  "y": -397,
+				  "fields": {
+					"side_tof_value": "LEFT"
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 106,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "forever_loop",
+				  "id": "rmot`p;^pFvjP1CZYLJE",
+				  "x": -630,
+				  "y": -450,
+				  "inputs": {
+					"LOOP_BODY": {
+					  "block": {
+						"type": "controls_if_else",
+						"id": "-hae])@||zuUepryjWhP",
+						"inputs": {
+						  "IF1": {
+							"block": {
+							  "type": "side_tof_read",
+							  "id": "!*+7!sGX=@v=K/K|luN2",
+							  "fields": {
+								"side_tof_value": "RIGHT"
+							  }
+							}
+						  },
+						  "DO1": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "_f+O0L@VrZSsQ2d=Nxy~",
+							  "fields": {
+								"led_color": "RED"
+							  }
+							}
+						  },
+						  "ELSE": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "y?dFbN{y;))`jX*b/9WV",
+							  "fields": {
+								"led_color": "OFF"
+							  }
+							}
+						  }
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		}
+	},
+	{
+		"coding_block_id": 107,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "controls_if_elseif",
+				  "id": "v1MS}sf:Fo/+[0Q$/,sC",
+				  "x": -590,
+				  "y": -550,
+				  "inputs": {
+					"IF1": {
+					  "block": {
+						"type": "side_tof_read",
+						"id": "!*+7!sGX=@v=K/K|luN2",
+						"fields": {
+						  "side_tof_value": "RIGHT"
+						}
+					  }
+					},
+					"DO1": {
+					  "block": {
+						"type": "control_all_leds",
+						"id": "_f+O0L@VrZSsQ2d=Nxy~",
+						"fields": {
+						  "led_color": "RED"
+						}
+					  }
+					},
+					"IF2": {
+					  "block": {
+						"type": "side_tof_read",
+						"id": "JL+;,fA$ZTXN%VQB@y?o",
+						"fields": {
+						  "side_tof_value": "LEFT"
+						}
+					  }
+					},
+					"DO2": {
+					  "block": {
+						"type": "control_all_leds",
+						"id": "/BvN$c}G]N7wK^v?63i4",
+						"fields": {
+						  "led_color": "YELLOW"
+						}
+					  }
+					},
+					"ELSE": {
+					  "block": {
+						"type": "control_all_leds",
+						"id": "tUQ]Fv=vvB_z$q~|OL_T",
+						"fields": {
+						  "led_color": "OFF"
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		}
+	},
+	{
+		"coding_block_id": 108,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "spin",
+				  "id": ".n8DR{JMturdO)DsOeXm",
+				  "x": -610,
+				  "y": -190,
+				  "fields": {
+					"turn_direction": "CLOCKWISE",
+					"percentage": 30
+				  },
+				  "next": {
+					"block": {
+					  "type": "wait",
+					  "id": "t#w.l+@Go2zMg4^y/M8,",
+					  "fields": {
+						"wait": 1,
+						"SECONDS_LABEL": "second"
+					  },
+					  "next": {
+						"block": {
+						  "type": "stop",
+						  "id": "%,nqKVA1hQklp+#}D5!`",
+						  "next": {
+							"block": {
+							  "type": "spin",
+							  "id": "qXK~u)$xzF!%$.ctfqE8",
+							  "fields": {
+								"turn_direction": "COUNTERCLOCKWISE",
+								"percentage": 30
+							  },
+							  "next": {
+								"block": {
+								  "type": "wait",
+								  "id": "/(}*onG[W[Vdk|gJ2]@!",
+								  "fields": {
+									"wait": 1,
+									"SECONDS_LABEL": "second"
+								  },
+								  "next": {
+									"block": {
+									  "type": "stop",
+									  "id": "xN1t}$f;!}G4fFVYK)0P"
+									}
+								  }
+								}
+							  }
+							}
+						  }
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 109,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "spin",
+				  "id": ".n8DR{JMturdO)DsOeXm",
+				  "x": -610,
+				  "y": -190,
+				  "fields": {
+					"turn_direction": "COUNTERCLOCKWISE",
+					"percentage": 30
+				  },
+				  "next": {
+					"block": {
+					  "type": "wait",
+					  "id": "t#w.l+@Go2zMg4^y/M8,",
+					  "fields": {
+						"wait": 1,
+						"SECONDS_LABEL": "second"
+					  },
+					  "next": {
+						"block": {
+						  "type": "stop",
+						  "id": "%,nqKVA1hQklp+#}D5!`",
+						  "next": {
+							"block": {
+							  "type": "spin",
+							  "id": "qXK~u)$xzF!%$.ctfqE8",
+							  "fields": {
+								"turn_direction": "CLOCKWISE",
+								"percentage": 30
+							  },
+							  "next": {
+								"block": {
+								  "type": "wait",
+								  "id": "/(}*onG[W[Vdk|gJ2]@!",
+								  "fields": {
+									"wait": 1,
+									"SECONDS_LABEL": "second"
+								  },
+								  "next": {
+									"block": {
+									  "type": "stop",
+									  "id": "xN1t}$f;!}G4fFVYK)0P"
+									}
+								  }
+								}
+							  }
+							}
+						  }
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 110,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "spin",
+				  "id": ".n8DR{JMturdO)DsOeXm",
+				  "x": -610,
+				  "y": -190,
+				  "fields": {
+					"turn_direction": "CLOCKWISE",
+					"percentage": 30
+				  },
+				  "next": {
+					"block": {
+					  "type": "spin",
+					  "id": "qXK~u)$xzF!%$.ctfqE8",
+					  "fields": {
+						"turn_direction": "COUNTERCLOCKWISE",
+						"percentage": 30
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 111,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "drive_distance",
+				  "id": "Sp5@W+#jxt_;fpckVop(",
+				  "x": -530,
+				  "y": -270,
+				  "fields": {
+					"direction": "forward",
+					"distance": 3,
+					"INCHES_LABEL": "inches",
+					"percentage": 15
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 112,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "drive_time",
+				  "id": "0sRzQKFx)kg^PMM|:!^N",
+				  "x": -1050,
+				  "y": -270,
+				  "fields": {
+					"direction": "backward",
+					"seconds": 1,
+					"SECONDS_LABEL": "second",
+					"percentage": 30
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 113,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "controls_if",
+				  "id": "QUXB%=F6SWN5|_9%G/X%",
+				  "x": -550,
+				  "y": -230,
+				  "inputs": {
+					"IF0": {
+					  "block": {
+						"type": "logic_compare",
+						"id": "Z.5Tbub*xzZuihKHqj|+",
+						"fields": {
+						  "COMPARE_OP": "LTE"
+						},
+						"inputs": {
+						  "COMPARE_A": {
+							"block": {
+							  "type": "get_front_distance_sensor_distance",
+							  "id": "hj0f=(%LW]ZC},X9}KYb"
+							}
+						  },
+						  "COMPARE_B": {
+							"block": {
+							  "type": "math_number",
+							  "id": "ZD|qA+vr#4G]ryz8?y#P",
+							  "fields": {
+								"NUMBER_NUM": 3
+							  }
+							}
+						  }
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 114,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "controls_if",
+				  "id": "QUXB%=F6SWN5|_9%G/X%",
+				  "x": -550,
+				  "y": -230,
+				  "inputs": {
+					"IF0": {
+					  "block": {
+						"type": "logic_compare",
+						"id": "Z.5Tbub*xzZuihKHqj|+",
+						"fields": {
+						  "COMPARE_OP": "LT"
+						},
+						"inputs": {
+						  "COMPARE_A": {
+							"block": {
+							  "type": "get_front_distance_sensor_distance",
+							  "id": "hj0f=(%LW]ZC},X9}KYb"
+							}
+						  },
+						  "COMPARE_B": {
+							"block": {
+							  "type": "math_number",
+							  "id": "ZD|qA+vr#4G]ryz8?y#P",
+							  "fields": {
+								"NUMBER_NUM": 3
+							  }
+							}
+						  }
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 115,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "controls_if",
+				  "id": "QUXB%=F6SWN5|_9%G/X%",
+				  "x": -550,
+				  "y": -230,
+				  "inputs": {
+					"IF0": {
+					  "block": {
+						"type": "center_tof_read",
+						"id": "JaMQwT@z@O$Hvo3A6VUR"
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 116,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "controls_if_else",
+				  "id": "q;hP*E8e4Is]-ZEeF_$u",
+				  "x": -950,
+				  "y": -150,
+				  "inputs": {
+					"IF1": {
+					  "block": {
+						"type": "logic_compare",
+						"id": "U,[u*fD+!_S`IK(Hx(mQ",
+						"fields": {
+						  "COMPARE_OP": "LT"
+						},
+						"inputs": {
+						  "COMPARE_A": {
+							"block": {
+							  "type": "get_front_distance_sensor_distance",
+							  "id": "YcrV|Wv?=U%_3fcPw#Po"
+							}
+						  },
+						  "COMPARE_B": {
+							"block": {
+							  "type": "math_number",
+							  "id": "vOCmF?~/hRcQaG#K/T|@",
+							  "fields": {
+								"NUMBER_NUM": 5
+							  }
+							}
+						  }
+						}
+					  }
+					},
+					"DO1": {
+					  "block": {
+						"type": "drive",
+						"id": "Y!ton8-aB/@ZNkC*`Of#",
+						"fields": {
+						  "direction": "backward",
+						  "percentage": 20
+						}
+					  }
+					},
+					"ELSE": {
+					  "block": {
+						"type": "stop",
+						"id": "[Y~QVnii#6:$rPr_EDna"
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 117,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "drive",
+				  "id": "Y!ton8-aB/@ZNkC*`Of#",
+				  "x": -950,
+				  "y": -170,
+				  "fields": {
+					"direction": "forward",
+					"percentage": 50
+				  }
+				}
+			  ]
+			}
+		  }
+	},
+	{
+		"coding_block_id": 118,
+		"coding_block_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "spin",
+				  "id": "L|FSTn*?lxC2HCM~A{Q]",
+				  "x": -530,
+				  "y": -110,
+				  "fields": {
+					"turn_direction": "CLOCKWISE",
+					"percentage": 30
+				  }
+				}
+			  ]
+			}
+		  }
 	}
 ]

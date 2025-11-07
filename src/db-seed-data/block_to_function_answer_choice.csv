@@ -119,3 +119,24 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                118 ,c44d5ccd-7064-4f27-94d4-59e4edbd1e87 ,"Makes Pip back away when something is within 5 inches, stop when nothing is close"                          ,true
                                119 ,c44d5ccd-7064-4f27-94d4-59e4edbd1e87 ,Makes Pip move forward when something is within 5 inches                                                     ,false
                                120 ,c44d5ccd-7064-4f27-94d4-59e4edbd1e87 ,Makes Pip turn when something is within 5 inches                                                             ,false
+                               121 ,f28aa099-e2b2-415c-8220-ae764bce8c43 ,Drives Pip backward at 10% speed                                                                             ,true
+                               122 ,f28aa099-e2b2-415c-8220-ae764bce8c43 ,Drives Pip forward at 10% speed                                                                              ,false
+                               123 ,f28aa099-e2b2-415c-8220-ae764bce8c43 ,Drives Pip backward for 10 seconds                                                                           ,false
+                               124 ,5e4f26e7-d03e-4830-9e5a-c5ab34eea211 ,If there's an object near the right side of Pip                                                              ,true
+                               125 ,5e4f26e7-d03e-4830-9e5a-c5ab34eea211 ,The exact distance to an object on the right                                                                 ,false
+                               126 ,5e4f26e7-d03e-4830-9e5a-c5ab34eea211 ,If there's an object in front of Pip                                                                         ,false
+                               127 ,d3e60ff7-46cb-49f0-81b9-84f7c0187e32 ,LEDs turn off                                                                                                ,true
+                               128 ,d3e60ff7-46cb-49f0-81b9-84f7c0187e32 ,LEDs turn blue                                                                                               ,false
+                               129 ,d3e60ff7-46cb-49f0-81b9-84f7c0187e32 ,Nothing happens                                                                                              ,false
+                               130 ,d4623afe-ea07-4bd6-9a90-86b0eb223d12 ,"Continuously checks for objects on the right and turns LEDs red when detected, off otherwise"               ,true
+                               131 ,d4623afe-ea07-4bd6-9a90-86b0eb223d12 ,Checks once for objects on the right and turns LEDs red                                                      ,false
+                               132 ,d4623afe-ea07-4bd6-9a90-86b0eb223d12 ,Turns LEDs red then immediately off                                                                          ,false
+                               133 ,d0483584-820a-47c4-89f0-19a1fd388fb1 ,LEDs turn yellow                                                                                             ,true
+                               134 ,d0483584-820a-47c4-89f0-19a1fd388fb1 ,LEDs turn red                                                                                                ,false
+                               135 ,d0483584-820a-47c4-89f0-19a1fd388fb1 ,Nothing happens                                                                                              ,false
+                               136 ,39a1ed4d-ec00-48bd-868d-d9e1d891305b ,Turns Pip's LEDs off                                                                                         ,true
+                               137 ,39a1ed4d-ec00-48bd-868d-d9e1d891305b ,Turns Pip's LEDs yellow                                                                                      ,false
+                               138 ,39a1ed4d-ec00-48bd-868d-d9e1d891305b ,Turns Pip's LEDs red                                                                                         ,false
+                               139 ,583ccc02-ba3f-4e68-a059-2eec75f29af2 ,"Drives backward if an object is within 5 inches, otherwise stops"                                           ,true
+                               140 ,583ccc02-ba3f-4e68-a059-2eec75f29af2 ,"Drives forward if an object is within 5 inches, otherwise stops"                                            ,false
+                               141 ,583ccc02-ba3f-4e68-a059-2eec75f29af2 ,Always drives backward at 20% speed                                                                          ,false
