@@ -717,5 +717,78 @@
 		  },
 		"reference_solution_cpp": "while(true) { if (right_distance_sensor.is_object_near()) { all_leds.set_color(RED); } else if (left_distance_sensor.is_object_near()) { all_leds.set_color(YELLOW); } else { all_leds.set_color(OFF); } }",
 		"question_text": "Write a program that turns Pip's LEDs red when there's an object on the right, yellow when there's an object on the left, and off otherwise."
+	},
+	{
+		"question_id": "74ee25bb-1622-4a49-8bb2-9c746eef3dbc",
+		"initial_blockly_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "forever_loop",
+				  "id": "rmot`p;^pFvjP1CZYLJE",
+				  "x": -530,
+				  "y": -490,
+				  "inputs": {
+					"LOOP_BODY": {
+					  "block": {
+						"type": "controls_if_elseif",
+						"id": "v1MS}sf:Fo/+[0Q$/,sC",
+						"inputs": {
+						  "IF1": {
+							"block": {
+							  "type": "side_tof_read",
+							  "id": "!*+7!sGX=@v=K/K|luN2",
+							  "fields": {
+								"side_tof_value": "RIGHT"
+							  }
+							}
+						  },
+						  "DO1": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "_f+O0L@VrZSsQ2d=Nxy~",
+							  "fields": {
+								"led_color": "RED"
+							  }
+							}
+						  },
+						  "IF2": {
+							"block": {
+							  "type": "side_tof_read",
+							  "id": "JL+;,fA$ZTXN%VQB@y?o",
+							  "fields": {
+								"side_tof_value": "LEFT"
+							  }
+							}
+						  },
+						  "DO2": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "/BvN$c}G]N7wK^v?63i4",
+							  "fields": {
+								"led_color": "YELLOW"
+							  }
+							}
+						  },
+						  "ELSE": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "tUQ]Fv=vvB_z$q~|OL_T",
+							  "fields": {
+								"led_color": "OFF"
+							  }
+							}
+						  }
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		  },
+		"reference_solution_cpp": "while(true) { if (right_distance_sensor.is_object_near()) { all_leds.set_color(RED); } else if (left_distance_sensor.is_object_near()) { all_leds.set_color(YELLOW); } else if (front_distance_sensor.get_distance() <= 3) { all_leds.set_color(WHITE); } else { all_leds.set_color(OFF); } }",
+		"question_text": "Write a program that turn Pip's LEDs red when there's an object on the right, yellow when there's an object on the left, white when there's an object within 3 inches (inclusive), and off otherwise."
 	}
 ]
