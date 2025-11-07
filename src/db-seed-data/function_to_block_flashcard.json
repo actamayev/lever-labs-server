@@ -162,5 +162,9 @@
 	{
 		"question_id": "8571887d-ee8f-468e-8b91-c15f0ee6ea4a",
 		"question_text": "Which block measures the distance in inches from Pip's front sensor?"
+	},
+	{
+		"question_id": "32ea3fda-7757-4b29-94d7-80642ac02b2f",
+		"question_text": "Which block checks if the front distance is within 3 inches (inclusive)?"
 	}
 ]
