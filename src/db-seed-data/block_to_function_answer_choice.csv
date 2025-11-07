@@ -128,9 +128,9 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                127 ,d3e60ff7-46cb-49f0-81b9-84f7c0187e32 ,LEDs turn off                                                                                                ,true
                                128 ,d3e60ff7-46cb-49f0-81b9-84f7c0187e32 ,LEDs turn blue                                                                                               ,false
                                129 ,d3e60ff7-46cb-49f0-81b9-84f7c0187e32 ,Nothing happens                                                                                              ,false
-                               130 ,7ace0128-5b38-4c37-8b25-f846ef3e9de0 ,"Continuously checks for objects on the right and turns LEDs red when detected, off otherwise"               ,true
-                               131 ,7ace0128-5b38-4c37-8b25-f846ef3e9de0 ,Checks once for objects on the right and turns LEDs red                                                      ,false
-                               132 ,7ace0128-5b38-4c37-8b25-f846ef3e9de0 ,Turns LEDs red then immediately off                                                                          ,false
+                               130 ,d4623afe-ea07-4bd6-9a90-86b0eb223d12 ,"Continuously checks for objects on the right and turns LEDs red when detected, off otherwise"               ,true
+                               131 ,d4623afe-ea07-4bd6-9a90-86b0eb223d12 ,Checks once for objects on the right and turns LEDs red                                                      ,false
+                               132 ,d4623afe-ea07-4bd6-9a90-86b0eb223d12 ,Turns LEDs red then immediately off                                                                          ,false
                                133 ,d0483584-820a-47c4-89f0-19a1fd388fb1 ,LEDs turn yellow                                                                                             ,true
                                134 ,d0483584-820a-47c4-89f0-19a1fd388fb1 ,LEDs turn red                                                                                                ,false
                                135 ,d0483584-820a-47c4-89f0-19a1fd388fb1 ,Nothing happens                                                                                              ,false
