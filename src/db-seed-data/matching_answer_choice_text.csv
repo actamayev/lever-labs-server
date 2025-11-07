@@ -8,3 +8,7 @@ matching_answer_choice_text_id ,answer_choice_text
                             10 ,Checks if right button is being pressed
                             11 ,Measures distance in inches from the front
                             13 ,Checks for blue objects below Pip
+                            14, Drives forward continuously at 50% speed
+                            15, Spins clockwise continuously at 30% speed
+                            16, Moves backward for 1 second at 30% speed
+                            17, Turns 90 degrees counterclockwise
