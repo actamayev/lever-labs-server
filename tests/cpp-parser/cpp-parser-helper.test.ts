@@ -3,7 +3,7 @@ import { CppParser } from "../../src/parser/cpp-parser"
 import { CppParserHelper } from "@/parser/cpp-parser-helper"
 import { MAX_LED_BRIGHTNESS, MAX_REGISTERS } from "@/utils/constants/constants"
 import { BytecodeOpCode, CommandType, ComparisonOp, SensorType } from "@/types/bytecode-types"
-import { describe, test, expect, jest } from "@jest/globals"
+import { describe, test, expect } from "@jest/globals"
 
 describe("CppParserHelper", () => {
 	describe("identifyCommand", () => {
@@ -346,11 +346,12 @@ describe("CppParserHelper", () => {
 		const originalIdentifyCommand = CppParserHelper.identifyCommand
 
 		try {
-		// Mock the helper's identifyCommand method
-			CppParserHelper.identifyCommand = jest.fn().mockReturnValue({
+			// Mock the helper's identifyCommand method with correct typing
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			CppParserHelper.identifyCommand = ((_statement: string) => ({
 				type: CommandType.VARIABLE_ASSIGNMENT,
 				matches: ["full match", "double", "testVar", "3.14"]
-			})
+			})) as typeof CppParserHelper.identifyCommand
 
 			// Test that it throws the correct error
 			expect(() => {
@@ -367,13 +368,13 @@ describe("CppParserHelper", () => {
 		const originalParseComparisonOperator = CppParserHelper.parseComparisonOperator
 
 		try {
-		  // Mock the parseComparisonOperator method to throw when it sees <=>
-		  CppParserHelper.parseComparisonOperator = jest.fn().mockImplementation((op) => {
+		  // Monkey-patch parseComparisonOperator to throw when it sees <=>
+		  CppParserHelper.parseComparisonOperator = function(op: string): ComparisonOp {
 				if (op === "<=>") {
-			  throw new Error("Unsupported operator: <=>")
+				  throw new Error("Unsupported operator: <=>")
 				}
-				return originalParseComparisonOperator(op)
-		  })
+				return originalParseComparisonOperator.call(CppParserHelper, op)
+		  }
 
 		  // This should now throw the unsupported operator error
 		  expect(() => {
