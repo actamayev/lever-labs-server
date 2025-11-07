@@ -1,5 +1,5 @@
-import { CppParser } from "@/parser/cpp-parser"
-import { BytecodeOpCode, SensorType } from "@/types/bytecode-types"
+import { CppParser } from "../../src/parser/cpp-parser"
+import { BytecodeOpCode, SensorType } from "../../src/types/bytecode-types"
 import { describe, test, expect } from "@jest/globals"
 import { MAX_LED_BRIGHTNESS } from "../../src/utils/constants/constants"
 

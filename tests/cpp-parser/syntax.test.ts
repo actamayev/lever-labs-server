@@ -185,7 +185,8 @@ describe("Specific Edge Cases for Uncovered Lines", () => {
 
 		try {
 		// Make validateBalancedSyntax always return true
-			CppParserHelper.validateBalancedSyntax = jest.fn().mockReturnValue(true)
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			CppParserHelper.validateBalancedSyntax = ((_code: string) => true) as typeof CppParserHelper.validateBalancedSyntax
 
 			// This code is missing a closing brace
 			expect(() => {

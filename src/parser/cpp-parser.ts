@@ -1,7 +1,7 @@
 /* eslint-disable max-len, complexity, max-lines-per-function, max-depth */
-import { INSTRUCTION_SIZE, MAX_JUMP_DISTANCE, MAX_LED_BRIGHTNESS, MAX_PROGRAM_SIZE, MAX_REGISTERS } from "@/utils/constants/constants"
+import { MAX_PROGRAM_SIZE, MAX_REGISTERS, MAX_LED_BRIGHTNESS, MAX_JUMP_DISTANCE, INSTRUCTION_SIZE } from "../utils/constants/constants"
 import { SoundType, ToneType } from "@lever-labs/common-ts/protocol"
-import { BytecodeOpCode, CommandPatterns, CommandType, ComparisonOp, comparisonOperatorPattern, SensorType, VarType } from "@/types/bytecode-types"
+import { CommandType, BytecodeOpCode, CommandPatterns, SensorType, VarType, ComparisonOp, comparisonOperatorPattern } from "../types/bytecode-types"
 import { CppParserHelper } from "./cpp-parser-helper"
 import { BytecodeInstruction, BlockStack, PendingJumps, VariableType } from "@/types/bytecode"
 
@@ -277,6 +277,7 @@ export class CppParser {
 							operand3: 0,
 							operand4: 0
 						})
+
 					// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 					} else if (typeEnum === VarType.INT) {
 						// Parse integer value

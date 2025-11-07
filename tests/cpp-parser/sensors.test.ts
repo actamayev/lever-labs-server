@@ -1,7 +1,7 @@
-import { CppParser } from "@/parser/cpp-parser"
-import { MAX_LED_BRIGHTNESS } from "@/utils/constants/constants"
-import { BytecodeOpCode, ComparisonOp, SensorType } from "@/types/bytecode-types"
-import { BytecodeInstruction } from "@/types/bytecode"
+import { CppParser } from "../../src/parser/cpp-parser"
+import { MAX_LED_BRIGHTNESS } from "../../src/utils/constants/constants"
+import { BytecodeOpCode, ComparisonOp, SensorType } from "../../src/types/bytecode-types"
+import { BytecodeInstruction } from "../../src/types/bytecode"
 import { describe, test, expect } from "@jest/globals"
 
 describe("Sensor Functionality", () => {

@@ -1,6 +1,6 @@
-import { MAX_LED_BRIGHTNESS } from "@/utils/constants/constants"
+import { MAX_LED_BRIGHTNESS } from "../../src/utils/constants/constants"
 import { BytecodeOpCode, ComparisonOp } from "../../src/types/bytecode-types"
-import { CppParser } from "@/parser/cpp-parser"
+import { CppParser } from "../../src/parser/cpp-parser"
 import { describe, test, expect } from "@jest/globals"
 
 describe("While Loop Functionality", () => {

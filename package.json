@@ -18,6 +18,7 @@
     "test:coverage": "jest --coverage",
     "test:unit": "jest tests/unit",
     "test:integration": "jest tests/integration",
+    "test:parser": "jest tests/cpp-parser",
     "postinstall": "prisma generate"
   },
   "ts-node": {

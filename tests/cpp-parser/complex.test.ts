@@ -1,6 +1,6 @@
-import { CppParser } from "@/parser/cpp-parser"
+import { CppParser } from "../../src/parser/cpp-parser"
 import { BytecodeOpCode, ComparisonOp, SensorType, VarType } from "../../src/types/bytecode-types"
-import { MAX_LED_BRIGHTNESS } from "@/utils/constants/constants"
+import { MAX_LED_BRIGHTNESS } from "../../src/utils/constants/constants"
 import { describe, test, expect } from "@jest/globals"
 
 describe("Complex Nested Structures", () => {

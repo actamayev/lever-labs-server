@@ -2,7 +2,7 @@ import { BytecodeInstruction } from "@/types/bytecode"
 import { CppParser } from "../../src/parser/cpp-parser"
 import { CppParserHelper } from "@/parser/cpp-parser-helper"
 import { MAX_LED_BRIGHTNESS, MAX_REGISTERS } from "@/utils/constants/constants"
-import { BytecodeOpCode, CommandType, ComparisonOp, SensorType } from "@/types/bytecode-types"
+import { BytecodeOpCode, CommandType, ComparisonOp, SensorType } from "../../src/types/bytecode-types"
 import { describe, test, expect } from "@jest/globals"
 
 describe("CppParserHelper", () => {

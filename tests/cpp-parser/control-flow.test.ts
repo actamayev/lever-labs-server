@@ -1,6 +1,6 @@
-import { CppParser } from "@/parser/cpp-parser"
-import { BytecodeOpCode, ComparisonOp, SensorType } from "@/types/bytecode-types"
-import { MAX_LED_BRIGHTNESS } from "@/utils/constants/constants"
+import { CppParser } from "../../src/parser/cpp-parser"
+import { BytecodeOpCode, ComparisonOp, SensorType } from "../../src/types/bytecode-types"
+import { MAX_LED_BRIGHTNESS } from "../../src/utils/constants/constants"
 import { describe, test, expect } from "@jest/globals"
 
 describe("Control flow", () => {
@@ -142,11 +142,11 @@ all_leds.set_color(PURPLE);`
 			{ code: "if (5 <= 5) { all_leds.set_color(RED); }", op: ComparisonOp.LESS_EQUAL }
 		]
 
-		for (const test of tests) {
-			const bytecode = CppParser.cppToByte(test.code)
+		for (const singleOperatorTest of tests) {
+			const bytecode = CppParser.cppToByte(singleOperatorTest.code)
 
 			expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
-			expect(bytecode[1]).toBe(test.op)
+			expect(bytecode[1]).toBe(singleOperatorTest.op)
 			expect(bytecode[2]).toBe(5)
 			expect(bytecode[3]).toBe(5)
 			expect(bytecode[4]).toBe(0)
@@ -504,11 +504,11 @@ describe("Bidirectional Comparisons", () => {
 				{ code: "if (5 != 6) { all_leds.set_color(RED); }", op: ComparisonOp.NOT_EQUAL }
 			]
 
-			for (const test of operatorTests) {
-				const bytecode = CppParser.cppToByte(test.code)
+			for (const singleOperatorTest of operatorTests) {
+				const bytecode = CppParser.cppToByte(singleOperatorTest.code)
 				// Verify correct operator enum is used
 				expect(bytecode[0]).toBe(BytecodeOpCode.COMPARE)
-				expect(bytecode[1]).toBe(test.op)
+				expect(bytecode[1]).toBe(singleOperatorTest.op)
 			}
 		})
 

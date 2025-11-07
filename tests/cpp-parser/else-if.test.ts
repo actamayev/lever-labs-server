@@ -1,6 +1,6 @@
-import { CppParser } from "@/parser/cpp-parser"
-import { BytecodeOpCode, ComparisonOp, SensorType } from "@/types/bytecode-types"
-import { MAX_LED_BRIGHTNESS } from "@/utils/constants/constants"
+import { CppParser } from "../../src/parser/cpp-parser"
+import { BytecodeOpCode, ComparisonOp, SensorType } from "../../src/types/bytecode-types"
+import { MAX_LED_BRIGHTNESS } from "../../src/utils/constants/constants"
 import { describe, test, expect } from "@jest/globals"
 
 describe("Else-If Functionality", () => {
