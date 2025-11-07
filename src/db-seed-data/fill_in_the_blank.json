@@ -787,8 +787,116 @@
 				}
 			  ]
 			}
-		  },
+		},
 		"reference_solution_cpp": "while(true) { if (right_distance_sensor.is_object_near()) { all_leds.set_color(RED); } else if (left_distance_sensor.is_object_near()) { all_leds.set_color(YELLOW); } else if (front_distance_sensor.get_distance() <= 3) { all_leds.set_color(WHITE); } else { all_leds.set_color(OFF); } }",
 		"question_text": "Write a program that turn Pip's LEDs red when there's an object on the right, yellow when there's an object on the left, white when there's an object within 3 inches (inclusive), and off otherwise."
+	},
+	{
+		"question_id": "4d494fb0-54b6-4883-b49a-43399cbec441",	
+		"initial_blockly_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "forever_loop",
+				  "id": "rmot`p;^pFvjP1CZYLJE",
+				  "x": -710,
+				  "y": -630,
+				  "inputs": {
+					"LOOP_BODY": {
+					  "block": {
+						"type": "controls_if_2elseif",
+						"id": "cX+VjBOl@rPvgMPP%8k5",
+						"inputs": {
+						  "IF1": {
+							"block": {
+							  "type": "side_tof_read",
+							  "id": "!*+7!sGX=@v=K/K|luN2",
+							  "fields": {
+								"side_tof_value": "RIGHT"
+							  }
+							}
+						  },
+						  "DO1": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "_f+O0L@VrZSsQ2d=Nxy~",
+							  "fields": {
+								"led_color": "RED"
+							  }
+							}
+						  },
+						  "IF2": {
+							"block": {
+							  "type": "side_tof_read",
+							  "id": "JL+;,fA$ZTXN%VQB@y?o",
+							  "fields": {
+								"side_tof_value": "LEFT"
+							  }
+							}
+						  },
+						  "DO2": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "/BvN$c}G]N7wK^v?63i4",
+							  "fields": {
+								"led_color": "YELLOW"
+							  }
+							}
+						  },
+						  "IF3": {
+							"block": {
+							  "type": "logic_compare",
+							  "id": "tOmrH0:u%qWl}^+%cM+C",
+							  "fields": {
+								"COMPARE_OP": "LTE"
+							  },
+							  "inputs": {
+								"COMPARE_A": {
+								  "block": {
+									"type": "get_front_distance_sensor_distance",
+									"id": "pnys1_QtQAxO0Y?+zU(="
+								  }
+								},
+								"COMPARE_B": {
+								  "block": {
+									"type": "math_number",
+									"id": "eW5#0O$AP5]7qW{U6a?t",
+									"fields": {
+									  "NUMBER_NUM": 3
+									}
+								  }
+								}
+							  }
+							}
+						  },
+						  "DO3": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "Hw69Cyu$3??i*4e(UbXr",
+							  "fields": {
+								"led_color": "WHITE"
+							  }
+							}
+						  },
+						  "ELSE": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "tUQ]Fv=vvB_z$q~|OL_T",
+							  "fields": {
+								"led_color": "OFF"
+							  }
+							}
+						  }
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		},
+		"reference_solution_cpp": "while(true) { if (right_distance_sensor.is_object_near()) { motors.spin(CLOCKWISE, 30); } else if (left_distance_sensor.is_object_near()) { motors.spin(COUNTERCLOCKWISE, 30); } else if (front_distance_sensor.get_distance() <= 3) { motors.drive(BACKWARD, 15); } else { motors.stop(); } }",
+		"question_text": "Write a program that makes Pip spin at 30% speed towards your hand when your hand is on either side. When there's an object within 3 inches (inclusive), make Pip back away from your hand at 15% speed. Otherwise, stop."
 	}
 ]
