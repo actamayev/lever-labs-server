@@ -1,22 +1,27 @@
 [
 	{
 		"question_id": "f8d41eef-65b0-40ef-b98a-f21dadfc6342",
-		"question_text": "Watch what Pip does, then select the code that matches!",
+		"question_text": "Watch what Pip does, then select the matching code.",
 		"reference_solution_cpp": "all_leds.set_color(RED);\n wait(1);\n all_leds.set_color(OFF);"
 	},
 	{
 		"question_id": "fca32f5f-066c-4d53-8bbd-9fadaf32426d",
-		"question_text": "Watch what Pip does, then select the matching code!",
+		"question_text": "Watch what Pip does, then select the matching code.",
 		"reference_solution_cpp": "while(true) { if (front_distance_sensor.is_object_in_front()) { all_leds.set_color(BLUE); } else { all_leds.set_color(WHITE); } }"
 	},
 	{
 		"question_id": "83485b07-2714-4e70-945e-a13c4f3d2a38",
-		"question_text": "Watch what Pip does, then select the matching code!",
+		"question_text": "Watch what Pip does, then select the matching code.",
 		"reference_solution_cpp": "while(true) { if (front_distance_sensor.get_distance() < 3) { all_leds.set_color(RED); } else if (front_distance_sensor.get_distance() < 6) { all_leds.set_color(GREEN); } else { all_leds.set_color(OFF); } }"
 	},
 	{
 		"question_id": "4535deac-4531-47d4-a52b-bfe74be7fcb7",
-		"question_text": "Watch what Pip does, then select the matching code!",
+		"question_text": "Watch what Pip does, then select the matching code.",
 		"reference_solution_cpp": "motors.spin(CLOCKWISE, 30); wait(1); motors.spin(COUNTERCLOCKWISE, 30); wait(1); motors.stop();"
+	},
+	{
+		"question_id": "9688fcf2-04ba-4d43-bffa-883aec46b582",
+		"question_text": "Watch what Pip does, then select the matching code",
+		"reference_solution_cpp": "motors.drive_time(FORWARD, 1, 30);"
 	}
 ]
