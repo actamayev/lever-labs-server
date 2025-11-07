@@ -22,6 +22,6 @@
 	{
 		"question_id": "9688fcf2-04ba-4d43-bffa-883aec46b582",
 		"question_text": "Watch what Pip does, then select the matching code",
-		"reference_solution_cpp": "motors.drive_time(FORWARD, 1, 30);"
+		"reference_solution_cpp": "motors.drive_distance(FORWARD, 3, 15);"
 	}
 ]
