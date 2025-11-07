@@ -17,7 +17,7 @@
 	{
 		"question_id": "4535deac-4531-47d4-a52b-bfe74be7fcb7",
 		"question_text": "Watch what Pip does, then select the matching code.",
-		"reference_solution_cpp": "motors.spin(CLOCKWISE, 30); wait(1); motors.spin(COUNTERCLOCKWISE, 30); wait(1); motors.stop();"
+		"reference_solution_cpp": "motors.spin(CLOCKWISE, 30); wait(1); motors.stop(); wait(1); motors.spin(COUNTERCLOCKWISE, 30); wait(1); motors.stop();"
 	},
 	{
 		"question_id": "9688fcf2-04ba-4d43-bffa-883aec46b582",
