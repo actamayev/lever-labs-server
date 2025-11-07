@@ -1,4 +1,4 @@
-import { CppParser } from "parser/cpp-parser"
+import { CppParser } from "@/parser/cpp-parser"
 import { MAX_LED_BRIGHTNESS } from "@/utils/constants/constants"
 import { BytecodeOpCode, ComparisonOp, SensorType } from "@/types/bytecode-types"
 import { BytecodeInstruction } from "@/types/bytecode"

@@ -1,4 +1,4 @@
-import { CppParser } from "parser/cpp-parser"
+import { CppParser } from "@/parser/cpp-parser"
 import { describe, test, expect } from "@jest/globals"
 
 describe("ESP32 Hardware Constraints", () => {

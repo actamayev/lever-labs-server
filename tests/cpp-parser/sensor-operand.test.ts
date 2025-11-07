@@ -1,4 +1,4 @@
-import { CppParser } from "parser/cpp-parser"
+import { CppParser } from "@/parser/cpp-parser"
 import { BytecodeOpCode, ComparisonOp, SensorType } from "../../src/types/bytecode-types"
 import { describe, test, expect } from "@jest/globals"
 
