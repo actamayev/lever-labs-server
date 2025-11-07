@@ -134,6 +134,9 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                133 ,d0483584-820a-47c4-89f0-19a1fd388fb1 ,LEDs turn yellow                                                                                             ,true
                                134 ,d0483584-820a-47c4-89f0-19a1fd388fb1 ,LEDs turn red                                                                                                ,false
                                135 ,d0483584-820a-47c4-89f0-19a1fd388fb1 ,Nothing happens                                                                                              ,false
-                               136 ,39a1ed4d-ec00-48bd-868d-d9e1d891305b ,Turns Pip's LEDs off when neither side detects an object
-                               137 ,39a1ed4d-ec00-48bd-868d-d9e1d891305b ,Turns Pip's LEDs yellow when there's an object detected on the left side
-                               138 ,39a1ed4d-ec00-48bd-868d-d9e1d891305b ,Always turns LEDs off
+                               136 ,39a1ed4d-ec00-48bd-868d-d9e1d891305b ,Turns Pip's LEDs off when neither side detects an object                                                     ,true
+                               137 ,39a1ed4d-ec00-48bd-868d-d9e1d891305b ,Turns Pip's LEDs yellow when there's an object detected on the left side                                     ,false
+                               138 ,39a1ed4d-ec00-48bd-868d-d9e1d891305b ,Always turns LEDs off                                                                                        ,false
+                               139 ,583ccc02-ba3f-4e68-a059-2eec75f29af2 ,"Drives backward if an object is within 5 inches, otherwise stops"                                           ,true
+                               140 ,583ccc02-ba3f-4e68-a059-2eec75f29af2 ,"Drives forward if an object is within 5 inches, otherwise stops"                                            ,false
+                               141 ,583ccc02-ba3f-4e68-a059-2eec75f29af2 ,Always drives backward at 20% speed                                                                          ,false
