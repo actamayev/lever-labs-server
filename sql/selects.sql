@@ -1,7 +1,7 @@
 -- SELECT * FROM credentials ORDER BY created_at;
 -- Select * from login_history;
 -- SELECT * FROM profile_picture;
--- SELECT * FROM pip_uuid;
+SELECT * FROM pip_uuid;
 -- SELECT * FROM career_quest_message;
 -- SELECT * FROM email_update_subscriber order by created_at;
 -- SELECT * FROM teacher;
