@@ -14,6 +14,7 @@ Staging:
 	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/db-seed-data ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
 	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/middleware ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
 	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/models ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/parser ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
 	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/prisma ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
 	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/routes ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
 	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/types ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
@@ -34,6 +35,7 @@ Production:
 	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem -r ./dist/src/db-seed-data ubuntu@34.203.76.152:/home/ubuntu/lever-labs/dist/src
 	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem -r ./dist/src/middleware ubuntu@34.203.76.152:/home/ubuntu/lever-labs/dist/src
 	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem -r ./dist/src/models ubuntu@34.203.76.152:/home/ubuntu/lever-labs/dist/src
+	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem -r ./dist/src/parser ubuntu@34.203.76.152:/home/ubuntu/lever-labs/dist/src
 	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem -r ./dist/src/prisma ubuntu@34.203.76.152:/home/ubuntu/lever-labs/dist/src
 	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem -r ./dist/src/routes ubuntu@34.203.76.152:/home/ubuntu/lever-labs/dist/src
 	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem -r ./dist/src/types ubuntu@34.203.76.152:/home/ubuntu/lever-labs/dist/src
