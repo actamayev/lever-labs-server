@@ -1,10 +1,10 @@
 import { Response, Request } from "express"
-import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
-import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 import { PipUUID } from "@lever-labs/common-ts/types/utils"
 import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
+import { ErrorResponse, WiFiBytecodeResponse } from "@lever-labs/common-ts/types/api"
+import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 
-export default async function sendSandboxCodeToPip(req: Request, res: Response): Promise<void> {
+export default async function sendSandboxCodeToPipWifi(req: Request, res: Response): Promise<void> {
 	try {
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 		const { bytecode } = req
@@ -14,7 +14,7 @@ export default async function sendSandboxCodeToPip(req: Request, res: Response):
 			MessageBuilder.createBytecodeMessage(bytecode)
 		)
 
-		res.status(200).json({ success: "Sent bytecode to Pip" } satisfies SuccessResponse)
+		res.status(200).json({ bytecode } satisfies WiFiBytecodeResponse)
 		return
 	} catch (error) {
 		console.error(error)

@@ -161,7 +161,6 @@ describe("Request Validation Middleware", () => {
 		it("should pass validation with valid C++ code data", () => {
 			// Arrange
 			mockRequest.body = {
-				pipUUID: "Y9d4L", // 5 alphanumeric characters
 				cppCode: "#include <iostream>\nint main() { return 0; }",
 			}
 
@@ -177,7 +176,7 @@ describe("Request Validation Middleware", () => {
 			// Arrange
 			mockRequest.body = {
 				cppCode: "#include <iostream>\nint main() { return 0; }",
-				// Missing pipUUID
+				pipUUID: "Y9d4L", // 5 alphanumeric characters
 			}
 
 			// Act
