@@ -13,11 +13,12 @@
     "validate": "pnpm run lint && pnpm run type-check && pnpm test",
     "cloud-seed": "node dist/src/prisma/seed.js",
     "updateCommon": "pnpm add @lever-labs/common-ts@latest",
-    "test": "jest",
+    "test": "jest --config jest.config.js",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:unit": "jest tests/unit",
     "test:integration": "jest tests/integration",
+    "test:parser": "jest tests/cpp-parser",
     "postinstall": "prisma generate"
   },
   "ts-node": {
@@ -69,7 +70,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.922.0",
     "@aws-sdk/client-secrets-manager": "^3.922.0",
-    "@lever-labs/common-ts": "^1.0.344",
+    "@lever-labs/common-ts": "^1.0.349",
     "@prisma/client": "^6.19.0",
     "@typegoose/typegoose": "^12.20.0",
     "bcrypt": "^6.0.0",

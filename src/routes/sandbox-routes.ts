@@ -4,11 +4,12 @@ import starSandboxProject from "../controllers/sandbox/star-sandbox-project"
 import editSandboxProject from "../controllers/sandbox/edit-sandbox-project"
 import deleteSandboxProject from "../controllers/sandbox/delete-sandbox-project"
 import createSandboxProject from "../controllers/sandbox/create-sandbox-project"
-import sendSandboxCodeToPip from "../controllers/sandbox/send-sandbox-code-to-pip"
 import getAllSandboxProjects from "../controllers/sandbox/get-all-sandbox-projects"
 import editSandboxProjectName from "../controllers/sandbox/edit-sandbox-project-name"
 import editSandboxProjectNotes from "../controllers/sandbox/edit-sandbox-project-notes"
 import getSingleSandboxProject from "../controllers/sandbox/get-single-sandbox-project"
+import sendSandboxCodeToPipUsb from "../controllers/sandbox/send-sandbox-code-to-pip-usb"
+import sendSandboxCodeToPipWifi from "../controllers/sandbox/send-sandbox-code-to-pip-wifi"
 import stopCurrentlyRunningSandboxCode from "../controllers/sandbox/stop-currently-running-sandbox-code"
 
 import convertCppToBytecode from "../middleware/convert-cpp-to-bytecode"
@@ -22,6 +23,7 @@ import validateProjectUUIDInParams from "../middleware/request-validation/sandbo
 import validateEditSandboxProjectName from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-name"
 import validateEditSandboxProjectNotes from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-notes"
 import confirmSandboxProjectExistsAndValidUserId from "../middleware/confirm/confirm-sandbox-project-exists-and-valid-user-id"
+import validateCppCodeAndPipUUID from "../middleware/request-validation/sandbox/validate-cpp-code-and-pip-uuid"
 
 const sandboxRoutes = express.Router()
 
@@ -76,12 +78,19 @@ sandboxRoutes.get(
 )
 
 sandboxRoutes.post(
-	"/send-sandbox-code-to-pip",
-	validateCppCode,
+	"/send-sandbox-code-to-pip-wifi",
+	validateCppCodeAndPipUUID,
 	confirmPipIsActive(true),
 	convertCppToBytecode,
 	confirmUserConnectedToPip,
-	sendSandboxCodeToPip
+	sendSandboxCodeToPipWifi
+)
+
+sandboxRoutes.post(
+	"/send-sandbox-code-to-pip-usb",
+	validateCppCode,
+	convertCppToBytecode,
+	sendSandboxCodeToPipUsb
 )
 
 sandboxRoutes.post(

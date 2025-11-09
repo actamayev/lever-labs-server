@@ -157,6 +157,10 @@ export default [
 			"security/detect-buffer-noassert": "off",
 			"security/detect-child-process": "off",
 			"security/detect-eval-with-expression": "off",
+			"@typescript-eslint/no-unnecessary-condition": "warn",
+			"@typescript-eslint/no-floating-promises": "warn",
+			"complexity": "off",
+			"max-depth": "off",
 		},
 	},
 	{
