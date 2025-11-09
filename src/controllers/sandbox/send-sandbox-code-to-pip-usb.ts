@@ -1,6 +1,8 @@
 import { Response, Request } from "express"
 import { ErrorResponse, UsbBytecodeResponse } from "@lever-labs/common-ts/types/api"
+import { Base64String } from "@lever-labs/common-ts/types/utils"
 import { checkForMotorCommands, checkForStartButton } from "../../utils/sandbox/sandbox-safety-measures"
+import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
 
 export default function sendSandboxCodeToPipUsb(req: Request, res: Response): void {
 	try {
@@ -10,7 +12,10 @@ export default function sendSandboxCodeToPipUsb(req: Request, res: Response): vo
 		const hasStartButton = checkForStartButton(bytecode)
 		const isAbleToRunViaUsb = !(hasMotorCommands && !hasStartButton)
 
-		res.status(200).json({ bytecode, isAbleToRunViaUsb } satisfies UsbBytecodeResponse)
+		const buffer = MessageBuilder.createBytecodeMessage(bytecode)
+		const bytecodeBase64 = Buffer.from(buffer).toString("base64") as Base64String
+
+		res.status(200).json({ bytecode: bytecodeBase64, isAbleToRunViaUsb } satisfies UsbBytecodeResponse)
 		return
 	} catch (error) {
 		console.error(error)

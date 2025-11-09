@@ -1,7 +1,7 @@
 import { Response, Request } from "express"
 import { PipUUID } from "@lever-labs/common-ts/types/utils"
 import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
-import { ErrorResponse, WiFiBytecodeResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 
 export default async function sendSandboxCodeToPipWifi(req: Request, res: Response): Promise<void> {
@@ -14,11 +14,11 @@ export default async function sendSandboxCodeToPipWifi(req: Request, res: Respon
 			MessageBuilder.createBytecodeMessage(bytecode)
 		)
 
-		res.status(200).json({ bytecode } satisfies WiFiBytecodeResponse)
+		res.status(200).json({ success: "Sandbox code sent to Pip" } satisfies SuccessResponse)
 		return
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: "Internal Server Error: Unable to send bytecode to Pip" } satisfies ErrorResponse)
+		res.status(500).json({ error: "Internal Server Error: Unable to send sandbox code to Pip" } satisfies ErrorResponse)
 		return
 	}
 }
