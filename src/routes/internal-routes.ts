@@ -9,7 +9,7 @@ import addNewPipUUID from "../controllers/internal/add-new-pip-uuid"
 import decodeEmailSubscriber from "../controllers/internal/decode-email-subscriber"
 import displayLedColorsDirectly from "../controllers/internal/display-led-colors-directly"
 import displayLedColorsToAll from "../controllers/internal/display-led-colors-to-all"
-import playSoundToAll from "../controllers/internal/play-sound-to-all"
+import playToneToAll from "../controllers/internal/play-tone-to-all"
 import getLatestFirmwareData from "../controllers/internal/get-latest-firmware-data"
 
 const internalRoutes = express.Router()
@@ -24,7 +24,7 @@ internalRoutes.post("/display-led-colors", validateLedColorsDirectly, displayLed
 
 internalRoutes.post("/display-led-colors-to-all", validateLedColorsToAll, displayLedColorsToAll)
 
-internalRoutes.post("/play-sound-to-all", playSoundToAll)
+internalRoutes.post("/play-tone-to-all", playToneToAll)
 
 internalRoutes.post("/firmware-update", forceFirmwareRefetch)
 

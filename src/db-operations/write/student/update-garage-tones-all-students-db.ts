@@ -1,18 +1,18 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 
-export default async function updateIndividualStudentGarageSounds(
-	studentId: number,
-	garageSoundsStatus: boolean
+export default async function updateGarageTonesAllStudents(
+	classroomId: number,
+	garageTonesStatus: boolean
 ): Promise<void> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
-		await prismaClient.student.update({
+		await prismaClient.student.updateMany({
 			where: {
-				student_id: studentId
+				classroom_id: classroomId
 			},
 			data: {
-				garage_sounds_allowed: garageSoundsStatus
+				garage_sounds_allowed: garageTonesStatus
 			}
 		})
 

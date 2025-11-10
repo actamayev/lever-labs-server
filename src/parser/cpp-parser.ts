@@ -1,6 +1,6 @@
 /* eslint-disable max-len, complexity, max-lines-per-function, max-depth */
 import { MAX_PROGRAM_SIZE, MAX_REGISTERS, MAX_LED_BRIGHTNESS, MAX_JUMP_DISTANCE, INSTRUCTION_SIZE } from "../utils/constants/constants"
-import { SoundType, ToneType } from "@lever-labs/common-ts/protocol"
+import { ToneType } from "@lever-labs/common-ts/protocol"
 import { CommandType, BytecodeOpCode, CommandPatterns, SensorType, VarType, ComparisonOp, comparisonOperatorPattern } from "../types/bytecode-types"
 import { CppParserHelper } from "./cpp-parser-helper"
 import { BytecodeInstruction, BlockStack, PendingJumps, VariableType } from "@/types/bytecode"
@@ -1413,42 +1413,18 @@ export class CppParser {
 				break
 			}
 
-			case CommandType.PLAY_SOUND: {
-				if (command.matches && command.matches.length === 2) {
-					const soundName = command.matches[1].replace(/"/g, "").trim()
-
-					// Validate sound name against SoundType enum
-					const soundTypeKey = soundName.toUpperCase() as keyof typeof SoundType
-					if (!(soundTypeKey in SoundType)) {
-						const validSounds = Object.keys(SoundType).filter(key => isNaN(Number(key)))
-						throw new Error(`Invalid sound name: "${soundName}". Valid sounds are: ${validSounds.join(", ")}`)
-					}
-
-					const soundId = SoundType[soundTypeKey]
-
-					instructions.push({
-						opcode: BytecodeOpCode.PLAY_SOUND,
-						operand1: soundId,
-						operand2: 0,
-						operand3: 0,
-						operand4: 0
-					})
-				}
-				break
-			}
-
 			case CommandType.PLAY_TONE: {
 				if (command.matches && command.matches.length === 2) {
-					const soundName = command.matches[1].replace(/"/g, "").trim()
+					const toneName = command.matches[1].replace(/"/g, "").trim()
 
-					// Validate sound name against SoundType enum
-					const soundTypeKey = soundName.toUpperCase() as keyof typeof ToneType
-					if (!(soundTypeKey in ToneType)) {
-						const validSounds = Object.keys(ToneType).filter(key => isNaN(Number(key)))
-						throw new Error(`Invalid tone name: "${soundName}". Valid tones are: ${validSounds.join(", ")}`)
+					// Validate tone name against ToneType enum
+					const toneTypeKey = toneName.toUpperCase() as keyof typeof ToneType
+					if (!(toneTypeKey in ToneType)) {
+						const validTones = Object.keys(ToneType).filter(key => isNaN(Number(key)))
+						throw new Error(`Invalid tone name: "${toneName}". Valid tones are: ${validTones.join(", ")}`)
 					}
 
-					const toneId = ToneType[soundTypeKey]
+					const toneId = ToneType[toneTypeKey]
 
 					instructions.push({
 						opcode: BytecodeOpCode.PLAY_TONE,
