@@ -1762,16 +1762,16 @@
 			  "blocks": [
 				{
 				  "type": "control_all_leds",
-				  "id": "Zy?2N:IztV=}v}Z8IKm^",
-				  "x": -410,
-				  "y": -270,
+				  "id": "K(elW,px:YprvRbWVLL1",
+				  "x": -70,
+				  "y": -190,
 				  "fields": {
 					"led_color": "RED"
 				  },
 				  "next": {
 					"block": {
 					  "type": "wait",
-					  "id": "@lD(}tWvGFOsZ(q:I;Iv",
+					  "id": "Vc*TL6k,vfmcOQ+E?D=I",
 					  "fields": {
 						"wait": 1,
 						"SECONDS_LABEL": "second"
@@ -1779,9 +1779,47 @@
 					  "next": {
 						"block": {
 						  "type": "control_all_leds",
-						  "id": "E%_=d~HW+b{Zc5B,N]mv",
+						  "id": "(|s@rBZDW*+e^LZDx+kz",
 						  "fields": {
-							"led_color": "OFF"
+							"led_color": "WHITE"
+						  },
+						  "next": {
+							"block": {
+							  "type": "wait",
+							  "id": "TmAsY5m2@j3%L_gh/r}a",
+							  "fields": {
+								"wait": 1,
+								"SECONDS_LABEL": "second"
+							  },
+							  "next": {
+								"block": {
+								  "type": "control_all_leds",
+								  "id": "mlZ?|ctD?Uw]hAGs;eJk",
+								  "fields": {
+									"led_color": "BLUE"
+								  },
+								  "next": {
+									"block": {
+									  "type": "wait",
+									  "id": "J4G-6%~_15q-_w=7FI_O",
+									  "fields": {
+										"wait": 1,
+										"SECONDS_LABEL": "second"
+									  },
+									  "next": {
+										"block": {
+										  "type": "control_all_leds",
+										  "id": "y]{%;5sP,h`E0jMOb(M~",
+										  "fields": {
+											"led_color": "OFF"
+										  }
+										}
+									  }
+									}
+								  }
+								}
+							  }
+							}
 						  }
 						}
 					  }
@@ -1800,18 +1838,36 @@
 			  "blocks": [
 				{
 				  "type": "control_all_leds",
-				  "id": "Zy?2N:IztV=}v}Z8IKm^",
-				  "x": -410,
-				  "y": -270,
+				  "id": "K(elW,px:YprvRbWVLL1",
+				  "x": -70,
+				  "y": -190,
 				  "fields": {
 					"led_color": "RED"
 				  },
 				  "next": {
 					"block": {
 					  "type": "control_all_leds",
-					  "id": "E%_=d~HW+b{Zc5B,N]mv",
+					  "id": "(|s@rBZDW*+e^LZDx+kz",
 					  "fields": {
-						"led_color": "OFF"
+						"led_color": "WHITE"
+					  },
+					  "next": {
+						"block": {
+						  "type": "control_all_leds",
+						  "id": "mlZ?|ctD?Uw]hAGs;eJk",
+						  "fields": {
+							"led_color": "BLUE"
+						  },
+						  "next": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "y]{%;5sP,h`E0jMOb(M~",
+							  "fields": {
+								"led_color": "OFF"
+							  }
+							}
+						  }
+						}
 					  }
 					}
 				  }
