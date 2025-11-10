@@ -2,7 +2,8 @@ import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-mana
 import calculateMotorSpeeds from "../calculate-motor-speeds"
 import { ClientSocketEvents, ClientSocketEventPayloadMap, PlayTonePayload } from "@lever-labs/common-ts/types/socket"
 import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
-import { LedControlData, MotorControlData, HeadlightData, HornData } from "@lever-labs/common-ts/types/garage"
+import { LedControlData, MotorControlData, HeadlightData } from "@lever-labs/common-ts/types/garage"
+import { ToneType } from "@lever-labs/common-ts/protocol"
 
 type ListenerHandler<T> = (payload: T) => void
 
@@ -40,18 +41,9 @@ const listenersMap: {
 			console.error(error)
 		}
 	},
-	"horn-tone-update": (hornControlData: HornData) => {
-		try {
-			void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-				hornControlData.pipUUID,
-				MessageBuilder.createUpdateHornToneMessage(hornControlData.hornStatus))
-		} catch (error) {
-			console.error(error)
-		}
-	},
 	"play-tone": (playToneData: PlayTonePayload) => {
 		try {
-			if (playToneData.toneType === null) {
+			if (playToneData.toneType === ToneType.OFF) {
 				const buffer = MessageBuilder.createStopToneCommandMessage()
 				return void SendEsp32MessageManager.getInstance().sendBinaryMessage(playToneData.pipUUID, buffer)
 			}
