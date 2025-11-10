@@ -236,10 +236,9 @@ describe("Button commands", () => {
 			expect(buttonCheckFound).toBe(true)
 		})
 
-		test("should work with sound commands", () => {
+		test("should work with tone commands", () => {
 			const program = `
 				if (right_button.is_pressed()) {
-					speaker.play_sound("Chime");
 					speaker.play_tone("A");
 				}
 			`

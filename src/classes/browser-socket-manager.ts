@@ -387,9 +387,9 @@ export default class BrowserSocketManager extends Singleton {
 		})
 	}
 
-	public emitGarageSoundsStatusUpdateToStudents(studentUserIds: number[], garageSoundsStatus: boolean): void {
+	public emitGarageTonesStatusUpdateToStudents(studentUserIds: number[], garageTonesStatus: boolean): void {
 		studentUserIds.forEach(studentUserId => {
-			this.emitToUser(studentUserId, "garage-sounds-status-update", { garageSoundsStatus })
+			this.emitToUser(studentUserId, "garage-tones-status-update", { garageTonesStatus })
 		})
 	}
 

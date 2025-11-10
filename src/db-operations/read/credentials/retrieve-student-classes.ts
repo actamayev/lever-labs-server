@@ -44,7 +44,7 @@ export default async function retrieveStudentClasses(userId: number): Promise<St
 				classCode: singleStudentData.classroom.class_code as ClassCode,
 				activeHubs: await hubManager.getStudentHubs(singleStudentData.classroom.class_code as ClassCode),
 				garageDrivingAllowed: singleStudentData.garage_driving_allowed,
-				garageSoundsAllowed: singleStudentData.garage_sounds_allowed,
+				garageTonesAllowed: singleStudentData.garage_sounds_allowed,
 				garageLightsAllowed: singleStudentData.garage_lights_allowed,
 				garageDisplayAllowed: singleStudentData.garage_display_allowed
 			}) satisfies StudentClassroomData)

@@ -16,16 +16,14 @@ import retrieveBasicClassroomInfo from "../../controllers/teacher/retrieve-basic
 import retrieveDetailedClassroomInfo from "../../controllers/teacher/retrieve-detailed-classroom-info"
 import validateUpdateGarageDrivingStatus from "../../middleware/request-validation/teacher/validate-update-garage-driving-status"
 import updateGarageDrivingStatus from "../../controllers/teacher/update-garage-driving-status"
-import validateUpdateGarageSounds from "../../middleware/request-validation/teacher/validate-update-garage-sounds"
-import updateGarageSounds from "../../controllers/teacher/update-garage-sounds"
 import validateUpdateGarageLights from "../../middleware/request-validation/teacher/validate-update-garage-lights"
 import updateGarageLights from "../../controllers/teacher/update-garage-lights"
 import validateUpdateIndividualStudentGarageDriving
 	from "../../middleware/request-validation/teacher/validate-update-individual-student-garage-driving"
 import updateIndividualStudentGarageDriving from "../../controllers/teacher/update-individual-student-garage-driving"
-import validateUpdateIndividualStudentGarageSounds
-	from "../../middleware/request-validation/teacher/validate-update-individual-student-garage-sounds"
-import updateIndividualStudentGarageSounds from "../../controllers/teacher/update-individual-student-garage-sounds"
+import updateIndividualStudentGarageTones from "../../controllers/teacher/update-individual-student-garage-tones"
+import validateUpdateIndividualStudentGarageTones
+	from "../../middleware/request-validation/teacher/validate-update-individual-student-garage-tones"
 import validateUpdateIndividualStudentGarageLights
 	from "../../middleware/request-validation/teacher/validate-update-individual-student-garage-lights"
 import updateIndividualStudentGarageLights from "../../controllers/teacher/update-individual-student-garage-lights"
@@ -36,6 +34,8 @@ import validateUpdateIndividualStudentGarageDisplay
 import updateIndividualStudentGarageDisplay from "../../controllers/teacher/update-individual-student-garage-display"
 import hubRoutes from "./hub-routes"
 import scoreboardRoutes from "./scoreboard-routes"
+import updateGarageTones from "../../controllers/teacher/update-garage-tones"
+import validateUpdateGarageTones from "../../middleware/request-validation/teacher/validate-update-garage-tones"
 
 const teacherRoutes = express.Router()
 
@@ -92,12 +92,12 @@ teacherRoutes.post(
 )
 
 teacherRoutes.post(
-	"/update-garage-sounds-all-students/:classCode",
-	validateUpdateGarageSounds,
+	"/update-garage-tones-all-students/:classCode",
+	validateUpdateGarageTones,
 	attachTeacherId,
 	attachClassroomIdValidateClassCode,
 	confirmClassBelongsToTeacher,
-	updateGarageSounds
+	updateGarageTones
 )
 
 teacherRoutes.post(
@@ -128,12 +128,12 @@ teacherRoutes.post(
 )
 
 teacherRoutes.post(
-	"/update-individual-student-garage-sounds/:classCode",
-	validateUpdateIndividualStudentGarageSounds,
+	"/update-individual-student-garage-tones/:classCode",
+	validateUpdateIndividualStudentGarageTones,
 	attachTeacherId,
 	attachClassroomIdValidateClassCode,
 	confirmClassBelongsToTeacher,
-	updateIndividualStudentGarageSounds
+	updateIndividualStudentGarageTones
 )
 
 teacherRoutes.post(
