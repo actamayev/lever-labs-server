@@ -29,7 +29,7 @@ ROBOTICS EXPLORATION FRAMEWORK:
 🤖 SENSE → THINK → ACT: The foundation of all robot behavior
 - SENSE: "What does Pip need to know?" (sensors, inputs)
 - THINK: "What should Pip decide?" (logic, conditions)  
-- ACT: "What should Pip do?" (motors, LEDs, sounds)
+- ACT: "What should Pip do?" (motors, LEDs, tones)
 
 CATEGORY GUIDE FOR SAFE EXPLORATION:
 🚗 MOTORS: Physical movement and navigation

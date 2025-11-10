@@ -1,10 +1,8 @@
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 import calculateMotorSpeeds from "../calculate-motor-speeds"
-import { ClientSocketEvents, ClientSocketEventPayloadMap } from "@lever-labs/common-ts/types/socket"
+import { ClientSocketEvents, ClientSocketEventPayloadMap, PlayTonePayload } from "@lever-labs/common-ts/types/socket"
 import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
-import { tuneToSoundType } from "@lever-labs/common-ts/protocol"
 import { LedControlData, MotorControlData, HeadlightData, HornData } from "@lever-labs/common-ts/types/garage"
-import { ExtendedPlayFunSoundPayload } from "@lever-labs/common-ts/dist/src/types/socket"
 
 type ListenerHandler<T> = (payload: T) => void
 
@@ -42,24 +40,24 @@ const listenersMap: {
 			console.error(error)
 		}
 	},
-	"horn-sound-update": (hornControlData: HornData) => {
+	"horn-tone-update": (hornControlData: HornData) => {
 		try {
 			void SendEsp32MessageManager.getInstance().sendBinaryMessage(
 				hornControlData.pipUUID,
-				MessageBuilder.createHornSoundMessage(hornControlData.hornStatus))
+				MessageBuilder.createUpdateHornToneMessage(hornControlData.hornStatus))
 		} catch (error) {
 			console.error(error)
 		}
 	},
-	"play-fun-sound": (funSoundsData: ExtendedPlayFunSoundPayload) => {
+	"play-tone": (playToneData: PlayTonePayload) => {
 		try {
-			if (funSoundsData.sound === null) {
-				const buffer = MessageBuilder.createStopSoundMessage()
-				return void SendEsp32MessageManager.getInstance().sendBinaryMessage(funSoundsData.pipUUID, buffer)
+			if (playToneData.toneType === null) {
+				const buffer = MessageBuilder.createStopToneCommandMessage()
+				return void SendEsp32MessageManager.getInstance().sendBinaryMessage(playToneData.pipUUID, buffer)
 			}
 			void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-				funSoundsData.pipUUID,
-				MessageBuilder.createSoundMessage(tuneToSoundType[funSoundsData.sound]))
+				playToneData.pipUUID,
+				MessageBuilder.createToneCommandMessage(playToneData.toneType))
 		} catch (error) {
 			console.error(error)
 		}

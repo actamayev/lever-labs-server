@@ -3,14 +3,14 @@ import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse} from "@lever-labs/common-ts/types/api"
 
-const updateIndividualStudentGarageSoundsSchema = Joi.object({
+const updateIndividualStudentGarageTonesSchema = Joi.object({
 	studentId: Joi.number().integer().positive().required(),
-	garageSoundsStatus: Joi.boolean().required()
+	garageTonesStatus: Joi.boolean().required()
 }).required()
 
-export default function validateUpdateIndividualStudentGarageSounds(req: Request, res: Response, next: NextFunction): void {
+export default function validateUpdateIndividualStudentGarageTones(req: Request, res: Response, next: NextFunction): void {
 	try {
-		const { error } = updateIndividualStudentGarageSoundsSchema.validate(req.body)
+		const { error } = updateIndividualStudentGarageTonesSchema.validate(req.body)
 
 		if (!isUndefined(error)) {
 			res.status(400).json({ validationError: error.details[0].message } satisfies ValidationErrorResponse)
@@ -21,7 +21,7 @@ export default function validateUpdateIndividualStudentGarageSounds(req: Request
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({
-			error: "Internal Server Error: Unable to validate update individual student garage sounds status"
+			error: "Internal Server Error: Unable to validate update individual student garage tones status"
 		} satisfies ErrorResponse)
 		return
 	}

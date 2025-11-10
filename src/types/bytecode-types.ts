@@ -32,7 +32,6 @@ export enum BytecodeOpCode {
     MOTOR_DRIVE_DISTANCE = 0x56, // Drive forward/backward for specified distance
     MOTOR_SPIN = 0x57,        // Spin motors in opposite directions
 
-    PLAY_SOUND = 0x60,
     PLAY_TONE = 0x61,
 }
 
@@ -79,7 +78,6 @@ export enum SensorType {
 
 export enum CommandType {
     SET_LED_COLOR = "SET_LED_COLOR",
-    PLAY_SOUND = "PLAY_SOUND",
     PLAY_TONE = "PLAY_TONE",
     WAIT = "WAIT",
 
@@ -121,7 +119,6 @@ export const comparisonOperatorPattern = /(.+?)([<>=!][=]?)(.+)/
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const CommandPatterns: Record<CommandType, RegExp> = {
 	[CommandType.SET_LED_COLOR]: /^all_leds\.set_color\(\s*(OFF|RED|GREEN|BLUE|WHITE|PURPLE|YELLOW)\s*\)$/,
-	[CommandType.PLAY_SOUND]: /^speaker\.play_sound\(\s*"([^"]*)"\s*\)$/,
 	[CommandType.PLAY_TONE]: /^speaker\.play_tone\(\s*"([^"]*)"\s*\)$/,
 	[CommandType.WAIT]: /^wait\(\s*(\d+(?:\.\d+)?)\s*\)$/,
 

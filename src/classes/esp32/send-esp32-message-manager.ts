@@ -6,7 +6,7 @@ import { DeviceInitialDataPayload } from "@lever-labs/common-ts/types/pip"
 import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
 import { PipUUID } from "@lever-labs/common-ts/types/utils"
 import { LedControlData } from "@lever-labs/common-ts/types/garage"
-import { tuneToSoundType } from "@lever-labs/common-ts/protocol"
+import { ToneType } from "@lever-labs/common-ts/protocol"
 import BrowserSocketManager from "../browser-socket-manager"
 
 export default class SendEsp32MessageManager extends Singleton {
@@ -71,10 +71,10 @@ export default class SendEsp32MessageManager extends Singleton {
 		}
 	}
 
-	public playSoundToAll(): Promise<void[]> {
-		const tuneToPlay = "Chime"
+	public playToneToAll(): Promise<void[]> {
+		const toneToPlay = ToneType.A
 		try {
-			const buffer = MessageBuilder.createSoundMessage(tuneToSoundType[tuneToPlay])
+			const buffer = MessageBuilder.createToneCommandMessage(toneToPlay)
 			const connectedPipUUIDs = Esp32SocketManager.getInstance().getAllConnectedPipUUIDs()
 			const promises: Promise<void>[] = []
 
@@ -84,8 +84,8 @@ export default class SendEsp32MessageManager extends Singleton {
 
 			return Promise.all(promises)
 		} catch (error: unknown) {
-			console.error("Sound transfer to all failed:", error)
-			throw new Error(`Sound transfer to all failed: ${error || "Unknown reason"}`)
+			console.error("Tone transfer to all failed:", error)
+			throw new Error(`Tone transfer to all failed: ${error || "Unknown reason"}`)
 		}
 	}
 

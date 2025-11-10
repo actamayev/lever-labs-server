@@ -16,13 +16,13 @@ export function brakeStudentPip(studentUserId: number): void {
 	}
 }
 
-export function stopStudentPipSound(studentUserId: number): void {
+export function stopStudentPipTone(studentUserId: number): void {
 	try {
 		const currentlyConnectedPipUUID = getCurrentlyConnectedPipUUID(studentUserId)
 		if (!currentlyConnectedPipUUID) return
 
 		void SendEsp32MessageManager.getInstance().sendBinaryMessage(
-			currentlyConnectedPipUUID, MessageBuilder.createStopSoundMessage()
+			currentlyConnectedPipUUID, MessageBuilder.createStopToneCommandMessage()
 		)
 	} catch (error) {
 		console.error(error)
