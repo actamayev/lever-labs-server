@@ -22,5 +22,11 @@
 		"question_text": "Watch what Pip does, then recreate the code!",
 		"reference_solution_cpp": "motors.turn(CLOCKWISE, 360);wait(1);motors.turn(COUNTERCLOCKWISE, 360);",
 		"initial_blockly_json": {}
+	},
+	{
+		"question_id": "081b4938-48a6-4edd-a7c8-0743604e5598",
+		"question_text": "Watch what Pip does, then recreate the code!",
+		"reference_solution_cpp": "while(true) { if (right_button.is_pressed()) { all_leds.set_color(BLUE); } else { all_leds.set_color(OFF); } }",
+		"initial_blockly_json": {}
 	}
 ]

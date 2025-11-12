@@ -1715,7 +1715,7 @@
 					  "direction": "forward",
 					  "distance": 10,
 					  "INCHES_LABEL": "inches",
-					  "percentage": 80
+					  "percentage": 12
 					}
 				  }
 				]
@@ -2093,7 +2093,7 @@
 							  "type": "control_all_leds",
 							  "id": "m_4KJVqVLl?B3LHZ_~Wb",
 							  "fields": {
-								"led_color": "WHITE"
+								"led_color": "OFF"
 							  }
 							}
 						  }
@@ -2138,7 +2138,7 @@
 						"type": "control_all_leds",
 						"id": "m_4KJVqVLl?B3LHZ_~Wb",
 						"fields": {
-						  "led_color": "WHITE"
+						  "led_color": "OFF"
 						}
 					  }
 					}
@@ -2176,7 +2176,7 @@
 							  "type": "control_all_leds",
 							  "id": "D6Yq`Z,W5[-#X21gsUj:",
 							  "fields": {
-								"led_color": "WHITE"
+								"led_color": "OFF"
 							  }
 							}
 						  },
