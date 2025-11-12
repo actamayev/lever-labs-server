@@ -442,6 +442,9 @@ model question {
 model coding_block {
 	coding_block_id												Int       @id
 	coding_block_json											Json
+	on_click_cpp_to_run											String? // This is the C++ that Pip will run while the block is pressed
+	on_release_cpp_to_run										String? // This is the C++ that Pip will run when the block is released
+	needs_manual_send_button									Boolean? // This is for driving blocks (where we don't want the user to accidentally drive Pip)
 
 	created_at													DateTime  @default(now())
 
