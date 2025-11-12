@@ -1,11 +1,11 @@
 import { isEmpty } from "lodash"
+import { BlocklyJson } from "@lever-labs/common-ts/types/sandbox"
+import { BlockNames } from "@lever-labs/common-ts/types/blockly/blockly"
+import { QuestionUUID, LessonUUID } from "@lever-labs/common-ts/types/utils"
 import { ActionToCodeMultipleChoiceAnswerChoice, BlockBankData,
 	BlockToFunctionAnswerChoice, DetailedLesson,
 	FunctionToBlockAnswerChoice, LessonQuestionMap, MatchingAnswerChoice } from "@lever-labs/common-ts/types/learn"
 import PrismaClientClass from "../../../classes/prisma-client"
-import { QuestionUUID, LessonUUID } from "@lever-labs/common-ts/types/utils"
-import { BlockNames } from "@lever-labs/common-ts/types/blockly/blockly"
-import { BlocklyJson } from "@lever-labs/common-ts/types/sandbox"
 
 // eslint-disable-next-line max-lines-per-function
 export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: number): Promise<DetailedLesson | null> {
@@ -46,7 +46,10 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 										coding_block: {
 											select: {
 												coding_block_id: true,
-												coding_block_json: true
+												coding_block_json: true,
+												on_click_cpp_to_run: true,
+												on_release_cpp_to_run: true,
+												needs_manual_send_button: true
 											}
 										}
 									}
@@ -61,7 +64,10 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 												coding_block: {
 													select: {
 														coding_block_id: true,
-														coding_block_json: true
+														coding_block_json: true,
+														on_click_cpp_to_run: true,
+														on_release_cpp_to_run: true,
+														needs_manual_send_button: true
 													}
 												}
 											}
@@ -95,7 +101,10 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 												coding_block: {
 													select: {
 														coding_block_id: true,
-														coding_block_json: true
+														coding_block_json: true,
+														on_click_cpp_to_run: true,
+														on_release_cpp_to_run: true,
+														needs_manual_send_button: true
 													}
 												}
 											},
@@ -131,7 +140,10 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 												coding_block: {
 													select: {
 														coding_block_id: true,
-														coding_block_json: true
+														coding_block_json: true,
+														on_click_cpp_to_run: true,
+														on_release_cpp_to_run: true,
+														needs_manual_send_button: true
 													}
 												},
 												matching_answer_choice_text: {
@@ -173,6 +185,9 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 						codingBlock: {
 							codingBlockId: map.question.block_to_function_flashcard.coding_block.coding_block_id,
 							codingBlockJson: map.question.block_to_function_flashcard.coding_block.coding_block_json as BlocklyJson,
+							onClickCppToRun: map.question.block_to_function_flashcard.coding_block.on_click_cpp_to_run,
+							onReleaseCppToRun: map.question.block_to_function_flashcard.coding_block.on_release_cpp_to_run,
+							needsManualSendButton: map.question.block_to_function_flashcard.coding_block.needs_manual_send_button
 						},
 
 						blockToFunctionAnswerChoice: map.question.block_to_function_flashcard.block_to_function_answer_choice
@@ -193,6 +208,9 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 								codingBlock: {
 									codingBlockId: choice.coding_block.coding_block_id,
 									codingBlockJson: choice.coding_block.coding_block_json as BlocklyJson,
+									onClickCppToRun: choice.coding_block.on_click_cpp_to_run,
+									onReleaseCppToRun: choice.coding_block.on_release_cpp_to_run,
+									needsManualSendButton: choice.coding_block.needs_manual_send_button
 								}
 							} satisfies FunctionToBlockAnswerChoice))
 					} : null,
@@ -216,6 +234,9 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 								codingBlock: {
 									codingBlockId: choice.coding_block.coding_block_id,
 									codingBlockJson: choice.coding_block.coding_block_json as BlocklyJson,
+									onClickCppToRun: choice.coding_block.on_click_cpp_to_run,
+									onReleaseCppToRun: choice.coding_block.on_release_cpp_to_run,
+									needsManualSendButton: choice.coding_block.needs_manual_send_button
 								}
 							} satisfies ActionToCodeMultipleChoiceAnswerChoice))
 					} : null,
@@ -241,6 +262,9 @@ export default async function getDetailedLessonDb(lessonId: LessonUUID, userId: 
 								codingBlock: {
 									codingBlockId: pair.coding_block.coding_block_id,
 									codingBlockJson: pair.coding_block.coding_block_json as BlocklyJson,
+									onClickCppToRun: pair.coding_block.on_click_cpp_to_run,
+									onReleaseCppToRun: pair.coding_block.on_release_cpp_to_run,
+									needsManualSendButton: pair.coding_block.needs_manual_send_button
 								}
 							} satisfies MatchingAnswerChoice))
 					} : null

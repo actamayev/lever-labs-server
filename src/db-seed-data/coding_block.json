@@ -16,7 +16,10 @@
 			}
 		  ]
 		}
-	  }
+	  },
+	  "on_click_cpp_to_run": "all_leds.set_color(RED);",
+	  "on_release_cpp_to_run": "all_leds.set_color(OFF);",
+	  "needs_manual_send_button": false
 	},
 	{
 	  "coding_block_id": 2,
@@ -35,7 +38,10 @@
 			}
 		  ]
 		}
-	  }
+	  },
+	  "on_click_cpp_to_run": "all_leds.set_color(GREEN);",
+	  "on_release_cpp_to_run": "all_leds.set_color(OFF);",
+	  "needs_manual_send_button": false
 	},
 	{
 	  "coding_block_id": 3,
@@ -54,7 +60,10 @@
 			}
 		  ]
 		}
-	  }
+	  },
+	  "on_click_cpp_to_run": "all_leds.set_color(BLUE);",
+	  "on_release_cpp_to_run": "all_leds.set_color(OFF);",
+	  "needs_manual_send_button": false
 	},
 	{
 	  "coding_block_id": 4,
@@ -73,7 +82,10 @@
 			}
 		  ]
 		}
-	  }
+	  },
+	  "on_click_cpp_to_run": "all_leds.set_color(WHITE);",
+	  "on_release_cpp_to_run": "all_leds.set_color(OFF);",
+	  "needs_manual_send_button": false
 	},
 	{
 	  "coding_block_id": 5,
@@ -92,7 +104,10 @@
 			}
 		  ]
 		}
-	  }
+	  },
+	  "on_click_cpp_to_run": "all_leds.set_color(OFF);",
+	  "on_release_cpp_to_run": "all_leds.set_color(OFF);",
+	  "needs_manual_send_button": false
 	},
 	{
 	  "coding_block_id": 6,
@@ -187,7 +202,10 @@
 			}
 		  ]
 		}
-	  }
+	  },
+	  "on_click_cpp_to_run": "speaker.play_tone(\"A\");",
+	  "on_release_cpp_to_run": "speaker.play_tone(\"OFF\");",
+	  "needs_manual_send_button": false
 	},
 	{
 	  "coding_block_id": 11,
@@ -206,7 +224,10 @@
 			}
 		  ]
 		}
-	  }
+	  },
+	  "on_click_cpp_to_run": "speaker.play_tone(\"B\");",
+	  "on_release_cpp_to_run": "speaker.play_tone(\"OFF\");",
+	  "needs_manual_send_button": false
 	},
 	{
 	  "coding_block_id": 12,
@@ -225,7 +246,10 @@
 			}
 		  ]
 		}
-	  }
+	  },
+	  "on_click_cpp_to_run": "speaker.play_tone(\"C\");",
+	  "on_release_cpp_to_run": "speaker.play_tone(\"OFF\");",
+	  "needs_manual_send_button": false
 	},
 	{
 	  "coding_block_id": 13,
@@ -244,7 +268,10 @@
 			}
 		  ]
 		}
-	  }
+	  },
+	  "on_click_cpp_to_run": "speaker.play_tone(\"D\");",
+	  "on_release_cpp_to_run": "speaker.play_tone(\"OFF\");",
+	  "needs_manual_send_button": false
 	},
 	{
 	  "coding_block_id": 14,
@@ -263,7 +290,10 @@
 			}
 		  ]
 		}
-	  }
+	  },
+	  "on_click_cpp_to_run": "speaker.play_tone(\"E\");",
+	  "on_release_cpp_to_run": "speaker.play_tone(\"OFF\");",
+	  "needs_manual_send_button": false
 	},
 	{
 	  "coding_block_id": 15,
@@ -282,7 +312,10 @@
 			}
 		  ]
 		}
-	  }
+	  },
+	  "on_click_cpp_to_run": "speaker.play_tone(\"F\");",
+	  "on_release_cpp_to_run": "speaker.play_tone(\"OFF\");",
+	  "needs_manual_send_button": false
 	},
 	{
 	  "coding_block_id": 16,
@@ -301,7 +334,10 @@
 			}
 		  ]
 		}
-	  }
+	  },
+	  "on_click_cpp_to_run": "speaker.play_tone(\"G\");",
+	  "on_release_cpp_to_run": "speaker.play_tone(\"OFF\");",
+	  "needs_manual_send_button": false
 	},
 	{
 		"coding_block_id": 17,
@@ -370,65 +406,71 @@
 	{
 		"coding_block_id": 21,
 		"coding_block_json": {
-		"blocks": {
-			"languageVersion": 0,
-			"blocks": [
-			{
-				"type": "drive_time",
-				"id": "jx@.=_T3|fuKf?j{-bLq",
-				"x": -430,
-				"y": -270,
-				"fields": {
-					"direction": "forward",
-					"seconds": 2,
-					"SECONDS_LABEL": "seconds",
-					"percentage": 80
-				}
+			"blocks": {
+				"languageVersion": 0,
+				"blocks": [
+					{
+						"type": "drive_time",
+						"id": "jx@.=_T3|fuKf?j{-bLq",
+						"x": -430,
+						"y": -270,
+						"fields": {
+							"direction": "forward",
+							"seconds": 2,
+							"SECONDS_LABEL": "seconds",
+							"percentage": 80
+						}
+					}
+				]
 			}
-			]
-		}
-		}
+		},
+		"on_click_cpp_to_run": "motors.drive_time(FORWARD 2, 80);",
+		"on_release_cpp_to_run": "motors.stop();",
+		"needs_manual_send_button": true
 	},
 	{
 		"coding_block_id": 22,
 		"coding_block_json": {
-		"blocks": {
-			"languageVersion": 0,
-			"blocks": [
-				{
-					"type": "drive_time",
-					"id": "jx@.=_T3|fuKf?j{-bLq",
-					"x": -430,
-					"y": -270,
-					"fields": {
-						"direction": "forward",
-						"seconds": 10,
-						"SECONDS_LABEL": "seconds",
-						"percentage": 80
+			"blocks": {
+				"languageVersion": 0,
+				"blocks": [
+					{
+						"type": "drive_time",
+						"id": "jx@.=_T3|fuKf?j{-bLq",
+						"x": -430,
+						"y": -270,
+						"fields": {
+							"direction": "forward",
+							"seconds": 10,
+							"SECONDS_LABEL": "seconds",
+							"percentage": 80
+						}
 					}
-				}
-			]
-		}
-		}
+				]
+			}
+		},
+		"on_click_cpp_to_run": "motors.drive_time(FORWARD 10, 80);",
+		"on_release_cpp_to_run": "motors.stop();",
+		"needs_manual_send_button": true
 	},
 	{
 		"coding_block_id": 23,
 		"coding_block_json": {
-		"blocks": {
-			"languageVersion": 0,
-			"blocks": [
-			{
-				"type": "wait",
-				"id": "(RP=pNxFZI%!m=~TSZgO",
-				"x": -350,
-				"y": -330,
-				"fields": {
-				"wait": 1,
-				"SECONDS_LABEL": "second"
+			"blocks": {
+				"languageVersion": 0,
+				"blocks": [
+				{
+					"type": "wait",
+					"id": "(RP=pNxFZI%!m=~TSZgO",
+					"x": -350,
+					"y": -330,
+					"fields": {
+					"wait": 1,
+					"SECONDS_LABEL": "second"
+					}
 				}
+				]
 			}
-			]
-		}
 		}
 	},
 	{
@@ -1700,42 +1742,45 @@
 			}
 		  }
 		},
-		{
-			"coding_block_id": 63,
-			"coding_block_json": {
-			  "blocks": {
-				"languageVersion": 0,
-				"blocks": [
-				  {
-					"type": "drive_distance",
-					"id": "GlHN})G?eQ*~c=$Lr{ta",
-					"x": -477,
-					"y": -456,
-					"fields": {
-					  "direction": "forward",
-					  "distance": 10,
-					  "INCHES_LABEL": "inches",
-					  "percentage": 12
-					}
-				  }
-				]
-			  }
-			}
-		  },
 	{
-		"coding_block_id": 64,
+		"coding_block_id": 63,
 		"coding_block_json": {
 			"blocks": {
 			"languageVersion": 0,
 			"blocks": [
-			{
-				"type": "right_button_press",
-				"id": "578oyU*NwQOevfmMsYxW",
-				"x": -692,
-				"y": -361
-			}
+				{
+				"type": "drive_distance",
+				"id": "GlHN})G?eQ*~c=$Lr{ta",
+				"x": -477,
+				"y": -456,
+				"fields": {
+					"direction": "forward",
+					"distance": 10,
+					"INCHES_LABEL": "inches",
+					"percentage": 12
+				}
+				}
 			]
-		}
+			}
+		},
+		"on_click_cpp_to_run": "motors.drive_distance(FORWARD 10, 12);",
+		"on_release_cpp_to_run": "motors.stop();",
+		"needs_manual_send_button": true
+	},
+	{
+		"coding_block_id": 64,
+		"coding_block_json": {
+			"blocks": {
+				"languageVersion": 0,
+				"blocks": [
+				{
+					"type": "right_button_press",
+					"id": "578oyU*NwQOevfmMsYxW",
+					"x": -692,
+					"y": -361
+				}
+				]
+			}
 		}
 	},
 	{

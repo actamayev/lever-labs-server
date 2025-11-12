@@ -15,8 +15,8 @@ importers:
         specifier: ^3.922.0
         version: 3.922.0
       '@lever-labs/common-ts':
-        specifier: ^1.0.357
-        version: 1.0.357
+        specifier: ^1.0.359
+        version: 1.0.359
       '@prisma/client':
         specifier: ^6.19.0
         version: 6.19.0(prisma@6.19.0(typescript@5.9.3))(typescript@5.9.3)
@@ -720,8 +720,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@lever-labs/common-ts@1.0.357':
-    resolution: {integrity: sha512-weQXsOiFN/Bjf8RV1uMn+gd0dXdsV8mzTzidD4uXdghqsoD9oAoCJ7+7zsQd7qU8uavl4nfE8GIOpJxMSYJmKQ==, tarball: https://npm.pkg.github.com/download/@lever-labs/common-ts/1.0.357/0567d196e7a79691e6a8c1cd02d85f5560de2fd7}
+  '@lever-labs/common-ts@1.0.359':
+    resolution: {integrity: sha512-kkFq/gro3hZiZF6hfhgHgRUhwAfiHx8KrcSGUb4XQ5T9UDB9n96wCk+0XBzOygW+/brPKAkgB47J5WnFEjT8aQ==, tarball: https://npm.pkg.github.com/download/@lever-labs/common-ts/1.0.359/8f2152df48e531651ac4e860dafb88a425cdcf63}
 
   '@mongodb-js/saslprep@1.3.2':
     resolution: {integrity: sha512-QgA5AySqB27cGTXBFmnpifAi7HxoGUeezwo6p9dI03MuDB6Pp33zgclqVb6oVK3j6I9Vesg0+oojW2XxB59SGg==}
@@ -4412,7 +4412,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@lever-labs/common-ts@1.0.357':
+  '@lever-labs/common-ts@1.0.359':
     dependencies:
       blockly: 12.3.1
     transitivePeerDependencies:

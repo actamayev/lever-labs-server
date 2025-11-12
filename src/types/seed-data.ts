@@ -31,6 +31,9 @@ declare global {
 	interface CodingBlockData {
 		coding_block_id: number
 		coding_block_json: BlocklyJson
+		on_click_cpp_to_run?: string
+		on_release_cpp_to_run?: string
+		needs_manual_send_button?: boolean
 	}
 
 	interface BlockToFunctionFlashcardData {
