@@ -21,9 +21,7 @@ export default async function confirmUserOwnsSandboxProject(
 		}
 
 		if (userId !== foundOwnerId) {
-			res.status(403).json({
-				message: "You do not own this sandbox project"
-			} satisfies MessageResponse)
+			res.status(400).json({ message: "You do not own this sandbox project" } satisfies MessageResponse)
 			return
 		}
 
