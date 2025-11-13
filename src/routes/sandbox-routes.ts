@@ -13,6 +13,7 @@ import sendSandboxCodeToPipWifi from "../controllers/sandbox/send-sandbox-code-t
 import stopCurrentlyRunningSandboxCode from "../controllers/sandbox/stop-currently-running-sandbox-code"
 import shareSandboxProject from "../controllers/sandbox/share-sandbox-project"
 import unshareSandboxProject from "../controllers/sandbox/unshare-sandbox-project"
+import searchByUsername from "../controllers/sandbox/search-by-username"
 
 import convertCppToBytecode from "../middleware/convert-cpp-to-bytecode"
 import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
@@ -30,6 +31,7 @@ import validateUserIdSharedWith from "../middleware/request-validation/sandbox/v
 import validateUserIdSharedWithUnshare from "../middleware/request-validation/sandbox/validate-user-id-shared-with-unshare"
 import validateUserIdNotSelf from "../middleware/request-validation/sandbox/validate-user-id-not-self"
 import confirmUserOwnsSandboxProject from "../middleware/confirm/confirm-user-owns-sandbox-project"
+import validateSearchUsername from "../middleware/request-validation/sandbox/validate-search-username"
 
 const sandboxRoutes = express.Router()
 
@@ -122,5 +124,7 @@ sandboxRoutes.post(
 	confirmUserOwnsSandboxProject,
 	unshareSandboxProject
 )
+
+sandboxRoutes.post("/search-by-username", validateSearchUsername, searchByUsername)
 
 export default sandboxRoutes

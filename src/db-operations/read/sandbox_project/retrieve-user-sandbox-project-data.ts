@@ -10,7 +10,17 @@ export default async function retrieveUserSandboxProjectData(userId: number): Pr
 
 		const sandboxProjects = await prismaClient.sandbox_project.findMany({
 			where: {
-				project_owner_id: userId,
+				OR: [
+					{ project_owner_id: userId },
+					{
+						sandbox_project_shares: {
+							some: {
+								user_id_shared_with: userId,
+								is_active: true
+							}
+						}
+					}
+				],
 				is_active: true
 			},
 			select: {
@@ -45,7 +55,6 @@ export default async function retrieveUserSandboxProjectData(userId: number): Pr
 						is_active: true
 					},
 					select: {
-						user_id_shared_with: true,
 						user: {
 							select: {
 								user_id: true,

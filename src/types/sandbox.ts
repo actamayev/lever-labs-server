@@ -26,6 +26,15 @@ declare global {
 			}
 		}[]
 	}
+
+	interface RetrievedUserSearchResult {
+		user_id: number
+		username: string | null
+		name: string | null
+		profile_picture: {
+			image_url: string
+		} | null
+	}
 }
 
 export {}
