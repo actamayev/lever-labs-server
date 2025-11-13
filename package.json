@@ -70,7 +70,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.922.0",
     "@aws-sdk/client-secrets-manager": "^3.922.0",
-    "@lever-labs/common-ts": "^1.0.367",
+    "@lever-labs/common-ts": "^1.0.368",
     "@prisma/client": "^6.19.0",
     "@typegoose/typegoose": "^12.20.0",
     "bcrypt": "^6.0.0",
