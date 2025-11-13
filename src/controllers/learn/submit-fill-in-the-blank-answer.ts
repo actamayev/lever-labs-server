@@ -32,6 +32,7 @@ export default async function submitFillInTheBlankAnswer(req: Request, res: Resp
 			model: selectModel("checkCode"),
 			messages: messages.map(m => ({ role: m.role, content: m.content })),
 			response_format: fitbCheckResponseFormat,
+			// TODO: test with lower temperature (also add to other check code endpoints)
 			stream: false
 		})
 
