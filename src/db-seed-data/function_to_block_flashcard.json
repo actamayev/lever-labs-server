@@ -166,5 +166,9 @@
 	{
 		"question_id": "32ea3fda-7757-4b29-94d7-80642ac02b2f",
 		"question_text": "Which block checks if the front distance is within 3 inches (inclusive)?"
+	},
+	{
+		"question_id": "fd2c3191-44ad-4363-83eb-8bdfad1a1706",
+		"question_text": "Which block turns Pip's LEDs red?"
 	}
 ]

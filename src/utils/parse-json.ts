@@ -1,15 +1,20 @@
+/* eslint-disable complexity */
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import path from "path"
 import { readFileSync } from "fs"
 
 function isCodingBlockData(data: unknown): data is CodingBlockData {
 	const d = data as CodingBlockData
-	return (
-		typeof d === "object" &&
-		d !== null &&
-		typeof d.coding_block_id === "number" &&
-		typeof d.coding_block_json === "object"
+	if (typeof d !== "object" || d === null) return false
+
+	const hasRequiredFields = typeof d.coding_block_id === "number" && typeof d.coding_block_json === "object"
+	const hasValidOptionalFields = (
+		(d.on_click_cpp_to_run === undefined || typeof d.on_click_cpp_to_run === "string") &&
+		(d.on_release_cpp_to_run === undefined || typeof d.on_release_cpp_to_run === "string") &&
+		(d.needs_manual_send_button === undefined || typeof d.needs_manual_send_button === "boolean")
 	)
+
+	return hasRequiredFields && hasValidOptionalFields
 }
 
 // ADD THIS:

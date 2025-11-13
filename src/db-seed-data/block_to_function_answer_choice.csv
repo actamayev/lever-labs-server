@@ -50,7 +50,7 @@ block_to_function_answer_choice_id ,block_to_function_flashcard_id       ,functi
                                 49 ,5602f091-e8fa-43b8-94ed-4bbfc8641b63 ,Moves forward for 2 seconds at 80% speed                                                                     ,true
                                 50 ,5602f091-e8fa-43b8-94ed-4bbfc8641b63 ,Rotates counterclockwise 80 degrees                                                                          ,false
                                 51 ,5602f091-e8fa-43b8-94ed-4bbfc8641b63 ,Moves forward 2 inches                                                                                       ,false
-                                52 ,3d8e1d83-21cf-4db0-9b16-4c14ea4d1120 ,"Pip drives the same distance, but at a higher speed"                                                        ,true
+                                52 ,3d8e1d83-21cf-4db0-9b16-4c14ea4d1120 ,"Pip drives the same distance, but faster"                                                                   ,true
                                 53 ,3d8e1d83-21cf-4db0-9b16-4c14ea4d1120 ,Pip drives farther                                                                                           ,false
                                 54 ,3d8e1d83-21cf-4db0-9b16-4c14ea4d1120 ,Pip rotates in place                                                                                         ,false
                                 55 ,27b3f990-b244-4fb2-907b-8dccb209d4f9 ,Pauses program for one second                                                                                ,true

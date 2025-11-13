@@ -37,6 +37,7 @@ model credentials {
 
 	login_history                                               login_history[]
 	sandbox_project												sandbox_project[]
+	sandbox_project_shares										sandbox_project_shares[]
 	challenge_chat												challenge_chat[]
 	career_chat													career_chat[]
 	challenge_sandbox											challenge_sandbox[]
@@ -97,8 +98,25 @@ model sandbox_project {
 
 	user                                                        credentials @relation(fields: [project_owner_id], references: [user_id])
 	sandbox_chat												sandbox_chat[]
+	sandbox_project_shares										sandbox_project_shares[]
 
 	@@index([project_owner_id], name: "sandbox_project__project_owner_id_idx")
+}
+
+model sandbox_project_shares {
+	sandbox_project_shares_id									Int      @id @default(autoincrement())
+	project_uuid            									String
+	user_id_shared_with        									Int
+
+	is_active               									Boolean  @default(true)
+	created_at              									DateTime @default(now())
+
+	sandbox_project         									sandbox_project @relation(fields: [project_uuid], references: [project_uuid])
+	user                    									credentials @relation(fields: [user_id_shared_with], references: [user_id])
+
+	@@unique([project_uuid, user_id_shared_with])
+	@@index([user_id_shared_with])
+	@@index([project_uuid])
 }
 
 model profile_picture {
@@ -442,6 +460,9 @@ model question {
 model coding_block {
 	coding_block_id												Int       @id
 	coding_block_json											Json
+	on_click_cpp_to_run											String? // This is the C++ that Pip will run while the block is pressed
+	on_release_cpp_to_run										String? // This is the C++ that Pip will run when the block is released
+	needs_manual_send_button									Boolean? // This is for driving blocks (where we don't want the user to accidentally drive Pip)
 
 	created_at													DateTime  @default(now())
 
