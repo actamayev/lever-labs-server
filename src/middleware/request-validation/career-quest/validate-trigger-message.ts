@@ -2,7 +2,7 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse } from "@lever-labs/common-ts/types/api"
-import { CareerType, MeetPipTriggerType } from "@lever-labs/common-ts/protocol"
+import { CareerType, MeetPipTriggerType, TurretArcadeTriggerType } from "@lever-labs/common-ts/protocol"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
 
 function validateTriggerMessageType(
@@ -13,6 +13,8 @@ function validateTriggerMessageType(
 	  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	  case CareerType.MEET_PIP:
 		return Object.values(MeetPipTriggerType).includes(triggerMessageType)
+	case CareerType.TURRET_ARCADE:
+		return Object.values(TurretArcadeTriggerType).includes(triggerMessageType)
 	  default:
 		return false
 	}
