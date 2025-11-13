@@ -4,9 +4,10 @@ import searchUsersByUsername from "../../db-operations/read/credentials/search-u
 
 export default async function searchByUsername(req: Request, res: Response): Promise<void> {
 	try {
+		const { userId } = req
 		const { username } = req.body as { username: string }
 
-		const users = await searchUsersByUsername(username)
+		const users = await searchUsersByUsername(username, userId)
 
 		res.status(200).json({ users } satisfies SearchByUsernameResult)
 		return

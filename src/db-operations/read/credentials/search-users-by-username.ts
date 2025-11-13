@@ -2,7 +2,7 @@ import PrismaClientClass from "../../../classes/prisma-client"
 import camelCaseUserSearchResult from "../../../utils/user/camel-case-user-search-result"
 import { SingleSearchByUsernameResult } from "@lever-labs/common-ts/types/sandbox"
 
-export default async function searchUsersByUsername(searchString: string): Promise<SingleSearchByUsernameResult[]> {
+export default async function searchUsersByUsername(searchString: string, userId: number): Promise<SingleSearchByUsernameResult[]> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -12,7 +12,10 @@ export default async function searchUsersByUsername(searchString: string): Promi
 					contains: searchString,
 					mode: "insensitive"
 				},
-				is_active: true
+				is_active: true,
+				user_id: {
+					not: userId
+				}
 			},
 			select: {
 				user_id: true,
