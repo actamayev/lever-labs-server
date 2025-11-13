@@ -898,5 +898,87 @@
 		},
 		"reference_solution_cpp": "while(true) { if (right_distance_sensor.is_object_near()) { motors.spin(CLOCKWISE, 30); } else if (left_distance_sensor.is_object_near()) { motors.spin(COUNTERCLOCKWISE, 30); } else if (front_distance_sensor.get_distance() <= 3) { motors.drive(BACKWARD, 15); } else { motors.stop(); } }",
 		"question_text": "Write a program that makes Pip spin at 30% speed towards your hand when your hand is on either side. When there's an object within 3 inches (inclusive), make Pip back away from your hand at 15% speed. Otherwise, stop."
+	},
+	{
+		"question_id": "617fe773-ebd7-4a75-9238-ec6ba7e2611d",
+		"initial_blockly_json": {
+			"blocks": {
+			  "languageVersion": 0,
+			  "blocks": [
+				{
+				  "type": "forever_loop",
+				  "id": "EIT[)d[MO5;x~h^7/QBB",
+				  "x": -730,
+				  "y": -390,
+				  "inputs": {
+					"LOOP_BODY": {
+					  "block": {
+						"type": "controls_if_2elseif",
+						"id": "r-,=caSHqj~:_EqCH(lV",
+						"inputs": {
+						  "IF1": {
+							"block": {
+							  "type": "color_sensor_read",
+							  "id": "E?Ho0T|h#!DeVxuJ:UAI",
+							  "fields": {
+								"color_sensor": "RED"
+							  }
+							}
+						  },
+						  "DO1": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": ":_YEyWLeqgF?pUX7l`gP",
+							  "fields": {
+								"led_color": "RED"
+							  }
+							}
+						  },
+						  "IF2": {
+							"block": {
+							  "type": "color_sensor_read",
+							  "id": "Q5ZK;jT*[gfGx;pK//`t",
+							  "fields": {
+								"color_sensor": "GREEN"
+							  }
+							}
+						  },
+						  "DO2": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "eHK05?nLhj0oB)8(2@)B",
+							  "fields": {
+								"led_color": "GREEN"
+							  }
+							}
+						  },
+						  "IF3": {
+							"block": {
+							  "type": "color_sensor_read",
+							  "id": "0joK.H,M|aiA-+9R{Xp}",
+							  "fields": {
+								"color_sensor": "BLUE"
+							  }
+							}
+						  },
+						  "ELSE": {
+							"block": {
+							  "type": "control_all_leds",
+							  "id": "Lg39Ft{Q45`0KkXBmoiz",
+							  "fields": {
+								"led_color": "OFF"
+							  }
+							}
+						  }
+						}
+					  }
+					}
+				  }
+				}
+			  ]
+			}
+		  },
+		"reference_solution_cpp": "while(true) { if (color_sensor.is_object(RED)) { all_leds.set_color(RED); } else if (color_sensor.is_object(GREEN)) { all_leds.set_color(GREEN); } else if (color_sensor.is_object(BLUE)) { all_leds.set_color(BLUE); } else { all_leds.set_color(OFF); } }",
+		"question_text": "Complete a program that makes Pip light up the same color as the object beneath him"
 	}
 ]

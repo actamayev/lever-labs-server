@@ -7,7 +7,7 @@
 	},
 	{
 		"question_id": "ceb4ca88-c2ea-4497-9fdb-a07bf40c13c9",
-		"question_text": "Watch what Pip does, then recreate the code!",
+		"question_text": "Watch what Pip does, then recreate the code (Hint: Use the front distance sensor)",
 		"reference_solution_cpp": "while(true) { if (front_distance_sensor.is_object_in_front()) { all_leds.set_color(WHITE); } else { all_leds.set_color(OFF); } }",
 		"initial_blockly_json": {}
 	},
@@ -21,6 +21,12 @@
 		"question_id": "8bf712a2-33e1-4a5b-ab84-a87e206e96e0",
 		"question_text": "Watch what Pip does, then recreate the code!",
 		"reference_solution_cpp": "motors.turn(CLOCKWISE, 360);wait(1);motors.turn(COUNTERCLOCKWISE, 360);",
+		"initial_blockly_json": {}
+	},
+	{
+		"question_id": "081b4938-48a6-4edd-a7c8-0743604e5598",
+		"question_text": "Watch what Pip does, then recreate the code (Hint: Press the right button)",
+		"reference_solution_cpp": "while(true) { if (right_button.is_pressed()) { all_leds.set_color(BLUE); } else { all_leds.set_color(OFF); } }",
 		"initial_blockly_json": {}
 	}
 ]

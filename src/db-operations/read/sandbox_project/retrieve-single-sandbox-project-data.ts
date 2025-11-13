@@ -5,7 +5,10 @@ import PrismaClientClass from "../../../classes/prisma-client"
 import camelCaseSandboxProject from "../../../utils/sandbox/camel-case-sandbox-project"
 
 // eslint-disable-next-line max-lines-per-function
-export default async function retrieveSingleSandboxProjectData(projectUUID: SandboxProjectUUID): Promise<SandboxProject | null> {
+export default async function retrieveSingleSandboxProjectData(
+	projectUUID: SandboxProjectUUID,
+	userId: number
+): Promise<SandboxProject | null> {
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
@@ -22,6 +25,21 @@ export default async function retrieveSingleSandboxProjectData(projectUUID: Sand
 				created_at: true,
 				updated_at: true,
 				project_notes: true,
+				project_owner_id: true,
+				user: {
+					select: {
+						username: true,
+						name: true,
+						profile_picture: {
+							select: {
+								image_url: true
+							},
+							where: {
+								is_active: true
+							}
+						}
+					}
+				},
 				sandbox_chat: {
 					where: {
 						is_active: true
@@ -39,18 +57,43 @@ export default async function retrieveSingleSandboxProjectData(projectUUID: Sand
 						}
 					},
 					take: 1
+				},
+				sandbox_project_shares: {
+					where: {
+						is_active: true
+					},
+					select: {
+						user: {
+							select: {
+								user_id: true,
+								username: true,
+								name: true,
+								profile_picture: {
+									select: {
+										image_url: true
+									},
+									where: {
+										is_active: true
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		})
 
 		if (isNull(sandboxData)) return null
 
-		return camelCaseSandboxProject({
-			...sandboxData,
-			project_uuid: sandboxData.project_uuid as SandboxProjectUUID,
-			sandbox_json: sandboxData.sandbox_json as BlocklyJson,
-			sandbox_chat: sandboxData.sandbox_chat[0] || null
-		})
+		return camelCaseSandboxProject(
+			{
+				...sandboxData,
+				project_uuid: sandboxData.project_uuid as SandboxProjectUUID,
+				sandbox_json: sandboxData.sandbox_json as BlocklyJson,
+				sandbox_chat: sandboxData.sandbox_chat[0] || null
+			},
+			userId
+		)
 	} catch (error) {
 		console.error(error)
 		throw error

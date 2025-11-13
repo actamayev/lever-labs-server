@@ -11,6 +11,9 @@ import getSingleSandboxProject from "../controllers/sandbox/get-single-sandbox-p
 import sendSandboxCodeToPipUsb from "../controllers/sandbox/send-sandbox-code-to-pip-usb"
 import sendSandboxCodeToPipWifi from "../controllers/sandbox/send-sandbox-code-to-pip-wifi"
 import stopCurrentlyRunningSandboxCode from "../controllers/sandbox/stop-currently-running-sandbox-code"
+import shareSandboxProject from "../controllers/sandbox/share-sandbox-project"
+import unshareSandboxProject from "../controllers/sandbox/unshare-sandbox-project"
+import searchByUsername from "../controllers/sandbox/search-by-username"
 
 import convertCppToBytecode from "../middleware/convert-cpp-to-bytecode"
 import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
@@ -23,7 +26,13 @@ import validateProjectUUIDInParams from "../middleware/request-validation/sandbo
 import validateEditSandboxProjectName from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-name"
 import validateEditSandboxProjectNotes from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-notes"
 import confirmSandboxProjectExistsAndValidUserId from "../middleware/confirm/confirm-sandbox-project-exists-and-valid-user-id"
+import confirmSandboxProjectExistsAndUserHasAccess from "../middleware/confirm/confirm-sandbox-project-exists-and-user-has-access"
 import validateCppCodeAndPipUUID from "../middleware/request-validation/sandbox/validate-cpp-code-and-pip-uuid"
+import validateUserIdSharedWith from "../middleware/request-validation/sandbox/validate-user-id-shared-with"
+import validateUserIdSharedWithUnshare from "../middleware/request-validation/sandbox/validate-user-id-shared-with-unshare"
+import validateUserIdNotSelf from "../middleware/request-validation/sandbox/validate-user-id-not-self"
+import confirmUserOwnsSandboxProject from "../middleware/confirm/confirm-user-owns-sandbox-project"
+import validateSearchUsername from "../middleware/request-validation/sandbox/validate-search-username"
 
 const sandboxRoutes = express.Router()
 
@@ -33,7 +42,7 @@ sandboxRoutes.post(
 	"/edit-sandbox-project/:projectUUID",
 	validateProjectUUIDInParams,
 	validateEditSandboxProject,
-	confirmSandboxProjectExistsAndValidUserId,
+	confirmSandboxProjectExistsAndUserHasAccess,
 	editSandboxProject
 )
 
@@ -49,7 +58,7 @@ sandboxRoutes.post(
 	"/edit-sandbox-project-notes/:projectUUID",
 	validateProjectUUIDInParams,
 	validateEditSandboxProjectNotes,
-	confirmSandboxProjectExistsAndValidUserId,
+	confirmSandboxProjectExistsAndUserHasAccess,
 	editSandboxProjectNotes
 )
 
@@ -73,7 +82,7 @@ sandboxRoutes.get("/retrieve-all-sandbox-projects", getAllSandboxProjects)
 sandboxRoutes.get(
 	"/retrieve-single-sandbox-project/:projectUUID",
 	validateProjectUUIDInParams,
-	confirmSandboxProjectExistsAndValidUserId,
+	confirmSandboxProjectExistsAndUserHasAccess,
 	getSingleSandboxProject
 )
 
@@ -99,5 +108,24 @@ sandboxRoutes.post(
 	confirmPipIsActive(true),
 	stopCurrentlyRunningSandboxCode
 )
+
+sandboxRoutes.post(
+	"/share-sandbox-project/:projectUUID",
+	validateProjectUUIDInParams,
+	validateUserIdSharedWith,
+	confirmUserOwnsSandboxProject,
+	validateUserIdNotSelf,
+	shareSandboxProject
+)
+
+sandboxRoutes.post(
+	"/unshare-sandbox-project/:projectUUID",
+	validateProjectUUIDInParams,
+	validateUserIdSharedWithUnshare,
+	confirmUserOwnsSandboxProject,
+	unshareSandboxProject
+)
+
+sandboxRoutes.post("/search-by-username", validateSearchUsername, searchByUsername)
 
 export default sandboxRoutes

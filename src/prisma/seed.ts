@@ -123,11 +123,21 @@ async function seedCodingBlocks(): Promise<void> {
 			throw new Error(`Invalid coding block data: ${JSON.stringify(block)}`)
 		}
 		return prismaClient.coding_block.upsert({
-			where: { coding_block_id: block.coding_block_id },
-			update: { coding_block_json: block.coding_block_json },
+			where: {
+				coding_block_id: block.coding_block_id
+			},
+			update: {
+				coding_block_json: block.coding_block_json,
+				on_click_cpp_to_run: block.on_click_cpp_to_run,
+				on_release_cpp_to_run: block.on_release_cpp_to_run,
+				needs_manual_send_button: block.needs_manual_send_button
+			},
 			create: {
 				coding_block_id: block.coding_block_id,
-				coding_block_json: block.coding_block_json
+				coding_block_json: block.coding_block_json,
+				on_click_cpp_to_run: block.on_click_cpp_to_run,
+				on_release_cpp_to_run: block.on_release_cpp_to_run,
+				needs_manual_send_button: block.needs_manual_send_button
 			}
 		})
 	}))
