@@ -21,9 +21,10 @@ export default async function createSandboxProjectDB(userId: number): Promise<Sa
 			...sandboxProjectWithoutChat,
 			project_uuid: uuid,
 			sandbox_chat: null,
-			sandbox_json: defaultSandboxJson
+			sandbox_json: defaultSandboxJson,
+			sandbox_project_shares: []
 		}
-		return camelCaseSandboxProject(sandboxProject)
+		return camelCaseSandboxProject(sandboxProject, userId)
 	} catch (error) {
 		console.error(error)
 		throw error

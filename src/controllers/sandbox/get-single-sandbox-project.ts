@@ -5,9 +5,10 @@ import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
 
 export default async function getSingleSandboxProject(req: Request, res: Response): Promise<void> {
 	try {
+		const { userId } = req
 		const { projectUUID } = req.params as { projectUUID: SandboxProjectUUID }
 
-		const sandboxProject = await retrieveSingleSandboxProjectData(projectUUID)
+		const sandboxProject = await retrieveSingleSandboxProjectData(projectUUID, userId)
 
 		res.status(200).json({ sandboxProject } satisfies RetrieveSandboxProjectResponse)
 		return

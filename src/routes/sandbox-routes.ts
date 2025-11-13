@@ -11,6 +11,8 @@ import getSingleSandboxProject from "../controllers/sandbox/get-single-sandbox-p
 import sendSandboxCodeToPipUsb from "../controllers/sandbox/send-sandbox-code-to-pip-usb"
 import sendSandboxCodeToPipWifi from "../controllers/sandbox/send-sandbox-code-to-pip-wifi"
 import stopCurrentlyRunningSandboxCode from "../controllers/sandbox/stop-currently-running-sandbox-code"
+import shareSandboxProject from "../controllers/sandbox/share-sandbox-project"
+import unshareSandboxProject from "../controllers/sandbox/unshare-sandbox-project"
 
 import convertCppToBytecode from "../middleware/convert-cpp-to-bytecode"
 import confirmPipIsActive from "../middleware/confirm/confirm-pip-is-active"
@@ -24,6 +26,10 @@ import validateEditSandboxProjectName from "../middleware/request-validation/san
 import validateEditSandboxProjectNotes from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-notes"
 import confirmSandboxProjectExistsAndValidUserId from "../middleware/confirm/confirm-sandbox-project-exists-and-valid-user-id"
 import validateCppCodeAndPipUUID from "../middleware/request-validation/sandbox/validate-cpp-code-and-pip-uuid"
+import validateUserIdSharedWith from "../middleware/request-validation/sandbox/validate-user-id-shared-with"
+import validateUserIdSharedWithUnshare from "../middleware/request-validation/sandbox/validate-user-id-shared-with-unshare"
+import validateUserIdNotSelf from "../middleware/request-validation/sandbox/validate-user-id-not-self"
+import confirmUserOwnsSandboxProject from "../middleware/confirm/confirm-user-owns-sandbox-project"
 
 const sandboxRoutes = express.Router()
 
@@ -98,6 +104,23 @@ sandboxRoutes.post(
 	validatePipUUIDInBody,
 	confirmPipIsActive(true),
 	stopCurrentlyRunningSandboxCode
+)
+
+sandboxRoutes.post(
+	"/share-sandbox-project/:projectUUID",
+	validateProjectUUIDInParams,
+	validateUserIdSharedWith,
+	confirmUserOwnsSandboxProject,
+	validateUserIdNotSelf,
+	shareSandboxProject
+)
+
+sandboxRoutes.post(
+	"/unshare-sandbox-project/:projectUUID",
+	validateProjectUUIDInParams,
+	validateUserIdSharedWithUnshare,
+	confirmUserOwnsSandboxProject,
+	unshareSandboxProject
 )
 
 export default sandboxRoutes

@@ -11,6 +11,7 @@ declare global {
 		created_at: Date
 		updated_at: Date
 		project_notes: string | null
+		project_owner_id: number
 		sandbox_chat: {
 			messages: {
 				message_text: string
@@ -18,6 +19,12 @@ declare global {
 				created_at: Date
 			}[]
 		} | null
+		sandbox_project_shares?: {
+			user: {
+				user_id: number
+				username: string | null
+			}
+		}[]
 	}
 }
 
