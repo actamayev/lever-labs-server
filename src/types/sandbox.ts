@@ -12,6 +12,13 @@ declare global {
 		updated_at: Date
 		project_notes: string | null
 		project_owner_id: number
+		user: {
+			username: string | null
+			name: string | null
+			profile_picture: {
+				image_url: string
+			} | null
+		}
 		sandbox_chat: {
 			messages: {
 				message_text: string
@@ -23,6 +30,10 @@ declare global {
 			user: {
 				user_id: number
 				username: string | null
+				name: string | null
+				profile_picture: {
+					image_url: string
+				} | null
 			}
 		}[]
 	}

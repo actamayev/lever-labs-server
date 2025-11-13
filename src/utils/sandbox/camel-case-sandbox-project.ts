@@ -1,6 +1,7 @@
 import { SandboxChatMessage } from "@lever-labs/common-ts/types/chat"
-import { SandboxProject, SharedWith } from "@lever-labs/common-ts/types/sandbox"
+import { SandboxProject, SingleSearchByUsernameResult } from "@lever-labs/common-ts/types/sandbox"
 
+// eslint-disable-next-line max-lines-per-function
 export default function camelCaseSandboxProject(
 	sandboxProject: RetrievedSandboxData,
 	userId: number
@@ -14,13 +15,21 @@ export default function camelCaseSandboxProject(
 
 		const isMyProject = sandboxProject.project_owner_id === userId
 
-		const sharedWith: SharedWith[] =
+		const sharedWith: SingleSearchByUsernameResult[] =
 			sandboxProject.sandbox_project_shares
 				?.filter(share => share.user.username !== null)
 				.map(share => ({
 					userId: share.user.user_id,
-					username: share.user.username as string
+					username: share.user.username as string,
+					name: share.user.name,
+					profilePictureUrl: share.user.profile_picture?.image_url || null
 				})) || []
+
+		const ownerDetails =  {
+			username: sandboxProject.user.username as string,
+			name: sandboxProject.user.name,
+			profilePictureUrl: sandboxProject.user.profile_picture?.image_url || null
+		}
 
 		return {
 			sandboxJson: sandboxProject.sandbox_json,
@@ -32,7 +41,8 @@ export default function camelCaseSandboxProject(
 			projectNotes: sandboxProject.project_notes,
 			sandboxChatMessages,
 			isMyProject,
-			sharedWith
+			sharedWith,
+			ownerDetails
 		}
 	} catch (error) {
 		console.error(error)

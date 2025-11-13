@@ -26,6 +26,20 @@ export default async function retrieveSingleSandboxProjectData(
 				updated_at: true,
 				project_notes: true,
 				project_owner_id: true,
+				user: {
+					select: {
+						username: true,
+						name: true,
+						profile_picture: {
+							select: {
+								image_url: true
+							},
+							where: {
+								is_active: true
+							}
+						}
+					}
+				},
 				sandbox_chat: {
 					where: {
 						is_active: true
@@ -52,7 +66,16 @@ export default async function retrieveSingleSandboxProjectData(
 						user: {
 							select: {
 								user_id: true,
-								username: true
+								username: true,
+								name: true,
+								profile_picture: {
+									select: {
+										image_url: true
+									},
+									where: {
+										is_active: true
+									}
+								}
 							}
 						}
 					}
