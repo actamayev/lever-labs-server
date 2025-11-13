@@ -26,6 +26,7 @@ import validateProjectUUIDInParams from "../middleware/request-validation/sandbo
 import validateEditSandboxProjectName from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-name"
 import validateEditSandboxProjectNotes from "../middleware/request-validation/sandbox/validate-edit-sandbox-project-notes"
 import confirmSandboxProjectExistsAndValidUserId from "../middleware/confirm/confirm-sandbox-project-exists-and-valid-user-id"
+import confirmSandboxProjectExistsAndUserHasAccess from "../middleware/confirm/confirm-sandbox-project-exists-and-user-has-access"
 import validateCppCodeAndPipUUID from "../middleware/request-validation/sandbox/validate-cpp-code-and-pip-uuid"
 import validateUserIdSharedWith from "../middleware/request-validation/sandbox/validate-user-id-shared-with"
 import validateUserIdSharedWithUnshare from "../middleware/request-validation/sandbox/validate-user-id-shared-with-unshare"
@@ -41,7 +42,7 @@ sandboxRoutes.post(
 	"/edit-sandbox-project/:projectUUID",
 	validateProjectUUIDInParams,
 	validateEditSandboxProject,
-	confirmSandboxProjectExistsAndValidUserId,
+	confirmSandboxProjectExistsAndUserHasAccess,
 	editSandboxProject
 )
 
@@ -57,7 +58,7 @@ sandboxRoutes.post(
 	"/edit-sandbox-project-notes/:projectUUID",
 	validateProjectUUIDInParams,
 	validateEditSandboxProjectNotes,
-	confirmSandboxProjectExistsAndValidUserId,
+	confirmSandboxProjectExistsAndUserHasAccess,
 	editSandboxProjectNotes
 )
 
@@ -81,7 +82,7 @@ sandboxRoutes.get("/retrieve-all-sandbox-projects", getAllSandboxProjects)
 sandboxRoutes.get(
 	"/retrieve-single-sandbox-project/:projectUUID",
 	validateProjectUUIDInParams,
-	confirmSandboxProjectExistsAndValidUserId,
+	confirmSandboxProjectExistsAndUserHasAccess,
 	getSingleSandboxProject
 )
 
