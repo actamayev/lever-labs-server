@@ -1,38 +1,38 @@
 import { Response, Request } from "express"
 import { CheckCodeResponse, ErrorResponse } from "@lever-labs/common-ts/types/api"
-import addFillInTheBlankUserAnswer from "../../db-operations/write/user-answer/add-fill-in-the-blank-user-answer"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
-import buildCheckFITBLLMContext, { fitbCheckResponseFormat } from "../../utils/llm/learn/build-check-fitb-llm-context"
+import buildCheckOpenEndedActionToCodeQuestionLLMContext,
+{ openEndedActionToCodeCheckResponseFormat } from "../../utils/llm/quest/build-check-open-ended-action-to-code-question-llm-context"
 import { getRandomCorrectResponse, getRandomIncorrectResponse } from "../../utils/career-quest-responses"
-import retrieveFillInTheBlankQuestion from "../../db-operations/read/fill-in-the-blank/retrieve-fill-in-the-blank-question"
+import addOpenEndedActionToCodeUserAnswer from "../../db-operations/write/user-answer/add-open-ended-action-to-code-user-answer"
+import retrieveOpenEndedActionToCodeQuestion from "../../db-operations/read/action-to-code/retrieve-open-ended-action-to-code-question"
 import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
 
-export default async function submitFillInTheBlankAnswer(req: Request, res: Response): Promise<void> {
+export default async function submitOpenEndedActionToCodeAnswer(req: Request, res: Response): Promise<void> {
 	try {
 		const { userId } = req
 		const { questionId } = req.params as { questionId: QuestionUUID }
 		const { userCode } = req.body as { userCode: string }
 
 		// Fetch reference solution and question text
-		const fitb = await retrieveFillInTheBlankQuestion(questionId)
-		if (!fitb) {
-			res.status(400).json({ error: "Invalid fill in the blank id" } satisfies ErrorResponse)
+		const openEndedActionToCodeQuestion = await retrieveOpenEndedActionToCodeQuestion(questionId)
+		if (!openEndedActionToCodeQuestion) {
+			res.status(400).json({ error: "Invalid open ended action to code id" } satisfies ErrorResponse)
 			return
 		}
 
 		// Evaluate with LLM (assume not a definite solution)
 		const openAiClient = await OpenAiClientClass.getOpenAiClient()
-		const messages = buildCheckFITBLLMContext(
-			fitb.questionText,
-			fitb.referenceSolutionCpp,
+		const messages = buildCheckOpenEndedActionToCodeQuestionLLMContext(
+			openEndedActionToCodeQuestion.questionText,
+			openEndedActionToCodeQuestion.referenceSolutionCpp,
 			userCode
 		)
 		const response = await openAiClient.chat.completions.create({
 			model: selectModel("checkCode"),
 			messages: messages.map(m => ({ role: m.role, content: m.content })),
-			response_format: fitbCheckResponseFormat,
-			// TODO: test with lower temperature (also add to other check code endpoints)
+			response_format: openEndedActionToCodeCheckResponseFormat,
 			stream: false
 		})
 
@@ -49,7 +49,7 @@ export default async function submitFillInTheBlankAnswer(req: Request, res: Resp
 		}
 
 		// Save to DB
-		await addFillInTheBlankUserAnswer(userId, questionId, userCode, result.isCorrect)
+		await addOpenEndedActionToCodeUserAnswer(userId, questionId, userCode, result.isCorrect)
 
 		// Return response
 		res.status(200).json({ isCorrect: result.isCorrect, feedback } satisfies CheckCodeResponse)

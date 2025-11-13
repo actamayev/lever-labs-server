@@ -181,7 +181,6 @@ export class BlockFormatter {
 
 	private static getSubCategoryEmoji(subCategory: SensorCategoryName | LogicCategoryName): string {
 		const emojis: Record<SensorCategoryName | LogicCategoryName, string> = {
-			"IR Sensors": "👁️",
 			"Distance Sensors": "📏",
 			"Motion Sensor": "🎯",
 			"Color Sensor": "🌈",

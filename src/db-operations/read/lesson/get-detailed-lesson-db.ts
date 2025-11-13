@@ -4,7 +4,7 @@ import { BlockNames } from "@lever-labs/common-ts/types/blockly/blockly"
 import { QuestionUUID, LessonUUID } from "@lever-labs/common-ts/types/utils"
 import { ActionToCodeMultipleChoiceAnswerChoice, BlockBankData,
 	BlockToFunctionAnswerChoice, DetailedLesson,
-	FunctionToBlockAnswerChoice, LessonQuestionMap, MatchingAnswerChoice } from "@lever-labs/common-ts/types/learn"
+	FunctionToBlockAnswerChoice, LessonQuestionMap, MatchingAnswerChoice } from "@lever-labs/common-ts/types/quest"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 // eslint-disable-next-line max-lines-per-function

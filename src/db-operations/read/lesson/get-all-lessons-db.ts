@@ -1,5 +1,5 @@
 import { isEmpty } from "lodash"
-import { Lesson } from "@lever-labs/common-ts/types/learn"
+import { Lesson } from "@lever-labs/common-ts/types/quest"
 import { LessonUUID } from "@lever-labs/common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
