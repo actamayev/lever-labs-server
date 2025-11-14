@@ -788,8 +788,8 @@
 			  ]
 			}
 		},
-		"reference_solution_cpp": "while(true) { if (right_distance_sensor.is_object_near()) { all_leds.set_color(RED); } else if (left_distance_sensor.is_object_near()) { all_leds.set_color(YELLOW); } else if (front_distance_sensor.get_distance() <= 3) { all_leds.set_color(WHITE); } else { all_leds.set_color(OFF); } }",
-		"question_text": "Write a program that turn Pip's LEDs red when there's an object on the right, yellow when there's an object on the left, white when there's an object within 3 inches (inclusive), and off otherwise."
+		"reference_solution_cpp": "while(true) { if (right_distance_sensor.is_object_near()) { all_leds.set_color(RED); } else if (left_distance_sensor.is_object_near()) { all_leds.set_color(YELLOW); } else if (front_distance_sensor.get_distance() <= 5) { all_leds.set_color(WHITE); } else { all_leds.set_color(OFF); } }",
+		"question_text": "Write a program that turn Pip's LEDs red when there's an object on the right, yellow when there's an object on the left, white when there's an object within 5 inches (inclusive), and off otherwise."
 	},
 	{
 		"question_id": "4d494fb0-54b6-4883-b49a-43399cbec441",	
@@ -896,8 +896,8 @@
 			  ]
 			}
 		},
-		"reference_solution_cpp": "while(true) { if (right_distance_sensor.is_object_near()) { motors.spin(CLOCKWISE, 30); } else if (left_distance_sensor.is_object_near()) { motors.spin(COUNTERCLOCKWISE, 30); } else if (front_distance_sensor.get_distance() <= 3) { motors.drive(BACKWARD, 15); } else { motors.stop(); } }",
-		"question_text": "Write a program that makes Pip spin at 30% speed towards your hand when your hand is on either side. When there's an object within 3 inches (inclusive), make Pip back away from your hand at 15% speed. Otherwise, stop."
+		"reference_solution_cpp": "while(true) { if (right_distance_sensor.is_object_near()) { motors.spin(CLOCKWISE, 5); } else if (left_distance_sensor.is_object_near()) { motors.spin(COUNTERCLOCKWISE, 5); } else if (front_distance_sensor.get_distance() <= 5) { motors.drive(BACKWARD, 15); } else { motors.stop(); } }",
+		"question_text": "Write a program that makes Pip spin at 5% speed towards your hand when your hand is on either side. When there's an object within 5 inches (inclusive), make Pip back away from your hand at 15% speed. Otherwise, stop."
 	},
 	{
 		"question_id": "617fe773-ebd7-4a75-9238-ec6ba7e2611d",
