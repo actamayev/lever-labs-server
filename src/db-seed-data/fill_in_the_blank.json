@@ -726,19 +726,19 @@
 			  "blocks": [
 				{
 				  "type": "forever_loop",
-				  "id": "rmot`p;^pFvjP1CZYLJE",
-				  "x": -530,
-				  "y": -490,
+				  "id": "12!=F?V}O0)$r.9h89h[",
+				  "x": -290,
+				  "y": -210,
 				  "inputs": {
 					"LOOP_BODY": {
 					  "block": {
-						"type": "controls_if_elseif",
-						"id": "v1MS}sf:Fo/+[0Q$/,sC",
+						"type": "controls_if_2elseif",
+						"id": "}$91XQ,;2kcNSQS[ntnM",
 						"inputs": {
 						  "IF1": {
 							"block": {
 							  "type": "side_tof_read",
-							  "id": "!*+7!sGX=@v=K/K|luN2",
+							  "id": "nj;zR8t0LxjcwDzhCZl7",
 							  "fields": {
 								"side_tof_value": "RIGHT"
 							  }
@@ -747,7 +747,7 @@
 						  "DO1": {
 							"block": {
 							  "type": "control_all_leds",
-							  "id": "_f+O0L@VrZSsQ2d=Nxy~",
+							  "id": ".#(m,F4pi7-3bZ_EMjk]",
 							  "fields": {
 								"led_color": "RED"
 							  }
@@ -756,7 +756,7 @@
 						  "IF2": {
 							"block": {
 							  "type": "side_tof_read",
-							  "id": "JL+;,fA$ZTXN%VQB@y?o",
+							  "id": "}lT0sf+)[R7PXU03ybV=",
 							  "fields": {
 								"side_tof_value": "LEFT"
 							  }
@@ -765,7 +765,7 @@
 						  "DO2": {
 							"block": {
 							  "type": "control_all_leds",
-							  "id": "/BvN$c}G]N7wK^v?63i4",
+							  "id": "}Vzi1R50$G3MW/ZnclfN",
 							  "fields": {
 								"led_color": "YELLOW"
 							  }
@@ -774,7 +774,7 @@
 						  "ELSE": {
 							"block": {
 							  "type": "control_all_leds",
-							  "id": "tUQ]Fv=vvB_z$q~|OL_T",
+							  "id": "T^7HH)HC)r?DhO79XCpm",
 							  "fields": {
 								"led_color": "OFF"
 							  }
@@ -787,7 +787,7 @@
 				}
 			  ]
 			}
-		},
+		  },
 		"reference_solution_cpp": "while(true) { if (right_distance_sensor.is_object_near()) { all_leds.set_color(RED); } else if (left_distance_sensor.is_object_near()) { all_leds.set_color(YELLOW); } else if (front_distance_sensor.get_distance() <= 5) { all_leds.set_color(WHITE); } else { all_leds.set_color(OFF); } }",
 		"question_text": "Write a program that turn Pip's LEDs red when there's an object on the right, yellow when there's an object on the left, white when there's an object within 5 inches (inclusive), and off otherwise."
 	},
@@ -863,7 +863,7 @@
 									"type": "math_number",
 									"id": "eW5#0O$AP5]7qW{U6a?t",
 									"fields": {
-									  "NUMBER_NUM": 3
+									  "NUMBER_NUM": 5
 									}
 								  }
 								}
