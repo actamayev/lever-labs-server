@@ -105,6 +105,9 @@ export default class Esp32SocketManager extends Singleton {
 			case "/battery-monitor-data-full":
 				BrowserSocketManager.getInstance().emitPipBatteryData(pipId, payload.batteryData)
 				break
+			case "/heartbeat": // NEW: Handle heartbeat
+				// Just update the heartbeat timestamp - that's all we need
+				break
 			case "/pip-turning-off":
 				console.info(`ESP32 ${pipId} turning off, disconnecting`)
 				this.handleDisconnection(pipId, true)

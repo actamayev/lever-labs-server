@@ -12,7 +12,7 @@ declare global {
 		pipId: PipUUID
 	}
 
-	type DisconnectReason = "ping_timeout" | "ping_failed" | "socket_closed" | "socket_error" | "disposed"
+	type DisconnectReason = "ping_timeout" | "ping_failed" | "socket_closed" | "socket_error" | "disposed" | "heartbeat_timeout"
 
 	interface LastOnlineConnectedUser {
 		userId: number
