@@ -23,9 +23,9 @@ export default class SendEsp32MessageManager extends Singleton {
 
 	private getPipConnectionSocket(pipUUID: PipUUID): ExtendedWebSocket {
 		try {
-			const connection = Esp32SocketManager.getInstance().getConnection(pipUUID)
+			const connection = Esp32SocketManager.getInstance().getCommandConnection(pipUUID) // CHANGED
 			if (!connection) {
-				throw new Error(`No active connection for Pip ${pipUUID}`)
+				throw new Error(`No active command connection for Pip ${pipUUID}`)
 			}
 
 			return connection.socket

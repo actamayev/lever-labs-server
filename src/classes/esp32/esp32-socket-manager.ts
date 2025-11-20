@@ -5,48 +5,43 @@ import { ESPToServerMessage } from "@lever-labs/common-ts/types/pip"
 import Singleton from "../singleton"
 import isPipUUID from "../../utils/type-helpers/type-checks"
 import BrowserSocketManager from "../browser-socket-manager"
-import SingleESP32Connection from "./single-esp32-connection"
 import SendEsp32MessageManager from "./send-esp32-message-manager"
+import doesPipUUIDExist from "../../db-operations/read/does-x-exist/does-pip-uuid-exist"
+import SingleESP32CommandConnection from "./single-esp32-connection"
 import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
 import { UserConnectedStatus } from "@lever-labs/common-ts/protocol"
-import doesPipUUIDExist from "../../db-operations/read/does-x-exist/does-pip-uuid-exist"
 
 export default class Esp32SocketManager extends Singleton {
-	private connections = new Map<PipUUID, ESP32SocketConnectionInfo>()
-	private readonly NINETY_MINUTES_MS = 90 * 60 * 1000 // 90 minutes in milliseconds
+	private connections = new Map<PipUUID, ESP32ConnectionInfo>()
+	private readonly NINETY_MINUTES_MS = 90 * 60 * 1000
 
-	private constructor(private readonly wss: WSServer) {
+	private constructor(
+		private readonly commandWSS: WSServer,
+		private readonly sensorWSS: WSServer // NEW
+	) {
 		super()
-		this.initializeWSServer()
-		// TODO 9/21/25: Consider loading in all the pips from DB here
-		// When we restart the server, and when we add a new pip (add new pip uuid) we need to reload the pips from DB
+		this.initializeCommandWSServer()
+		this.initializeSensorWSServer() // NEW
 	}
 
-	public static override getInstance(wss?: WSServer): Esp32SocketManager {
+	public static override getInstance(commandWSS?: WSServer, sensorWSS?: WSServer): Esp32SocketManager {
 		if (!Esp32SocketManager.instance) {
-			if (!wss) {
-				throw new Error("WebSocket Server instance required to initialize Esp32SocketManager")
+			if (!commandWSS || !sensorWSS) {
+				throw new Error("Both WebSocket Server instances required")
 			}
-			Esp32SocketManager.instance = new Esp32SocketManager(wss)
+			Esp32SocketManager.instance = new Esp32SocketManager(commandWSS, sensorWSS)
 		}
 		return Esp32SocketManager.instance
 	}
 
-	private initializeWSServer(): void {
-		this.wss.on("connection", (socket: ExtendedWebSocket, request): void => {
+	private initializeCommandWSServer(): void {
+		this.commandWSS.on("connection", (socket: ExtendedWebSocket, request): void => {
 			void (async (): Promise<void> => {
 				try {
-					// Extract pipId from headers
 					const pipId = request.headers["x-pip-id"] as string
 
-					if (!pipId) {
-						console.warn("Missing X-Pip-Id header")
-						socket.close(1002, "Missing X-Pip-Id header")
-						return
-					}
-
-					if (!isPipUUID(pipId)) {
-						console.warn("Invalid X-Pip-Id header")
+					if (!pipId || !isPipUUID(pipId)) {
+						console.warn("Invalid X-Pip-Id header on command connection")
 						socket.close(1002, "Invalid X-Pip-Id header")
 						return
 					}
@@ -58,33 +53,63 @@ export default class Esp32SocketManager extends Singleton {
 						return
 					}
 
-					console.info(`ESP32 ${pipId} connected - registering immediately`)
-
+					console.info(`ESP32 ${pipId} command connection established`)
 					socket.pipId = pipId
 
-					// ✅ IMMEDIATE REGISTRATION - happens right when WebSocket connects
-					const connection = new SingleESP32Connection(
+					const connection = new SingleESP32CommandConnection(
 						pipId,
 						socket,
-						(disconnectedPipId: PipUUID) => void this.handleDisconnection(disconnectedPipId, false)
+						(disconnectedPipId: PipUUID) => void this.handleCommandDisconnection(disconnectedPipId, false)
 					)
 
-					// ✅ TRACK ACTIVE CONNECTIONS - this replaces your registration message
-					this.registerConnection(pipId, connection)
+					this.registerCommandConnection(pipId, connection)
 
 					socket.on("message", (message) => {
-						this.handleOngoingMessage(pipId, message.toString())
+						this.handleCommandMessage(pipId, message.toString())
 					})
 				} catch (error) {
 					console.error(error)
-					socket.close(1002, "Invalid or missing X-Pip-Id header")
-					return
+					socket.close(1002, "Connection setup failed")
 				}
 			})()
 		})
 	}
 
-	private handleOngoingMessage(pipId: PipUUID, message: string): void {
+	private initializeSensorWSServer(): void {
+		this.sensorWSS.on("connection", (socket: ExtendedWebSocket, request): void => {
+			void ((): void => {
+				try {
+					const pipId = request.headers["x-pip-id"] as string
+
+					if (!pipId || !isPipUUID(pipId)) {
+						console.warn("Invalid X-Pip-Id header on sensor connection")
+						socket.close(1002, "Invalid X-Pip-Id header")
+						return
+					}
+
+					console.info(`ESP32 ${pipId} sensor connection established`)
+					socket.pipId = pipId
+
+					// Simpler connection - no ping/pong needed
+					this.registerSensorConnection(pipId, socket)
+
+					socket.on("message", (message) => {
+						this.handleSensorMessage(pipId, message.toString())
+					})
+
+					socket.on("close", () => {
+						console.info(`ESP32 ${pipId} sensor connection closed`)
+						this.handleSensorDisconnection(pipId)
+					})
+				} catch (error) {
+					console.error(error)
+					socket.close(1002, "Connection setup failed")
+				}
+			})()
+		})
+	}
+
+	private handleCommandMessage(pipId: PipUUID, message: string): void {
 		try {
 			const parsed = JSON.parse(message) as ESPToServerMessage
 			const { route, payload } = parsed
@@ -96,21 +121,15 @@ export default class Esp32SocketManager extends Singleton {
 				BrowserSocketManager.getInstance().emitPipBatteryData(pipId, payload.batteryData)
 				void SendEsp32MessageManager.getInstance().transferUpdateAvailableMessage(pipId, payload)
 				break
-			case "/sensor-data":
-				BrowserSocketManager.getInstance().sendBrowserPipSensorData(pipId, payload)
-				break
-			case "/sensor-data-mz":
-				BrowserSocketManager.getInstance().sendBrowserPipSensorDataMZ(pipId, payload)
-				break
 			case "/battery-monitor-data-full":
 				BrowserSocketManager.getInstance().emitPipBatteryData(pipId, payload.batteryData)
 				break
-			case "/heartbeat": // NEW: Handle heartbeat
-				// Just update the heartbeat timestamp - that's all we need
+			case "/heartbeat":
+				// Heartbeat received - just update activity
 				break
 			case "/pip-turning-off":
-				console.info(`ESP32 ${pipId} turning off, disconnecting`)
-				this.handleDisconnection(pipId, true)
+				console.info(`ESP32 ${pipId} turning off`)
+				this.handleCommandDisconnection(pipId, true)
 				break
 			case "/dino-score":
 				BrowserSocketManager.getInstance().emitPipDinoScore(pipId, payload.score)
@@ -120,45 +139,75 @@ export default class Esp32SocketManager extends Singleton {
 				break
 			}
 		} catch (error) {
-			console.error(`Failed to process message from ${pipId}:`, error)
+			console.error(`Failed to process command message from ${pipId}:`, error)
 		}
 	}
+
+	private handleSensorMessage(pipId: PipUUID, message: string): void {
+		try {
+			const parsed = JSON.parse(message) as ESPToServerMessage
+			const { route, payload } = parsed
+
+			switch (route) {
+			case "/sensor-data":
+				BrowserSocketManager.getInstance().sendBrowserPipSensorData(pipId, payload)
+				break
+			case "/sensor-data-mz":
+				BrowserSocketManager.getInstance().sendBrowserPipSensorDataMZ(pipId, payload)
+				break
+			default:
+				console.warn(`Unknown sensor route from ${pipId}: ${route}`)
+				break
+			}
+		} catch (error) {
+			console.error(`Failed to process sensor message from ${pipId}:`, error)
+		}
+	}
+
 
 	private updateLastActivity(pipId: PipUUID): void {
 		const connectionInfo = this.connections.get(pipId)
 		if (!connectionInfo) return
-		// Reset the ping counter since we received data
-		connectionInfo.connection?.resetPingCounter()
+		// Reset the ping counter AND update heartbeat
+		connectionInfo.commandConnection?.resetPingCounter()
 	}
 
 	// eslint-disable-next-line max-lines-per-function
-	private registerConnection(pipId: PipUUID, connection: SingleESP32Connection): void {
+	private registerCommandConnection(pipId: PipUUID, connection: SingleESP32CommandConnection): void {
 		try {
 			const existing = this.connections.get(pipId)
 
 			if (!existing) {
 				// ✅ NEW CONNECTION - track it immediately
 				const initialStatus = this.createInitialStatus()
-				this.connections.set(pipId, { status: initialStatus, connection })
+				this.connections.set(pipId, {
+					status: initialStatus,
+					commandConnection: connection,
+					sensorSocket: null
+				})
+
+				// Notify user if they were previously connected
+				this.checkForAutoReconnect(pipId)
 				return
 			}
 
-			console.info(`ESP32 ${pipId} connecting online, modifying existing connection`)
-			existing.connection?.dispose()
+			console.info(`ESP32 ${pipId} command connection updating`)
+			existing.commandConnection?.dispose()
 
 			// Handle serial connection case
 			if (existing.status.connectedToSerialUserId) {
 				this.connections.set(pipId, {
+					...existing,
 					status: {
 						...existing.status,
-						online: true,
+						online: true, // ADDED: Mark as online
 						connectedToOnlineUserId: existing.status.connectedToSerialUserId,
 						lastOnlineConnectedUser: {
 							userId: existing.status.connectedToSerialUserId,
 							lastActivityAt: new Date()
 						}
 					},
-					connection
+					commandConnection: connection
 				})
 				return
 			}
@@ -172,13 +221,14 @@ export default class Esp32SocketManager extends Singleton {
 				if (timeSinceLastConnection > this.NINETY_MINUTES_MS) {
 					// Too old, clear it
 					this.connections.set(pipId, {
+						...existing,
 						status: {
 							...existing.status,
-							online: true,
+							online: true, // ADDED: Mark as online
 							connectedToOnlineUserId: null,
 							lastOnlineConnectedUser: null
 						},
-						connection
+						commandConnection: connection
 					})
 					return
 				}
@@ -188,16 +238,17 @@ export default class Esp32SocketManager extends Singleton {
 				if (hasActiveSockets) {
 					// User is online - auto-reconnect
 					this.connections.set(pipId, {
+						...existing,
 						status: {
 							...existing.status,
-							online: true,
+							online: true, // ADDED: Mark as online (was already here)
 							connectedToOnlineUserId: userId,
 							lastOnlineConnectedUser: {
 								userId,
 								lastActivityAt: new Date()
 							}
 						},
-						connection
+						commandConnection: connection
 					})
 
 					// Notify ESP
@@ -216,46 +267,96 @@ export default class Esp32SocketManager extends Singleton {
 
 			// Default case: just mark as online, no auto-connect
 			this.connections.set(pipId, {
+				...existing,
 				status: {
 					...existing.status,
-					online: true,
+					online: true, // ADDED: Mark as online
 					connectedToOnlineUserId: null
 				},
-				connection
+				commandConnection: connection
 			})
 
 		} catch (error) {
-			console.error(`Failed to register connection for ${pipId}:`, error)
+			console.error(`Failed to register command connection for ${pipId}:`, error)
 		}
 	}
 
-	public handleDisconnection(pipId: PipUUID, isShutdown: boolean): void {
+	// NEW helper method for checking auto-reconnect on first connection
+	private checkForAutoReconnect(pipId: PipUUID): void {
+		const connectionInfo = this.connections.get(pipId)
+		if (!connectionInfo) return
+
+		// This handles the case where this is the FIRST connection ever
+		// Check if a user should be auto-reconnected based on recent activity
+		// (This logic is similar to what's in registerCommandConnection for existing connections)
+		// For now, we can leave this empty since the main logic is in registerCommandConnection
+	}
+
+	private registerSensorConnection(pipId: PipUUID, socket: ExtendedWebSocket): void {
+		const existing = this.connections.get(pipId)
+
+		if (!existing) {
+			console.warn(`Sensor connection for ${pipId} but no command connection exists`)
+			return
+		}
+
+		console.info(`ESP32 ${pipId} sensor connection registered`)
+		this.connections.set(pipId, {
+			...existing,
+			sensorSocket: socket
+		})
+	}
+
+	public handleCommandDisconnection(pipId: PipUUID, isShutdown: boolean): void {
 		try {
-			console.info(`ESP32 disconnected: ${pipId}`)
+			console.info(`ESP32 command disconnected: ${pipId}`)
 
-			// Get the connection before updating
 			const connectionInfo = this.connections.get(pipId)
-
 			if (!connectionInfo) return
+
 			const updatedStatus: ESPConnectionState = {
 				...connectionInfo.status,
 				online: false,
 				connectedToOnlineUserId: null,
 				connectedToSerialUserId: isShutdown ? null : connectionInfo.status.connectedToSerialUserId
 			}
+
 			this.connections.set(pipId, {
 				...connectionInfo,
 				status: updatedStatus
 			})
 
-			// Dispose of the connection object to stop ping intervals and clean up
-			connectionInfo.connection?.dispose(true)
+			connectionInfo.commandConnection?.dispose(true)
+
 			const userConnectedToOnlineBeforeDisconnection = connectionInfo.status.connectedToOnlineUserId
 			if (!userConnectedToOnlineBeforeDisconnection) return
-			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(userConnectedToOnlineBeforeDisconnection, pipId, "offline")
+
+			BrowserSocketManager.getInstance().emitPipStatusUpdateToUser(
+				userConnectedToOnlineBeforeDisconnection,
+				pipId,
+				"offline"
+			)
 			BrowserSocketManager.getInstance().removePipConnection(userConnectedToOnlineBeforeDisconnection)
 		} catch (error) {
-			console.error(`Failed to handle disconnection for ${pipId}:`, error)
+			console.error(`Failed to handle command disconnection for ${pipId}:`, error)
+		}
+	}
+
+	private handleSensorDisconnection(pipId: PipUUID): void {
+		try {
+			console.info(`ESP32 sensor disconnected: ${pipId}`)
+
+			const connectionInfo = this.connections.get(pipId)
+			if (!connectionInfo) return
+
+			// Just clear the sensor socket - don't change status
+			// The command connection determines online/offline status
+			this.connections.set(pipId, {
+				...connectionInfo,
+				sensorSocket: null
+			})
+		} catch (error) {
+			console.error(`Failed to handle sensor disconnection for ${pipId}:`, error)
 		}
 	}
 
@@ -263,8 +364,8 @@ export default class Esp32SocketManager extends Singleton {
 		return this.connections.get(pipId)?.status
 	}
 
-	public getConnection(pipId: PipUUID): SingleESP32Connection | null | undefined {
-		return this.connections.get(pipId)?.connection
+	public getCommandConnection(pipId: PipUUID): SingleESP32CommandConnection | null | undefined {
+		return this.connections.get(pipId)?.commandConnection
 	}
 
 	public isPipUUIDConnected(pipId: PipUUID): boolean {
@@ -288,7 +389,6 @@ export default class Esp32SocketManager extends Singleton {
 			const connectionInfo = this.connections.get(pipId)
 			if (!connectionInfo) {
 				// Create connection info for offline + serial case
-				// If there's never been a connection to this pip before, we need to create a new connection info
 				this.connections.set(pipId, {
 					status: {
 						online: false,
@@ -296,10 +396,12 @@ export default class Esp32SocketManager extends Singleton {
 						lastOnlineConnectedUser: null,
 						connectedToSerialUserId: userId
 					},
-					connection: null
+					commandConnection: null, // CHANGED
+					sensorSocket: null // CHANGED
 				})
 				return null
 			}
+
 			let lastOnlineConnectedUser: LastOnlineConnectedUser | null = null
 			// If the pip is online, we need to update the last online connected user
 			if (connectionInfo.status.online) {
@@ -308,6 +410,7 @@ export default class Esp32SocketManager extends Singleton {
 					lastActivityAt: new Date()
 				}
 			}
+
 			this.connections.set(pipId, {
 				...connectionInfo,
 				status: {

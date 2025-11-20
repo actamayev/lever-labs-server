@@ -1,6 +1,6 @@
 import { PipUUID } from "@lever-labs/common-ts/types/utils"
 
-export default class SingleESP32Connection {
+export default class SingleESP32CommandConnection {
 	private _isAlive: boolean = true
 	private _lastHeartbeat: number = Date.now() // NEW
 	private pingInterval?: NodeJS.Timeout

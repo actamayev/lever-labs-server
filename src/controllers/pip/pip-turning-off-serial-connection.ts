@@ -7,7 +7,7 @@ export default function pipTurningOffSerialConnection(req: Request, res: Respons
 	try {
 		const { pipUUID } = req.body as { pipUUID: PipUUID }
 
-		Esp32SocketManager.getInstance().handleDisconnection(pipUUID, true)
+		Esp32SocketManager.getInstance().handleCommandDisconnection(pipUUID, true)
 
 		res.status(200).json({ success: "Successfully shutting down Pip" } satisfies SuccessResponse)
 		return
