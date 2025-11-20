@@ -2,7 +2,8 @@ import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
 import { ErrorResponse, ValidationErrorResponse } from "@lever-labs/common-ts/types/api"
-import { CareerType, MeetPipTriggerType, TurretArcadeTriggerType } from "@lever-labs/common-ts/protocol"
+import { CareerType, CityDrivingArcadeTriggerType, FlappyBirdArcadeTriggerType,
+	MeetPipTriggerType, TurretArcadeTriggerType } from "@lever-labs/common-ts/protocol"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
 
 function validateTriggerMessageType(
@@ -14,6 +15,10 @@ function validateTriggerMessageType(
 		return Object.values(MeetPipTriggerType).includes(triggerMessageType)
 	case CareerType.TURRET_ARCADE:
 		return Object.values(TurretArcadeTriggerType).includes(triggerMessageType)
+	case CareerType.FLAPPY_BIRD_ARCADE:
+		return Object.values(FlappyBirdArcadeTriggerType).includes(triggerMessageType)
+	case CareerType.CITY_DRIVING_ARCADE:
+		return Object.values(CityDrivingArcadeTriggerType).includes(triggerMessageType)
 	  default:
 		return false
 	}
