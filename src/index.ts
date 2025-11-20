@@ -49,16 +49,28 @@ BrowserSocketManager.getInstance(io) // Directly use getInstance with io
 
 // Initialize WebSocket server for ESP32 connections
 const esp32WSServer = new WSServer({ noServer: true })
-Esp32SocketManager.getInstance(esp32WSServer) // Directly use getInstance with wss
+
+const esp32SensorWSServer = new WSServer({ noServer: true })
+Esp32SocketManager.getInstance(esp32WSServer, esp32SensorWSServer) // Directly use getInstance with wss
 
 void EspLatestFirmwareManager.getInstance()
 
 // Handle WebSocket upgrade for ESP32 connections
+// Handle WebSocket upgrade for BOTH ESP32 endpoints
 httpServer.on("upgrade", (request, socket, head) => {
-	if (request.url !== "/esp32") return
-	esp32WSServer.handleUpgrade(request, socket, head, (ws) => {
-		esp32WSServer.emit("connection", ws, request)
-	})
+	const url = request.url
+
+	if (url === "/esp32" || url === "/ws-command") {
+		// Command connection (receives commands, handles ping/pong)
+		esp32WSServer.handleUpgrade(request, socket, head, (ws) => {
+			esp32WSServer.emit("connection", ws, request)
+		})
+	} else if (url === "/ws-sensor") {
+		// Sensor connection (receives sensor data only)
+		esp32SensorWSServer.handleUpgrade(request, socket, head, (ws) => {
+			esp32SensorWSServer.emit("connection", ws, request)
+		})
+	}
 })
 
 void (async (): Promise<void> => {
