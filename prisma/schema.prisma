@@ -55,7 +55,7 @@ model credentials {
 	action_to_code_multiple_choice_user_answer					action_to_code_multiple_choice_user_answer[]
 	matching_question_user_answer								matching_question_user_answer[]
 	completed_user_lesson										completed_user_lesson[]
-	arcade_high_score											arcade_high_score[]
+	arcade_score												arcade_score[]
 }
 
 model login_history {
@@ -775,8 +775,8 @@ enum ArcadeGameName {
 	CITY_DRIVER
 }
 
-model arcade_high_score {
-	arcade_high_score_id										Int       @id @default(autoincrement())
+model arcade_score {
+	arcade_score_id												Int       @id @default(autoincrement())
 	arcade_game_name											ArcadeGameName
 
 	score														Int
