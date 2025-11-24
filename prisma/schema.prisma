@@ -780,7 +780,7 @@ model arcade_score {
 	arcade_game_name											ArcadeGameName
 
 	score														Int
-    user_id             										Int       @unique
+    user_id             										Int
 
 	user                                                        credentials @relation(fields: [user_id], references: [user_id])
 	created_at          										DateTime  @default(now())
