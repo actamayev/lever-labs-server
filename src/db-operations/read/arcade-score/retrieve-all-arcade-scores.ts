@@ -6,6 +6,7 @@ export default async function retrieveAllArcadeScores(userId: number): Promise<A
 	try {
 		const prismaClient = await PrismaClientClass.getPrismaClient()
 
+		// Fetch all scores ordered by score descending to get highest scores first
 		const arcadeScores = await prismaClient.arcade_score.findMany({
 			select: {
 				arcade_score_id: true,
@@ -13,18 +14,20 @@ export default async function retrieveAllArcadeScores(userId: number): Promise<A
 				score: true,
 				user_id: true,
 				created_at: true,
-				user: {
-					select: {
-						username: true
-					}
-				}
+				user: { select: { username: true } }
 			},
-			orderBy: {
-				created_at: "desc"
-			}
+			orderBy: [{ score: "desc" }, { created_at: "desc" }]
 		})
 
-		return arcadeScores.map(score => ({
+		// Group by user_id and arcade_game_name, keeping only the highest score for each combination
+		const highestScoresMap = new Map<string, typeof arcadeScores[0]>()
+		for (const score of arcadeScores) {
+			const key = `${score.user_id}-${score.arcade_game_name}`
+			if (!highestScoresMap.has(key)) highestScoresMap.set(key, score)
+		}
+
+		// Convert to array and map to ArcadeScore format
+		return Array.from(highestScoresMap.values()).map(score => ({
 			arcadeScoreId: score.arcade_score_id,
 			arcadeGameName: convertArcadeGameNameToType(score.arcade_game_name),
 			score: score.score,
