@@ -55,6 +55,7 @@ model credentials {
 	action_to_code_multiple_choice_user_answer					action_to_code_multiple_choice_user_answer[]
 	matching_question_user_answer								matching_question_user_answer[]
 	completed_user_lesson										completed_user_lesson[]
+	arcade_high_score											arcade_high_score[]
 }
 
 model login_history {
@@ -766,4 +767,21 @@ model matching_question_user_answer {
 	matching_answer_choice_text									matching_answer_choice_text @relation(fields: [matching_answer_choice_text_id], references: [matching_answer_choice_text_id])
 
 	@@index([user_id])
+}
+
+enum ArcadeGameName {
+	TURRET_DEFENSE
+	FLAPPY_BIRD
+	CITY_DRIVER
+}
+
+model arcade_high_score {
+	arcade_high_score_id										Int       @id @default(autoincrement())
+	arcade_game_name											ArcadeGameName
+
+	score														Int
+    user_id             										Int       @unique
+
+	user                                                        credentials @relation(fields: [user_id], references: [user_id])
+	created_at          										DateTime  @default(now())
 }
