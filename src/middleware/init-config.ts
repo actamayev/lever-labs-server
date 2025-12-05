@@ -8,11 +8,6 @@ export const corsOptions = {
 	origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
 		if (!origin || allowedOrigins().includes(origin)) return callback(null, true)
 
-		// Allow all Vercel preview URLs in staging environment
-		if (process.env.NODE_ENV === "staging" && origin.endsWith(".vercel.app")) {
-			return callback(null, true)
-		}
-
 		return callback(new Error("CORS not allowed for this origin"))
 	},
 	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

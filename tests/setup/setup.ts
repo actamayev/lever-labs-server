@@ -3,7 +3,7 @@ import { jest, beforeAll, afterAll, beforeEach, afterEach } from "@jest/globals"
 // Global test setup
 beforeAll(() => {
 	// Set test environment variables
-	process.env.NODE_ENV = "test" as "staging" | "production"
+	process.env.NODE_ENV = "test" as "production"
 	process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || "postgresql://test:test@localhost:5432/test_db"
 
 	// Mock console methods to reduce noise in tests

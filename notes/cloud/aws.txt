@@ -1,27 +1,6 @@
 To copy important files to AWS, run the following commands from the lever-labs-server root directory.
 Locally, run `sudo pnpm run build`
 
-Staging:
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./package.json ubuntu@34.229.209.115:/home/ubuntu/lever-labs
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./pnpm-lock.yaml ubuntu@34.229.209.115:/home/ubuntu/lever-labs
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./.env.production ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src/.env.staging
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./ecosystem.config.js ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./.npmrc ubuntu@34.229.209.115:/home/ubuntu/lever-labs
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/index.js ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/classes ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/controllers ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/db-operations ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/db-seed-data ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/middleware ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/models ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/parser ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/prisma ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/routes ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/types ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./dist/src/utils ubuntu@34.229.209.115:/home/ubuntu/lever-labs/dist/src
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem -r ./prisma ubuntu@34.229.209.115:/home/ubuntu/lever-labs/
-	scp -i /Users/arieltamayev/Documents/lever-labs-staging-ec2-keypair.pem ./prisma.config.ts ubuntu@34.229.209.115:/home/ubuntu/lever-labs/
-
 Production:
 	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem ./package.json ubuntu@34.203.76.152:/home/ubuntu/lever-labs
 	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem ./pnpm-lock.yaml ubuntu@34.203.76.152:/home/ubuntu/lever-labs
@@ -44,13 +23,11 @@ Production:
 	scp -i /Users/arieltamayev/Documents/lever-labs-production-ec2-keypair.pem ./prisma.config.ts ubuntu@34.203.76.152:/home/ubuntu/lever-labs/
 
 To SSH into AWS:
-	Staging:
-		aws ec2-instance-connect ssh --instance-id i-0151f137cb9067c1c --os-user ubuntu
 	Prod:
 		aws ec2-instance-connect ssh --instance-id i-0af414ad7e5d89c3e --os-user ubuntu
 
 For Database migrations, navigate to /lever-labs, and run:
-	pnpm dlx prisma migrate deploy && pnpm dlx prisma generate && pm2 restart 0 && pm2 logs;
+	pnpm prisma migrate deploy && pnpm prisma generate && pm2 restart 0 && pm2 logs;
 	If nothing is working after doing a migration, try restarting the pm2 `pm2 restart 0`
 	If there is new data to seed, run `pnpm run cloud-seed`
 
@@ -58,7 +35,7 @@ Shortcuts:
 	Restart server after application update:
 		cd lever-labs/ && pnpm i --prod && pm2 restart 0 && pm2 logs;
 	DB (be in /lever-labs folder)
-		pnpm dlx prisma migrate deploy && pnpm dlx prisma generate && pm2 restart 0 && pm2 logs;
+		pnpm prisma migrate deploy && pnpm prisma generate && pm2 restart 0 && pm2 logs;
 
 Other:
 - If getting this error:  `Error: @prisma/client did not initialize yet. Please run "prisma generate" and try to import it again.`, run:
@@ -109,6 +86,6 @@ Setting up a new instance:
 		pnpm run cloud-seed
 	6. Go to /lever-labs/dist/src:
 		cd /home/ubuntu/lever-labs/dist/src
-		pm2 start ecosystem.config.js --env {staging, production}
+		pm2 start ecosystem.config.js --env production
 	7. View logs:
 		pm2 logs

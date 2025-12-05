@@ -4,7 +4,6 @@ Important pm2 commands:
 2. pm2 stop app_name_or_id (stops a running pm2 process)
 3. pm2 delete app_name_or_id (deletes a stopped pm2 process)
 4.
-	Staging: pm2 start ecosystem.config.js --env staging (must be done where the index.js file is)
 	Production: pm2 start ecosystem.config.js --env production (must be done where the index.js file is)
 5. pm2 logs app_name_or_id (shows logs for a process)
 6. pm2 monit (see detailed pm2 view)

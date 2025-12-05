@@ -15,10 +15,10 @@ export const AUTH_COOKIE_NAME = "auth_token"
 // Default cookie options for auth
 const getAuthCookieOptions = (): CookieOptions => ({
 	httpOnly: true,
-	secure: (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging"), // Only send over HTTPS in production
+	secure: (process.env.NODE_ENV === "production"), // Only send over HTTPS in production
 	sameSite: "lax", // Allows cross-site navigation while preventing CSRF
-	// eslint-disable-next-line max-len
-	domain: (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging") ? ".leverlabs.com" : undefined, // Subdomain sharing in production
+
+	domain: (process.env.NODE_ENV === "production") ? ".leverlabs.com" : undefined, // Subdomain sharing in production
 	maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
 })
 
@@ -28,9 +28,9 @@ export const setAuthCookie = (res: Response, token: string): void => {
 
 export const clearAuthCookie = (res: Response): void => {
 	res.clearCookie(AUTH_COOKIE_NAME, {
-		domain: (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging") ? ".leverlabs.com" : undefined,
+		domain: (process.env.NODE_ENV === "production") ? ".leverlabs.com" : undefined,
 		httpOnly: true,
-		secure: (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging"),
+		secure: (process.env.NODE_ENV === "production"),
 		sameSite: "lax"
 	})
 }

@@ -19,7 +19,7 @@ declare namespace NodeJS {
 		AWS_ACCESS_KEY_ID: string
 		AWS_SECRET_ACCESS_KEY: string
 
-		NODE_ENV: "staging" | "production" | undefined
+		NODE_ENV: "production" | undefined
 
 		PIP_HARDWARE_VERSION: string
 
