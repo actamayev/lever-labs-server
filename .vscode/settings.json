@@ -6,5 +6,6 @@
 	},
 	"eslint.validate": ["typescript", "javascript"],
 	"editor.insertSpaces": false,
-    "editor.tabSize": 4
+	"editor.tabSize": 4,
+	"prisma.pinToPrisma6": true
 }
