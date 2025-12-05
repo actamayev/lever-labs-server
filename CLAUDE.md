@@ -97,7 +97,6 @@ pnpm run cloud-seed       # Seed in cloud
 ## Deployment & Environment
 
 ### AWS Infrastructure
-- **Staging**: EC2 `i-0151f137cb9067c1c` (34.229.209.115)
 - **Production**: EC2 `i-0af414ad7e5d89c3e` (54.81.65.153)
 - **Database**: RDS PostgreSQL
 - **Process Manager**: PM2 for server processes

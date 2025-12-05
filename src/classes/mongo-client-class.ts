@@ -16,7 +16,7 @@ export default class MongoClientClass {
 				// Local environment
 				mongoUrl = process.env.MONGODB_URL
 			} else {
-				// Staging or Production - get from SecretsManager
+				// Production - get from SecretsManager
 				mongoUrl = await SecretsManager.getInstance().getSecret("MONGODB_URL")
 			}
 
