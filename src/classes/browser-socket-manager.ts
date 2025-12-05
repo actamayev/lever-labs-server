@@ -18,6 +18,7 @@ import { UserConnectedStatus } from "@lever-labs/common-ts/protocol"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import espConnectionStateToClientConnectionStatus from "../utils/pip/esp-connection-state-to-client-connection-status"
 import autoConnectToPip from "../utils/pip/auto-connect-to-pip"
+import { ArcadeGameType } from "@lever-labs/common-ts/types/arcade"
 
 type UserConnectionState = {
 	sockets: Set<string>  // Set of unique socket IDs
@@ -460,6 +461,18 @@ export default class BrowserSocketManager extends Singleton {
 					userState.lastActivityAt = new Date()
 				}
 			}
+		})
+	}
+
+	public emitArcadeScoreUpdate(score: number, username: string, excludeUserId: number, arcadeGameName: ArcadeGameType): void {
+		// Emit to all connected users except the user who submitted the score
+		this.connections.forEach((userState, userId) => {
+			if (userId === excludeUserId) return
+			this.emitToAllUserStateSockets(userState, "arcade-score-update", {
+				score,
+				username,
+				arcadeGameName
+			})
 		})
 	}
 
