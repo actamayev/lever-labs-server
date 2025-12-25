@@ -1,6 +1,6 @@
 import isNull from "lodash/isNull"
 import isUndefined from "lodash/isUndefined"
-import { ClientPipConnectionStatus } from "@lever-labs/common-ts/types/pip"
+import { ClientPipConnectionStatus } from "@actamayev/lever-labs-common-ts/types/pip"
 
 export default function espConnectionStateToClientConnectionStatus(
 	espConnectionState: ESPConnectionState | undefined,

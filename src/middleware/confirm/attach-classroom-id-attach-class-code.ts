@@ -1,8 +1,8 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { ClassCode } from "@lever-labs/common-ts/types/utils"
-import { ErrorResponse, MessageResponse, ValidationErrorResponse } from "@lever-labs/common-ts/types/api"
+import { ClassCode } from "@actamayev/lever-labs-common-ts/types/utils"
+import { ErrorResponse, MessageResponse, ValidationErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import classCodeValidator from "../joi/class-code-validator"
 import getClassroomIdFromClassCode from "../../db-operations/read/classroom/get-classroom-id-from-class-code"
 

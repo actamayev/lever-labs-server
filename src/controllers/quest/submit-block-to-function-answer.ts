@@ -1,8 +1,8 @@
 import { Response, Request } from "express"
-import { CheckMCQResponse, ErrorResponse } from "@lever-labs/common-ts/types/api"
+import { CheckMCQResponse, ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import addBlockToFunctionUserAnswer from "../../db-operations/write/user-answer/add-block-to-function-user-answer"
 import getCorrectBlockToFunctionAnswerChoiceId from "../../db-operations/read/block-to-function/check-block-to-function-answer-choice"
-import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
+import { QuestionUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default async function submitBlockToFunctionAnswer(req: Request, res: Response): Promise<void> {
 	try {

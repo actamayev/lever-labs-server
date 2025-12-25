@@ -1,9 +1,9 @@
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
 import calculateMotorSpeeds from "../calculate-motor-speeds"
-import { ClientSocketEvents, ClientSocketEventPayloadMap, PlayTonePayload } from "@lever-labs/common-ts/types/socket"
-import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
-import { LedControlData, MotorControlData, HeadlightData } from "@lever-labs/common-ts/types/garage"
-import { PipUUIDInterface } from "@lever-labs/common-ts/types/utils"
+import { ClientSocketEvents, ClientSocketEventPayloadMap, PlayTonePayload } from "@actamayev/lever-labs-common-ts/types/socket"
+import { MessageBuilder } from "@actamayev/lever-labs-common-ts/message-builder"
+import { LedControlData, MotorControlData, HeadlightData } from "@actamayev/lever-labs-common-ts/types/garage"
+import { PipUUIDInterface } from "@actamayev/lever-labs-common-ts/types/utils"
 
 type ListenerHandler<T> = (payload: T) => void
 

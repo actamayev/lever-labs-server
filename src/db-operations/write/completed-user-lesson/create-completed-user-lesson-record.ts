@@ -1,4 +1,4 @@
-import { LessonUUID } from "@lever-labs/common-ts/types/utils"
+import { LessonUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function createCompletedUserLessonRecordDb(userId: number, lessonId: LessonUUID): Promise<void> {

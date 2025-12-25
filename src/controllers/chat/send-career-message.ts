@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Response, Request } from "express"
 import { MessageSender } from "@prisma/client"
-import { ErrorResponse, StartChatSuccess } from "@lever-labs/common-ts/types/api"
-import { CareerUUID } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, StartChatSuccess } from "@actamayev/lever-labs-common-ts/types/api"
+import { CareerUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"

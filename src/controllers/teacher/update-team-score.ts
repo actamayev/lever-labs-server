@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
-import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
-import { ScoreboardUUID } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, SuccessResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { ScoreboardUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import ScoreboardManager from "../../classes/scoreboard-manager"
 
 export default async function updateTeamScore(req: Request, res: Response): Promise<void> {

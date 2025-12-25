@@ -1,8 +1,8 @@
 import { Response, Request } from "express"
 import generatePipUUID from "../../utils/generate/generate-pip-uuid"
 import addPipUUIDRecord from "../../db-operations/write/pip-uuid/add-pip-uuid-record"
-import { ErrorResponse } from "@lever-labs/common-ts/types/api"
-import { PipUUID } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { PipUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default async function addNewPipUUID (_req: Request, res: Response): Promise<void> {
 	try {

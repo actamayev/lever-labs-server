@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, ValidationErrorResponse} from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, ValidationErrorResponse} from "@actamayev/lever-labs-common-ts/types/api"
 
 const setHubNewSlideIdSchema = Joi.object({
 	hubId: Joi.string().uuid({ version: "uuidv4" }).required(),

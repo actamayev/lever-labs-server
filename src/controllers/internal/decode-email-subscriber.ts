@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import Encryptor from "../../classes/encryptor"
-import { ErrorResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
 
 export default async function decodeEmailSubscriber (req: Request, res: Response): Promise<void> {
 	try {

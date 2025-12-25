@@ -1,5 +1,5 @@
-import { StudentViewHubData, TeacherViewHubData } from "@lever-labs/common-ts/types/hub"
-import { ClassCode, HubUUID } from "@lever-labs/common-ts/types/utils"
+import { StudentViewHubData, TeacherViewHubData } from "@actamayev/lever-labs-common-ts/types/hub"
+import { ClassCode, HubUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import Singleton from "./singleton"
 import MongoClientClass from "./mongo-client-class"
 import { HubModel, Hub } from "../models/Hub.model"

@@ -1,5 +1,5 @@
 import { prop, getModelForClass, modelOptions } from "@typegoose/typegoose"
-import { HubUUID, ClassCode, CareerUUID } from "@lever-labs/common-ts/types/utils"
+import { HubUUID, ClassCode, CareerUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 // Embedded subdocument for students
 class StudentJoined {

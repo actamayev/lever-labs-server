@@ -1,4 +1,4 @@
-import { ChallengeChatMessage } from "@lever-labs/common-ts/types/chat"
+import { ChallengeChatMessage } from "@actamayev/lever-labs-common-ts/types/chat"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function retrieveChallengeChatMessages(challengeChatId: number): Promise<ChallengeChatMessage[]> {

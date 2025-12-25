@@ -1,4 +1,4 @@
-import { ErrorResponse} from "@lever-labs/common-ts/types/api"
+import { ErrorResponse} from "@actamayev/lever-labs-common-ts/types/api"
 import { CppParser } from "../parser/cpp-parser"
 import { Request, Response, NextFunction } from "express"
 

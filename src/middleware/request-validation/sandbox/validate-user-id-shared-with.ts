@@ -1,8 +1,8 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, MessageResponse, ValidationErrorResponse } from "@lever-labs/common-ts/types/api"
-import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, MessageResponse, ValidationErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { SandboxProjectUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import checkSandboxProjectShareExists from "../../../db-operations/read/sandbox-project-shares/check-sandbox-project-share-exists"
 
 const shareSandboxProjectSchema = Joi.object({

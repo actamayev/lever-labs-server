@@ -1,7 +1,7 @@
 import { Response, Request } from "express"
 import createCompletedUserLessonRecordDb from "../../db-operations/write/completed-user-lesson/create-completed-user-lesson-record"
-import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
-import { LessonUUID } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, SuccessResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { LessonUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default async function markLessonComplete(req: Request, res: Response): Promise<void> {
 	try {

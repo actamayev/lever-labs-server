@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
-import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
-import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
+import { QuestionUUID } from "@actamayev/lever-labs-common-ts/types/utils"
+import { ErrorResponse, SuccessResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import checkMatchingAnswer from "../../db-operations/read/matching/check-matching-answer"
 import addMatchingUserAnswer from "../../db-operations/write/user-answer/add-matching-user-answer"
 

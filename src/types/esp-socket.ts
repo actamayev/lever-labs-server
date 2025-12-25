@@ -1,5 +1,5 @@
 import { WebSocket } from "ws"
-import { PipUUID } from "@lever-labs/common-ts/types/utils"
+import { PipUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import SingleESP32CommandConnection from "../classes/esp32/single-esp32-connection"
 
 declare global {

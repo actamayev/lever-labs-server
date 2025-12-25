@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
-import { ClassCodeResponse, ErrorResponse } from "@lever-labs/common-ts/types/api"
-import { ClassCode } from "@lever-labs/common-ts/types/utils"
+import { ClassCodeResponse, ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { ClassCode } from "@actamayev/lever-labs-common-ts/types/utils"
 import generateClassroomCode from "../../utils/generate/generate-classroom-code"
 import addClassroom from "../../db-operations/write/simultaneous-writes/add-classroom"
 

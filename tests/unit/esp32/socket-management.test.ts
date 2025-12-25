@@ -36,7 +36,7 @@ jest.mock("@/classes/browser-socket-manager", () => ({
 }))
 
 import SingleESP32Connection from "@/classes/esp32/single-esp32-connection"
-import { PipUUID } from "@lever-labs/common-ts/types/utils"
+import { PipUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 describe("ESP32 Socket Management", () => {
 	describe("SingleESP32Connection", () => {

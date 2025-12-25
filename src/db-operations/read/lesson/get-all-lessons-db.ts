@@ -1,6 +1,6 @@
 import { isEmpty } from "lodash"
-import { Lesson } from "@lever-labs/common-ts/types/quest"
-import { LessonUUID } from "@lever-labs/common-ts/types/utils"
+import { Lesson } from "@actamayev/lever-labs-common-ts/types/quest"
+import { LessonUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function getAllLessonsDb(userId: number): Promise<Lesson[]> {

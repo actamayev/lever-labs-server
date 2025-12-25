@@ -1,10 +1,10 @@
 import { isEmpty } from "lodash"
-import { BlocklyJson } from "@lever-labs/common-ts/types/sandbox"
-import { BlockNames } from "@lever-labs/common-ts/types/blockly/blockly"
-import { QuestionUUID, LessonUUID } from "@lever-labs/common-ts/types/utils"
+import { BlocklyJson } from "@actamayev/lever-labs-common-ts/types/sandbox"
+import { BlockNames } from "@actamayev/lever-labs-common-ts/types/blockly/blockly"
+import { QuestionUUID, LessonUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import { ActionToCodeMultipleChoiceAnswerChoice, BlockBankData,
 	BlockToFunctionAnswerChoice, DetailedLesson,
-	FunctionToBlockAnswerChoice, LessonQuestionMap, MatchingAnswerChoice } from "@lever-labs/common-ts/types/quest"
+	FunctionToBlockAnswerChoice, LessonQuestionMap, MatchingAnswerChoice } from "@actamayev/lever-labs-common-ts/types/quest"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 // eslint-disable-next-line max-lines-per-function

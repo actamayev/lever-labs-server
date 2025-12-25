@@ -1,5 +1,5 @@
 import { prop, getModelForClass, modelOptions } from "@typegoose/typegoose"
-import { ScoreboardUUID, ClassCode } from "@lever-labs/common-ts/types/utils"
+import { ScoreboardUUID, ClassCode } from "@actamayev/lever-labs-common-ts/types/utils"
 
 // Embedded subdocument for student in scoreboard
 class StudentJoinedScoreboard {
