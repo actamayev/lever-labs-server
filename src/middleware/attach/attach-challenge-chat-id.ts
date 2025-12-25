@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import findOrCreateChallengeChat from "../../db-operations/write/challenge-chat/find-or-create-challenge-chat"
 
 export default async function attachChallengeChatId(

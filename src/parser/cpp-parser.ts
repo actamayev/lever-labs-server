@@ -1,6 +1,6 @@
 /* eslint-disable max-len, complexity, max-lines-per-function, max-depth */
 import { MAX_PROGRAM_SIZE, MAX_REGISTERS, MAX_LED_BRIGHTNESS, MAX_JUMP_DISTANCE, INSTRUCTION_SIZE } from "../utils/constants/constants"
-import { ToneType } from "@lever-labs/common-ts/protocol"
+import { ToneType } from "@actamayev/lever-labs-common-ts/protocol"
 import { CommandType, BytecodeOpCode, CommandPatterns, SensorType, VarType, ComparisonOp, comparisonOperatorPattern } from "../types/bytecode-types"
 import { CppParserHelper } from "./cpp-parser-helper"
 import { BytecodeInstruction, BlockStack, PendingJumps, VariableType } from "@/types/bytecode"

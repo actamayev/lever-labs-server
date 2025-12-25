@@ -1,6 +1,6 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 import { isNull } from "lodash"
-import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
+import { QuestionUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 interface FillInTheBlankQuestion {
 	questionText: string

@@ -1,8 +1,8 @@
 import { Response, Request } from "express"
 import updateSandboxProject from "../../db-operations/write/sandbox-project/update-sandbox-project"
-import { ErrorResponse, SuccessResponse} from "@lever-labs/common-ts/types/api"
-import { BlocklyJson } from "@lever-labs/common-ts/types/sandbox"
-import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, SuccessResponse} from "@actamayev/lever-labs-common-ts/types/api"
+import { BlocklyJson } from "@actamayev/lever-labs-common-ts/types/sandbox"
+import { SandboxProjectUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default async function editSandboxProject(req: Request, res: Response): Promise<void> {
 	try {

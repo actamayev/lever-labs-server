@@ -1,7 +1,7 @@
 import { Response, Request } from "express"
-import { ErrorResponse } from "@lever-labs/common-ts/types/api"
-import { ClassCode, ScoreboardUUID } from "@lever-labs/common-ts/types/utils"
-import { Scoreboard } from "@lever-labs/common-ts/types/scoreboard"
+import { ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { ClassCode, ScoreboardUUID } from "@actamayev/lever-labs-common-ts/types/utils"
+import { Scoreboard } from "@actamayev/lever-labs-common-ts/types/scoreboard"
 import ScoreboardManager from "../../classes/scoreboard-manager"
 
 export default async function removeStudentFromScoreboard(req: Request, res: Response): Promise<void> {

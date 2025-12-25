@@ -1,8 +1,8 @@
 import { Response, Request } from "express"
-import { ErrorResponse, UsbBytecodeResponse } from "@lever-labs/common-ts/types/api"
-import { Base64String } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, UsbBytecodeResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { Base64String } from "@actamayev/lever-labs-common-ts/types/utils"
 import { checkForMotorCommands, checkForStartButton } from "../../utils/sandbox/sandbox-safety-measures"
-import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
+import { MessageBuilder } from "@actamayev/lever-labs-common-ts/message-builder"
 
 export default function sendSandboxCodeToPipUsb(req: Request, res: Response): void {
 	try {

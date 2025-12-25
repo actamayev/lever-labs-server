@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"
-import { JwtPayload } from "@lever-labs/common-ts/types/auth"
+import { JwtPayload } from "@actamayev/lever-labs-common-ts/types/auth"
 import SecretsManager from "../../../classes/aws/secrets-manager"
 
 export default async function signJWT(payload: JwtPayload): Promise<string> {

@@ -1,9 +1,9 @@
 import { Response, Request } from "express"
-import { ErrorResponse, CheckMCQResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, CheckMCQResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import addActionToCodeMultipleChoiceUserAnswer from "../../db-operations/write/user-answer/add-action-to-code-multiple-choice-user-answer"
 import getCorrectActionToCodeMultipleChoiceAnswerChoiceId
 	from "../../db-operations/read/action-to-code/check-action-to-code-multiple-choice-answer-choice"
-import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
+import { QuestionUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default async function submitActionToCodeMultipleChoiceAnswer(req: Request, res: Response): Promise<void> {
 	try {

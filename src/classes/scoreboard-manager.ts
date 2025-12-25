@@ -1,7 +1,7 @@
 import Singleton from "./singleton"
 import MongoClientClass from "./mongo-client-class"
-import { ClassCode, ScoreboardUUID } from "@lever-labs/common-ts/types/utils"
-import { Scoreboard as ScoreboardType, StudentJoinedScoreboardData } from "@lever-labs/common-ts/types/scoreboard"
+import { ClassCode, ScoreboardUUID } from "@actamayev/lever-labs-common-ts/types/utils"
+import { Scoreboard as ScoreboardType, StudentJoinedScoreboardData } from "@actamayev/lever-labs-common-ts/types/scoreboard"
 import { ScoreboardModel, TeamStats as TeamStatsClass } from "../models/Scoreboard.model"
 
 export default class ScoreboardManager extends Singleton {

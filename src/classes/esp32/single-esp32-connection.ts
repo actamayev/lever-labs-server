@@ -1,4 +1,4 @@
-import { PipUUID } from "@lever-labs/common-ts/types/utils"
+import { PipUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default class SingleESP32CommandConnection {
 	private _isAlive: boolean = true

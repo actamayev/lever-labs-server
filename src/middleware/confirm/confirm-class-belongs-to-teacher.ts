@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, MessageResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, MessageResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import getClassBelongsToTeacher from "../../db-operations/read/classroom/get-class-belongs-to-teacher"
 
 export default async function confirmClassBelongsToTeacher(

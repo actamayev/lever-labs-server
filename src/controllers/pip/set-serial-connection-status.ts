@@ -1,7 +1,7 @@
 import { Response, Request } from "express"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
-import { PipUUID } from "@lever-labs/common-ts/types/utils"
-import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
+import { PipUUID } from "@actamayev/lever-labs-common-ts/types/utils"
+import { ErrorResponse, SuccessResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 import autoConnectToLastOnlineUser from "../../utils/pip/auto-connect-to-last-online-user"
 

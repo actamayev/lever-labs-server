@@ -1,4 +1,4 @@
-import { PipUUID } from "@lever-labs/common-ts/types/utils"
+import { PipUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import SecretsManager from "../../../classes/aws/secrets-manager"
 import PrismaClientClass from "../../../classes/prisma-client"
 

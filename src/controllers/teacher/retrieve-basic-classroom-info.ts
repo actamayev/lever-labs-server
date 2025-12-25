@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { BasicTeacherClassroomData, ErrorResponse } from "@lever-labs/common-ts/types/api"
+import { BasicTeacherClassroomData, ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import getTeacherClassrooms from "../../db-operations/read/classroom-teacher-map/get-teacher-classrooms"
 
 export default async function retrieveBasicClassroomInfo(req: Request, res: Response): Promise<void> {

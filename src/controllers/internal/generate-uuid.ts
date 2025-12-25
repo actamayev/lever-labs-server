@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { ErrorResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
 
 // This is used for generating UUIDs when adding data to the reading_questions.csv and activities.csv, career.csv, and challenge.csv
 export default function generateUUID(req: Request, res: Response): void {

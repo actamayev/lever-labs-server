@@ -1,5 +1,5 @@
-import { SandboxChatMessage } from "@lever-labs/common-ts/types/chat"
-import { SandboxProject, SingleSearchByUsernameResult } from "@lever-labs/common-ts/types/sandbox"
+import { SandboxChatMessage } from "@actamayev/lever-labs-common-ts/types/chat"
+import { SandboxProject, SingleSearchByUsernameResult } from "@actamayev/lever-labs-common-ts/types/sandbox"
 
 // eslint-disable-next-line max-lines-per-function
 export default function camelCaseSandboxProject(

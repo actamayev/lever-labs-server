@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import retrieveSandboxChatMessages from "../../db-operations/read/sandbox-message/retrieve-sandbox-chat-messages"
 
 export default async function attachSandboxConversationHistory(req: Request, res: Response, next: NextFunction): Promise<void> {

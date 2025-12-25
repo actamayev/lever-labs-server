@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
 import EspLatestFirmwareManager from "../../classes/esp32/esp-latest-firmware-manager"
-import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, SuccessResponse } from "@actamayev/lever-labs-common-ts/types/api"
 
 // This endpoint is hit by the Github action when it publishes a new build to the S3 bucket (prod)
 // This forces the server to fetch the latest firmware info

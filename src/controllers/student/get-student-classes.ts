@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { ErrorResponse, StudentClassroomData } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, StudentClassroomData } from "@actamayev/lever-labs-common-ts/types/api"
 import retrieveStudentClasses from "../../db-operations/read/credentials/retrieve-student-classes"
 
 export default async function getStudentClasses(req: Request, res: Response): Promise<void> {

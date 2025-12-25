@@ -1,4 +1,4 @@
-import { ClassCode } from "@lever-labs/common-ts/types/utils"
+import { ClassCode } from "@actamayev/lever-labs-common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function updateClassroomName(

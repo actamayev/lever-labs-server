@@ -1,6 +1,6 @@
 import isNull from "lodash/isNull"
 import { Response, Request } from "express"
-import { ErrorResponse, MessageResponse, EmailUpdatesRequest, NewGoogleInfoRequest } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, MessageResponse, EmailUpdatesRequest, NewGoogleInfoRequest } from "@actamayev/lever-labs-common-ts/types/api"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"
 import { setAuthCookie } from "../../middleware/cookie-helpers"

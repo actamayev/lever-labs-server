@@ -1,5 +1,5 @@
 import { isNull } from "lodash"
-import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
+import { QuestionUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function checkMatchingAnswer(

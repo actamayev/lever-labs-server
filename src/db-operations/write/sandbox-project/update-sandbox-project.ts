@@ -1,6 +1,6 @@
-import { BlocklyJson } from "@lever-labs/common-ts/types/sandbox"
+import { BlocklyJson } from "@actamayev/lever-labs-common-ts/types/sandbox"
 import PrismaClientClass from "../../../classes/prisma-client"
-import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
+import { SandboxProjectUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default async function updateSandboxProject(projectUUID: SandboxProjectUUID, newBlocklyJson: BlocklyJson): Promise<void> {
 	try {

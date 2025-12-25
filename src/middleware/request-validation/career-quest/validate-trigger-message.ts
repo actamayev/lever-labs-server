@@ -1,9 +1,9 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, ValidationErrorResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, ValidationErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import { CareerType, CityDrivingArcadeTriggerType, FlappyBirdArcadeTriggerType,
-	MeetPipTriggerType, TurretArcadeTriggerType } from "@lever-labs/common-ts/protocol"
+	MeetPipTriggerType, TurretArcadeTriggerType } from "@actamayev/lever-labs-common-ts/protocol"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
 
 function validateTriggerMessageType(

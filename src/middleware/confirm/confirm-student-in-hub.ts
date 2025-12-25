@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, MessageResponse } from "@lever-labs/common-ts/types/api"
-import { HubUUID } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, MessageResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { HubUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import HubManager from "../../classes/hub-manager"
 
 export default async function confirmStudentInHub(

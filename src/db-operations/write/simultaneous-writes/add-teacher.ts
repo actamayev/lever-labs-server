@@ -1,4 +1,4 @@
-import { IncomingTeacherRequestData } from "@lever-labs/common-ts/types/api"
+import { IncomingTeacherRequestData } from "@actamayev/lever-labs-common-ts/types/api"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function addTeacher(

@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
-import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
-import { ClassCode } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, SuccessResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { ClassCode } from "@actamayev/lever-labs-common-ts/types/utils"
 import updateClassroomName from "../../db-operations/write/classroom/update-classroom-name"
 
 export default async function editClassroomName(req: Request, res: Response): Promise<void> {

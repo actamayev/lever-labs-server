@@ -1,7 +1,7 @@
 import { Response, Request } from "express"
 import updateSandboxStarStatus from "../../db-operations/write/sandbox-project/update-sandbox-project-star-status"
-import { ErrorResponse, SuccessResponse} from "@lever-labs/common-ts/types/api"
-import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, SuccessResponse} from "@actamayev/lever-labs-common-ts/types/api"
+import { SandboxProjectUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default async function starSandboxProject(req: Request, res: Response): Promise<void> {
 	try {

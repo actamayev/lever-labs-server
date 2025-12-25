@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { ErrorResponse, ArcadeScoreRequest } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, ArcadeScoreRequest } from "@actamayev/lever-labs-common-ts/types/api"
 import retrieveAllArcadeScores from "../../db-operations/read/arcade-score/retrieve-all-arcade-scores"
 
 export default async function retrieveAllArcadeScoresController(req: Request, res: Response): Promise<void> {

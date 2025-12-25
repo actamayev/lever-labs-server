@@ -1,4 +1,4 @@
-import { SingleSearchByUsernameResult } from "@lever-labs/common-ts/types/sandbox"
+import { SingleSearchByUsernameResult } from "@actamayev/lever-labs-common-ts/types/sandbox"
 
 export default function camelCaseUserSearchResult(user: RetrievedUserSearchResult): SingleSearchByUsernameResult {
 	try {

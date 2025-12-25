@@ -1,10 +1,10 @@
 import { Response, Request } from "express"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
-import { ErrorResponse, SuccessResponse, MessageResponse } from "@lever-labs/common-ts/types/api"
-import { PipUUID } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, SuccessResponse, MessageResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { PipUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
-import { UserConnectedStatus } from "@lever-labs/common-ts/protocol"
-import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
+import { UserConnectedStatus } from "@actamayev/lever-labs-common-ts/protocol"
+import { MessageBuilder } from "@actamayev/lever-labs-common-ts/message-builder"
 import BrowserSocketManager from "../../classes/browser-socket-manager"
 
 export default function clientDisconnectFromPipRequest (req: Request, res: Response): void {

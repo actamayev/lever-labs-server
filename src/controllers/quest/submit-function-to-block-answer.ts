@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
-import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
-import { ErrorResponse, CheckMCQResponse } from "@lever-labs/common-ts/types/api"
+import { QuestionUUID } from "@actamayev/lever-labs-common-ts/types/utils"
+import { ErrorResponse, CheckMCQResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import addFunctionToBlockUserAnswer from "../../db-operations/write/user-answer/add-function-to-block-user-answer"
 import getCorrectFunctionToBlockAnswerChoiceId from "../../db-operations/read/function-to-block/check-function-to-block-answer-choice"
 

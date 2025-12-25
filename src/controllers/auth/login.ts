@@ -1,6 +1,6 @@
 import isNull from "lodash/isNull"
 import { Response, Request } from "express"
-import { ErrorResponse, LoginRequest, LoginSuccess, MessageResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, LoginRequest, LoginSuccess, MessageResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import Hash from "../../classes/hash"
 import Encryptor from "../../classes/encryptor"
 import signJWT from "../../utils/auth-helpers/jwt/sign-jwt"

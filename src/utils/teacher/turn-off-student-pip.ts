@@ -1,6 +1,6 @@
 import getCurrentlyConnectedPipUUID from "../pip/get-currently-connected-pip-uuid"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
-import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
+import { MessageBuilder } from "@actamayev/lever-labs-common-ts/message-builder"
 
 export function brakeStudentPip(studentUserId: number): void {
 	try {

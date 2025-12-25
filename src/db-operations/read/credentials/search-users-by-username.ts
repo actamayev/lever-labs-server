@@ -1,6 +1,6 @@
 import PrismaClientClass from "../../../classes/prisma-client"
 import camelCaseUserSearchResult from "../../../utils/user/camel-case-user-search-result"
-import { SingleSearchByUsernameResult } from "@lever-labs/common-ts/types/sandbox"
+import { SingleSearchByUsernameResult } from "@actamayev/lever-labs-common-ts/types/sandbox"
 
 export default async function searchUsersByUsername(searchString: string, userId: number): Promise<SingleSearchByUsernameResult[]> {
 	try {

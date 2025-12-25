@@ -2,8 +2,8 @@
 import { Response, Request } from "express"
 import doesPipUUIDExist from "../../db-operations/read/does-x-exist/does-pip-uuid-exist"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
-import { PipUUID } from "@lever-labs/common-ts/types/utils"
-import { ErrorResponse, RetrieveIsPipUUIDValidResponse, MessageResponse} from "@lever-labs/common-ts/types/api"
+import { PipUUID } from "@actamayev/lever-labs-common-ts/types/utils"
+import { ErrorResponse, RetrieveIsPipUUIDValidResponse, MessageResponse} from "@actamayev/lever-labs-common-ts/types/api"
 import espConnectionStateToClientConnectionStatus from "../../utils/pip/esp-connection-state-to-client-connection-status"
 
 export default async function retrievePipUUIDStatus(req: Request, res: Response): Promise<void> {

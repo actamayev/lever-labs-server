@@ -1,4 +1,4 @@
-import { MotorControlData } from "@lever-labs/common-ts/types/garage"
+import { MotorControlData } from "@actamayev/lever-labs-common-ts/types/garage"
 
 interface MotorSpeeds {
 	leftMotor: number

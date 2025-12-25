@@ -1,12 +1,12 @@
 import { Response, Request } from "express"
-import { CheckCodeResponse, ErrorResponse } from "@lever-labs/common-ts/types/api"
+import { CheckCodeResponse, ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import addFillInTheBlankUserAnswer from "../../db-operations/write/user-answer/add-fill-in-the-blank-user-answer"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
 import buildCheckFITBLLMContext, { fitbCheckResponseFormat } from "../../utils/llm/quest/build-check-fitb-llm-context"
 import { getRandomCorrectResponse, getRandomIncorrectResponse } from "../../utils/career-quest-responses"
 import retrieveFillInTheBlankQuestion from "../../db-operations/read/fill-in-the-blank/retrieve-fill-in-the-blank-question"
-import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
+import { QuestionUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default async function submitFillInTheBlankAnswer(req: Request, res: Response): Promise<void> {
 	try {

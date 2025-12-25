@@ -5,7 +5,7 @@ import {
 	createTestApp,
 	createAuthenticatedRequest,
 } from "../../../utils/app-test-setup"
-import { CareerType } from "@lever-labs/common-ts/protocol"
+import { CareerType } from "@actamayev/lever-labs-common-ts/protocol"
 
 // Mock the getDecodedId function
 jest.mock("@/utils/auth-helpers/get-decoded-id")

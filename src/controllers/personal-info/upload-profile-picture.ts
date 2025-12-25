@@ -1,6 +1,6 @@
 import { isUndefined } from "lodash"
 import { Request, Response } from "express"
-import { ErrorResponse, MessageResponse, ProfilePictureUrl} from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, MessageResponse, ProfilePictureUrl} from "@actamayev/lever-labs-common-ts/types/api"
 import AwsS3 from "../../classes/aws/s3-manager"
 import upsertProfilePicture from "../../db-operations/write/profile-picture/upsert-profile-picture"
 

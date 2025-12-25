@@ -1,4 +1,4 @@
-import { CareerUUID } from "@lever-labs/common-ts/types/utils"
+import { CareerUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 
 export default async function findCareerIdFromUUID(careerUUID: CareerUUID): Promise<number | null> {

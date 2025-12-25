@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import Esp32SocketManager from "../../classes/esp32/esp32-socket-manager"
-import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
-import { PipUUID } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, SuccessResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { PipUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default function confirmUserIsntAlreadyConnectedToPip(
 	req: Request,

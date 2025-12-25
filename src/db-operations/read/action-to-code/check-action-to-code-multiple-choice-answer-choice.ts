@@ -1,6 +1,6 @@
 import { isNull } from "lodash"
 import PrismaClientClass from "../../../classes/prisma-client"
-import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
+import { QuestionUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default async function getCorrectActionToCodeMultipleChoiceAnswerChoiceId(questionId: QuestionUUID): Promise<number | null> {
 	try {

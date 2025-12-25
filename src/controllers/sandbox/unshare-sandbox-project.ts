@@ -1,7 +1,7 @@
 import { Response, Request } from "express"
 import removeSandboxProjectShare from "../../db-operations/write/sandbox-project-shares/remove-sandbox-project-share"
-import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
-import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, SuccessResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { SandboxProjectUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default async function unshareSandboxProject(req: Request, res: Response): Promise<void> {
 	try {

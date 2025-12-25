@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Response, Request } from "express"
-import { ErrorResponse, StartChatSuccess, CheckCodeResponse } from "@lever-labs/common-ts/types/api"
-import { ChallengeUUID } from "@lever-labs/common-ts/types/utils"
+import { ErrorResponse, StartChatSuccess, CheckCodeResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { ChallengeUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import StreamManager from "../../classes/stream-manager"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"

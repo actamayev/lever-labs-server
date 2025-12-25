@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { CareerProgressData, ErrorResponse } from "@lever-labs/common-ts/types/api"
+import { CareerProgressData, ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import getUserCareerProgressData from "../../db-operations/read/simultaneous-reads/get-user-career-progress-data"
 
 export default async function retrieveCareerProgressData(req: Request, res: Response): Promise<void> {

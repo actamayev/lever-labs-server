@@ -1,6 +1,6 @@
 import { isNull } from "lodash"
 import { Response, Request } from "express"
-import { DetailedClassroomData, ErrorResponse} from "@lever-labs/common-ts/types/api"
+import { DetailedClassroomData, ErrorResponse} from "@actamayev/lever-labs-common-ts/types/api"
 import getDetailedTeacherClassroomData from "../../db-operations/read/classroom-teacher-map/get-detailed-teacher-classroom-data"
 
 export default async function retrieveDetailedClassroomInfo(req: Request, res: Response): Promise<void> {

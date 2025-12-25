@@ -2,23 +2,23 @@
 import isUndefined from "lodash/isUndefined"
 import { isNull } from "lodash"
 import { Server as SocketIOServer, Socket } from "socket.io"
-import { StudentViewHubData } from "@lever-labs/common-ts/types/hub"
+import { StudentViewHubData } from "@actamayev/lever-labs-common-ts/types/hub"
 import { SensorPayload, ClientPipConnectionStatus,
-	BatteryMonitorData, SensorPayloadMZ } from "@lever-labs/common-ts/types/pip"
-import { PipUUID, ClassCode } from "@lever-labs/common-ts/types/utils"
+	BatteryMonitorData, SensorPayloadMZ } from "@actamayev/lever-labs-common-ts/types/pip"
+import { PipUUID, ClassCode } from "@actamayev/lever-labs-common-ts/types/utils"
 import { SocketEvents, SocketEventPayloadMap,
-	StudentJoinedHub, DeletedHub, UpdatedHubSlideId, StudentLeftHub } from "@lever-labs/common-ts/types/socket"
-import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
+	StudentJoinedHub, DeletedHub, UpdatedHubSlideId, StudentLeftHub } from "@actamayev/lever-labs-common-ts/types/socket"
+import { MessageBuilder } from "@actamayev/lever-labs-common-ts/message-builder"
 import Singleton from "./singleton"
 import listenersMap from "../utils/constants/listeners-map"
 import SendEsp32MessageManager from "./esp32/send-esp32-message-manager"
 import handleDisconnectHubHelper from "../utils/handle-disconnect-hub-helper"
 import retrieveUsername from "../db-operations/read/credentials/retrieve-username"
-import { UserConnectedStatus } from "@lever-labs/common-ts/protocol"
+import { UserConnectedStatus } from "@actamayev/lever-labs-common-ts/protocol"
 import Esp32SocketManager from "./esp32/esp32-socket-manager"
 import espConnectionStateToClientConnectionStatus from "../utils/pip/esp-connection-state-to-client-connection-status"
 import autoConnectToPip from "../utils/pip/auto-connect-to-pip"
-import { ArcadeGameType } from "@lever-labs/common-ts/types/arcade"
+import { ArcadeGameType } from "@actamayev/lever-labs-common-ts/types/arcade"
 
 type UserConnectionState = {
 	sockets: Set<string>  // Set of unique socket IDs

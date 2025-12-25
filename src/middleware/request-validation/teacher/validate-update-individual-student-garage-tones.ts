@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, ValidationErrorResponse} from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, ValidationErrorResponse} from "@actamayev/lever-labs-common-ts/types/api"
 
 const updateIndividualStudentGarageTonesSchema = Joi.object({
 	studentId: Joi.number().integer().positive().required(),

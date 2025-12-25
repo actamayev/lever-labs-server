@@ -1,5 +1,5 @@
-import { StudentClassroomData } from "@lever-labs/common-ts/types/api"
-import { ClassCode } from "@lever-labs/common-ts/types/utils"
+import { StudentClassroomData } from "@actamayev/lever-labs-common-ts/types/api"
+import { ClassCode } from "@actamayev/lever-labs-common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 import HubManager from "../../../classes/hub-manager"
 

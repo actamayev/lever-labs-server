@@ -1,4 +1,4 @@
-import { CqChallengeData } from "@lever-labs/common-ts/types/career-quest"
+import { CqChallengeData } from "@actamayev/lever-labs-common-ts/types/career-quest"
 import { ResponseFormatJSONSchema } from "openai/resources/shared"
 
 export default function buildCheckCodeLLMContext(

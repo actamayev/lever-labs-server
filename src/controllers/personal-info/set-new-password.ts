@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import Hash from "../../classes/hash"
 import updatePassword from "../../db-operations/write/credentials/update-password"
-import { ErrorResponse, SuccessResponse, MessageResponse} from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, SuccessResponse, MessageResponse} from "@actamayev/lever-labs-common-ts/types/api"
 
 export default async function setNewPassword(req: Request, res: Response): Promise<void> {
 	try {

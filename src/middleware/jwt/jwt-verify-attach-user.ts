@@ -1,7 +1,7 @@
 import Joi from "joi"
 import isNull from "lodash/isNull"
 import isUndefined from "lodash/isUndefined"
-import { ErrorResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import { Request, Response, NextFunction } from "express"
 import { getAuthTokenFromCookies } from "../cookie-helpers"
 import getDecodedId from "../../utils/auth-helpers/get-decoded-id"

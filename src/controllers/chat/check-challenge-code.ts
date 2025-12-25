@@ -1,6 +1,6 @@
 import { Response, Request } from "express"
-import { CheckCodeResponse, ErrorResponse } from "@lever-labs/common-ts/types/api"
-import { ChallengeUUID } from "@lever-labs/common-ts/types/utils"
+import { CheckCodeResponse, ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { ChallengeUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
 import findChallengeDataFromUUID from "../../utils/llm/find-challenge-data-from-uuid"

@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import Encryptor from "../../classes/encryptor"
-import { ErrorResponse, PersonalInfoResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, PersonalInfoResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import extractTeacherDataFromUserData from "../../utils/teacher/extract-teacher-data-from-user-data"
 
 export default async function getPersonalInfo(req: Request, res: Response): Promise<void> {

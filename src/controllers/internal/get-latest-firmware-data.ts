@@ -1,7 +1,7 @@
 import { isNull } from "lodash"
 import { Response, Request } from "express"
 import EspLatestFirmwareManager from "../../classes/esp32/esp-latest-firmware-manager"
-import { ErrorResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
 
 export default function getLatestFirmwareData(_req: Request, res: Response): void {
 	try {

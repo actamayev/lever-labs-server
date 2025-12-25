@@ -1,6 +1,6 @@
 import { QuestionType } from "@prisma/client"
-import { CareerUUID, ChallengeUUID } from "@lever-labs/common-ts/types/utils"
-import { BlocklyJson } from "@lever-labs/common-ts/types/sandbox"
+import { CareerUUID, ChallengeUUID } from "@actamayev/lever-labs-common-ts/types/utils"
+import { BlocklyJson } from "@actamayev/lever-labs-common-ts/types/sandbox"
 
 declare global {
 	interface CareerData {

@@ -1,5 +1,5 @@
-import { PipUUID } from "@lever-labs/common-ts/types/utils"
-import { ACCEPTABLE_PIP_ID_CHARACTERS } from "@lever-labs/common-ts/types/utils/constants"
+import { PipUUID } from "@actamayev/lever-labs-common-ts/types/utils"
+import { ACCEPTABLE_PIP_ID_CHARACTERS } from "@actamayev/lever-labs-common-ts/types/utils/constants"
 
 export default function generatePipUUID(): PipUUID {
 	try {

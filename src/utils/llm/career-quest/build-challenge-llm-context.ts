@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { isEmpty } from "lodash"
-import { ChallengeUUID } from "@lever-labs/common-ts/types/utils"
+import { ChallengeUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import { BlockFormatter } from "../../sandbox/block-formatter"
 import findChallengeDataFromUUID from "../find-challenge-data-from-uuid"
 
