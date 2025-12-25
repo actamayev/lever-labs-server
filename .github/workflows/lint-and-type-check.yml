@@ -25,7 +25,7 @@ jobs:
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
       env:
-        NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     - name: Run linter
       run: pnpm lint
@@ -52,7 +52,7 @@ jobs:
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
       env:
-        NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     - name: Run type-check
       run: pnpm type-check
