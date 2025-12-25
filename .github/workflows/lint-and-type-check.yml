@@ -20,7 +20,7 @@ jobs:
         node-version: 'lts/*'
         cache: 'pnpm'
         registry-url: 'https://npm.pkg.github.com'
-        scope: '@lever-labs'
+        scope: '@actamayev'
 
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
@@ -47,7 +47,7 @@ jobs:
         node-version: 'lts/*'
         cache: 'pnpm'
         registry-url: 'https://npm.pkg.github.com'
-        scope: '@lever-labs'
+        scope: '@actamayev'
 
     - name: Install dependencies
       run: pnpm install --frozen-lockfile

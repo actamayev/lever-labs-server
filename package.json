@@ -12,7 +12,7 @@
     "type-check": "tsc --noEmit --project tsconfig.test.json",
     "validate": "pnpm run lint && pnpm run type-check && pnpm test",
     "cloud-seed": "node dist/src/prisma/seed.js",
-    "updateCommon": "pnpm add @lever-labs/common-ts@latest",
+    "updateCommon": "pnpm add @actamayev/lever-labs-common-ts@latest",
     "test": "jest --config jest.config.js",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -68,9 +68,9 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@actamayev/lever-labs-common-ts": "^1.0.380",
     "@aws-sdk/client-s3": "^3.935.0",
     "@aws-sdk/client-secrets-manager": "^3.935.0",
-    "@lever-labs/common-ts": "^1.0.377",
     "@prisma/client": "^6.19.0",
     "@typegoose/typegoose": "^12.20.0",
     "bcrypt": "^6.0.0",
