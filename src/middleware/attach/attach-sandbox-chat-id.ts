@@ -1,7 +1,7 @@
-import { ErrorResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import { Request, Response, NextFunction } from "express"
 import findOrCreateSandboxChat from "../../db-operations/write/sandbox-chat/find-or-create-sandbox-chat"
-import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
+import { SandboxProjectUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default async function attachSandboxChatId(
 	req: Request,

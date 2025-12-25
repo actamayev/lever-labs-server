@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
-import { ErrorResponse, RetrieveSandboxProjectResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, RetrieveSandboxProjectResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import retrieveSingleSandboxProjectData from "../../db-operations/read/sandbox_project/retrieve-single-sandbox-project-data"
-import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
+import { SandboxProjectUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default async function getSingleSandboxProject(req: Request, res: Response): Promise<void> {
 	try {

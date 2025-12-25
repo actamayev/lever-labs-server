@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { ErrorResponse, SearchByUsernameResult } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, SearchByUsernameResult } from "@actamayev/lever-labs-common-ts/types/api"
 import searchUsersByUsername from "../../db-operations/read/credentials/search-users-by-username"
 
 export default async function searchByUsername(req: Request, res: Response): Promise<void> {

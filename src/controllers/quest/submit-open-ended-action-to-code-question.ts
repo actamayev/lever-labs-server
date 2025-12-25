@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { CheckCodeResponse, ErrorResponse } from "@lever-labs/common-ts/types/api"
+import { CheckCodeResponse, ErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import selectModel from "../../utils/llm/model-selector"
 import OpenAiClientClass from "../../classes/openai-client"
 import buildCheckOpenEndedActionToCodeQuestionLLMContext,
@@ -7,7 +7,7 @@ import buildCheckOpenEndedActionToCodeQuestionLLMContext,
 import { getRandomCorrectResponse, getRandomIncorrectResponse } from "../../utils/career-quest-responses"
 import addOpenEndedActionToCodeUserAnswer from "../../db-operations/write/user-answer/add-open-ended-action-to-code-user-answer"
 import retrieveOpenEndedActionToCodeQuestion from "../../db-operations/read/action-to-code/retrieve-open-ended-action-to-code-question"
-import { QuestionUUID } from "@lever-labs/common-ts/types/utils"
+import { QuestionUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default async function submitOpenEndedActionToCodeAnswer(req: Request, res: Response): Promise<void> {
 	try {

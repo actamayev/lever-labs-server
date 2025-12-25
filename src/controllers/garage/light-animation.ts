@@ -1,10 +1,10 @@
 import { Response, Request } from "express"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
-import { LightAnimation } from "@lever-labs/common-ts/types/garage"
-import { PipUUID } from "@lever-labs/common-ts/types/utils"
-import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
-import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
-import { lightToLEDType } from "@lever-labs/common-ts/protocol"
+import { LightAnimation } from "@actamayev/lever-labs-common-ts/types/garage"
+import { PipUUID } from "@actamayev/lever-labs-common-ts/types/utils"
+import { MessageBuilder } from "@actamayev/lever-labs-common-ts/message-builder"
+import { ErrorResponse, SuccessResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { lightToLEDType } from "@actamayev/lever-labs-common-ts/protocol"
 
 export default function lightAnimationEndpoint(req: Request, res: Response): void {
 	try {

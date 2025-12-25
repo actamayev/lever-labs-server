@@ -1,4 +1,4 @@
-import { ToneType } from "@lever-labs/common-ts/protocol"
+import { ToneType } from "@actamayev/lever-labs-common-ts/protocol"
 import { CppParser } from "@/parser/cpp-parser"
 import { BytecodeOpCode } from "../../src/types/bytecode-types"
 import { describe, test, expect } from "@jest/globals"

@@ -1,7 +1,7 @@
 import { Response, Request } from "express"
-import { ErrorResponse, DetailedLessonResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, DetailedLessonResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import getDetailedLessonDb from "../../db-operations/read/lesson/get-detailed-lesson-db"
-import { LessonUUID } from "@lever-labs/common-ts/types/utils"
+import { LessonUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default async function getDetailedLesson(req: Request, res: Response): Promise<void> {
 	try {

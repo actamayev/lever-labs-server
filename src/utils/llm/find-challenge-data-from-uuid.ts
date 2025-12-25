@@ -1,6 +1,6 @@
-import { CqChallengeData } from "@lever-labs/common-ts/types/career-quest"
-import { ChallengeUUID } from "@lever-labs/common-ts/types/utils"
-import { CHALLENGES } from "@lever-labs/common-ts/types/cq-challenge-data"
+import { CqChallengeData } from "@actamayev/lever-labs-common-ts/types/career-quest"
+import { ChallengeUUID } from "@actamayev/lever-labs-common-ts/types/utils"
+import { CHALLENGES } from "@actamayev/lever-labs-common-ts/types/cq-challenge-data"
 
 export default function findChallengeDataFromUUID(challengeUUID: ChallengeUUID): CqChallengeData {
 	const challenge = CHALLENGES.find(foundChallenge => foundChallenge.challengeUUID === challengeUUID)

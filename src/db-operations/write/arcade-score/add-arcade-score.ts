@@ -1,4 +1,4 @@
-import { ArcadeGameType } from "@lever-labs/common-ts/types/arcade"
+import { ArcadeGameType } from "@actamayev/lever-labs-common-ts/types/arcade"
 import PrismaClientClass from "../../../classes/prisma-client"
 import { convertArcadeGameTypeToName } from "../../../utils/arcade/convert-arcade-game"
 

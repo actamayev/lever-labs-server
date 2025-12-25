@@ -1,5 +1,5 @@
 import { ArcadeGameName } from "@prisma/client"
-import { ArcadeGameType } from "@lever-labs/common-ts/types/arcade"
+import { ArcadeGameType } from "@actamayev/lever-labs-common-ts/types/arcade"
 
 export function convertArcadeGameNameToType(gameName: ArcadeGameName): ArcadeGameType {
 	switch (gameName) {

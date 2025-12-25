@@ -1,5 +1,5 @@
 import Joi from "joi"
-import { ACCEPTABLE_PIP_ID_CHARACTERS } from "@lever-labs/common-ts/types/utils/constants"
+import { ACCEPTABLE_PIP_ID_CHARACTERS } from "@actamayev/lever-labs-common-ts/types/utils/constants"
 
 // Validator for pipUUID: 5 characters from the acceptable set
 const pipUUIDValidator = Joi.string()

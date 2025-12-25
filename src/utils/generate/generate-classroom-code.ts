@@ -1,5 +1,5 @@
-import { ClassCode } from "@lever-labs/common-ts/types/utils"
-import { ACCEPTABLE_CLASS_CODE_CHARACTERS } from "@lever-labs/common-ts/types/utils/constants"
+import { ClassCode } from "@actamayev/lever-labs-common-ts/types/utils"
+import { ACCEPTABLE_CLASS_CODE_CHARACTERS } from "@actamayev/lever-labs-common-ts/types/utils/constants"
 
 export default function generateClassroomCode(): ClassCode {
 	try {

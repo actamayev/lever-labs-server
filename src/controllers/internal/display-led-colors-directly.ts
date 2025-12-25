@@ -1,8 +1,8 @@
 import { Response, Request } from "express"
 import SendEsp32MessageManager from "../../classes/esp32/send-esp32-message-manager"
-import { LedControlData } from "@lever-labs/common-ts/types/garage"
-import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
-import { MessageBuilder } from "@lever-labs/common-ts/message-builder"
+import { LedControlData } from "@actamayev/lever-labs-common-ts/types/garage"
+import { ErrorResponse, SuccessResponse } from "@actamayev/lever-labs-common-ts/types/api"
+import { MessageBuilder } from "@actamayev/lever-labs-common-ts/message-builder"
 
 // This is an internal route to not have to go through the WS in Postman
 export default function displayLedColorsDirectly(req: Request, res: Response): void {

@@ -1,5 +1,5 @@
-import { BlocklyJson, SandboxProject } from "@lever-labs/common-ts/types/sandbox"
-import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
+import { BlocklyJson, SandboxProject } from "@actamayev/lever-labs-common-ts/types/sandbox"
+import { SandboxProjectUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 import PrismaClientClass from "../../../classes/prisma-client"
 import camelCaseSandboxProject from "../../../utils/sandbox/camel-case-sandbox-project"
 

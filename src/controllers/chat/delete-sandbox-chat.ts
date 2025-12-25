@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
-import { ErrorResponse, SuccessResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, SuccessResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import deleteSandboxChat from "../../db-operations/write/sandbox-chat/delete-sandbox-chat"
-import { SandboxProjectUUID } from "@lever-labs/common-ts/types/utils"
+import { SandboxProjectUUID } from "@actamayev/lever-labs-common-ts/types/utils"
 
 export default async function deleteSandboxChatController(req: Request, res: Response): Promise<void> {
 	try {

@@ -1,6 +1,6 @@
 import Joi from "joi"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, ValidationErrorResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, ValidationErrorResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import pipUUIDValidator from "../../joi/pip-uuid-validator"
 import isUndefined from "lodash/isUndefined"
 

@@ -1,6 +1,6 @@
 import isUndefined from "lodash/isUndefined"
 import { Request, Response, NextFunction } from "express"
-import { ErrorResponse, MessageResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, MessageResponse } from "@actamayev/lever-labs-common-ts/types/api"
 
 export default function validateUserIdNotSelf(req: Request, res: Response, next: NextFunction): void {
 	try {

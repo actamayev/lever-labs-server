@@ -1,5 +1,5 @@
 import PrismaClientClass from "../../../classes/prisma-client"
-import { ArcadeScore } from "@lever-labs/common-ts/types/arcade"
+import { ArcadeScore } from "@actamayev/lever-labs-common-ts/types/arcade"
 import { convertArcadeGameNameToType } from "../../../utils/arcade/convert-arcade-game"
 
 export default async function retrieveAllArcadeScores(userId: number): Promise<ArcadeScore[]> {

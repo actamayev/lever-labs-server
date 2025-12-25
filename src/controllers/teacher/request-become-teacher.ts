@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { ErrorResponse, IncomingTeacherRequestData, SuccessResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, IncomingTeacherRequestData, SuccessResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import addTeacher from "../../db-operations/write/simultaneous-writes/add-teacher"
 
 export default async function requestBecomeTeacher(req: Request, res: Response): Promise<void> {

@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express"
 import emailValidator from "../../joi/email-validator"
 import usernameValidator from "../../joi/username-validator"
 import passwordValidatorSchema from "../../joi/password-validator"
-import { ErrorResponse, ValidationErrorResponse} from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, ValidationErrorResponse} from "@actamayev/lever-labs-common-ts/types/api"
 
 const registerInformationSchema = Joi.object({
 	registerInformation: Joi.object({

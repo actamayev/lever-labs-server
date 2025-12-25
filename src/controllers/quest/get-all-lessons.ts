@@ -1,5 +1,5 @@
 import { Response, Request } from "express"
-import { ErrorResponse, LessonsResponse } from "@lever-labs/common-ts/types/api"
+import { ErrorResponse, LessonsResponse } from "@actamayev/lever-labs-common-ts/types/api"
 import getAllLessonsDb from "../../db-operations/read/lesson/get-all-lessons-db"
 
 export default async function getAllLessons(req: Request, res: Response): Promise<void> {
