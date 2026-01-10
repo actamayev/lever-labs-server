@@ -5,3 +5,4 @@ node_modules
 prisma/.DS_Store
 /coverage
 .npmrc
+prod-secrets.txt
